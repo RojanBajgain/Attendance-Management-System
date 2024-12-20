@@ -73,6 +73,7 @@ class _TabScreenState extends State<TabScreen> {
           BottomBarItem(iconData: Icons.confirmation_number_outlined),
           BottomBarItem(iconData: Icons.settings),
         ],
+        color: Colors.black,
         onSelect: (index) {
           // Use addPostFrameCallback to avoid calling setState during build
           WidgetsBinding.instance.addPostFrameCallback((_) {

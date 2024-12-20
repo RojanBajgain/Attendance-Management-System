@@ -53,6 +53,8 @@ dependencies:
   tap_to_expand: ^0.7.2
   image_picker: ^1.1.2
   material_dialogs: ^1.1.5
+  get_storage: ^2.1.1
+  http: ^1.2.2
 
 dev_dependencies:
   flutter_test:

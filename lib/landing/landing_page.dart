@@ -14,6 +14,15 @@ class LandingPage extends StatefulWidget {
 
 class _LandingPageState extends State<LandingPage> {
   @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(seconds: 3), () {
+      Navigator.of(context)
+          .pushReplacement(MaterialPageRoute(builder: (_) => Login()));
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -78,7 +87,7 @@ class _LandingPageState extends State<LandingPage> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomAppBar(
+      /* bottomNavigationBar: BottomAppBar(
         color: Colors.white,
         elevation: 0.0,
         child: Padding(
@@ -120,7 +129,7 @@ class _LandingPageState extends State<LandingPage> {
                   ),
                 ),
               ),
-              GestureDetector(
+              /* GestureDetector(
                 onTap: () {
                   Navigator.of(context).pushReplacement(
                     CupertinoPageRoute(
@@ -153,11 +162,11 @@ class _LandingPageState extends State<LandingPage> {
                     ),
                   ),
                 ),
-              ),
+              ), */
             ],
           ),
         ),
-      ),
+      ), */
     );
   }
 }

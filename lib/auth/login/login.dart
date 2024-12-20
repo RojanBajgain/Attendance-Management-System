@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:ams/auth/register/register.dart';
 import 'package:ams/components/password_text_field.dart';
 import 'package:ams/components/text_form_builder.dart';
@@ -7,17 +9,44 @@ import 'package:ams/screens/mainscreen.dart';
 import 'package:ams/view_models/auth/login_view_model.dart';
 import 'package:ams/widgets/indicators.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 class Login extends StatefulWidget {
+  final Map? valid;
+
+  const Login({super.key, this.valid});
+
   @override
   _LoginState createState() => _LoginState();
 }
 
 class _LoginState extends State<Login> {
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+
+  final storage = GetStorage();
+
+  @override
+  void initState() {
+    super.initState();
+    checkLoginStatus();
+  }
+
+  void checkLoginStatus() {
+    final token = storage.read('token');
+    if (token != null) {
+      // Token Exists
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => TabScreen()));
+    }
+  }
+
   final GlobalKey<ScaffoldState> scaffoldKey1 = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
@@ -116,7 +145,7 @@ class _LoginState extends State<Login> {
                 ),
               ),
               const SizedBox(height: 30.0),
-              Row(
+              /* Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text('Don\'t have an account?'),
@@ -138,7 +167,7 @@ class _LoginState extends State<Login> {
                     ),
                   ),
                 ],
-              ),
+              ), */
             ],
           ),
         ),
@@ -254,6 +283,7 @@ class _LoginState extends State<Login> {
       child: Column(
         children: [
           TextFormBuilder(
+            controller: _emailController,
             enabled: !viewModel.loading,
             prefix: Ionicons.mail,
             hintText: "Email",
@@ -266,15 +296,22 @@ class _LoginState extends State<Login> {
           ),
           const SizedBox(height: 20.0),
           PasswordFormBuilder(
+            controller: _passwordController,
             enabled: !viewModel.loading,
             prefix: Ionicons.lock_closed,
             suffix: Ionicons.eye_off_outline,
             hintText: "Password",
+            validateFunction: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Password cannot be empty';
+              }
+              return null;
+            },
+            onSaved: (value) {
+              print('Saved password: $value');
+            },
             textInputAction: TextInputAction.done,
             obscureText: true,
-            onSaved: (String val) {
-              viewModel.setPassword(val);
-            },
             focusNode: viewModel.passFN,
           ),
           Align(
@@ -335,16 +372,90 @@ class _LoginState extends State<Login> {
                 ),
               ),
               onPressed: () {
-                Navigator.of(context).pushReplacement(
+                /* Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
                     builder: (context) => TabScreen(),
                   ),
-                );
+                ); */
+                loginWithToken();
               },
             ),
           ),
         ],
       ),
     );
+  }
+
+// Fetch data for logging in
+  Future<void> loginWithToken() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      showErrorMsg('Email and Password must not be empty');
+    }
+
+    final emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+    if (!emailRegex.hasMatch(email)) {
+      showErrorMsg('Please enter a valid email address');
+      return;
+    }
+
+    final body = {
+      "email": email,
+      "password": password,
+    };
+
+    const url = "http://192.168.254.15:8000/api/login/";
+    final uri = Uri.parse(url);
+
+    try {
+      final response = await http.post(
+        uri,
+        body: jsonEncode(body),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print("statu code is: ${response.statusCode}");
+        final data = jsonDecode(response.body);
+
+        final token = data['token'];
+        storage.write('token', token);
+
+        _emailController.clear();
+        _passwordController.clear();
+
+        showSuccessMsg('Login Successful');
+
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => TabScreen()));
+      } else {
+        showErrorMsg("Login Failed: ppError Occurred");
+      }
+    } catch (e) {
+      showErrorMsg('An error occurred: $e');
+    }
+  }
+
+  void showSuccessMsg(String message) {
+    final snackBar = SnackBar(
+      content: Text(message),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  void showErrorMsg(String message) {
+    final snackBar = SnackBar(
+      content: Text(
+        message,
+        style: const TextStyle(
+          color: Colors.white,
+        ),
+      ),
+      backgroundColor: Colors.red,
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }
