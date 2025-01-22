@@ -1,4 +1,4 @@
-import 'package:ams/screens/mainscreen.dart';
+import 'package:ams/feature/presentation/pages/screens/mainscreen.dart';
 import 'package:ams/utils/validation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

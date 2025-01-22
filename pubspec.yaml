@@ -55,6 +55,10 @@ dependencies:
   material_dialogs: ^1.1.5
   get_storage: ^2.1.1
   http: ^1.2.2
+  responsive_sizer: ^3.3.1
+  get: ^4.6.6
+  shimmer: ^3.0.0
+  dropdown_button2: ^2.3.9
 
 dev_dependencies:
   flutter_test:

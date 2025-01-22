@@ -1,4 +1,4 @@
-import 'package:ams/pages/timesheet_details.dart';
+import 'package:ams/feature/presentation/pages/timesheet/sub_view_timesheet/timesheet_details.dart';
 import 'package:flutter/material.dart';
 
 class LogSheetConstant extends StatelessWidget {
