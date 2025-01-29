@@ -1,207 +1,140 @@
+import 'package:ams/config/resources/colors.dart';
+import 'package:ams/config/resources/styles.dart';
+import 'package:ams/feature/presentation/widget/button_large.dart';
+import 'package:ams/feature/presentation/widget/custom_textfield.dart';
+import 'package:ams/feature/utils/validator.dart';
 import 'package:flutter/material.dart';
 
-class ChangePassword extends StatelessWidget {
+class ChangePassword extends StatefulWidget {
   const ChangePassword({super.key});
 
   @override
+  State<ChangePassword> createState() => _ChangePasswordState();
+}
+
+class _ChangePasswordState extends State<ChangePassword> {
+  final oldpw = TextEditingController();
+  final newpw = TextEditingController();
+  final confirmpw = TextEditingController();
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Colors.black),
-        title: const Text(
-          'Change Password',
-          style: TextStyle(
-            color: Colors.black,
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          titleSpacing: 0,
+          title: Text(
+            'Change Password',
+            style: smallStyle.copyWith(
+              fontWeight: FontWeight.bold,
+              color: isDarkMode ? Colors.white : Colors.black,
+            ),
           ),
         ),
-      ),
-      body: SafeArea(
-        child: SizedBox(
-          width: double.infinity,
+        body: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.05),
-                  const PasswordForm(),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.05),
-                ],
-              ),
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              // crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 24),
+                CustomTextField(
+                  label: "Old Password",
+                  // hint: "Old Password",
+                  textEditingController: oldpw,
+                  validator: (string) =>
+                      Validator.validateIsEmpty(string: string ?? ""),
+                  isPassword: true,
+                ),
+                const SizedBox(height: 30),
+                CustomTextField(
+                  label: "New Password",
+                  textEditingController: newpw,
+                  validator: (string) =>
+                      Validator.validateIsEmpty(string: string ?? ""),
+                  isPassword: true,
+                ),
+                const SizedBox(height: 30),
+                CustomTextField(
+                  label: "Confirm Password",
+                  textEditingController: confirmpw,
+                  validator: (string) =>
+                      Validator.validateIsEmpty(string: string ?? ""),
+                  isPassword: true,
+                ),
+                const SizedBox(height: 80.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                              color: isDarkMode ? Colors.white : Colors.black,
+                            ),
+                            borderRadius: BorderRadius.circular(12)),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.sort,
+                                color: isDarkMode ? Colors.white : Colors.black,
+                              ),
+                              SizedBox(width: 10.0),
+                              Text(
+                                "Clear",
+                                style: smallStyle.copyWith(
+                                  color:
+                                      isDarkMode ? Colors.white : Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: isDarkMode ? Colors.white : Colors.black,
+                            borderRadius: BorderRadius.circular(12)),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.rate_review,
+                                color: isDarkMode ? Colors.black : Colors.white,
+                              ),
+                              const SizedBox(width: 10.0),
+                              Text(
+                                "Update",
+                                style: smallStyle.copyWith(
+                                  color:
+                                      isDarkMode ? Colors.black : Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ],
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-const authOutlineInputBorder = OutlineInputBorder(
-  borderSide: BorderSide(color: Color(0xFF757575)),
-  borderRadius: BorderRadius.all(Radius.circular(100)),
-);
-
-class PasswordForm extends StatefulWidget {
-  const PasswordForm({super.key});
-
-  @override
-  _PasswordFormState createState() => _PasswordFormState();
-}
-
-class _PasswordFormState extends State<PasswordForm> {
-  bool _oldPasswordVisible = false;
-  bool _newPasswordVisible = false;
-  bool _confirmPasswordVisible = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Form(
-      child: Column(
-        children: [
-          const SizedBox(height: 15.0),
-          TextFormField(
-            obscureText: !_oldPasswordVisible,
-            onSaved: (oldPassword) {},
-            onChanged: (oldPassword) {},
-            textInputAction: TextInputAction.next,
-            decoration: InputDecoration(
-              hintText: "Old Password",
-              labelText: "Old Password *",
-              floatingLabelBehavior: FloatingLabelBehavior.always,
-              hintStyle: const TextStyle(color: Colors.black),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 24,
-                vertical: 16,
-              ),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _oldPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _oldPasswordVisible = !_oldPasswordVisible;
-                  });
-                },
-              ),
-              border: authOutlineInputBorder,
-              enabledBorder: authOutlineInputBorder,
-              focusedBorder: authOutlineInputBorder.copyWith(
-                borderSide: const BorderSide(color: Colors.black),
-              ),
-            ),
-          ),
-          const SizedBox(height: 15.0),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24),
-            child: TextFormField(
-              obscureText: !_newPasswordVisible,
-              onSaved: (newPassword) {},
-              onChanged: (newPassword) {},
-              textInputAction: TextInputAction.next,
-              decoration: InputDecoration(
-                hintText: "New Password",
-                labelText: "New Password *",
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-                hintStyle: const TextStyle(color: Colors.black),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 16,
-                ),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _newPasswordVisible
-                        ? Icons.visibility
-                        : Icons.visibility_off,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _newPasswordVisible = !_newPasswordVisible;
-                    });
-                  },
-                ),
-                border: authOutlineInputBorder,
-                enabledBorder: authOutlineInputBorder,
-                focusedBorder: authOutlineInputBorder.copyWith(
-                  borderSide: const BorderSide(color: Colors.black),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 15.0),
-          TextFormField(
-            obscureText: !_confirmPasswordVisible,
-            onSaved: (confirmPassword) {},
-            onChanged: (confirmPassword) {},
-            textInputAction: TextInputAction.done,
-            decoration: InputDecoration(
-              hintText: "Confirm Password",
-              labelText: "Confirm Password *",
-              floatingLabelBehavior: FloatingLabelBehavior.always,
-              hintStyle: const TextStyle(color: Colors.black),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 24,
-                vertical: 16,
-              ),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _confirmPasswordVisible
-                      ? Icons.visibility
-                      : Icons.visibility_off,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _confirmPasswordVisible = !_confirmPasswordVisible;
-                  });
-                },
-              ),
-              border: authOutlineInputBorder,
-              enabledBorder: authOutlineInputBorder,
-              focusedBorder: authOutlineInputBorder.copyWith(
-                borderSide: const BorderSide(color: Colors.black),
-              ),
-            ),
-          ),
-          const SizedBox(height: 50.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Clear Button
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  elevation: 0,
-                  backgroundColor: Colors.grey,
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size(150, 48),
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(16)),
-                  ),
-                ),
-                child: const Text("Clear"),
-              ),
-
-              // Update Button
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  elevation: 0,
-                  backgroundColor: Colors.black,
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size(150, 48),
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(16)),
-                  ),
-                ),
-                child: const Text(
-                  "Update",
-                ),
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }

@@ -1,25 +1,30 @@
-import 'package:ams/feature/presentation/pages/login/login.dart';
-import 'package:ams/feature/presentation/pages/landing/landing_page.dart';
+import 'package:ams/config/resources/styles.dart';
+import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/password/change_password.dart';
-import 'package:ams/feature/presentation/pages/profile/sub_view_profile/edit_profile.dart';
+import 'package:ams/feature/presentation/pages/profile/sub_view_profile/edit_profile_view.dart';
+import 'package:ams/feature/presentation/pages/profile/sub_view_profile/profile_container.dart';
+import 'package:ams/feature/presentation/pages/profile/sub_view_profile/profile_menu.dart';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:material_dialogs/dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
-import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
   @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  final authcontroller = Get.find<AuthController>();
+  @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white,
-      // appBar: AppBar(
-      //   backgroundColor: Colors.grey[400],
-      //   elevation: 0,
-      //   toolbarHeight: 40.0,
-      // ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -42,18 +47,13 @@ class ProfilePage extends StatelessWidget {
                 ),
               ),
             ),
-            Container(
+            SizedBox(
               width: double.infinity,
               child: Stack(
                 children: [
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const EditProfile(),
-                        ),
-                      );
+                      Get.to(() => const EditProfileView());
                     },
                     child: SingleChildScrollView(
                       child: Stack(
@@ -69,9 +69,7 @@ class ProfilePage extends StatelessWidget {
                                 const EdgeInsets.symmetric(vertical: 100.0),
                             child: Column(
                               children: [
-                                const SizedBox(
-                                  height: 80.0,
-                                ),
+                                const SizedBox(height: 80.0),
                                 ProfileMenu(
                                   text: "Personal Info",
                                   icon: Icons.account_circle_outlined,
@@ -79,9 +77,11 @@ class ProfilePage extends StatelessWidget {
                                   expandedContent: Container(
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(13.0),
-                                      color: Colors.grey.shade50,
+                                      color: isDarkMode
+                                          ? Colors.black
+                                          : Colors.grey.shade50,
                                     ),
-                                    child: const Padding(
+                                    child: Padding(
                                       padding: EdgeInsets.all(12.0),
                                       child: Column(
                                         crossAxisAlignment:
@@ -91,41 +91,41 @@ class ProfilePage extends StatelessWidget {
                                             children: [
                                               Text(
                                                 'Full Name:',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               ),
-                                              Spacer(),
+                                              const Spacer(),
                                               Text(
                                                 'Sushma Tamrakar',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               )
                                             ],
                                           ),
-                                          SizedBox(height: 10.0),
+                                          const SizedBox(height: 10.0),
                                           Row(
                                             children: [
                                               Text(
                                                 'Designation:',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               ),
-                                              Spacer(),
+                                              const Spacer(),
                                               Text(
                                                 'UI/UX Designer',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               )
                                             ],
@@ -135,19 +135,19 @@ class ProfilePage extends StatelessWidget {
                                             children: [
                                               Text(
                                                 'Date of Birth:',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               ),
                                               Spacer(),
                                               Text(
                                                 '2056-10-16',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               )
                                             ],
@@ -157,19 +157,19 @@ class ProfilePage extends StatelessWidget {
                                             children: [
                                               Text(
                                                 'Joined Date:',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               ),
                                               Spacer(),
                                               Text(
                                                 '2023-05-16',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               )
                                             ],
@@ -179,19 +179,19 @@ class ProfilePage extends StatelessWidget {
                                             children: [
                                               Text(
                                                 'Contact:',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               ),
                                               Spacer(),
                                               Text(
                                                 '9808010602',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               )
                                             ],
@@ -201,19 +201,19 @@ class ProfilePage extends StatelessWidget {
                                             children: [
                                               Text(
                                                 'Address:',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               ),
                                               Spacer(),
                                               Text(
                                                 'Newroad, KTM',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               )
                                             ],
@@ -223,19 +223,19 @@ class ProfilePage extends StatelessWidget {
                                             children: [
                                               Text(
                                                 'Email:',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               ),
                                               Spacer(),
                                               Text(
                                                 'sushma@gmail.com',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               )
                                             ],
@@ -254,9 +254,11 @@ class ProfilePage extends StatelessWidget {
                                   expandedContent: Container(
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(13.0),
-                                      color: Colors.grey.shade50,
+                                      color: isDarkMode
+                                          ? Colors.black
+                                          : Colors.grey.shade50,
                                     ),
-                                    child: const Padding(
+                                    child: Padding(
                                       padding: EdgeInsets.all(12.0),
                                       child: Column(
                                         crossAxisAlignment:
@@ -266,41 +268,41 @@ class ProfilePage extends StatelessWidget {
                                             children: [
                                               Text(
                                                 'Citizenship Number:',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               ),
                                               Spacer(),
                                               Text(
                                                 '2018-056-0777-253',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               )
                                             ],
                                           ),
-                                          SizedBox(height: 10.0),
+                                          const SizedBox(height: 10.0),
                                           Row(
                                             children: [
                                               Text(
                                                 'Issued Date:',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               ),
-                                              Spacer(),
+                                              const Spacer(),
                                               Text(
                                                 '2075-02-25',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               )
                                             ],
@@ -310,41 +312,41 @@ class ProfilePage extends StatelessWidget {
                                             children: [
                                               Text(
                                                 'Issued District:',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               ),
-                                              Spacer(),
+                                              const Spacer(),
                                               Text(
                                                 'Kathmandu',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               )
                                             ],
                                           ),
-                                          SizedBox(height: 10.0),
+                                          const SizedBox(height: 10.0),
                                           Row(
                                             children: [
                                               Text(
                                                 'PAN Number:',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               ),
-                                              Spacer(),
+                                              const Spacer(),
                                               Text(
                                                 '02225555535',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               )
                                             ],
@@ -363,10 +365,12 @@ class ProfilePage extends StatelessWidget {
                                   expandedContent: Container(
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(13.0),
-                                      color: Colors.grey.shade50,
+                                      color: isDarkMode
+                                          ? Colors.black
+                                          : Colors.grey.shade50,
                                     ),
-                                    child: const Padding(
-                                      padding: EdgeInsets.all(12.0),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12.0),
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
@@ -375,85 +379,85 @@ class ProfilePage extends StatelessWidget {
                                             children: [
                                               Text(
                                                 'Bank Name:',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               ),
-                                              Spacer(),
+                                              const Spacer(),
                                               Text(
                                                 'NMB Bank',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               )
                                             ],
                                           ),
-                                          SizedBox(height: 10.0),
+                                          const SizedBox(height: 10.0),
                                           Row(
                                             children: [
                                               Text(
                                                 'Branch Name:',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               ),
-                                              Spacer(),
+                                              const Spacer(),
                                               Text(
                                                 'New Road',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               )
                                             ],
                                           ),
-                                          SizedBox(height: 10.0),
+                                          const SizedBox(height: 10.0),
                                           Row(
                                             children: [
                                               Text(
                                                 'Account Name:',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               ),
-                                              Spacer(),
+                                              const Spacer(),
                                               Text(
                                                 'Sushma Tamrakar',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               )
                                             ],
                                           ),
-                                          SizedBox(height: 10.0),
+                                          const SizedBox(height: 10.0),
                                           Row(
                                             children: [
                                               Text(
                                                 'Account Numberr:',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               ),
-                                              Spacer(),
+                                              const Spacer(),
                                               Text(
                                                 '01234567898745632',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               )
                                             ],
@@ -472,10 +476,12 @@ class ProfilePage extends StatelessWidget {
                                   expandedContent: Container(
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(13.0),
-                                      color: Colors.grey.shade50,
+                                      color: isDarkMode
+                                          ? Colors.black
+                                          : Colors.grey.shade50,
                                     ),
-                                    child: const Padding(
-                                      padding: EdgeInsets.all(12.0),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12.0),
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
@@ -484,41 +490,41 @@ class ProfilePage extends StatelessWidget {
                                             children: [
                                               Text(
                                                 'Finager Print ID:',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               ),
-                                              Spacer(),
+                                              const Spacer(),
                                               Text(
                                                 '985142',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               )
                                             ],
                                           ),
-                                          SizedBox(height: 10.0),
+                                          const SizedBox(height: 10.0),
                                           Row(
                                             children: [
                                               Text(
                                                 'Device ID:',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               ),
-                                              Spacer(),
+                                              const Spacer(),
                                               Text(
                                                 '2075-0512',
-                                                style: TextStyle(
-                                                  fontFamily: 'Mutka',
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.bold,
+                                                style: smallStyle.copyWith(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               )
                                             ],
@@ -551,9 +557,18 @@ class ProfilePage extends StatelessWidget {
                                   press: () {
                                     // Action for Logout
                                     Dialogs.bottomMaterialDialog(
+                                      color: isDarkMode
+                                          ? Colors.grey.shade800
+                                          : Colors.black,
                                       msg: 'Are You Sure? You want to Logout.',
-                                      title: 'logout',
+                                      title: 'LOGOUT',
                                       context: context,
+                                      msgStyle: TextStyle(
+                                        color: isDarkMode
+                                            ? Colors.white
+                                            : Colors.grey,
+                                        fontSize: 15,
+                                      ),
                                       actions: [
                                         IconsButton(
                                           onPressed: () {
@@ -561,26 +576,50 @@ class ProfilePage extends StatelessWidget {
                                               context,
                                               MaterialPageRoute(
                                                 builder: (context) =>
-                                                    ProfilePage(),
+                                                    const ProfilePage(),
                                               ),
                                             );
                                           },
                                           text: 'Cancel',
                                           iconData: Icons.cancel_outlined,
                                           color: Colors.grey[300],
-                                          textStyle: TextStyle(
+                                          textStyle: const TextStyle(
                                             color: Colors.grey,
                                           ),
                                           iconColor: Colors.grey,
                                         ),
                                         IconsButton(
-                                          onPressed: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) => Login(),
-                                              ),
-                                            );
+                                          onPressed: () async {
+                                            // Retrieve tokens from SharedPreferences
+                                            final prefs =
+                                                await SharedPreferences
+                                                    .getInstance();
+                                            final refreshToken =
+                                                prefs.getString(
+                                                        'refresh_token') ??
+                                                    '';
+                                            final accessToken = prefs.getString(
+                                                    'access_token') ??
+                                                '';
+
+                                            if (refreshToken.isEmpty ||
+                                                accessToken.isEmpty) {
+                                              // Handle missing tokens
+                                              Get.snackbar(
+                                                'Logout Failed',
+                                                'Tokens are missing. Please try again.',
+                                                snackPosition:
+                                                    SnackPosition.BOTTOM,
+                                              );
+                                              return;
+                                            }
+
+                                            // Call the logout method with tokens
+                                            authcontroller.logoutmethod(
+                                                refreshToken, accessToken);
+
+                                            // Close the dialog
+                                            Navigator.pop(context);
                                           },
                                           text: 'Logout',
                                           iconData: Icons.delete,
@@ -607,196 +646,6 @@ class ProfilePage extends StatelessWidget {
             )
           ],
         ),
-      ),
-    );
-  }
-}
-
-class ProfilePic extends StatelessWidget {
-  const ProfilePic({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20.0),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.3),
-                  blurRadius: 8.0,
-                  spreadRadius: 1.0,
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.only(left: 10.0),
-            height: MediaQuery.of(context).size.height * 0.3,
-            width: MediaQuery.of(context).size.width * 0.85,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                IgnorePointer(
-                  ignoring: true,
-                  child: CircleAvatar(
-                    radius: 50,
-                    backgroundColor: Colors.grey[300],
-                    backgroundImage:
-                        const AssetImage("assets/images/profile_image.png"),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                ElevatedButton(
-                  style: ButtonStyle(
-                    elevation: MaterialStateProperty.all(5),
-                    backgroundColor: MaterialStateProperty.all(Colors.blue),
-                    foregroundColor: MaterialStateProperty.all(Colors.white),
-                  ),
-                  onPressed: () {},
-                  child: Text('Edit Profile'),
-                ),
-                const SizedBox(height: 10),
-                const Text(
-                  "Sushma Tamrakar",
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'SF_Pro',
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Status',
-                        style: TextStyle(
-                          fontFamily: 'Mutka',
-                          fontWeight: FontWeight.w600,
-                          color: Colors.grey[500],
-                        ),
-                      ),
-                      const SizedBox(width: 5.0),
-                      Container(
-                        width: 25.0,
-                        decoration: const BoxDecoration(
-                          color: Colors.green,
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(8),
-                          ),
-                        ),
-                        child: const Text(
-                          'IN',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontFamily: 'Mutka',
-                            fontWeight: FontWeight.w400,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class ProfileMenu extends StatefulWidget {
-  const ProfileMenu({
-    Key? key,
-    required this.text,
-    required this.icon,
-    this.press,
-    this.showIcon = true,
-    this.expandedContent,
-  }) : super(key: key);
-
-  final String text;
-  final IconData icon;
-  final VoidCallback? press;
-  final bool showIcon;
-  final Widget? expandedContent; // Widget to show when expanded
-
-  @override
-  _ProfileMenuState createState() => _ProfileMenuState();
-}
-
-class _ProfileMenuState extends State<ProfileMenu> {
-  bool _isExpanded = false; // Tracks expanded state
-
-  void _toggleExpand() {
-    setState(() {
-      _isExpanded = !_isExpanded;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-      child: Column(
-        children: [
-          TextButton(
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.black,
-              padding: const EdgeInsets.all(18),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              backgroundColor: Colors.grey[100],
-            ),
-            onPressed: () {
-              _toggleExpand();
-              if (widget.press != null) {
-                widget.press!();
-              }
-            },
-            child: Row(
-              children: [
-                Icon(widget.icon, size: 30),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: Text(
-                    widget.text,
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontFamily: 'Mutka',
-                      fontSize: 18.0,
-                    ),
-                  ),
-                ),
-                if (widget.showIcon)
-                  GestureDetector(
-                    onTap: _toggleExpand,
-                    child: Icon(
-                      _isExpanded ? Icons.expand_less : Icons.expand_more,
-                      size: 30.0,
-                      color: Colors.black,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          // Expanded content shown conditionally
-          if (_isExpanded && widget.expandedContent != null)
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
-              child: widget.expandedContent,
-            ),
-        ],
       ),
     );
   }
