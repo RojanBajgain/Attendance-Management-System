@@ -22,6 +22,12 @@ TextStyle get normalStyle {
       textStyle: TextStyle(fontSize: AppDimens.normal.sp, color: Colors.black));
 }
 
+//17
+TextStyle get smallNStyle {
+  return GoogleFonts.poppins(
+      textStyle: TextStyle(fontSize: AppDimens.smallN.sp, color: Colors.black));
+}
+
 //15
 TextStyle get smallStyle {
   return GoogleFonts.poppins(

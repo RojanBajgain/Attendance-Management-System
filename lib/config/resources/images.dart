@@ -1,13 +1,15 @@
-// class AppImages {
-//   // static const appLogo = "assets/images/ebidhya.svg";
-//   static const appLogo = "assets/images/app_logo.png";
-//   static const loginBg = "assets/images/login_bg.png";
-//   static const otpVerify = "assets/images/otp_verify.svg";
-//   static const formBg = "assets/images/form_bg.png";
-//   static const instructor = "assets/images/instructors.png";
-//   static const home = "assets/images/home.png";
-//   static const backImg = "assets/images/background.jpg";
-// }
+class AppImages {
+  // static const appLogo = "assets/images/ebidhya.svg";
+  static const appLogo = "assets/images/logo.png";
+  static const ayataLogo = "assets/images/Ayata_logo.png";
+  static const loginBg = "assets/images/login_bg.png";
+  static const otpVerify = "assets/images/otp_verify.svg";
+  static const formBg = "assets/images/form_bg.png";
+  static const instructor = "assets/images/instructors.png";
+  static const home = "assets/images/home.png";
+  static const backImg = "assets/images/background.jpg";
+  static const profileImage = "assets/images/profile_image.png";
+}
 
 // class AppIcons {
 //   static const clap = "assets/icons/clap.svg";
