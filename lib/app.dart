@@ -1,6 +1,5 @@
 import 'package:ams/config/resources/app_theme.dart';
 import 'package:ams/feature/presentation/pages/landing/landing_page.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
