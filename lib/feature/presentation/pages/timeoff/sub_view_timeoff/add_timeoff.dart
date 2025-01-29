@@ -1,3 +1,4 @@
+import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/widget/components/app_bar.dart';
 import 'package:ams/feature/presentation/pages/timeoff/time_off_page.dart';
 import 'package:flutter/material.dart';
@@ -14,8 +15,9 @@ class _AddTimeoffState extends State<AddTimeoff> {
   String? _selectedValue;
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: const ConstantAppBar(),
       body: SingleChildScrollView(
         child: SafeArea(
@@ -36,17 +38,16 @@ class _AddTimeoffState extends State<AddTimeoff> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.arrow_back_sharp,
-                        color: Colors.black,
+                        color: isDarkMode ? Colors.white : Colors.black,
                       ),
                       const SizedBox(width: 15.0),
-                      const Text(
+                      Text(
                         'Add Time Off',
-                        style: TextStyle(
-                          fontFamily: 'Mukta',
-                          fontSize: 20.0,
+                        style: smallNStyle.copyWith(
                           fontWeight: FontWeight.bold,
+                          color: isDarkMode ? Colors.white : Colors.black,
                         ),
                       ),
                     ],
@@ -58,11 +59,11 @@ class _AddTimeoffState extends State<AddTimeoff> {
                     Text.rich(
                       TextSpan(
                         children: [
-                          const TextSpan(
+                          TextSpan(
                             text: 'Time Off Type  ',
-                            style: TextStyle(
-                              fontFamily: 'Mukta',
-                              fontSize: 15.0,
+                            style: smallStyle.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: isDarkMode ? Colors.white : Colors.black,
                             ),
                           ),
                           const TextSpan(
@@ -85,7 +86,8 @@ class _AddTimeoffState extends State<AddTimeoff> {
                   width: double.infinity,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(13.0),
-                    color: Colors.grey.shade50,
+                    color:
+                        isDarkMode ? Colors.grey.shade600 : Colors.grey.shade50,
                     border: Border.all(
                       color: Colors.black,
                       width: 1.0,
@@ -136,11 +138,11 @@ class _AddTimeoffState extends State<AddTimeoff> {
                     Text.rich(
                       TextSpan(
                         children: [
-                          const TextSpan(
+                          TextSpan(
                             text: 'Start Date  ',
-                            style: TextStyle(
-                              fontFamily: 'Mukta',
-                              fontSize: 15.0,
+                            style: smallStyle.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: isDarkMode ? Colors.white : Colors.black,
                             ),
                           ),
                           const TextSpan(
@@ -163,33 +165,51 @@ class _AddTimeoffState extends State<AddTimeoff> {
                   width: double.infinity,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(13.0),
-                    color: Colors.grey.shade50,
+                    color:
+                        isDarkMode ? Colors.grey.shade800 : Colors.grey.shade50,
                     border: Border.all(
                       color: Colors.black,
                       width: 1.0,
                     ),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.only(
-                      left: 10.0,
-                    ),
-                    child: FormBuilderDateTimePicker(
-                      name: 'start_date',
-                      decoration: const InputDecoration(
-                          icon: Icon(
-                            Icons.calendar_month_outlined,
-                            color: Colors.grey,
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.calendar_month_outlined,
+                          color: Colors.grey,
+                        ),
+                        const SizedBox(width: 10), // Adds spacing
+                        Expanded(
+                          // Prevents overflow
+                          child: Theme(
+                            data: Theme.of(context).copyWith(
+                                textTheme: const TextTheme(
+                                    bodyLarge: TextStyle(fontSize: 14),
+                                    bodyMedium: TextStyle(fontSize: 12))),
+                            child: FormBuilderDateTimePicker(
+                              name: 'start_date',
+                              decoration: InputDecoration(
+                                hintText: 'Start Date',
+                                hintStyle: smallStyle.copyWith(
+                                  color:
+                                      isDarkMode ? Colors.white : Colors.black,
+                                ),
+                                border:
+                                    InputBorder.none, // Removes extra border
+                                contentPadding: EdgeInsets.zero,
+                              ),
+                              inputType: InputType.date,
+                              onChanged: (value) {
+                                setState(() {});
+                              },
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime.now(),
+                            ),
                           ),
-                          hintText: 'Start Date',
-                          hintStyle: TextStyle(
-                            color: Colors.grey,
-                          )),
-                      inputType: InputType.date,
-                      onChanged: (value) {
-                        setState(() {});
-                      },
-                      firstDate: DateTime(2000),
-                      lastDate: DateTime.now(),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -199,11 +219,11 @@ class _AddTimeoffState extends State<AddTimeoff> {
                     Text.rich(
                       TextSpan(
                         children: [
-                          const TextSpan(
+                          TextSpan(
                             text: 'End Date  ',
-                            style: TextStyle(
-                              fontFamily: 'Mukta',
-                              fontSize: 15.0,
+                            style: smallStyle.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: isDarkMode ? Colors.white : Colors.black,
                             ),
                           ),
                           const TextSpan(
@@ -226,33 +246,51 @@ class _AddTimeoffState extends State<AddTimeoff> {
                   width: double.infinity,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(13.0),
-                    color: Colors.grey.shade50,
+                    color:
+                        isDarkMode ? Colors.grey.shade800 : Colors.grey.shade50,
                     border: Border.all(
                       color: Colors.black,
                       width: 1.0,
                     ),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.only(
-                      left: 10.0,
-                    ),
-                    child: FormBuilderDateTimePicker(
-                      name: 'end_date',
-                      decoration: const InputDecoration(
-                          icon: Icon(
-                            Icons.calendar_month_outlined,
-                            color: Colors.grey,
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.calendar_month_outlined,
+                          color: Colors.grey,
+                        ),
+                        const SizedBox(width: 10), // Adds spacing
+                        Expanded(
+                          // Prevents overflow
+                          child: Theme(
+                            data: Theme.of(context).copyWith(
+                                textTheme: const TextTheme(
+                                    bodyLarge: TextStyle(fontSize: 14),
+                                    bodyMedium: TextStyle(fontSize: 12))),
+                            child: FormBuilderDateTimePicker(
+                              name: 'end_date',
+                              decoration: InputDecoration(
+                                hintText: 'End Date',
+                                hintStyle: smallStyle.copyWith(
+                                  color:
+                                      isDarkMode ? Colors.white : Colors.black,
+                                ),
+                                border:
+                                    InputBorder.none, // Removes extra border
+                                contentPadding: EdgeInsets.zero,
+                              ),
+                              inputType: InputType.date,
+                              onChanged: (value) {
+                                setState(() {});
+                              },
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime.now(),
+                            ),
                           ),
-                          hintText: 'End Date',
-                          hintStyle: TextStyle(
-                            color: Colors.grey,
-                          )),
-                      inputType: InputType.date,
-                      onChanged: (value) {
-                        setState(() {});
-                      },
-                      firstDate: DateTime(2000),
-                      lastDate: DateTime.now(),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -262,13 +300,12 @@ class _AddTimeoffState extends State<AddTimeoff> {
                     Text.rich(
                       TextSpan(
                         children: [
-                          const TextSpan(
-                            text: 'Reason  ',
-                            style: TextStyle(
-                              fontFamily: 'Mukta',
-                              fontSize: 15.0,
-                            ),
-                          ),
+                          TextSpan(
+                              text: 'Reason  ',
+                              style: smallStyle.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: isDarkMode ? Colors.white : Colors.black,
+                              )),
                           const TextSpan(
                             text: '*',
                             style: TextStyle(
@@ -289,32 +326,32 @@ class _AddTimeoffState extends State<AddTimeoff> {
                   width: double.infinity,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(13.0),
-                    color: Colors.grey.shade50,
+                    color:
+                        isDarkMode ? Colors.grey.shade800 : Colors.grey.shade50,
                     border: Border.all(
                       color: Colors.black,
                       width: 1.0,
                     ),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.only(
-                      left: 10.0,
-                      top: 16.0,
-                    ),
+                    padding: const EdgeInsets.all(10.0),
                     child: TextField(
                       onChanged: (text) {
                         print('Text changed: $text');
                       },
                       maxLines: 8,
-                      decoration: InputDecoration.collapsed(
-                        hintText: "Write Your Reason",
-                        hintStyle: TextStyle(
-                          color: Colors.grey[500],
-                        ),
+                      style: smallStyle.copyWith(
+                        color: isDarkMode ? Colors.white : Colors.black,
                       ),
+                      decoration: InputDecoration.collapsed(
+                          hintText: "Write Your Reason",
+                          hintStyle: smallStyle.copyWith(
+                            color: isDarkMode ? Colors.white : Colors.black,
+                          )),
                     ),
                   ),
                 ),
-                SizedBox(height: 40.0),
+                const SizedBox(height: 40.0),
                 Row(
                   children: [
                     Padding(
@@ -328,51 +365,47 @@ class _AddTimeoffState extends State<AddTimeoff> {
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.black),
                           borderRadius: BorderRadius.circular(10.0),
-                          color: Colors.transparent,
+                          color:
+                              isDarkMode ? Colors.grey.shade800 : Colors.black,
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
                               Icons.sort,
-                              color: Colors.grey,
+                              color: isDarkMode ? Colors.white : Colors.white,
                             ),
-                            SizedBox(width: 4.0),
-                            Text(
-                              "Clear",
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontFamily: 'Mukta',
-                                fontSize: 16.0,
-                              ),
-                            )
+                            const SizedBox(width: 4.0),
+                            Text("Clear",
+                                style: smallStyle.copyWith(
+                                  color:
+                                      isDarkMode ? Colors.white : Colors.white,
+                                ))
                           ],
                         ),
                       ),
                     ),
-                    SizedBox(width: 15.0),
+                    const SizedBox(width: 15.0),
                     Container(
                       height: 45.0,
                       width: 120.0,
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.black),
                         borderRadius: BorderRadius.circular(10.0),
-                        color: Colors.black,
+                        color: isDarkMode ? Colors.grey.shade600 : Colors.black,
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.save_outlined,
                             color: Colors.white,
                           ),
-                          SizedBox(width: 5.0),
+                          const SizedBox(width: 5.0),
                           Text(
                             "Save",
-                            style: TextStyle(
+                            style: smallStyle.copyWith(
                               color: Colors.white,
-                              fontFamily: 'Mukta',
-                              fontSize: 16.0,
                             ),
                           )
                         ],

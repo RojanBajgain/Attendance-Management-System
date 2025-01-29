@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
 class CustomTextField extends StatefulWidget {
-  final String hint;
+  final String? hint;
+  final String? label;
   Icon? icon;
   final TextEditingController textEditingController;
   final String? Function(String?)? validator;
@@ -13,7 +14,8 @@ class CustomTextField extends StatefulWidget {
 
   CustomTextField({
     super.key,
-    required this.hint,
+    this.hint,
+    this.label,
     this.icon,
     required this.textEditingController,
     this.validator,
@@ -54,6 +56,11 @@ class _CustomTextFieldState extends State<CustomTextField> {
             borderSide: const BorderSide(width: 1, color: Color(0xffCCCCCC)),
             borderRadius: BorderRadius.circular(8.0),
           ),
+          labelText: widget.label, // Add label text here
+          labelStyle: smallStyle.copyWith(
+              color: isDarkMode
+                  ? AppColors.white.withOpacity(0.8)
+                  : AppColors.grey),
           hintText: widget.hint,
           hintStyle: smallStyle.copyWith(
               color: isDarkMode
