@@ -1,7 +1,10 @@
-import 'package:ams/feature/presentation/pages/login/login.dart';
+import 'package:ams/config/resources/images.dart';
+import 'package:ams/config/resources/styles.dart';
+import 'package:ams/feature/presentation/pages/login/login_page.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:get/get.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
@@ -15,19 +18,25 @@ class _LandingPageState extends State<LandingPage> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(seconds: 3), () {
-      Navigator.of(context)
-          .pushReplacement(MaterialPageRoute(builder: (_) => Login()));
+      // Navigator.of(context)
+      //     .pushReplacement(MaterialPageRoute(builder: (_) => Login()));
+      // Get.to(() => LandingPage());
+      Get.off(
+        () => const LoginPage(),
+        transition: Transition.rightToLeft,
+      );
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       extendBodyBehindAppBar: true,
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             children: [
               const Spacer(flex: 1),
@@ -37,39 +46,26 @@ class _LandingPageState extends State<LandingPage> {
                   child: AspectRatio(
                     aspectRatio: 1,
                     child: Image.asset(
-                      'assets/images/logo.png',
+                      AppImages.appLogo,
                     ),
                   ),
                 ),
               ),
-              Spacer(flex: 1),
-              // const Text(
-              //   '"Welcome To Ayata"',
-              //   style: TextStyle(
-              //     fontSize: 22.0,
-              //     fontWeight: FontWeight.w900,
-              //     fontStyle: FontStyle.italic,
-              //     color: Colors.black45,
-              //     fontFamily: 'Ubuntu-Regular',
-              //   ),
-              // ),
+              const Spacer(flex: 1),
               AnimatedTextKit(
                 animatedTexts: [
-                  TypewriterAnimatedText(
-                    '"Welcome To Ayata"',
-                    textStyle: TextStyle(
-                      fontSize: 26.0,
-                      fontWeight: FontWeight.w900,
-                      fontStyle: FontStyle.italic,
-                      color: Colors.black45,
-                      fontFamily: 'Mukta',
-                    ),
-                  ),
+                  TypewriterAnimatedText('"Welcome To Ayata"',
+                      textStyle: mediumStyle.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: isDarkMode
+                            ? Colors.grey.shade400
+                            : Colors.grey.shade500,
+                      )),
                 ],
                 totalRepeatCount: 10,
                 pause: const Duration(milliseconds: 2000),
               ),
-              Spacer(flex: 2),
+              const Spacer(flex: 2),
               // CircularProgressIndicator(),
               SpinKitFoldingCube(
                 itemBuilder: (BuildContext context, int index) {
@@ -80,91 +76,11 @@ class _LandingPageState extends State<LandingPage> {
                   );
                 },
               ),
-              Spacer(flex: 2)
+              const Spacer(flex: 2)
             ],
           ),
         ),
       ),
-      /* bottomNavigationBar: BottomAppBar(
-        color: Colors.white,
-        elevation: 0.0,
-        child: Padding(
-          padding: EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  Navigator.of(context).pushReplacement(
-                    CupertinoPageRoute(
-                      builder: (_) => Login(),
-                    ),
-                  );
-                },
-                child: Container(
-                  height: 45.0,
-                  width: 130.0,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(40.0),
-                    border: Border.all(color: Colors.grey),
-                    gradient: LinearGradient(
-                      begin: Alignment.topRight,
-                      end: Alignment.bottomLeft,
-                      colors: [
-                        Theme.of(context).colorScheme.secondary,
-                        Colors.black
-                      ],
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      "Login",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w900,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              /* GestureDetector(
-                onTap: () {
-                  Navigator.of(context).pushReplacement(
-                    CupertinoPageRoute(
-                      builder: (_) => Register(),
-                    ),
-                  );
-                },
-                child: Container(
-                  height: 45.0,
-                  width: 130.0,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(40.0),
-                    border: Border.all(color: Colors.grey),
-                    gradient: LinearGradient(
-                      begin: Alignment.topRight,
-                      end: Alignment.bottomLeft,
-                      colors: [
-                        Theme.of(context).colorScheme.secondary,
-                        Colors.black
-                      ],
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      "Sign Up",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w900,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ), */
-            ],
-          ),
-        ),
-      ), */
     );
   }
 }
