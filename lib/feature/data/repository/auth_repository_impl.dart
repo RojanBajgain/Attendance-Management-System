@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:ams/feature/data/datasource/remote/api_client.dart';
 import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/datasource/remote/api_urls.dart';
@@ -10,6 +12,7 @@ class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl({required this.apiClient});
 
   @override
+  // Login
   Future<ApiResponse<LoginModel>> login(String email, String pw) async {
     final response = await ApiClient.postApi<LoginModel>(
       ApiUrls.login,
@@ -36,6 +39,7 @@ class AuthRepositoryImpl implements AuthRepository {
   //   return response;
   // }
 
+  // Logout
   Future<ApiResponse> logOut(String refreshToken, String accessToken) async {
     final response = await ApiClient.postApi(
       ApiUrls.logout,
@@ -46,14 +50,19 @@ class AuthRepositoryImpl implements AuthRepository {
     return response;
   }
 
-  // Future<ApiResponse> logOut(String refreshToken, String accessToken) async {
-  //   return await ApiClient.postApi(
-  //     ApiUrls.logout,
-  //     requestBody: {
-  //       'refresh_token': refreshToken, // Send refresh token in the body
-  //     },
-  //     token: accessToken, // Send access token as the Bearer token
-  //     fromJson: null, // You can use this if you want to parse the response
-  //   );
-  // }
+  // Change Password
+  Future<ApiResponse> changePassword(
+      String oldPassword, String newPassword, String confirmPassword) async {
+    final response = await ApiClient.postApi(
+      ApiUrls.changePassword,
+      requestBody: {
+        'old_password': oldPassword,
+        'new_password1': newPassword,
+        'new_password2': confirmPassword,
+      },
+      token: apiClient.token,
+      fromJson: null,
+    );
+    return response;
+  }
 }
