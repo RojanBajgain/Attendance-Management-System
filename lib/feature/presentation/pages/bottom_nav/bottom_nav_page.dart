@@ -23,11 +23,11 @@ class _BottomNavPageState extends State<BottomNavPage> {
   int _selectedTab = 0;
 
   List<Widget> get _pages => [
-        DashboardPage(),
-        TimeOffPage(),
-        TimeSheetPage(),
-        PayrollPage(),
-        ProfilePage(),
+        const DashboardPage(),
+        const TimeOffPage(),
+        const TimeSheetPage(),
+        const PayrollPage(),
+        const ProfilePage(),
       ];
 
   void _changeTab(int index) {

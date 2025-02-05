@@ -129,14 +129,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           SizedBox(width: 35.0),
                           GestureDetector(
-                            onTap: () {
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //     builder: (context) => VerifyOtpPage(),
-                              //   ),
-                              // );
-                            },
+                            onTap: () {},
                             child: Text(
                               "Forget your password?",
                               style: smallStyle.copyWith(
@@ -149,15 +142,16 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 24.0),
                       Material(
-                          borderRadius: BorderRadius.circular(20.0),
-                          color:
-                              isDarkMode ? Colors.grey.shade700 : Colors.black,
-                          child: InkWell(
-                              borderRadius: BorderRadius.circular(8.0),
-                              onTap: () {
-                                authcontroller.loginMethod(email.text, pw.text);
-                              },
-                              child: const LargeButton(title: "Log in"))),
+                        borderRadius: BorderRadius.circular(20.0),
+                        color: isDarkMode ? Colors.grey.shade700 : Colors.black,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(8.0),
+                          onTap: () {
+                            authcontroller.loginMethod(email.text, pw.text);
+                          },
+                          child: const LargeButton(title: "Log in"),
+                        ),
+                      ),
                       const SizedBox(height: 200),
                       Image.asset("assets/images/logo.png"),
                       const SizedBox(height: 50.0),
