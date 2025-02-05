@@ -41,7 +41,7 @@ class AuthController extends GetxController {
         // Save both token
         apiClient.saveTokens(accessToken, refreshToken);
 
-        Get.to(() => const BottomNavPage());
+        Get.offAll(() => const BottomNavPage());
       } else {
         log("Error: ${response.message ?? 'Login failed'}");
         Get.snackbar(
@@ -112,45 +112,31 @@ class AuthController extends GetxController {
     }
   }
 
-  // LOGOUT
-/*   Future<void> logoutmethod() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    // Retrieve the refresh token from storage
-    final refreshToken = prefs.getString('refresh_token') ?? '';
-
-    // Retrieve the access token from storage (to use in the Authorization header)
-    final accessToken = prefs.getString('access_token') ?? '';
-
-    // Check if tokens are available
-    if (refreshToken.isEmpty || accessToken.isEmpty) {
-      Get.snackbar(
-        'Logout Failed',
-        'Tokens are missing. Please log in again.',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return;
-    }
-
-    // Prepare the logout request
-    final response =
-        await authRepo.logOut(refreshToken, accessToken); // Pass both tokens
-
+// Change Password
+  Future<void> changePasswordmethod(
+      String oldPassword, String newPassword, String confirmPassword) async {
+    authIsLoading.value = true;
+    ApiResponse response = await authRepo.changePassword(
+        oldPassword, newPassword, confirmPassword);
     if (response.status == ApiStatus.SUCCESS) {
-      // Clear tokens after successful logout
-      prefs.clear();
-      Get.to(() => const LoginPage()); // Navigate to Login page
+      log("Successfully changed Password.  Data: ${response.response}");
+
+      Get.offAll(() => const LoginPage());
+      apiClient.clearTokens();
+
       Get.snackbar(
-        'Logout Successful',
-        response.message ?? 'Logged out successfully',
+        'Password Changed Successful.',
+        response.message ?? 'Please Login Again...',
         snackPosition: SnackPosition.BOTTOM,
       );
     } else {
+      log("Error: ${response.message ?? 'failed to change password'}");
       Get.snackbar(
-        'Logout Failed',
-        response.message ?? 'An error occurred during logout',
+        'Failed to change password',
+        response.message ?? 'An unexpected error occurred',
         snackPosition: SnackPosition.BOTTOM,
       );
     }
-  } */
+    authIsLoading.value = false;
+  }
 }
