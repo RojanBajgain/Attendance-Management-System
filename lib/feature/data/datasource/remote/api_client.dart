@@ -36,6 +36,15 @@ class ApiClient {
       'Accept': 'application/json',
       if (token.isNotEmpty) 'Authorization': 'Bearer $token',
     };
+    return headers;
+  }
+
+  static Map<String, String> getHeaders(String token) {
+    final headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      // 'Authorization': 'Bearer $token',
+    };
 
     return headers;
   }
@@ -70,37 +79,6 @@ class ApiClient {
   }
 
 //POST
-/*   static Future<ApiResponse<T>> postApi<T>(
-    String endPoint, {
-    required dynamic requestBody,
-    required String token,
-    required T Function(dynamic json)? fromJson,
-  }) async {
-    try {
-      final response = await MyHttpClient.client.post(
-        Uri.parse(ApiUrls.baseUrl + endPoint),
-        body: jsonEncode(requestBody),
-        headers: getHeader(token),
-      );
-
-      // log("Response Code: ${response.statusCode}");
-      // log("Response Body: ${response.body}");
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final json = jsonDecode(response.body);
-        final data = fromJson != null ? fromJson(json) : json as T;
-        return ApiResponse.completed(data);
-      } else {
-        final message = ApiMessage.getMessage(response.statusCode, response);
-        log('Api Client:$endPoint:$message');
-        return ApiResponse.error(message);
-      }
-    } catch (e) {
-      log("Error: $e");
-      return ApiResponse.error(e.toString());
-    }
-  } */
-
   static Future<ApiResponse<T>> postApi<T>(
     String endPoint, {
     required dynamic requestBody,
@@ -123,8 +101,7 @@ class ApiClient {
           final data = fromJson != null ? fromJson(json) : json as T;
           return ApiResponse.completed(data);
         } else {
-          return ApiResponse.completed(
-              null as T); // If no body, return a completed response
+          return ApiResponse.completed(null as T);
         }
       } else {
         final message = ApiMessage.getMessage(response.statusCode, response);
