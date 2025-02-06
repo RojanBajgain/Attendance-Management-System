@@ -1,9 +1,9 @@
 class ApiUrls {
   // static const String baseUrl = "http://192.168.254.81:8000/";
   // static const String baseUrl = "http://192.168.254.49:8000/";
-  // static const String baseUrl = "http://192.168.10.109:8000/";
+  static const String baseUrl = "http://192.168.10.109:8000/";
 
-  static const String baseUrl = "https://backend.ams.ayata.com.np/";
+  // static const String baseUrl = "https://backend.ams.ayata.com.np/";
 
   static const String login = "api/login/";
 
