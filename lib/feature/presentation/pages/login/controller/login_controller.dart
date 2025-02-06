@@ -115,7 +115,23 @@ class AuthController extends GetxController {
 // Change Password
   Future<void> changePasswordmethod(
       String oldPassword, String newPassword, String confirmPassword) async {
-    authIsLoading.value = true;
+    if (newPassword != confirmPassword) {
+      Get.snackbar(
+        "Password does not match",
+        "Please check again",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+      );
+      return;
+    }
+    if (newPassword != confirmPassword) {
+      Get.snackbar(
+        "Password does not match",
+        "Please check again",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+      );
+    }
     ApiResponse response = await authRepo.changePassword(
         oldPassword, newPassword, confirmPassword);
     if (response.status == ApiStatus.SUCCESS) {
@@ -131,12 +147,24 @@ class AuthController extends GetxController {
       );
     } else {
       log("Error: ${response.message ?? 'failed to change password'}");
-      Get.snackbar(
-        'Failed to change password',
-        response.message ?? 'An unexpected error occurred',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      if (response.message
+              ?.toLowerCase()
+              .contains("old password is incorrect") ??
+          false) {
+        Get.snackbar(
+          'Old Password Incorrect',
+          'Please enter the correct old password',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+        );
+      } else {
+        // Get.snackbar(
+        //   'Failed to Change Password',
+        //   response.message ?? 'An unexpected error occurred',
+        //   snackPosition: SnackPosition.BOTTOM,
+        //   backgroundColor: Colors.red,
+        // );
+      }
     }
-    authIsLoading.value = false;
   }
 }
