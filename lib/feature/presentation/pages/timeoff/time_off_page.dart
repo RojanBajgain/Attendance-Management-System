@@ -1,12 +1,25 @@
+import 'package:ams/config/resources/shimmer.dart';
 import 'package:ams/config/resources/styles.dart';
+import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
+import 'package:ams/feature/presentation/pages/timeoff/controller/timeoff_controller.dart';
 import 'package:ams/feature/presentation/pages/timeoff/sub_view_timeoff/time_off_view.dart';
 import 'package:ams/feature/presentation/widget/components/app_bar.dart';
 import 'package:ams/feature/presentation/pages/timeoff/sub_view_timeoff/add_timeoff.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class TimeOffPage extends StatelessWidget {
+class TimeOffPage extends StatefulWidget {
   const TimeOffPage({super.key});
+
+  @override
+  State<TimeOffPage> createState() => _TimeOffPageState();
+}
+
+class _TimeOffPageState extends State<TimeOffPage> {
+  final authcontroller = Get.find<AuthController>();
+
+  final TimeoffController timeoffcontroller =
+      Get.put(TimeoffController(timeoffRepo: Get.find()));
 
   @override
   Widget build(BuildContext context) {
@@ -96,35 +109,31 @@ class TimeOffPage extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 20.0),
-                TimeOffSheet(
-                  buttonText: 'Approved',
-                  backColor: Colors.green[100],
-                  foreColor: Colors.green[900],
-                ),
-                // const SizedBox(height: 20.0),
-                // TimeOffSheet(
-                //   buttonText: 'Rejected',
-                //   backColor: Colors.red[100],
-                //   foreColor: Colors.red[900],
-                // ),
-                // const SizedBox(height: 20.0),
-                // TimeOffSheet(
-                //   buttonText: 'Pending',
-                //   backColor: Colors.yellow[100],
-                //   foreColor: Colors.yellow[900],
-                // ),
-                // const SizedBox(height: 20.0),
-                // TimeOffSheet(
-                //   buttonText: 'Rejected',
-                //   backColor: Colors.red[100],
-                //   foreColor: Colors.red[900],
-                // ),
-                // const SizedBox(height: 20.0),
-                // TimeOffSheet(
-                //   buttonText: 'Approved',
-                //   backColor: Colors.green[100],
-                //   foreColor: Colors.green[900],
-                // ),
+                SizedBox(
+                  height: 600,
+                  child: Obx(() {
+                    if (timeoffcontroller.isLoading.value) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ShrimmerEffect.rectangular(
+                          height: 200,
+                          width: MediaQuery.sizeOf(context).width,
+                        ),
+                      );
+                    } else {
+                      return ListView.builder(
+                          scrollDirection: Axis.vertical,
+                          itemCount: timeoffcontroller.timeoff.length,
+                          itemBuilder: (context, index) {
+                            final timeoff = timeoffcontroller.timeoff[index];
+                            return Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: TimeOffSheet(timeoffdata: timeoff),
+                            );
+                          });
+                    }
+                  }),
+                )
               ],
             ),
           ),
