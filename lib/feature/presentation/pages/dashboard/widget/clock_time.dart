@@ -46,9 +46,9 @@ class _ClockTimeState extends State<ClockTime> {
             color: isDarkMode
                 ? Colors.grey.shade800
                 : Colors.grey.withOpacity(0.5),
-            blurRadius: 5,
+            blurRadius: 2,
             spreadRadius: 1,
-            offset: const Offset(0, 5),
+            offset: const Offset(0, 2),
           ),
         ],
       ),

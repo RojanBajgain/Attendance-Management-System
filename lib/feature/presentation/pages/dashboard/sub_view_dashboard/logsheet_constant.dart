@@ -1,9 +1,26 @@
 import 'package:ams/config/resources/styles.dart';
+import 'package:ams/feature/presentation/pages/timesheet/controller/timesheet_controller.dart';
+import 'package:ams/feature/presentation/pages/timesheet/model/timesheet_model.dart';
 import 'package:ams/feature/presentation/pages/timesheet/sub_view_timesheet/timesheet_details.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
-class LogSheetConstant extends StatelessWidget {
-  const LogSheetConstant({super.key});
+class LogSheetConstant extends StatefulWidget {
+  final Datum timesheetdata;
+
+  LogSheetConstant({
+    super.key,
+    required this.timesheetdata,
+  });
+
+  @override
+  State<LogSheetConstant> createState() => _LogSheetConstantState();
+}
+
+class _LogSheetConstantState extends State<LogSheetConstant> {
+  final TimesheetController timesheetcontroller =
+      Get.put(TimesheetController(timesheetRepo: Get.find()));
 
   @override
   Widget build(BuildContext context) {
@@ -11,12 +28,12 @@ class LogSheetConstant extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => TimeSheetDetail(),
-          ),
-        );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => TimeSheetDetail(timesheetId: ,),
+        //   ),
+        // );
       },
       child: Container(
         // color: isDarkMode ? Colors.black : Colors.grey,
