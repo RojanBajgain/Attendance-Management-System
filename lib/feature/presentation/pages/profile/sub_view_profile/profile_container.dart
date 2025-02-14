@@ -47,27 +47,59 @@ class _ProfilePicState extends State<ProfilePic> {
                   final profiledata = profileData[index]; // Individual item
                   return Column(
                     children: [
-                      CircleAvatar(
-                        radius: 50,
-                        backgroundColor:
-                            isDarkMode ? Colors.black : Colors.grey[300],
-                        backgroundImage: (profiledata.profileImage.isNotEmpty)
-                            ? NetworkImage(profiledata.profileImage)
-                            : const AssetImage(
-                                    "assets/images/profile_image.png")
-                                as ImageProvider,
-                      ),
-                      const SizedBox(height: 10),
-                      ElevatedButton(
-                        style: ButtonStyle(
-                          elevation: MaterialStateProperty.all(5),
+                      GestureDetector(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return Dialog(
+                                backgroundColor: Colors.transparent,
+                                insetPadding: EdgeInsets.all(10.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    height: MediaQuery.of(context).size.height,
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: (profiledata
+                                                .profileImage.isNotEmpty)
+                                            ? NetworkImage(
+                                                profiledata.profileImage)
+                                            : const AssetImage(
+                                                    "assets/images/profile_image.png")
+                                                as ImageProvider,
+                                        fit: BoxFit.contain,
+                                        // errorBuilder: (context, error, stackTrace) {
+                                        //   return Image.asset(
+                                        //     "assets/images/profile_image.png",
+                                        //     fit: BoxFit.contain,
+                                        //   );
+                                        // },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        child: CircleAvatar(
+                          radius: 70,
                           backgroundColor:
-                              MaterialStateProperty.all(Colors.black),
-                          foregroundColor:
-                              MaterialStateProperty.all(Colors.white),
+                              isDarkMode ? Colors.black : Colors.grey[300],
+                          backgroundImage: (profiledata.profileImage.isNotEmpty)
+                              ? NetworkImage(profiledata.profileImage)
+                              : const AssetImage(
+                                      "assets/images/profile_image.png")
+                                  as ImageProvider,
+                          onBackgroundImageError: (exception, stackTrace) {
+                            // Fallback to a placeholder image if the network image fails to load
+                            // return const AssetImage("assets/images/profile_image.png");
+                          },
                         ),
-                        onPressed: () {},
-                        child: const Text('Edit Profile'),
                       ),
                       const SizedBox(height: 10),
                       Text(
