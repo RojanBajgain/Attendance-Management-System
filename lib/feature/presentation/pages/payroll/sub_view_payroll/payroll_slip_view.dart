@@ -1,17 +1,23 @@
 import 'package:ams/config/resources/styles.dart';
+import 'package:ams/feature/presentation/pages/payroll/controller/payroll_controller.dart';
+import 'package:ams/feature/presentation/pages/payroll/model/payroll_model.dart';
 import 'package:ams/feature/presentation/pages/payroll/sub_view_payroll/payment_slip_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class PayRollSlip extends StatefulWidget {
+class PayRollSlip extends StatelessWidget {
+  final Datum payrolldata;
+  void Function()? onTap;
   final String dop;
   final String mop;
   final String bank;
   final String cheque;
   final String salary;
 
-  const PayRollSlip({
+  PayRollSlip({
     super.key,
+    required this.payrolldata,
+    this.onTap,
     required this.dop,
     required this.mop,
     required this.bank,
@@ -19,19 +25,17 @@ class PayRollSlip extends StatefulWidget {
     required this.salary,
   });
 
-  @override
-  State<PayRollSlip> createState() => _PayRollSlipState();
-}
-
-class _PayRollSlipState extends State<PayRollSlip> {
+  // final PayrollController payrollcontroller =
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    return GestureDetector(
+    return InkWell(
       onTap: () {
         Get.to(
-          () => const PaymentSlip(),
+          () => PaymentSlip(
+            payrollId: payrolldata.id.toString(),
+          ),
           transition: Transition.rightToLeft,
         );
       },
@@ -46,7 +50,7 @@ class _PayRollSlipState extends State<PayRollSlip> {
               color: Colors.grey.withOpacity(0.4),
               blurRadius: 5,
               spreadRadius: 2,
-              offset: const Offset(0, 5),
+              offset: const Offset(0, 1),
             ),
           ],
           gradient: LinearGradient(
@@ -83,7 +87,8 @@ class _PayRollSlipState extends State<PayRollSlip> {
                       color: isDarkMode ? Colors.white : Colors.black,
                     ),
                   ),
-                  SizedBox(width: 80.0),
+                  // SizedBox(width: 80.0),
+                  Spacer(),
                   Text(
                     'Mode of Payment',
                     style: smallStyle.copyWith(
@@ -96,14 +101,15 @@ class _PayRollSlipState extends State<PayRollSlip> {
               Row(
                 children: [
                   Text(
-                    widget.dop,
+                    dop,
                     style: smallStyle.copyWith(
                       color: isDarkMode ? Colors.white : Colors.black,
                     ),
                   ),
-                  const SizedBox(width: 120.0),
+                  // const SizedBox(width: 120.0),
+                  Spacer(),
                   Text(
-                    widget.mop,
+                    mop,
                     style: smallStyle.copyWith(
                       color: isDarkMode ? Colors.white : Colors.black,
                     ),
@@ -119,62 +125,79 @@ class _PayRollSlipState extends State<PayRollSlip> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Bank',
-                        style: smallStyle.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: isDarkMode ? Colors.white : Colors.black,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Bank',
+                          style: smallStyle.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: isDarkMode ? Colors.white : Colors.black,
+                          ),
                         ),
-                      ),
-                      Text(
-                        widget.bank,
-                        style: smallStyle.copyWith(
-                          color: isDarkMode ? Colors.white : Colors.black,
+                        Text(
+                          bank,
+                          style: smallStyle.copyWith(
+                            color: isDarkMode ? Colors.white : Colors.black,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          softWrap: false,
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Cheque no.',
-                        style: smallStyle.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: isDarkMode ? Colors.white : Colors.black,
+                  SizedBox(width: 30.0),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Cheque no.',
+                          style: smallStyle.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: isDarkMode ? Colors.white : Colors.black,
+                          ),
                         ),
-                      ),
-                      Text(
-                        widget.cheque,
-                        style: smallStyle.copyWith(
-                          color: isDarkMode ? Colors.white : Colors.black,
+                        Text(
+                          cheque,
+                          style: smallStyle.copyWith(
+                            color: isDarkMode ? Colors.white : Colors.black,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          softWrap: false,
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Total Salary',
-                        style: smallStyle.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: isDarkMode ? Colors.white : Colors.black,
+                  SizedBox(width: 30.0),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Total Salary',
+                          style: smallStyle.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: isDarkMode ? Colors.white : Colors.black,
+                          ),
                         ),
-                      ),
-                      Text(
-                        widget.salary,
-                        style: smallStyle.copyWith(
-                          color: isDarkMode ? Colors.white : Colors.black,
+                        Text(
+                          salary,
+                          style: smallStyle.copyWith(
+                            color: isDarkMode ? Colors.white : Colors.black,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          softWrap: false,
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
-              ),
+              )
             ],
           ),
         ),
