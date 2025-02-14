@@ -1,12 +1,30 @@
+import 'package:ams/config/resources/shimmer.dart';
 import 'package:ams/config/resources/styles.dart';
+import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
+import 'package:ams/feature/presentation/pages/timesheet/controller/timesheet_controller.dart';
 import 'package:ams/feature/presentation/pages/timesheet/sub_view_timesheet/time_sheet_view.dart';
 import 'package:ams/feature/presentation/widget/components/app_bar.dart';
-import 'package:ams/feature/presentation/pages/timesheet/sub_view_timesheet/timesheet_details.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class TimeSheetPage extends StatelessWidget {
+class TimeSheetPage extends StatefulWidget {
   const TimeSheetPage({super.key});
+
+  @override
+  State<TimeSheetPage> createState() => _TimeSheetPageState();
+}
+
+class _TimeSheetPageState extends State<TimeSheetPage> {
+  final authcontroller = Get.find<AuthController>();
+
+  final TimesheetController timesheetcontroller =
+      Get.put(TimesheetController(timesheetRepo: Get.find()));
+
+  @override
+  void initState() {
+    timesheetcontroller.timesheet();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +59,8 @@ class TimeSheetPage extends StatelessWidget {
                         );
                       },
                       child: Container(
-                        height: 55.0,
-                        width: 55.0,
+                        height: 40.0,
+                        width: 40.0,
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.black),
                           borderRadius: BorderRadius.circular(30.0),
@@ -57,17 +75,48 @@ class TimeSheetPage extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 20.0),
-                const TimeSheetWidget(),
-                // const SizedBox(height: 20.0),
-                // TimeSheetWidget(),
-                // const SizedBox(height: 20.0),
-                // TimeSheetWidget(),
-                // const SizedBox(height: 20.0),
-                // TimeSheetWidget(),
-                // const SizedBox(height: 20.0),
-                // TimeSheetWidget(),
-                // const SizedBox(height: 20.0),
-                // TimeSheetWidget(),
+                SizedBox(
+                  // height: 600,
+                  child: Obx(
+                    () {
+                      if (timesheetcontroller.isLoading.value) {
+                        return const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: ShrimmerEffect.rectangular(
+                            height: 100,
+                          ),
+                        );
+                      } else if (timesheetcontroller.timesheet.isEmpty) {
+                        return SizedBox(
+                          height: 600,
+                          child: Center(
+                            child: Text(
+                              "No available Timesheet data",
+                              style: smallStyle.copyWith(
+                                color: isDarkMode ? Colors.white : Colors.black,
+                              ),
+                            ),
+                          ),
+                        );
+                      } else {
+                        return ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            scrollDirection: Axis.vertical,
+                            itemCount: timesheetcontroller.timesheet.length,
+                            itemBuilder: (context, index) {
+                              final timesheet =
+                                  timesheetcontroller.timesheet[index];
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child:
+                                    TimeSheetWidget(timesheetdata: timesheet),
+                              );
+                            });
+                      }
+                    },
+                  ),
+                ),
               ],
             ),
           ),

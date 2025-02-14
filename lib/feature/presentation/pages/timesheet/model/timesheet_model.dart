@@ -39,9 +39,9 @@ class Datum {
   String? verifyMode;
   String? pictureUrl;
   int employeeNo;
-  int totalHour;
-  int breakTime;
-  int overTime;
+  int? totalHour;
+  int? breakTime;
+  int? overTime;
   String? designation;
   String? remarks;
 

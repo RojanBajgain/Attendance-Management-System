@@ -1,35 +1,60 @@
 import 'package:ams/config/resources/styles.dart';
+import 'package:ams/feature/presentation/pages/timesheet/controller/timesheet_controller.dart';
+import 'package:ams/feature/presentation/pages/timesheet/model/timesheet_model.dart';
 import 'package:ams/feature/presentation/pages/timesheet/sub_view_timesheet/timesheet_details.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
-class TimeSheetWidget extends StatelessWidget {
-  const TimeSheetWidget({super.key});
+class TimeSheetWidget extends StatefulWidget {
+  final Datum timesheetdata;
+  void Function()? onTap;
+
+  TimeSheetWidget({
+    super.key,
+    required this.timesheetdata,
+    this.onTap,
+  });
+
+  @override
+  State<TimeSheetWidget> createState() => _TimeSheetWidgetState();
+}
+
+class _TimeSheetWidgetState extends State<TimeSheetWidget> {
+  // final TimesheetController timesheetcontroller =
+  //     Get.put(TimesheetController(timesheetRepo: Get.find()));
+
+  // @override
+  // void initState() {
+  //   timesheetcontroller.timesheet();
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    return GestureDetector(
+    return InkWell(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => TimeSheetDetail(),
+        Get.to(
+          () => TimeSheetDetail(
+            timesheetId: widget.timesheetdata.serialNo.toString(),
           ),
+          transition: Transition.rightToLeft,
         );
       },
       child: Container(
         height: 90.0,
         width: double.infinity,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30.0),
+          borderRadius: BorderRadius.circular(10.0),
           color: Colors.grey[200],
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.4),
               blurRadius: 5,
-              spreadRadius: 2,
-              offset: const Offset(0, 5),
+              spreadRadius: 1,
+              offset: const Offset(0, 1),
             ),
           ],
           gradient: LinearGradient(
@@ -57,7 +82,10 @@ class TimeSheetWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Monday, 26 Oct 2024',
+                widget.timesheetdata.date != null
+                    ? DateFormat.yMMMd('en_US')
+                        .format(widget.timesheetdata.date!)
+                    : "N/A",
                 style: smallStyle.copyWith(
                   fontWeight: FontWeight.bold,
                   color: isDarkMode ? Colors.white : Colors.black,
@@ -72,21 +100,29 @@ class TimeSheetWidget extends StatelessWidget {
                     color: isDarkMode ? Colors.white : Colors.black,
                   ),
                   Text(
-                    '9:30 AM',
+                    widget.timesheetdata.entryTime != null
+                        ? DateFormat('hh:mm a')
+                            .format(widget.timesheetdata.entryTime!.toLocal())
+                        : "",
                     style: smallNStyle.copyWith(color: Colors.green),
                   ),
                   Icon(
                     Icons.update,
                     color: isDarkMode ? Colors.white : Colors.black,
                   ),
-                  Text('5:30 AM',
-                      style: smallNStyle.copyWith(color: Colors.red)),
+                  Text(
+                    widget.timesheetdata.exitTime != null
+                        ? DateFormat('hh:mm a')
+                            .format(widget.timesheetdata.exitTime!.toLocal())
+                        : "",
+                    style: smallNStyle.copyWith(color: Colors.red),
+                  ),
                   Icon(
                     Icons.schedule,
                     color: isDarkMode ? Colors.white : Colors.black,
                   ),
                   Text(
-                    '8h 50min',
+                    "${widget.timesheetdata.totalHour.toString()} hrs",
                     style: smallNStyle.copyWith(color: Colors.grey),
                   ),
                 ],
