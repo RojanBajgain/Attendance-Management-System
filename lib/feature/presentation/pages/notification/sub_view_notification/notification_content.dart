@@ -1,4 +1,5 @@
 import 'package:ams/config/resources/styles.dart';
+import 'package:ams/feature/presentation/pages/notification/model/notification_model.dart';
 import 'package:flutter/material.dart';
 
 class NotificationsContent extends StatefulWidget {
@@ -7,6 +8,8 @@ class NotificationsContent extends StatefulWidget {
   final String contextTxt;
   final String contextTxtDetail;
   final String contextTime;
+  final Datum notificationdata;
+
   const NotificationsContent({
     super.key,
     required this.calenderTxt,
@@ -14,6 +17,7 @@ class NotificationsContent extends StatefulWidget {
     required this.contextTxt,
     required this.contextTxtDetail,
     required this.contextTime,
+    required this.notificationdata,
   });
 
   @override
@@ -26,7 +30,7 @@ class _NotificationsContentState extends State<NotificationsContent> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      height: 100.0,
+      height: 105.0,
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(13.0),
@@ -36,7 +40,7 @@ class _NotificationsContentState extends State<NotificationsContent> {
             color: Colors.grey.withOpacity(0.5),
             blurRadius: 5,
             spreadRadius: 1,
-            offset: const Offset(0, 4),
+            offset: const Offset(0, 1),
           ),
         ],
       ),
@@ -84,46 +88,57 @@ class _NotificationsContentState extends State<NotificationsContent> {
                   ),
                   Positioned(
                     top: 33.0,
-                    left: 22.0,
-                    child: Text(
-                      widget.calenderDate,
-                      style: normalStyle.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                    left: 0,
+                    right: 0,
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: Text(
+                        widget.calenderDate,
+                        textAlign: TextAlign.center,
+                        style: normalStyle.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-            SizedBox(width: MediaQuery.of(context).size.height * 0.04),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.contextTxt,
-                  style: normalStyle.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: isDarkMode ? Colors.white : Colors.black,
+            const SizedBox(width: 15),
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    widget.contextTxt,
+                    style: smallStyle.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: isDarkMode ? Colors.white : Colors.black,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 5.0),
-                Text(
-                  widget.contextTxtDetail,
-                  style: smallStyle.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: isDarkMode ? Colors.white : Colors.black,
+                  const SizedBox(height: 5.0),
+                  Expanded(
+                    child: Text(
+                      widget.contextTxtDetail,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                      softWrap: false,
+                      style: miniStyle.copyWith(
+                        color: isDarkMode ? Colors.white : Colors.black,
+                      ),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 5.0),
-                Text(
-                  widget.contextTime,
-                  style: smallStyle.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: isDarkMode ? Colors.white : Colors.black,
+                  const SizedBox(height: 5.0),
+                  Text(
+                    widget.contextTime,
+                    style: smallStyle.copyWith(
+                      color: isDarkMode ? Colors.white : Colors.black,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
