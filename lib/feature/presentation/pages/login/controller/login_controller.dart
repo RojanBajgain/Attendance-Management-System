@@ -5,8 +5,10 @@ import 'package:ams/feature/data/repository/auth_repository_impl.dart';
 import 'package:ams/feature/presentation/pages/bottom_nav/bottom_nav_page.dart';
 import 'package:ams/feature/presentation/pages/login/login_page.dart';
 import 'package:ams/feature/presentation/pages/login/model/login_model.dart';
+import 'package:clock_loader/clock_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../data/datasource/remote/api_client.dart';
@@ -30,16 +32,27 @@ class AuthController extends GetxController {
         alluserData.value = response.response!;
 
         // Save the token
-        // final tokens = response.response;
-        // if (tokens != null) {
-        //   apiClient.saveTokens(tokens.access, tokens.refresh);
-        // }
+        final tokens = response.response;
+        if (tokens != null) {
+          apiClient.saveTokens(tokens.access, tokens.refresh);
+        }
 
-        final accessToken = response.response!.access;
-        final refreshToken = response.response!.refresh;
+        // final accessToken = response.response!.access;
+        // final refreshToken = response.response!.refresh;
 
-        // Save both token
-        apiClient.saveTokens(accessToken, refreshToken);
+        // // Save both token
+        // apiClient.saveTokens(accessToken, refreshToken);
+
+        // Show loading dialog before navigation
+        Get.dialog(
+          Center(
+            child: LoadingAnimationWidget.staggeredDotsWave(
+                color: Colors.white, size: 80),
+          ),
+          barrierDismissible: false, // Prevent closing before transition,
+        );
+        // Wait a bit for animation effect before navigation
+        await Future.delayed(const Duration(seconds: 3));
 
         Get.offAll(() => const BottomNavPage());
       } else {
@@ -95,6 +108,16 @@ class AuthController extends GetxController {
 
       // Clear tokens in app memory
       apiClient.clearTokens();
+
+      Get.dialog(
+        Center(
+          child: LoadingAnimationWidget.inkDrop(color: Colors.white, size: 50),
+        ),
+        barrierDismissible: false, // Prevent closing before transition,
+      );
+
+      // Wait a bit for animation effect before navigation
+      await Future.delayed(const Duration(seconds: 2));
 
       Get.offAll(() => const LoginPage());
       Get.snackbar(

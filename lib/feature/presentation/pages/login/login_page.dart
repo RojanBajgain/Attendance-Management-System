@@ -152,35 +152,35 @@ class _LoginPageState extends State<LoginPage> {
                           child: const LargeButton(title: "Log in"),
                         ),
                       ),
-                      const SizedBox(height: 200),
+                      const SizedBox(height: 250),
                       Image.asset("assets/images/logo.png"),
-                      const SizedBox(height: 50.0),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Don’t have an account? ",
-                            style: smallStyle.copyWith(
-                              color: isDarkMode ? Colors.white : AppColors.grey,
-                            ),
-                          ),
-                          const SizedBox(width: 4.0),
-                          GestureDetector(
-                            onTap: () {
-                              Get.to(() => SignupPage());
-                            },
-                            child: Text(
-                              "Sign Up",
-                              style: smallStyle.copyWith(
-                                color: isDarkMode
-                                    ? Colors.blue
-                                    : AppColors.primary,
-                                // decoration: TextDecoration.underline,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                      // const SizedBox(height: 50.0),
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.center,
+                      //   children: [
+                      //     Text(
+                      //       "Don’t have an account? ",
+                      //       style: smallStyle.copyWith(
+                      //         color: isDarkMode ? Colors.white : AppColors.grey,
+                      //       ),
+                      //     ),
+                      //     const SizedBox(width: 4.0),
+                      //     GestureDetector(
+                      //       onTap: () {
+                      //         Get.to(() => SignupPage());
+                      //       },
+                      //       child: Text(
+                      //         "Sign Up",
+                      //         style: smallStyle.copyWith(
+                      //           color: isDarkMode
+                      //               ? Colors.blue
+                      //               : AppColors.primary,
+                      //           // decoration: TextDecoration.underline,
+                      //         ),
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
                       // const SizedBox(height: 300.0),
                     ],
                   ),

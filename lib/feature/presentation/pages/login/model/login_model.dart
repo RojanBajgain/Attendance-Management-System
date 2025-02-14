@@ -26,7 +26,7 @@ class LoginModel {
 
 class User {
   final int userId;
-  final int? profileId;
+  final int profileId;
   final String fullName;
   final String? email;
   final String role;
@@ -36,7 +36,7 @@ class User {
 
   User({
     required this.userId,
-    this.profileId,
+    required this.profileId,
     required this.fullName,
     this.email,
     required this.role,
@@ -51,7 +51,7 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) => User(
         userId: json["user_id"] ?? 0,
-        profileId: json["profile_id"] as int?,
+        profileId: json["profile_id"] ?? 0,
         fullName: json["full_name"] ?? "",
         email: json["email"] as String?,
         role: json["role"] ?? "",
@@ -62,7 +62,7 @@ class User {
 
   factory User.empty() => User(
         userId: 0,
-        profileId: null,
+        profileId: 0,
         fullName: "",
         email: null,
         role: "",
