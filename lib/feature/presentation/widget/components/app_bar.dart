@@ -1,5 +1,6 @@
 import 'package:ams/config/resources/images.dart';
 import 'package:ams/feature/presentation/pages/bottom_nav/bottom_nav_page.dart';
+import 'package:ams/feature/presentation/pages/chat/chat.dart';
 import 'package:ams/feature/presentation/pages/notification/notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -20,23 +21,18 @@ class ConstantAppBar extends StatelessWidget implements PreferredSizeWidget {
           onTap: () {
             Get.off(() => BottomNavPage());
           },
-          child: Image.asset(AppImages.ayataLogo),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10.0),
+            child: Image.asset(AppImages.ayataLogo),
+          ),
         ),
         actions: <Widget>[
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.play_circle,
-              size: 35.0,
-              color: Colors.green,
-            ),
-          ),
           IconButton(
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => NotificationsPage(),
+                  builder: (context) => const NotificationsPage(),
                 ),
               );
             },
@@ -44,6 +40,21 @@ class ConstantAppBar extends StatelessWidget implements PreferredSizeWidget {
               Icons.notifications_none_outlined,
               color: Colors.grey.shade500,
               size: 35.0,
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ChatsScreen(),
+                ),
+              );
+            },
+            icon: const Icon(
+              Icons.chat,
+              size: 35.0,
+              color: Colors.grey,
             ),
           ),
         ],

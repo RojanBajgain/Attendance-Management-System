@@ -27,7 +27,7 @@ class _BottomNavPageState extends State<BottomNavPage> {
         const TimeOffPage(),
         const TimeSheetPage(),
         const PayrollPage(),
-        const ProfilePage(),
+        ProfilePage(),
       ];
 
   void _changeTab(int index) {
