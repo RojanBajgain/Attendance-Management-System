@@ -1,11 +1,18 @@
+import 'package:ams/config/resources/shimmer.dart';
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/dashboard/sub_view_dashboard/timeoff_view.dart';
 import 'package:ams/feature/presentation/pages/dashboard/widget/clock_time.dart';
+import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
+import 'package:ams/feature/presentation/pages/timeoff/controller/timeoff_controller.dart';
+import 'package:ams/feature/presentation/pages/timesheet/controller/timesheet_controller.dart';
+import 'package:ams/feature/presentation/pages/timesheet/time_sheet_page.dart';
 import 'package:ams/feature/presentation/widget/components/app_bar.dart';
 import 'package:ams/feature/presentation/pages/timeoff/time_off_page.dart';
 import 'package:ams/feature/presentation/pages/dashboard/sub_view_dashboard/logsheet_constant.dart';
 import 'package:ams/feature/presentation/pages/dashboard/sub_view_dashboard/holiday_event_notification_page.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -16,6 +23,31 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+  final authcontroller = Get.find<AuthController>();
+
+  final TimeoffController timeoffcontroller =
+      Get.put(TimeoffController(timeoffRepo: Get.find()));
+
+  final TimesheetController timesheetcontroller =
+      Get.put(TimesheetController(timesheetRepo: Get.find()));
+
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) {
+      return 'Good Morning,'.tr;
+    } else if (hour < 17) {
+      return 'Good Afternoon,'.tr;
+    } else {
+      return 'Good Evening,'.tr;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    timeoffcontroller.getTimeoff();
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -64,28 +96,40 @@ class _DashboardPageState extends State<DashboardPage> {
                     child: Padding(
                       padding: const EdgeInsets.only(
                         right: 10.0,
-                        top: 18.0,
+                        top: 22.0,
                         left: 22.0,
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              Text(
-                                'Hello Sushma',
-                                style: normalStyle.copyWith(
-                                    fontWeight: FontWeight.w500,
+                          RichText(
+                            text: TextSpan(
+                              text: "${_getGreeting()} ",
+                              style: smallStyle.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: isDarkMode
+                                    ? Colors.black
+                                    : Colors.grey[200],
+                              ),
+                              children: [
+                                TextSpan(
+                                  text: authcontroller
+                                          .alluserData.value.user?.fullName ??
+                                      'Guest',
+                                  style: smallStyle.copyWith(
+                                    fontWeight: FontWeight.bold,
                                     color: isDarkMode
                                         ? Colors.black
-                                        : Colors.grey[200]),
-                              ),
-                            ],
+                                        : Colors.grey[200],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          const SizedBox(height: 5.0),
+                          const SizedBox(height: 5),
                           Text(
-                            'Welcome to Ayata attendance management system',
-                            style: miniStyle.copyWith(
+                            'Welcome to Ayata attendance.',
+                            style: smallStyle.copyWith(
                               fontWeight: FontWeight.w400,
                               color:
                                   isDarkMode ? Colors.black : Colors.grey[200],
@@ -112,29 +156,72 @@ class _DashboardPageState extends State<DashboardPage> {
                             : Colors.grey[200],
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.all(12.0),
+                        padding: const EdgeInsets.all(16.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               "This week time",
-                              // style: normalStyle.copyWith(
-                              //     color:
-                              //         isDarkMode ? Colors.white : Colors.black),
-                              style: TextStyle(
-                                fontFamily: 'SF_Pro',
-                                fontSize: 16.0,
+                              style: smallStyle.copyWith(
                                 color: isDarkMode ? Colors.white : Colors.black,
+                                fontWeight: FontWeight.bold,
                               ),
+                            ),
+                            const SizedBox(height: 8.0),
+                            Text("14 h 03 m",
+                                style: smallStyle.copyWith(
+                                  color:
+                                      isDarkMode ? Colors.white : Colors.black,
+                                )),
+                            const SizedBox(height: 8.0),
+                            CustomPaint(
+                              painter: ProgressBarPainter(
+                                percentage: 0.6,
+                                backgroundColor: isDarkMode
+                                    ? Colors.grey.shade600
+                                    : Colors.grey,
+                                foregroundColor:
+                                    isDarkMode ? Colors.white : Colors.black,
+                                borderRadius: 10.0,
+                              ),
+                              size: const Size(150, 8),
+                            ),
+                            const SizedBox(height: 10.0),
+                            Text("01 Nov - 07 Nov",
+                                style: smallStyle.copyWith(
+                                  color:
+                                      isDarkMode ? Colors.white : Colors.black,
+                                )),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    Container(
+                      height: 125.0,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30.0),
+                        color: isDarkMode
+                            ? Colors.grey.shade800
+                            : Colors.grey[200],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "This month time",
+                              style: smallStyle.copyWith(
+                                  color:
+                                      isDarkMode ? Colors.white : Colors.black,
+                                  fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 8.0),
                             Text(
                               "14 h 03 m",
-                              style: TextStyle(
+                              style: smallStyle.copyWith(
                                 color: isDarkMode ? Colors.white : Colors.black,
-                                fontFamily: 'SF_Pro',
-                                fontSize: 15.0,
-                                fontWeight: FontWeight.bold,
                               ),
                             ),
                             const SizedBox(height: 8.0),
@@ -150,165 +237,218 @@ class _DashboardPageState extends State<DashboardPage> {
                               ),
                               size: const Size(150, 8),
                             ),
-                            const SizedBox(height: 8.0),
-                            Text(
-                              "01 Nov - 07 Nov",
-                              style: TextStyle(
-                                color: isDarkMode ? Colors.white : Colors.black,
-                                fontFamily: 'SF_Pro',
-                                fontSize: 15.0,
-                              ),
-                            ),
+                            const SizedBox(height: 10.0),
+                            Text("01 Nov - 30 Nov",
+                                style: smallStyle.copyWith(
+                                  color:
+                                      isDarkMode ? Colors.white : Colors.black,
+                                )),
                           ],
                         ),
                       ),
                     ),
-                    Spacer(),
-                    Container(
-                      height: 125.0,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30.0),
-                        color: isDarkMode
-                            ? Colors.grey.shade800
-                            : Colors.grey[200],
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Month time",
-                              style: TextStyle(
-                                fontFamily: 'SF_Pro',
-                                fontSize: 16.0,
-                                color: isDarkMode ? Colors.white : Colors.black,
-                              ),
-                            ),
-                            const SizedBox(height: 8.0),
-                            Text(
-                              "21 h 50 m",
-                              style: TextStyle(
-                                color: isDarkMode ? Colors.white : Colors.black,
-                                fontFamily: 'SF_Pro',
-                                fontSize: 15.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8.0),
-                            CustomPaint(
-                              painter: ProgressBarPainter(
-                                percentage: 0.5,
-                                backgroundColor: isDarkMode
-                                    ? Colors.grey.shade600
-                                    : Colors.grey,
-                                foregroundColor:
-                                    isDarkMode ? Colors.white : Colors.black,
-                                borderRadius: 10.0,
-                              ),
-                              size: const Size(150, 8),
-                            ),
-                            const SizedBox(height: 8.0),
-                            Text(
-                              "01 Nov - 30 Nov",
-                              style: TextStyle(
-                                color: isDarkMode ? Colors.white : Colors.black,
-                                fontFamily: 'SF_Pro',
-                                fontSize: 15.0,
-                                // fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
                   ],
                 ),
-                const SizedBox(height: 15.0),
+                const SizedBox(height: 20.0),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Last 7 day log',
+                      style: smallNStyle.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: isDarkMode ? Colors.white : Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 15.0),
+                Obx(() {
+                  if (timesheetcontroller.isLoading.value) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ShrimmerEffect.rectangular(
+                        height: 200,
+                        width: MediaQuery.sizeOf(context).width,
+                      ),
+                    );
+                  } else if (timesheetcontroller.timesheet.isEmpty) {
+                    return SizedBox(
+                      child: Center(
+                        child: Text(
+                          "No available Timesheet data data",
+                          style: miniStyle.copyWith(
+                            color: isDarkMode ? Colors.white : Colors.black,
+                          ),
+                        ),
+                      ),
+                    );
+                  } else {
+                    int maxItems = 7;
+
+                    bool showViewAll =
+                        timesheetcontroller.timesheet.length > maxItems;
+
+                    int itemCount = showViewAll
+                        ? maxItems
+                        : timesheetcontroller.timesheet.length;
+
+                    double itemHeight = 120;
+                    double totalHeight = itemCount * itemHeight;
+
+                    return SizedBox(
+                      height: totalHeight,
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: showViewAll
+                                  ? maxItems
+                                  : timesheetcontroller.timesheet.length,
+                              itemBuilder: (context, index) {
+                                final timesheet =
+                                    timesheetcontroller.timesheet[index];
+                                return Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: LogSheetConstant(
+                                      timesheetdata: timesheet),
+                                );
+                              },
+                            ),
+                          ),
+                          if (showViewAll)
+                            TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const TimeSheetPage(),
+                                  ),
+                                );
+                              },
+                              child: const Text(
+                                "View All",
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    );
+                  }
+                }),
+
+                // TIme Offs
+                const SizedBox(height: 10.0),
+                Row(
+                  children: [
+                    Text(
+                      "Time offs",
                       style: normalStyle.copyWith(
                         fontWeight: FontWeight.bold,
                         color: isDarkMode ? Colors.white : Colors.black,
                       ),
-                      // style: TextStyle(
-                      //   fontFamily: 'SF_Pro',
-                      //   fontSize: 20.0,
-                      //   fontWeight: FontWeight.bold,
-                      //   color: isDarkMode ? Colors.white : Colors.black,
-                      // ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 10.0),
-                const LogSheetConstant(),
-                // const SizedBox(height: 10.0),
-                // const LogSheetConstant(),
-                // const SizedBox(height: 10.0),
-                // const LogSheetConstant(),
-                // const SizedBox(height: 10.0),
-                // const LogSheetConstant(),
-                // const SizedBox(height: 10.0),
-                // const LogSheetConstant(),
-                // const SizedBox(height: 10.0),
-                // const LogSheetConstant(),
-                // const SizedBox(height: 10.0),
-                // const LogSheetConstant(),
                 const SizedBox(height: 20.0),
-                Row(
-                  children: [
-                    const Text(
-                      "Time offs",
-                      style: TextStyle(
-                        fontFamily: 'SF_Pro',
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.w600,
+                Obx(() {
+                  if (timeoffcontroller.isLoading.value) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ShrimmerEffect.rectangular(
+                        height: 200,
+                        width: MediaQuery.sizeOf(context).width,
                       ),
-                    ),
-                    const Spacer(),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => TimeOffPage(),
+                    );
+                  } else if (timeoffcontroller.timeoff.isEmpty) {
+                    return SizedBox(
+                      child: Center(
+                        child: Text(
+                          "No available Timeoff data",
+                          style: miniStyle.copyWith(
+                            color: isDarkMode ? Colors.white : Colors.black,
                           ),
-                        );
-                      },
-                      child: const Text(
-                        "View All",
-                        style: TextStyle(
-                          fontFamily: 'SF_Pro',
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.w400,
-                          decoration: TextDecoration.underline,
-                          decorationColor: Colors.blue,
-                          color: Colors.blue,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20.0),
-                const TimeoffView(),
-                const SizedBox(height: 20.0),
-                const TimeoffView(),
-                const SizedBox(height: 20.0),
-                const TimeoffView(),
+                    );
+                  } else {
+                    int maxItems = 3;
+                    bool showViewAll =
+                        timeoffcontroller.timeoff.length > maxItems;
+                    int itemCount = showViewAll
+                        ? maxItems
+                        : timeoffcontroller.timeoff.length;
+
+                    double itemHeight = 210;
+                    double totalHeight = itemCount * itemHeight;
+
+                    return Column(
+                      children: [
+                        SizedBox(
+                          height: totalHeight,
+                          child: Column(
+                            children: [
+                              Expanded(
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  scrollDirection: Axis.vertical,
+                                  itemCount: showViewAll
+                                      ? maxItems
+                                      : timeoffcontroller.timeoff.length,
+                                  itemBuilder: (context, index) {
+                                    final timeoff =
+                                        timeoffcontroller.timeoff[index];
+                                    return Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: TimeoffView(timeoffdata: timeoff),
+                                    );
+                                  },
+                                ),
+                              ),
+                              if (showViewAll)
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const TimeOffPage(),
+                                      ),
+                                    );
+                                  },
+                                  child: const Text(
+                                    "View All",
+                                    style: TextStyle(
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+                }),
                 const SizedBox(height: 20.0),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       "Holidays & Events",
-                      style: TextStyle(
-                        fontFamily: 'SF_Pro',
-                        fontSize: 22.0,
-                        fontWeight: FontWeight.w600,
+                      style: normalStyle.copyWith(
+                        color: isDarkMode ? Colors.white : Colors.black,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 20.0),
