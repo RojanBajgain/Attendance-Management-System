@@ -1,14 +1,14 @@
 import 'package:ams/config/resources/styles.dart';
+import 'package:ams/feature/presentation/pages/timeoff/model/timeoff_model.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
-class TimeoffView extends StatefulWidget {
-  const TimeoffView({super.key});
+class TimeoffView extends StatelessWidget {
+  final Datum timeoffdata;
+  void Function()? onTap;
 
-  @override
-  State<TimeoffView> createState() => _TimeoffViewState();
-}
+  TimeoffView({super.key, this.onTap, required this.timeoffdata});
 
-class _TimeoffViewState extends State<TimeoffView> {
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -21,50 +21,51 @@ class _TimeoffViewState extends State<TimeoffView> {
         color: isDarkMode ? Colors.grey.shade800 : Colors.grey.shade200,
       ),
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           // mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Date',
-              style: TextStyle(
-                fontFamily: 'SF_Pro',
-                fontWeight: FontWeight.w400,
-                fontSize: 15.0,
+              style: smallStyle.copyWith(
+                fontWeight: FontWeight.bold,
+                color: isDarkMode ? Colors.white : Colors.black,
               ),
             ),
             // SizedBox(height: 5.0),
             Row(
               children: [
-                const Text(
-                  'Jan 5, 2024 to Jan 10, 2024',
-                  style: TextStyle(
-                    fontFamily: 'SF_Pro',
-                    fontWeight: FontWeight.w500,
-                    fontSize: 15.0,
+                Text(
+                  "${timeoffdata.startDate != null ? DateFormat.yMMMd('en_US').format(timeoffdata.startDate!) : ""} to ${timeoffdata.endDate != null ? DateFormat.yMMMd('en_US').format(timeoffdata.endDate!) : ""}",
+                  style: smallStyle.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: isDarkMode ? Colors.white : Colors.black,
                   ),
                 ),
                 // const SizedBox(width: 20.0),
-                Spacer(),
-                ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(
-                      Colors.redAccent,
-                    ),
-                    foregroundColor: MaterialStateProperty.all(
-                      Colors.white,
+                const Spacer(),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: _getContainerColor(
+                        timeoffdata.status), // Dynamic background color
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Center(
+                    child: Text(
+                      _getButtonText(timeoffdata.status),
+                      style: smallStyle.copyWith(color: Colors.white),
                     ),
                   ),
-                  onPressed: () {},
-                  child: const Text('Rejected'),
                 ),
                 // const SizedBox(width: 5.0),
-                const Spacer(),
-                Icon(
-                  Icons.more_vert,
-                  color: isDarkMode ? Colors.white : Colors.black,
-                )
+                // const Spacer(),
+                // Icon(
+                //   Icons.more_vert,
+                //   color: isDarkMode ? Colors.white : Colors.black,
+                // )
               ],
             ),
             const SizedBox(height: 10.0),
@@ -86,11 +87,13 @@ class _TimeoffViewState extends State<TimeoffView> {
                         color: isDarkMode ? Colors.white : Colors.black,
                       ),
                     ),
-                    Text('5 Days',
-                        style: smallStyle.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: isDarkMode ? Colors.white : Colors.black,
-                        )),
+                    Text(
+                      '${timeoffdata.days.toString()} days',
+                      style: smallStyle.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: isDarkMode ? Colors.white : Colors.black,
+                      ),
+                    ),
                   ],
                 ),
                 Column(
@@ -103,7 +106,7 @@ class _TimeoffViewState extends State<TimeoffView> {
                       ),
                     ),
                     Text(
-                      'Sick Leave',
+                      timeoffdata.type?.name ?? 'N/A',
                       style: smallStyle.copyWith(
                         fontWeight: FontWeight.bold,
                         color: isDarkMode ? Colors.white : Colors.black,
@@ -121,7 +124,9 @@ class _TimeoffViewState extends State<TimeoffView> {
                       ),
                     ),
                     Text(
-                      'Sampurna',
+                      timeoffdata.approvedBy != null
+                          ? timeoffdata.approvedBy!
+                          : "N/A",
                       style: smallStyle.copyWith(
                         fontWeight: FontWeight.bold,
                         color: isDarkMode ? Colors.white : Colors.black,
@@ -135,5 +140,31 @@ class _TimeoffViewState extends State<TimeoffView> {
         ),
       ),
     );
+  }
+}
+
+Color _getContainerColor(String? status) {
+  switch (status?.toLowerCase()) {
+    case 'approved':
+      return Colors.green;
+    case 'pending':
+      return Colors.orange;
+    case 'rejected':
+      return Colors.red;
+    default:
+      return Colors.grey;
+  }
+}
+
+String _getButtonText(String? status) {
+  switch (status?.toLowerCase()) {
+    case 'approved':
+      return 'Approved';
+    case 'pending':
+      return 'Pending';
+    case 'rejected':
+      return 'Rejected';
+    default:
+      return 'Unknown';
   }
 }

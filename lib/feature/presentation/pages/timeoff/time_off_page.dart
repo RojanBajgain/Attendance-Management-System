@@ -22,6 +22,14 @@ class _TimeOffPageState extends State<TimeOffPage> {
       Get.put(TimeoffController(timeoffRepo: Get.find()));
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      timeoffcontroller.getTimeoff();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
@@ -71,11 +79,9 @@ class _TimeOffPageState extends State<TimeOffPage> {
                     const SizedBox(width: 10.0),
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const AddTimeoff(),
-                          ),
+                        Get.to(
+                          () => const AddTimeoff(),
+                          transition: Transition.rightToLeft,
                         );
                       },
                       child: Container(
@@ -109,30 +115,46 @@ class _TimeOffPageState extends State<TimeOffPage> {
                   ],
                 ),
                 const SizedBox(height: 20.0),
-                SizedBox(
-                  height: 600,
-                  child: Obx(() {
-                    if (timeoffcontroller.isLoading.value) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ShrimmerEffect.rectangular(
-                          height: 200,
-                          width: MediaQuery.sizeOf(context).width,
-                        ),
-                      );
-                    } else {
-                      return ListView.builder(
-                          scrollDirection: Axis.vertical,
-                          itemCount: timeoffcontroller.timeoff.length,
-                          itemBuilder: (context, index) {
-                            final timeoff = timeoffcontroller.timeoff[index];
-                            return Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: TimeOffSheet(timeoffdata: timeoff),
-                            );
-                          });
-                    }
-                  }),
+                SingleChildScrollView(
+                  child: SizedBox(
+                    // height: 655,
+                    child: Obx(() {
+                      if (timeoffcontroller.isLoading.value) {
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ShrimmerEffect.rectangular(
+                            height: 200,
+                            width: MediaQuery.sizeOf(context).width,
+                          ),
+                        );
+                      } else if (timeoffcontroller.timeoff.isEmpty) {
+                        return SizedBox(
+                          height: 600,
+                          child: Center(
+                            child: Text(
+                              "No available Timeoff data",
+                              style: smallStyle.copyWith(
+                                color: isDarkMode ? Colors.white : Colors.black,
+                              ),
+                            ),
+                          ),
+                        );
+                      } else {
+                        return ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            scrollDirection: Axis.vertical,
+                            itemCount: timeoffcontroller.timeoff.length,
+                            itemBuilder: (context, index) {
+                              final timeoff = timeoffcontroller.timeoff[index];
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: TimeOffSheet(timeoffdata: timeoff),
+                              );
+                            });
+                      }
+                    }),
+                  ),
                 )
               ],
             ),

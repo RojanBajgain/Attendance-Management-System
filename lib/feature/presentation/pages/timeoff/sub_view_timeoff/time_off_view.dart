@@ -1,9 +1,6 @@
-import 'package:ams/config/resources/shimmer.dart';
 import 'package:ams/config/resources/styles.dart';
-import 'package:ams/feature/presentation/pages/timeoff/controller/timeoff_controller.dart';
 import 'package:ams/feature/presentation/pages/timeoff/model/timeoff_model.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class TimeOffSheet extends StatelessWidget {
@@ -16,7 +13,6 @@ class TimeOffSheet extends StatelessWidget {
     this.onTap,
   });
 
-  // final TimeoffController timeoffcontroller =
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -285,7 +281,9 @@ class TimeOffSheet extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      timeoffdata.comments.toString(),
+                                      timeoffdata.comments != null
+                                          ? timeoffdata.comments.toString()
+                                          : "",
                                       style: smallStyle.copyWith(
                                           fontWeight: FontWeight.bold,
                                           color: Colors.black),
@@ -315,7 +313,7 @@ class TimeOffSheet extends StatelessWidget {
                 color: Colors.grey.withOpacity(0.5),
                 blurRadius: 2,
                 spreadRadius: 2,
-                offset: const Offset(0, 5),
+                offset: const Offset(0, 2),
               ),
             ],
           ),
