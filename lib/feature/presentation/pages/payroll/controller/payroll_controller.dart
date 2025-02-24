@@ -6,12 +6,15 @@ import 'package:ams/feature/presentation/pages/payroll/model/payroll_detail_mode
 import 'package:ams/feature/presentation/pages/payroll/model/payroll_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class PayrollController extends GetxController {
   var payroll = <Datum>[].obs;
+  var filteredPayroll = <Datum>[].obs;
   var isLoading = false.obs;
   var errorMessage = ''.obs;
   var payrollDetail = PayrollDetailModel().obs;
+  var selectedDate = Rxn<DateTime>();
 
   final PayrollRepo payrollRepo;
 
@@ -19,8 +22,8 @@ class PayrollController extends GetxController {
 
   @override
   void onInit() {
-    getPayroll();
     super.onInit();
+    getPayroll();
   }
 
   Future<void> getPayroll() async {
@@ -33,6 +36,8 @@ class PayrollController extends GetxController {
 
         PayRollModel payrolldata = response.response;
         payroll.value = payrolldata.data;
+
+        filteredPayroll.value = payroll;
       } else {
         log("Error: ${response.message}");
       }
@@ -67,5 +72,22 @@ class PayrollController extends GetxController {
         print('the error of Payroll detail is $e');
       }
     }
+  }
+
+  // Function to filter by selected date
+  void filterPayrollByDate(DateTime date) {
+    selectedDate.value = date;
+
+    String formattedSelectedDate = DateFormat('yyyy-MM-dd').format(date);
+    filteredPayroll.value = payroll.where((payrolldate) {
+      String formattedEntryDate = DateFormat('yyyy-MM-dd')
+          .format(DateTime.parse(payrolldate.dateOfPayment.toString()));
+      return formattedEntryDate == formattedSelectedDate;
+    }).toList();
+  }
+
+  void clearSelectedDate() {
+    selectedDate.value = null;
+    filteredPayroll.assignAll(payroll);
   }
 }
