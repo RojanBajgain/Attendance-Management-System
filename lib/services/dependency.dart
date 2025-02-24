@@ -1,11 +1,19 @@
 import 'package:ams/feature/data/datasource/remote/api_client.dart';
 import 'package:ams/feature/data/repository/auth_repository_impl.dart';
+import 'package:ams/feature/data/repository/clock_in_out_repo.dart';
+import 'package:ams/feature/data/repository/dashboard_timesheet_repo.dart';
+import 'package:ams/feature/data/repository/has_clockedIn_repo.dart';
 import 'package:ams/feature/data/repository/notification_repo.dart';
 import 'package:ams/feature/data/repository/payroll_repo.dart';
 import 'package:ams/feature/data/repository/policy_repo.dart';
 import 'package:ams/feature/data/repository/profile_repo.dart';
+import 'package:ams/feature/data/repository/reset_password_repo.dart';
 import 'package:ams/feature/data/repository/timeoff_repo.dart';
 import 'package:ams/feature/data/repository/timesheet_repo.dart';
+import 'package:ams/feature/presentation/pages/dashboard/controller/clock_in_out_controller.dart';
+import 'package:ams/feature/presentation/pages/dashboard/controller/dashboard_timesheet_controller.dart';
+import 'package:ams/feature/presentation/pages/dashboard/controller/has_clockedIn_controller.dart';
+import 'package:ams/feature/presentation/pages/forget_password/controller/reset_password_controller.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/notification/controller/notification_controller.dart';
 import 'package:ams/feature/presentation/pages/payroll/controller/payroll_controller.dart';
@@ -59,4 +67,25 @@ Future<void> init() async {
   Get.put<NotificationRepo>(NotificationRepo(apiClient: Get.find<ApiClient>()));
   Get.put<NotificationController>(
       NotificationController(notificationrepo: Get.find<NotificationRepo>()));
+
+  // Dashboard timesheet
+  Get.put<DashboardTimesheetRepo>(
+      DashboardTimesheetRepo(apiClient: Get.find<ApiClient>()));
+  Get.put<DashboardTimesheetController>(DashboardTimesheetController(
+      dashboardtimesheetrepo: Get.find<DashboardTimesheetRepo>()));
+
+  // Dashboard Clock In / Clock Out
+  Get.put<ClockInOutRepo>(ClockInOutRepo(apiClient: Get.find<ApiClient>()));
+  Get.put<ClockInOutController>(
+      ClockInOutController(clockinoutrepo: Get.find<ClockInOutRepo>()));
+
+  Get.put<HasClockRepo>(HasClockRepo(apiClient: Get.find<ApiClient>()));
+  Get.put<HasClockedinController>(
+      HasClockedinController(hasClockedIn: Get.find<HasClockRepo>()));
+
+  // Reset Password
+  Get.put<ResetPasswordRepo>(
+      ResetPasswordRepo(apiClient: Get.find<ApiClient>()));
+  Get.put<ResetPasswordController>(ResetPasswordController(
+      resetpasswordrepo: Get.find<ResetPasswordRepo>()));
 }
