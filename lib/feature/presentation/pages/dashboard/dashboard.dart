@@ -1,10 +1,12 @@
 import 'package:ams/config/resources/shimmer.dart';
 import 'package:ams/config/resources/styles.dart';
+import 'package:ams/feature/presentation/pages/dashboard/controller/dashboard_timesheet_controller.dart';
 import 'package:ams/feature/presentation/pages/dashboard/sub_view_dashboard/timeoff_view.dart';
 import 'package:ams/feature/presentation/pages/dashboard/widget/clock_time.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/timeoff/controller/timeoff_controller.dart';
 import 'package:ams/feature/presentation/pages/timesheet/controller/timesheet_controller.dart';
+import 'package:ams/feature/presentation/pages/timesheet/sub_view_timesheet/time_sheet_view.dart';
 import 'package:ams/feature/presentation/pages/timesheet/time_sheet_page.dart';
 import 'package:ams/feature/presentation/widget/components/app_bar.dart';
 import 'package:ams/feature/presentation/pages/timeoff/time_off_page.dart';
@@ -31,6 +33,9 @@ class _DashboardPageState extends State<DashboardPage> {
   final TimesheetController timesheetcontroller =
       Get.put(TimesheetController(timesheetRepo: Get.find()));
 
+  final DashboardTimesheetController dashboardtimesheetcontroller =
+      Get.put(DashboardTimesheetController(dashboardtimesheetrepo: Get.find()));
+
   String _getGreeting() {
     final hour = DateTime.now().hour;
     if (hour < 12) {
@@ -46,6 +51,8 @@ class _DashboardPageState extends State<DashboardPage> {
   void initState() {
     super.initState();
     timeoffcontroller.getTimeoff();
+    timesheetcontroller.getTimesheet();
+    dashboardtimesheetcontroller.getDashboardTimesheet();
   }
 
   @override
@@ -143,112 +150,149 @@ class _DashboardPageState extends State<DashboardPage> {
                 const SizedBox(height: 10.0),
                 // const DateTimeWidget(),
                 const SizedBox(height: 10.0),
-                const ClockTime(),
+                ClockTime(),
                 const SizedBox(height: 20.0),
-                Row(
-                  children: [
-                    Container(
-                      height: 125.0,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30.0),
-                        color: isDarkMode
-                            ? Colors.grey.shade800
-                            : Colors.grey[200],
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "This week time",
-                              style: smallStyle.copyWith(
-                                color: isDarkMode ? Colors.white : Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
+                Obx(() {
+                  if (dashboardtimesheetcontroller.isLoading.value) {
+                    return const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: ShrimmerEffect.rectangular(height: 50),
+                    );
+                  } else {
+                    return Row(
+                      children: [
+                        Container(
+                          height: 125.0,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30.0),
+                            color: isDarkMode
+                                ? Colors.grey.shade800
+                                : Colors.grey[200],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "This week time",
+                                  style: smallStyle.copyWith(
+                                    color: isDarkMode
+                                        ? Colors.white
+                                        : Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 8.0),
+                                Text(
+                                  "${dashboardtimesheetcontroller.dashboardtimesheet.value.thisWeek?.totalHour ?? "---"} ",
+                                  style: smallStyle.copyWith(
+                                    color: isDarkMode
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                                ),
+                                const SizedBox(height: 8.0),
+                                CustomPaint(
+                                  painter: ProgressBarPainter(
+                                    percentage: (dashboardtimesheetcontroller
+                                                .dashboardtimesheet
+                                                .value
+                                                .month
+                                                ?.percentage ??
+                                            0.0)
+                                        .toDouble(),
+                                    backgroundColor: isDarkMode
+                                        ? Colors.grey.shade600
+                                        : Colors.grey,
+                                    foregroundColor: isDarkMode
+                                        ? Colors.white
+                                        : Colors.black,
+                                    borderRadius: 10.0,
+                                  ),
+                                  size: const Size(150, 8),
+                                ),
+                                const SizedBox(height: 10.0),
+                                Text(
+                                  "01 Nov - 07 Nov",
+                                  style: smallStyle.copyWith(
+                                    color: isDarkMode
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 8.0),
-                            Text("14 h 03 m",
-                                style: smallStyle.copyWith(
-                                  color:
-                                      isDarkMode ? Colors.white : Colors.black,
-                                )),
-                            const SizedBox(height: 8.0),
-                            CustomPaint(
-                              painter: ProgressBarPainter(
-                                percentage: 0.6,
-                                backgroundColor: isDarkMode
-                                    ? Colors.grey.shade600
-                                    : Colors.grey,
-                                foregroundColor:
-                                    isDarkMode ? Colors.white : Colors.black,
-                                borderRadius: 10.0,
-                              ),
-                              size: const Size(150, 8),
-                            ),
-                            const SizedBox(height: 10.0),
-                            Text("01 Nov - 07 Nov",
-                                style: smallStyle.copyWith(
-                                  color:
-                                      isDarkMode ? Colors.white : Colors.black,
-                                )),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
-                    const Spacer(),
-                    Container(
-                      height: 125.0,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30.0),
-                        color: isDarkMode
-                            ? Colors.grey.shade800
-                            : Colors.grey[200],
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "This month time",
-                              style: smallStyle.copyWith(
-                                  color:
-                                      isDarkMode ? Colors.white : Colors.black,
-                                  fontWeight: FontWeight.bold),
+                        const Spacer(),
+                        Container(
+                          height: 125.0,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30.0),
+                            color: isDarkMode
+                                ? Colors.grey.shade800
+                                : Colors.grey[200],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Month time",
+                                  style: smallStyle.copyWith(
+                                      color: isDarkMode
+                                          ? Colors.white
+                                          : Colors.black,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 8.0),
+                                Text(
+                                  "${dashboardtimesheetcontroller.dashboardtimesheet.value.month?.totalHour ?? "---"} ",
+                                  style: smallStyle.copyWith(
+                                    color: isDarkMode
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                                ),
+                                const SizedBox(height: 8.0),
+                                CustomPaint(
+                                  painter: ProgressBarPainter(
+                                    percentage: (dashboardtimesheetcontroller
+                                                .dashboardtimesheet
+                                                .value
+                                                .thisWeek
+                                                ?.percentage ??
+                                            0.0)
+                                        .toDouble(),
+                                    backgroundColor: isDarkMode
+                                        ? Colors.grey.shade600
+                                        : Colors.grey,
+                                    foregroundColor: isDarkMode
+                                        ? Colors.white
+                                        : Colors.black,
+                                    borderRadius: 10.0,
+                                  ),
+                                  size: const Size(150, 8),
+                                ),
+                                const SizedBox(height: 10.0),
+                                Text(
+                                  "01 Nov - 30 Nov",
+                                  style: smallStyle.copyWith(
+                                    color: isDarkMode
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 8.0),
-                            Text(
-                              "14 h 03 m",
-                              style: smallStyle.copyWith(
-                                color: isDarkMode ? Colors.white : Colors.black,
-                              ),
-                            ),
-                            const SizedBox(height: 8.0),
-                            CustomPaint(
-                              painter: ProgressBarPainter(
-                                percentage: 0.6,
-                                backgroundColor: isDarkMode
-                                    ? Colors.grey.shade600
-                                    : Colors.grey,
-                                foregroundColor:
-                                    isDarkMode ? Colors.white : Colors.black,
-                                borderRadius: 10.0,
-                              ),
-                              size: const Size(150, 8),
-                            ),
-                            const SizedBox(height: 10.0),
-                            Text("01 Nov - 30 Nov",
-                                style: smallStyle.copyWith(
-                                  color:
-                                      isDarkMode ? Colors.white : Colors.black,
-                                )),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
-                  ],
-                ),
+                      ],
+                    );
+                  }
+                }),
                 const SizedBox(height: 20.0),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -276,7 +320,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     return SizedBox(
                       child: Center(
                         child: Text(
-                          "No available Timesheet data data",
+                          "No available Timesheet data.",
                           style: miniStyle.copyWith(
                             color: isDarkMode ? Colors.white : Colors.black,
                           ),
@@ -312,8 +356,9 @@ class _DashboardPageState extends State<DashboardPage> {
                                     timesheetcontroller.timesheet[index];
                                 return Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: LogSheetConstant(
-                                      timesheetdata: timesheet),
+                                  child: TimeSheetWidget(
+                                    timesheetdata: timesheet,
+                                  ),
                                 );
                               },
                             ),
