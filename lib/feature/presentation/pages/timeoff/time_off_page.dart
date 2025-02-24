@@ -38,7 +38,7 @@ class _TimeOffPageState extends State<TimeOffPage> {
       body: SingleChildScrollView(
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(15),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -52,15 +52,42 @@ class _TimeOffPageState extends State<TimeOffPage> {
                       ),
                     ),
                     const Spacer(),
-                    GestureDetector(
+                    /*  GestureDetector(
                       onTap: () async {
+                        // Define the theme for the date picker
+                        final ThemeData datePickerTheme =
+                            Theme.of(context).copyWith(
+                          textTheme: TextTheme(
+                            bodyLarge: TextStyle(
+                              fontSize: 14.0,
+                              color: isDarkMode ? Colors.white : Colors.black,
+                            ),
+                            bodyMedium: TextStyle(
+                              fontSize: 12.0,
+                              color: isDarkMode ? Colors.white : Colors.black,
+                            ),
+                          ),
+                        );
+
+                        // Show the date picker with the custom theme
                         DateTime? selectedDate = await showDatePicker(
                           context: context,
                           initialDate: DateTime.now(),
                           firstDate: DateTime(2000),
                           lastDate: DateTime(2100),
+                          builder: (BuildContext context, Widget? child) {
+                            return Theme(
+                              data: datePickerTheme,
+                              child: child!,
+                            );
+                          },
                         );
+
                         // Handle the selected date if needed
+                        if (selectedDate != null) {
+                          // Do something with the selected date
+                          print("Selected Date: $selectedDate");
+                        }
                       },
                       child: Container(
                         height: 45.0,
@@ -68,14 +95,15 @@ class _TimeOffPageState extends State<TimeOffPage> {
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.black),
                           borderRadius: BorderRadius.circular(70.0),
-                          color: Colors.grey.shade400,
+                          color:
+                              isDarkMode ? Colors.grey.shade400 : Colors.white,
                         ),
                         child: const Icon(
                           Icons.date_range_outlined,
                           color: Colors.black,
                         ),
                       ),
-                    ),
+                    ), */
                     const SizedBox(width: 10.0),
                     GestureDetector(
                       onTap: () {
@@ -86,10 +114,10 @@ class _TimeOffPageState extends State<TimeOffPage> {
                       },
                       child: Container(
                         height: 45.0,
-                        width: 140.0,
+                        width: 45.0,
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.black),
-                          borderRadius: BorderRadius.circular(10.0),
+                          borderRadius: BorderRadius.circular(70.0),
                           color:
                               isDarkMode ? Colors.grey.shade400 : Colors.black,
                         ),
@@ -100,18 +128,94 @@ class _TimeOffPageState extends State<TimeOffPage> {
                               Icons.add,
                               color: isDarkMode ? Colors.black : Colors.white,
                             ),
-                            const SizedBox(width: 5.0),
-                            Text(
-                              "Add Time off",
-                              style: smallStyle.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: isDarkMode ? Colors.black : Colors.white,
-                              ),
-                            )
+                            // const SizedBox(width: 5.0),
+                            // Text(
+                            //   "Add Time off",
+                            //   style: smallStyle.copyWith(
+                            //     fontWeight: FontWeight.bold,
+                            //     color: isDarkMode ? Colors.black : Colors.white,
+                            //   ),
+                            // )
                           ],
                         ),
                       ),
                     ),
+                    const SizedBox(width: 5.0),
+                    // FILTER BUTTON
+                    Obx(() => Container(
+                          height: 45.0,
+                          // width: 80.0,
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black),
+                            borderRadius: BorderRadius.circular(10.0),
+                            color: isDarkMode
+                                ? Colors.grey.shade400
+                                : Colors.black,
+                          ),
+                          child: DropdownButton<String>(
+                            value: timeoffcontroller.selectedFilter.value,
+                            onChanged: (String? newValue) {
+                              if (newValue != null) {
+                                timeoffcontroller.filterTimeoff(newValue);
+                              }
+                            },
+                            icon: Icon(
+                              Icons.arrow_drop_down,
+                              color: isDarkMode ? Colors.black : Colors.white,
+                            ),
+                            dropdownColor: isDarkMode
+                                ? Colors.grey.shade400
+                                : Colors.black,
+                            underline: const SizedBox(),
+                            style: TextStyle(
+                              color: isDarkMode ? Colors.black : Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            items: [
+                              DropdownMenuItem(
+                                  value: 'All',
+                                  child: Text(
+                                    'All',
+                                    style: smallStyle.copyWith(
+                                      color: isDarkMode
+                                          ? Colors.black
+                                          : Colors.white,
+                                    ),
+                                  )),
+                              DropdownMenuItem(
+                                  value: 'Pending',
+                                  child: Text(
+                                    'Pending',
+                                    style: smallStyle.copyWith(
+                                      color: isDarkMode
+                                          ? Colors.black
+                                          : Colors.white,
+                                    ),
+                                  )),
+                              DropdownMenuItem(
+                                  value: 'Approved',
+                                  child: Text(
+                                    'Approved',
+                                    style: smallStyle.copyWith(
+                                      color: isDarkMode
+                                          ? Colors.black
+                                          : Colors.white,
+                                    ),
+                                  )),
+                              DropdownMenuItem(
+                                  value: 'Rejected',
+                                  child: Text(
+                                    'Rejected',
+                                    style: smallStyle.copyWith(
+                                      color: isDarkMode
+                                          ? Colors.black
+                                          : Colors.white,
+                                    ),
+                                  )),
+                            ],
+                          ),
+                        ))
                   ],
                 ),
                 const SizedBox(height: 20.0),
@@ -144,9 +248,10 @@ class _TimeOffPageState extends State<TimeOffPage> {
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             scrollDirection: Axis.vertical,
-                            itemCount: timeoffcontroller.timeoff.length,
+                            itemCount: timeoffcontroller.filteredTimeoff.length,
                             itemBuilder: (context, index) {
-                              final timeoff = timeoffcontroller.timeoff[index];
+                              final timeoff =
+                                  timeoffcontroller.filteredTimeoff[index];
                               return Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: TimeOffSheet(timeoffdata: timeoff),
