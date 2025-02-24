@@ -274,7 +274,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
           final profileData = profilecontroller.profile;
           return SizedBox(
-            height: 150,
+            height: profileData.isNotEmpty
+                ? profileData.fold(
+                    0,
+                    (totalHeight, datum) =>
+                        totalHeight! + (datum.bankDetails?.length ?? 0) * 130)
+                : 0,
             child: ListView.builder(
               padding: EdgeInsets.zero,
               shrinkWrap: true,
@@ -331,7 +336,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
           final profileData = profilecontroller.profile;
           return SizedBox(
-            height: 90,
+            height: 60,
             width: MediaQuery.of(context).size.width,
             child: ListView.builder(
               padding: EdgeInsets.zero,
@@ -359,8 +364,8 @@ class _ProfilePageState extends State<ProfilePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildRow("Finger Print ID:", device?.fingerprintId ?? "N/A"),
-          _buildRow("Device ID:", device?.portalPin ?? "N/A"),
-          _buildRow("App Pin:", device?.appPin ?? "N/A"),
+          _buildRow("Employee No:", device?.deviceUserId.toString() ?? "N/A"),
+          // _buildRow("App Pin:", device?.appPin ?? "N/A"),
         ],
       ),
     );
@@ -463,10 +468,13 @@ class _ProfilePageState extends State<ProfilePage> {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          Text(
-            value,
-            style: smallStyle.copyWith(
-              color: isDarkMode ? Colors.white : Colors.black,
+          Flexible(
+            child: Text(
+              value,
+              overflow: TextOverflow.ellipsis,
+              style: smallStyle.copyWith(
+                color: isDarkMode ? Colors.white : Colors.black,
+              ),
             ),
           ),
         ],
