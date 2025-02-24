@@ -36,12 +36,12 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
 
     return InkWell(
       onTap: () {
-        Get.to(
-          () => TimeSheetDetail(
-            timesheetId: widget.timesheetdata.serialNo.toString(),
-          ),
-          transition: Transition.rightToLeft,
-        );
+        // Get.to(
+        //   () => TimeSheetDetail(
+        //     timesheetId: widget.timesheetdata.serialNo.toString(),
+        //   ),
+        //   transition: Transition.rightToLeft,
+        // );
       },
       child: Container(
         height: 90.0,
@@ -63,7 +63,7 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
             colors: [
               isDarkMode ? Colors.grey.shade700 : Colors.black,
               isDarkMode ? Colors.grey.shade700 : Colors.black,
-              isDarkMode ? Colors.black : Colors.white,
+              isDarkMode ? Colors.grey.shade800 : Colors.white,
             ],
             stops: const [
               0.0,
@@ -99,6 +99,7 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
                     Icons.history,
                     color: isDarkMode ? Colors.white : Colors.black,
                   ),
+                  SizedBox(width: 5.0),
                   Text(
                     widget.timesheetdata.entryTime != null
                         ? DateFormat('hh:mm a')
@@ -106,10 +107,12 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
                         : "",
                     style: smallNStyle.copyWith(color: Colors.green),
                   ),
+                  Spacer(),
                   Icon(
                     Icons.update,
                     color: isDarkMode ? Colors.white : Colors.black,
                   ),
+                  SizedBox(width: 5.0),
                   Text(
                     widget.timesheetdata.exitTime != null
                         ? DateFormat('hh:mm a')
@@ -117,10 +120,12 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
                         : "",
                     style: smallNStyle.copyWith(color: Colors.red),
                   ),
+                  Spacer(),
                   Icon(
                     Icons.schedule,
                     color: isDarkMode ? Colors.white : Colors.black,
                   ),
+                  SizedBox(width: 5.0),
                   Text(
                     "${widget.timesheetdata.totalHour.toString()} hrs",
                     style: smallNStyle.copyWith(color: Colors.grey),
