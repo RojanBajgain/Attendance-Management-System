@@ -9,8 +9,10 @@ import 'package:get/get.dart';
 
 class TimeoffController extends GetxController {
   var timeoff = <Datum>[].obs;
+  var filteredTimeoff = <Datum>[].obs;
   var isLoading = false.obs;
   var errorMessage = ''.obs;
+  var selectedFilter = 'All'.obs;
 
   final TimeoffRepo timeoffRepo;
 
@@ -32,7 +34,10 @@ class TimeoffController extends GetxController {
         log("Fetch Timeoff data: ${response.response}");
 
         TimeoffModel timeoffdata = response.response;
-        timeoff.value = timeoffdata.data;
+
+        timeoff.assignAll(timeoffdata.data);
+
+        filterTimeoff(selectedFilter.value);
       } else {
         log("Error: ${response.message}");
       }
@@ -75,12 +80,12 @@ class TimeoffController extends GetxController {
       } else {
         log("Error: ${response.message}");
         Get.snackbar(
-          'Error',
-          response.message ?? 'Failed to post timeoff',
+          'Server Error',
+          'Failed to post timeoff. Please try again later',
           snackPosition: SnackPosition.BOTTOM,
           duration: const Duration(seconds: 3),
           colorText: Colors.white,
-          backgroundColor: Colors.red,
+          backgroundColor: Colors.redAccent,
         );
       }
     } catch (e) {
@@ -90,10 +95,29 @@ class TimeoffController extends GetxController {
       Get.snackbar(
         'Error',
         'An unexpected error occurred: $e',
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
         duration: const Duration(seconds: 3),
         colorText: Colors.white,
         backgroundColor: Colors.red,
+      );
+    }
+  }
+
+  // Filtered the timeoff
+  void filterTimeoff(String status) {
+    selectedFilter.value = status;
+
+    if (status == 'All') {
+      filteredTimeoff.assignAll(timeoff);
+    } else {
+      filteredTimeoff.assignAll(
+        timeoff.where((element) {
+          // Normalize case to avoid mismatches
+          String elementStatus = element.status.toString().toLowerCase();
+          String filterStatus = status.toLowerCase();
+
+          return elementStatus == filterStatus;
+        }).toList(),
       );
     }
   }
