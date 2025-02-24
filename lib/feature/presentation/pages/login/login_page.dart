@@ -1,5 +1,6 @@
 import 'package:ams/config/resources/colors.dart';
 import 'package:ams/config/resources/styles.dart';
+import 'package:ams/feature/presentation/pages/forget_password/forget_password.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/signup/signup_page.dart';
 import 'package:ams/feature/presentation/widget/button_large.dart';
@@ -16,6 +17,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  bool keepMeLoggedIn = false;
+
   final email = TextEditingController();
   final pw = TextEditingController();
 
@@ -113,9 +116,11 @@ class _LoginPageState extends State<LoginPage> {
                             height: 24.0,
                             width: 24.0,
                             child: Checkbox(
-                              value: isBlank,
+                              value: keepMeLoggedIn,
                               onChanged: (bool? value) {
-                                //
+                                setState(() {
+                                  keepMeLoggedIn = value ?? false;
+                                });
                               },
                             ),
                           ),
@@ -129,7 +134,9 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           SizedBox(width: 35.0),
                           GestureDetector(
-                            onTap: () {},
+                            onTap: () {
+                              Get.to(() => const ForgetPassword());
+                            },
                             child: Text(
                               "Forget your password?",
                               style: smallStyle.copyWith(
@@ -142,12 +149,13 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 24.0),
                       Material(
-                        borderRadius: BorderRadius.circular(20.0),
+                        borderRadius: BorderRadius.circular(12.0),
                         color: isDarkMode ? Colors.grey.shade700 : Colors.black,
                         child: InkWell(
                           borderRadius: BorderRadius.circular(8.0),
                           onTap: () {
-                            authcontroller.loginMethod(email.text, pw.text);
+                            authcontroller.loginMethod(
+                                email.text, pw.text, keepMeLoggedIn);
                           },
                           child: const LargeButton(title: "Log in"),
                         ),
