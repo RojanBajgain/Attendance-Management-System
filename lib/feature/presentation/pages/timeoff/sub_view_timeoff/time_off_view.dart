@@ -27,7 +27,7 @@ class TimeOffSheet extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Container(
-                  height: 500,
+                  height: 600,
                   width: double.infinity,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(13.0),
