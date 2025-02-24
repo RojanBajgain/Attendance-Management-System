@@ -7,12 +7,15 @@ import 'package:ams/feature/presentation/pages/timesheet/model/timesheet_model.d
 import 'package:ams/feature/presentation/pages/timesheet/sub_view_timesheet/timesheet_details.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class TimesheetController extends GetxController {
   var timesheet = <Datum>[].obs;
+  var filteredTimesheet = <Datum>[].obs;
   var isLoading = false.obs;
   var errorMessage = ''.obs;
   var timesheetDetail = TimesheetDetailModel().obs;
+  var selectedDate = Rxn<DateTime>();
 
   final TimesheetRepo timesheetRepo;
 
@@ -20,12 +23,12 @@ class TimesheetController extends GetxController {
 
   @override
   void onInit() {
-    getTimesheet();
     super.onInit();
+    getTimesheet();
   }
 
   Future<void> getTimesheet() async {
-    // isLoading(true);
+    isLoading(true);
     try {
       ApiResponse response = await timesheetRepo.getTimesheet();
 
@@ -34,6 +37,8 @@ class TimesheetController extends GetxController {
 
         TimesheetModel timesheetdata = response.response;
         timesheet.value = timesheetdata.data;
+
+        filteredTimesheet.value = timesheet;
       } else {
         log("Error: ${response.message}");
       }
@@ -42,7 +47,7 @@ class TimesheetController extends GetxController {
 
       errorMessage.value = "An error occurred: $e";
     } finally {
-      // isLoading(false);
+      isLoading(false);
     }
   }
 
@@ -68,5 +73,22 @@ class TimesheetController extends GetxController {
         print('the error of Timesheet detail is $e');
       }
     }
+  }
+
+  // Function to filter by selected date
+  void filterByDate(DateTime date) {
+    selectedDate.value = date;
+
+    String formattedSelectedDate = DateFormat('yyyy-MM-dd').format(date);
+    filteredTimesheet.value = timesheet.where((timesheetdate) {
+      String formattedEntryDate = DateFormat('yyyy-MM-dd')
+          .format(DateTime.parse(timesheetdate.date.toString()));
+      return formattedEntryDate == formattedSelectedDate;
+    }).toList();
+  }
+
+  void clearSelectedDate() {
+    selectedDate.value = null;
+    filteredTimesheet.assignAll(timesheet);
   }
 }
