@@ -21,8 +21,15 @@ class AuthController extends GetxController {
   var authIsLoading = false.obs;
   var alluserData = LoginModel(access: "", refresh: "").obs;
 
+  @override
+  void onInit() {
+    super.onInit();
+    checkLoginStatus();
+  }
+
 //LOGIN
-  Future<void> loginMethod(String email, String password) async {
+  Future<void> loginMethod(
+      String email, String password, bool keepMeLoggedIn) async {
     authIsLoading.value = true;
     try {
       ApiResponse<LoginModel> response = await authRepo.login(email, password);
@@ -37,11 +44,13 @@ class AuthController extends GetxController {
           apiClient.saveTokens(tokens.access, tokens.refresh);
         }
 
-        // final accessToken = response.response!.access;
-        // final refreshToken = response.response!.refresh;
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isLoggedIn', keepMeLoggedIn);
 
-        // // Save both token
-        // apiClient.saveTokens(accessToken, refreshToken);
+        if (keepMeLoggedIn) {
+          await prefs.setString('accessToken', tokens!.access);
+          await prefs.setString('refreshToken', tokens.refresh);
+        }
 
         // Show loading dialog before navigation
         Get.dialog(
@@ -49,9 +58,9 @@ class AuthController extends GetxController {
             child: LoadingAnimationWidget.staggeredDotsWave(
                 color: Colors.white, size: 80),
           ),
-          barrierDismissible: false, // Prevent closing before transition,
+          barrierDismissible: false,
         );
-        // Wait a bit for animation effect before navigation
+
         await Future.delayed(const Duration(seconds: 3));
 
         Get.offAll(() => const BottomNavPage());
@@ -71,6 +80,16 @@ class AuthController extends GetxController {
           snackPosition: SnackPosition.BOTTOM);
     } finally {
       authIsLoading.value = false;
+    }
+  }
+
+  Future<void> checkLoginStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+
+    if (isLoggedIn) {
+      await Future.delayed(const Duration(milliseconds: 300));
+      Get.offAll(() => const BottomNavPage());
     }
   }
 
@@ -109,12 +128,12 @@ class AuthController extends GetxController {
       // Clear tokens in app memory
       apiClient.clearTokens();
 
-      Get.dialog(
-        Center(
-          child: LoadingAnimationWidget.inkDrop(color: Colors.white, size: 50),
-        ),
-        barrierDismissible: false, // Prevent closing before transition,
-      );
+      // Get.dialog(
+      //   Center(
+      //     child: LoadingAnimationWidget.inkDrop(color: Colors.white, size: 50),
+      //   ),
+      //   barrierDismissible: false, // Prevent closing before transition,
+      // );
 
       // Wait a bit for animation effect before navigation
       await Future.delayed(const Duration(seconds: 2));

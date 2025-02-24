@@ -26,6 +26,8 @@ class _PayrollPageState extends State<PayrollPage> {
   void initState() {
     super.initState();
     payrollcontroller.getPayroll();
+
+    payrollcontroller.clearSelectedDate();
   }
 
   @override
@@ -53,38 +55,87 @@ class _PayrollPageState extends State<PayrollPage> {
                     const Spacer(),
                     GestureDetector(
                       onTap: () async {
+                        final ThemeData datePickerTheme =
+                            Theme.of(context).copyWith(
+                          textTheme: TextTheme(
+                            bodyLarge: TextStyle(
+                              fontSize: 14.0,
+                              color: isDarkMode ? Colors.white : Colors.black,
+                            ),
+                            bodyMedium: TextStyle(
+                              fontSize: 12.0,
+                              color: isDarkMode ? Colors.white : Colors.black,
+                            ),
+                          ),
+                        );
                         DateTime? selectedDate = await showDatePicker(
                           context: context,
                           initialDate: DateTime.now(),
                           firstDate: DateTime(2000),
                           lastDate: DateTime(2100),
+                          builder: (BuildContext context, Widget? child) {
+                            return Theme(
+                              data: datePickerTheme,
+                              child: child!,
+                            );
+                          },
                         );
+
+                        if (selectedDate != null) {
+                          payrollcontroller.selectedDate.value = selectedDate;
+                          payrollcontroller.filterPayrollByDate(selectedDate);
+                        }
                       },
-                      child: Container(
-                        height: 40.0,
-                        width: 40.0,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          borderRadius: BorderRadius.circular(100.0),
-                          color: Colors.grey[100],
-                        ),
-                        child: const Icon(
-                          Icons.date_range_outlined,
-                          color: Colors.black,
-                        ),
-                      ),
+                      child: Obx(() {
+                        return Container(
+                          height: 40.0,
+                          width: payrollcontroller.selectedDate.value != null
+                              ? 165.0
+                              : 55.0,
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black),
+                            borderRadius: BorderRadius.circular(70.0),
+                            color: isDarkMode
+                                ? Colors.grey.shade500
+                                : Colors.white,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.date_range_outlined,
+                                color: Colors.black,
+                              ),
+                              if (payrollcontroller.selectedDate.value !=
+                                  null) ...[
+                                const SizedBox(width: 5),
+                                Text(
+                                  DateFormat('MMM d, yyyy').format(
+                                      payrollcontroller.selectedDate.value!),
+                                  style:
+                                      smallStyle.copyWith(color: Colors.black),
+                                ),
+                                const SizedBox(width: 5),
+                                GestureDetector(
+                                  onTap: () {
+                                    payrollcontroller.clearSelectedDate();
+                                  },
+                                  child: const Icon(
+                                    Icons.clear,
+                                    size: 20.0,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        );
+                      }),
                     ),
                   ],
                 ),
-                const SizedBox(height: 20.0),
-                // PayRollSlip(
-                //   dop: 'Jan 5, 2024',
-                //   mop: 'Cheque',
-                //   bank: 'NMB BANK',
-                //   cheque: '25458687',
-                //   salary: 'Rs. 30,000',
-                // ),
-
+                const SizedBox(height: 10.0),
                 SizedBox(
                   // height: 600,
                   child: Obx(
@@ -99,6 +150,7 @@ class _PayrollPageState extends State<PayrollPage> {
                         );
                       } else if (payrollcontroller.payroll.isEmpty) {
                         return SizedBox(
+                          height: 600,
                           child: Center(
                             child: Text(
                               "No available payroll data",
@@ -113,9 +165,10 @@ class _PayrollPageState extends State<PayrollPage> {
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             scrollDirection: Axis.vertical,
-                            itemCount: payrollcontroller.payroll.length,
+                            itemCount: payrollcontroller.filteredPayroll.length,
                             itemBuilder: (context, index) {
-                              final payroll = payrollcontroller.payroll[index];
+                              final payroll =
+                                  payrollcontroller.filteredPayroll[index];
                               return Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: PayRollSlip(
