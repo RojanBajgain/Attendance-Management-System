@@ -2,6 +2,10 @@ class AppImages {
   // static const appLogo = "assets/images/ebidhya.svg";
   static const appLogo = "assets/images/logo.png";
   static const ayataLogo = "assets/images/Ayata_logo.png";
+  static const ayataDashboardLogo = "assets/images/ayata_app_bar.svg";
+  static const ayataLogoAppBar = "assets/images/ayata_appbar.png";
+  static const ayata_ayata = "assets/images/ayata_dash_logo.svg";
+
   static const loginBg = "assets/images/login_bg.png";
   static const otpVerify = "assets/images/otp_verify.svg";
   static const formBg = "assets/images/form_bg.png";
