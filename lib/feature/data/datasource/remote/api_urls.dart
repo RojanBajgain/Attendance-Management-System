@@ -5,7 +5,19 @@ class ApiUrls {
 
   // static const String baseUrl = "http://192.168.10.109:8000/";
 
-  static const String baseUrl = "https://backend.ams.ayata.com.np/";
+  static const String baseUrl = "http://192.168.10.64:8000/";
+
+  // static const String baseUrl = "http://192.168.254.107:8000/";
+
+  // static const String baseUrl = "http://192.168.10.68:8000/";
+
+  // static const String baseUrl = "http://192.168.254.50:8000/";
+
+  // static const String baseUrl = "http://192.168.0.104:8000/";
+
+  // static const String baseUrl = "http://192.168.18.8:8000/";
+
+  // static const String baseUrl = "https://backend.ams.ayata.com.np/";
 
   static const String login = "api/login/";
 
@@ -30,6 +42,22 @@ class ApiUrls {
   static const String timesheetdetail = "api/timesheets/attendencelogs/";
 
   static const String notification = "api/inbox/notifications/";
+
+  static const String dashboardtimesheet = "api/dashboard/timesheet/user";
+
+  static const String officelocation = "api/geolocation/office/";
+
+  static const String hasClockedIn =
+      "api/timesheets/attendencelogs/hasClockedIn/";
+  static const String postclockin =
+      "api/timesheets/attendencelogs/postClockIn/";
+  static const String postclockout =
+      "api/timesheets/attendencelogs/postClockOut/";
+
+  static const String onbreak = "api/timesheets/breaktime/start/";
+  static const String onresume = "api/timesheets/breaktime/resume/";
+
+  static const String passwordreset = "api/smtp/password-reset/";
 
   // static const String token = "";
 }
