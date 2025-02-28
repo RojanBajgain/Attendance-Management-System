@@ -13,7 +13,8 @@ class TimesheetDetailModel {
   int? breakTime;
   int? overTime;
   String? designation;
-  String? remarks;
+  String? entryRemarks;
+  String? exitRemarks;
 
   TimesheetDetailModel({
     this.serialNo = 0,
@@ -28,7 +29,8 @@ class TimesheetDetailModel {
     this.breakTime = 0,
     this.overTime = 0,
     this.designation = '',
-    this.remarks = '',
+    this.entryRemarks,
+    this.exitRemarks,
   });
 
   factory TimesheetDetailModel.fromRawJson(String str) =>
@@ -50,7 +52,8 @@ class TimesheetDetailModel {
         breakTime: json["break_time"] ?? 0,
         overTime: json["over_time"] ?? 0,
         designation: json["designation"] ?? '',
-        remarks: json["remarks"] ?? '',
+        entryRemarks: json["entry_remarks"],
+        exitRemarks: json["exit_remarks"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -66,6 +69,7 @@ class TimesheetDetailModel {
         "break_time": breakTime,
         "over_time": overTime,
         "designation": designation,
-        "remarks": remarks,
+        "entry_remarks": entryRemarks,
+        "exit_remarks": exitRemarks,
       };
 }

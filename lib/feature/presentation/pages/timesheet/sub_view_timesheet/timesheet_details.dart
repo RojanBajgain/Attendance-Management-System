@@ -75,7 +75,7 @@ class _TimeSheetDetailState extends State<TimeSheetDetail> {
                   // }
 
                   return Container(
-                    height: 230.0,
+                    height: 280.0,
                     width: double.infinity,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(30.0),
@@ -113,8 +113,12 @@ class _TimeSheetDetailState extends State<TimeSheetDetail> {
                                     .format(timesheet.exitTime!.toLocal())
                                 : "",
                           ),
+                          _buildRow("Entry Remarks:",
+                              timesheet.entryRemarks.toString()),
+                          _buildRow("Exit Remarks:",
+                              timesheet.exitRemarks.toString()),
                           _buildRow(
-                              "Entry Remarks:", timesheet.remarks.toString()),
+                              "Break Time:", timesheet.breakTime.toString()),
                           // _buildRow(
                           //     "Exit Remarks:", timesheet.remarks.toString()),
                           _buildRow("Total Hour:",

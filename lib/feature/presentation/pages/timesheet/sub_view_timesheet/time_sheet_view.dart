@@ -36,12 +36,12 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
 
     return InkWell(
       onTap: () {
-        // Get.to(
-        //   () => TimeSheetDetail(
-        //     timesheetId: widget.timesheetdata.serialNo.toString(),
-        //   ),
-        //   transition: Transition.rightToLeft,
-        // );
+        Get.to(
+          () => TimeSheetDetail(
+            timesheetId: widget.timesheetdata.id.toString(),
+          ),
+          transition: Transition.rightToLeft,
+        );
       },
       child: Container(
         height: 90.0,
@@ -117,7 +117,7 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
                     widget.timesheetdata.exitTime != null
                         ? DateFormat('hh:mm a')
                             .format(widget.timesheetdata.exitTime!.toLocal())
-                        : "",
+                        : "---",
                     style: smallNStyle.copyWith(color: Colors.red),
                   ),
                   Spacer(),

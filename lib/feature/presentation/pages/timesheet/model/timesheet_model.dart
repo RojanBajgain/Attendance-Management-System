@@ -31,6 +31,7 @@ class TimesheetModel {
 }
 
 class Datum {
+  int id;
   int? serialNo;
   String? name;
   DateTime? date;
@@ -43,9 +44,11 @@ class Datum {
   int? breakTime;
   int? overTime;
   String? designation;
-  String? remarks;
+  String? entryRemarks;
+  String? exitRemarks;
 
   Datum({
+    this.id = 0,
     this.serialNo = 0,
     this.name = '',
     this.date,
@@ -58,10 +61,12 @@ class Datum {
     this.breakTime = 0,
     this.overTime = 0,
     this.designation = '',
-    this.remarks = '',
+    this.entryRemarks = '',
+    this.exitRemarks = '',
   });
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
+        id: json["id"],
         serialNo: json["serial_no"],
         name: json["name"],
         date: json["date"] != null ? DateTime.tryParse(json["date"]) : null,
@@ -78,10 +83,12 @@ class Datum {
         breakTime: json["break_time"],
         overTime: json["over_time"],
         designation: json["designation"],
-        remarks: json["remarks"],
+        entryRemarks: json["entry_remarks"],
+        exitRemarks: json["exit_remarks"],
       );
 
   Map<String, dynamic> toJson() => {
+        "id": id,
         "serial_no": serialNo,
         "name": name,
         "date": date?.toIso8601String(),
@@ -94,6 +101,7 @@ class Datum {
         "break_time": breakTime,
         "over_time": overTime,
         "designation": designation,
-        "remarks": remarks,
+        "entry_remarks": entryRemarks,
+        "exit_remarks": exitRemarks,
       };
 }
