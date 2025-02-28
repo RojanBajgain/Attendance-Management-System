@@ -162,7 +162,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     return Row(
                       children: [
                         Container(
-                          height: 125.0,
+                          height: 110.0,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(30.0),
                             color: isDarkMode
@@ -212,22 +212,22 @@ class _DashboardPageState extends State<DashboardPage> {
                                   ),
                                   size: const Size(150, 8),
                                 ),
-                                const SizedBox(height: 10.0),
-                                Text(
-                                  "01 Nov - 07 Nov",
-                                  style: smallStyle.copyWith(
-                                    color: isDarkMode
-                                        ? Colors.white
-                                        : Colors.black,
-                                  ),
-                                ),
+                                // const SizedBox(height: 10.0),
+                                // Text(
+                                //   "01 Nov - 07 Nov",
+                                //   style: smallStyle.copyWith(
+                                //     color: isDarkMode
+                                //         ? Colors.white
+                                //         : Colors.black,
+                                //   ),
+                                // ),
                               ],
                             ),
                           ),
                         ),
                         const Spacer(),
                         Container(
-                          height: 125.0,
+                          height: 110.0,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(30.0),
                             color: isDarkMode
@@ -276,15 +276,15 @@ class _DashboardPageState extends State<DashboardPage> {
                                   ),
                                   size: const Size(150, 8),
                                 ),
-                                const SizedBox(height: 10.0),
-                                Text(
-                                  "01 Nov - 30 Nov",
-                                  style: smallStyle.copyWith(
-                                    color: isDarkMode
-                                        ? Colors.white
-                                        : Colors.black,
-                                  ),
-                                ),
+                                // const SizedBox(height: 10.0),
+                                // Text(
+                                //   "01 Nov - 30 Nov",
+                                //   style: smallStyle.copyWith(
+                                //     color: isDarkMode
+                                //         ? Colors.white
+                                //         : Colors.black,
+                                //   ),
+                                // ),
                               ],
                             ),
                           ),
