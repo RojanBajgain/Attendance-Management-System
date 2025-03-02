@@ -13,6 +13,8 @@ class HolidayEventNotification extends StatefulWidget {
 
 class _HolidayEventNotificationState extends State<HolidayEventNotification> {
   bool isHolidaySelected = true;
+  bool isEventSelected = false;
+  bool isNoticeSelected = false;
 
   final NotificationController notificationcontroller =
       Get.put(NotificationController(notificationrepo: Get.find()));
@@ -26,12 +28,24 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
   void selectHoliday() {
     setState(() {
       isHolidaySelected = true;
+      isEventSelected = false;
+      isNoticeSelected = false;
     });
   }
 
   void selectEvents() {
     setState(() {
       isHolidaySelected = false;
+      isEventSelected = true;
+      isNoticeSelected = false;
+    });
+  }
+
+  void selectNotice() {
+    setState(() {
+      isHolidaySelected = false;
+      isEventSelected = false;
+      isNoticeSelected = true;
     });
   }
 
@@ -76,7 +90,28 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                         color: isDarkMode ? Colors.white : Colors.black,
                       ),
                     ),
-                    if (!isHolidaySelected)
+                    if (isEventSelected)
+                      Container(
+                        margin: const EdgeInsets.only(top: 2.0),
+                        height: 4.0,
+                        width: 60.0,
+                        color: isDarkMode ? Colors.white : Colors.black,
+                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 15.0),
+              GestureDetector(
+                onTap: selectNotice,
+                child: Column(
+                  children: [
+                    Text(
+                      'Notice',
+                      style: smallNStyle.copyWith(
+                        color: isDarkMode ? Colors.white : Colors.black,
+                      ),
+                    ),
+                    if (isNoticeSelected)
                       Container(
                         margin: const EdgeInsets.only(top: 2.0),
                         height: 4.0,
@@ -104,16 +139,26 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
             }
 
             // Filter the list based on the selected type
-            final filteredList = notificationcontroller.notification
-                .where((item) => isHolidaySelected
-                    ? item.type!.toLowerCase() == "holiday"
-                    : item.type!.toLowerCase() == "event")
-                .toList();
+            final filteredList =
+                notificationcontroller.notification.where((item) {
+              if (isHolidaySelected) {
+                return item.type!.toLowerCase() == "holiday";
+              } else if (isEventSelected) {
+                return item.type!.toLowerCase() == "event";
+              } else if (isNoticeSelected) {
+                return item.type!.toLowerCase() == "notice";
+              }
+              return false;
+            }).toList();
 
             return filteredList.isEmpty
                 ? Center(
                     child: Text(
-                      'No ${isHolidaySelected ? 'Holidays' : 'Event'} found',
+                      isHolidaySelected
+                          ? 'No Holidays found'
+                          : isEventSelected
+                              ? 'No Events found'
+                              : 'No Notices found',
                       style: smallNStyle.copyWith(
                         color: isDarkMode ? Colors.white : Colors.black,
                       ),

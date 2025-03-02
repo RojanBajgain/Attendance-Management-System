@@ -32,7 +32,7 @@ class NotificationController extends GetxController {
         log("Fetched Notification data: ${response.response}");
 
         NotificationModel notificationdata = response.response;
-        notification.value = notificationdata.data ?? [];
+        notification.value = notificationdata.data;
       } else {
         log("Error: ${response.message}");
       }
