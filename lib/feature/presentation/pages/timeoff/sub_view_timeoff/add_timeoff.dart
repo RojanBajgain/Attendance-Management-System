@@ -480,7 +480,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
                             ),
                             const SizedBox(width: 5.0),
                             Text(
-                              "Save",
+                              "Request",
                               style: smallStyle.copyWith(
                                 color: Colors.white,
                               ),
