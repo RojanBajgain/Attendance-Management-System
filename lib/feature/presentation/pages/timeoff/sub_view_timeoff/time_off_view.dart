@@ -1,6 +1,9 @@
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/timeoff/model/timeoff_model.dart';
+import 'package:ams/feature/presentation/pages/timeoff/sub_view_timeoff/add_reapply.dart';
+import 'package:ams/feature/presentation/pages/timeoff/sub_view_timeoff/add_timeoff.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class TimeOffSheet extends StatelessWidget {
@@ -469,8 +472,7 @@ class TimeOffSheet extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           vertical: 10, horizontal: 16),
                       decoration: BoxDecoration(
-                        color: _getContainerColor(
-                            timeoffdata.status), // Dynamic background color
+                        color: _getContainerColor(timeoffdata.status),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Center(
@@ -480,6 +482,35 @@ class TimeOffSheet extends StatelessWidget {
                         ),
                       ),
                     ),
+                    // Only show Re-apply button if status is rejected
+                    if (timeoffdata.status?.toLowerCase() == 'rejected')
+                      Row(
+                        children: [
+                          const SizedBox(width: 10.0),
+                          GestureDetector(
+                            onTap: () {
+                              Get.to(() => AddReapplyPage(
+                                    id: timeoffdata.id,
+                                  ));
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 16),
+                              decoration: BoxDecoration(
+                                color: Colors.blue,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'Re-apply',
+                                  style:
+                                      smallStyle.copyWith(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                   ],
                 ),
               ],
@@ -497,6 +528,8 @@ Color _getContainerColor(String? status) {
       return Colors.orange;
     case 'rejected':
       return Colors.red;
+    case 're-apply':
+      return Colors.blue;
     default:
       return Colors.grey;
   }
@@ -510,6 +543,8 @@ String _getButtonText(String? status) {
       return 'Pending';
     case 'rejected':
       return 'Rejected';
+    case 're-apply':
+      return 'Reapplied';
     default:
       return 'Unknown';
   }

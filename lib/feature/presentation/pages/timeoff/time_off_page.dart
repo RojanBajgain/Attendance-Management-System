@@ -52,58 +52,6 @@ class _TimeOffPageState extends State<TimeOffPage> {
                       ),
                     ),
                     const Spacer(),
-                    /*  GestureDetector(
-                      onTap: () async {
-                        // Define the theme for the date picker
-                        final ThemeData datePickerTheme =
-                            Theme.of(context).copyWith(
-                          textTheme: TextTheme(
-                            bodyLarge: TextStyle(
-                              fontSize: 14.0,
-                              color: isDarkMode ? Colors.white : Colors.black,
-                            ),
-                            bodyMedium: TextStyle(
-                              fontSize: 12.0,
-                              color: isDarkMode ? Colors.white : Colors.black,
-                            ),
-                          ),
-                        );
-
-                        // Show the date picker with the custom theme
-                        DateTime? selectedDate = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime(2100),
-                          builder: (BuildContext context, Widget? child) {
-                            return Theme(
-                              data: datePickerTheme,
-                              child: child!,
-                            );
-                          },
-                        );
-
-                        // Handle the selected date if needed
-                        if (selectedDate != null) {
-                          // Do something with the selected date
-                          print("Selected Date: $selectedDate");
-                        }
-                      },
-                      child: Container(
-                        height: 45.0,
-                        width: 45.0,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          borderRadius: BorderRadius.circular(70.0),
-                          color:
-                              isDarkMode ? Colors.grey.shade400 : Colors.white,
-                        ),
-                        child: const Icon(
-                          Icons.date_range_outlined,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ), */
                     const SizedBox(width: 10.0),
                     GestureDetector(
                       onTap: () {
@@ -213,6 +161,17 @@ class _TimeOffPageState extends State<TimeOffPage> {
                                           : Colors.white,
                                     ),
                                   )),
+                              DropdownMenuItem(
+                                value: 're-apply',
+                                child: Text(
+                                  'Reapplied',
+                                  style: smallStyle.copyWith(
+                                    color: isDarkMode
+                                        ? Colors.black
+                                        : Colors.white,
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ))

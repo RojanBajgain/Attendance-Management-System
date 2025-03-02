@@ -105,19 +105,60 @@ class TimeoffController extends GetxController {
 
   // Filtered the timeoff
   void filterTimeoff(String status) {
-    selectedFilter.value = status;
+    selectedFilter.value = status; // Update the selected filter
 
     if (status == 'All') {
-      filteredTimeoff.assignAll(timeoff);
+      filteredTimeoff.assignAll(timeoff); // Show all entries
     } else {
+      // Filter entries based on the selected status
       filteredTimeoff.assignAll(
-        timeoff.where((element) {
-          // Normalize case to avoid mismatches
-          String elementStatus = element.status.toString().toLowerCase();
-          String filterStatus = status.toLowerCase();
+        timeoff
+            .where((item) => item.status?.toLowerCase() == status.toLowerCase())
+            .toList(),
+      );
+    }
+  }
 
-          return elementStatus == filterStatus;
-        }).toList(),
+  Future<void> reapply({
+    required int id,
+    required String reason,
+  }) async {
+    try {
+      ApiResponse response = await timeoffRepo.postReapply(id, reason);
+
+      if (response.status == ApiStatus.SUCCESS && response.response != null) {
+        log("Fetched created reapply data: ${response.response}");
+
+        Get.back();
+
+        Get.snackbar(
+          'Posted Reapply',
+          response.message ?? 'Your reapply has been successfully posted',
+          snackPosition: SnackPosition.TOP,
+          duration: const Duration(seconds: 3),
+          colorText: Colors.white,
+          backgroundColor: Colors.green,
+        );
+      } else {
+        log("Error: ${response.message}");
+        Get.snackbar(
+          'Server Error',
+          'Failed to post timeoff reapply. Please try again later',
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 3),
+          colorText: Colors.white,
+          backgroundColor: Colors.redAccent,
+        );
+      }
+    } catch (e) {
+      log("Error for re-apply of timeoff: $e");
+      Get.snackbar(
+        'Error',
+        'An unexpected error occurred: $e',
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 3),
+        colorText: Colors.white,
+        backgroundColor: Colors.red,
       );
     }
   }
