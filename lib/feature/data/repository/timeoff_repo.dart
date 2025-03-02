@@ -52,4 +52,27 @@ class TimeoffRepo {
     );
     return response;
   }
+
+  // Patch timeoff
+  Future<ApiResponse> postReapply(int id, String reason) async {
+    final token = apiClient.token;
+
+    if (token.isEmpty) {
+      throw Exception('JWT token is missing or invalid');
+    }
+
+    final url = '${ApiUrls.reapplytimeoff}$id/';
+
+    final response = await ApiClient.patchApi(
+      // Use POST instead of PATCH
+      url,
+      requestBody: {
+        'reason': reason,
+        'status': 're-apply' // Only send the 'reason' field
+      },
+      token: token,
+      fromJson: null,
+    );
+    return response;
+  }
 }
