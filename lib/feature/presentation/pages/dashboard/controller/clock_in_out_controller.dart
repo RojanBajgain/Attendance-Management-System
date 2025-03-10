@@ -19,6 +19,8 @@ class ClockInOutController extends GetxController {
   var officelocation = <Datum>[].obs;
   var isLoading = false.obs;
 
+  var officeLocationError = ''.obs; // Add this observable
+
   final ClockInOutRepo clockinoutrepo;
 
   ClockInOutController({required this.clockinoutrepo});
@@ -35,30 +37,20 @@ class ClockInOutController extends GetxController {
       ApiResponse response = await clockinoutrepo.getOfficeLocation();
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
-        log("Fetched Dashboard office location: $response.response");
-
         LocationModel locationModel = response.response as LocationModel;
-
         if (locationModel.data.isNotEmpty) {
-          double latitude = locationModel.data.first.latitude ?? 0.0;
-          double longitude = locationModel.data.first.longitude ?? 0.0;
-
-          log("Office Location - Latitude: $latitude, Longitude: $longitude");
-
-          return Location(latitude: latitude, longitude: longitude);
+          return Location(
+            latitude: locationModel.data.first.latitude ?? 0.0,
+            longitude: locationModel.data.first.longitude ?? 0.0,
+          );
         } else {
-          log("No office locations found.");
+          officeLocationError.value = "No office locations found.";
         }
+      } else {
+        officeLocationError.value = "Failed to fetch office location.";
       }
-      // else {
-      //   log("Error: ${response.message}");
-      //   Get.snackbar("Error", "Failed to fetch office location.",
-      //       backgroundColor: Colors.red, colorText: Colors.white);
-      // }
     } catch (e) {
-      log("Error fetching office location: $e");
-      Get.snackbar("Error", "An error occurred while fetching office location.",
-          backgroundColor: Colors.red, colorText: Colors.white);
+      officeLocationError.value = "An error occurred: $e";
     }
     return null;
   }

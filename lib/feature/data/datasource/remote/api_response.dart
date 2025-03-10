@@ -1,5 +1,3 @@
-// ignore_for_file: constant_identifier_names
-
 class ApiResponse<T> {
   ApiStatus status;
   T? response;
@@ -19,6 +17,15 @@ class ApiResponse<T> {
   ApiResponse.error([this.message])
       : status = ApiStatus.ERROR,
         response = null;
+
+  // Add a factory constructor for parsing JSON
+  factory ApiResponse.fromJson(
+      Map<String, dynamic> json, T Function(dynamic) fromJsonT) {
+    return ApiResponse.completed(
+      fromJsonT(json), // Parse the response using the provided function
+      json['message'] as String?, // Parse the message (if available)
+    );
+  }
 
   @override
   String toString() {

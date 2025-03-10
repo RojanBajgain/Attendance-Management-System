@@ -4,9 +4,8 @@ import 'package:ams/feature/presentation/pages/login/controller/login_controller
 import 'package:ams/feature/presentation/pages/password/change_password.dart';
 import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/model/profile_model.dart';
-import 'package:ams/feature/presentation/pages/profile/sub_view_profile/edit_profile_view.dart';
-import 'package:ams/feature/presentation/pages/profile/sub_view_profile/profile_container.dart';
-import 'package:ams/feature/presentation/pages/profile/sub_view_profile/profile_menu.dart';
+import 'package:ams/feature/presentation/pages/profile/pages/profile_container.dart';
+import 'package:ams/feature/presentation/pages/profile/pages/profile_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -36,7 +35,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   // List of allowed types
-  List<String> allowedTypes = ['citizenship', 'education', 'pan'];
+  List<String> allowedTypes = ['citizenship', 'education', 'pan', 'license'];
 
   @override
   Widget build(BuildContext context) {
@@ -116,7 +115,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
           final profileData = profilecontroller.profile;
           return SizedBox(
-            height: 235,
+            height: 250,
             child: ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
               padding: EdgeInsets.zero,
@@ -135,6 +134,21 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildProfileDetails(Datum profiledata, bool isDarkMode) {
+    String currentAddress = 'N/A';
+    String permanentAddress = 'N/A';
+
+    if (profiledata.addresses != null && profiledata.addresses!.isNotEmpty) {
+      for (var address in profiledata.addresses!) {
+        if (address.addressType == 'current') {
+          currentAddress =
+              '${address.city ?? ""}, ${address.country?.name ?? ""}';
+        } else if (address.addressType == 'permanent') {
+          permanentAddress =
+              '${address.city ?? ""}, ${address.country?.name ?? ""}';
+        }
+      }
+    }
+
     return Container(
       width: MediaQuery.of(context).size.width,
       padding: const EdgeInsets.symmetric(vertical: 1.0),
@@ -160,24 +174,8 @@ class _ProfilePageState extends State<ProfilePage> {
               profiledata.phoneNumber.isNotEmpty
                   ? profiledata.phoneNumber
                   : 'N/A'),
-          if (profiledata.addresses != null &&
-              profiledata.addresses!.isNotEmpty)
-            _buildRow(
-              'Permanent Address:',
-              '${profiledata.addresses![0].city ?? ""}, ${profiledata.addresses![0].country?.name ?? ""}',
-            )
-          else
-            _buildRow('Address:', 'N/A'),
-          if (profiledata.addresses != null &&
-              profiledata.addresses!.isNotEmpty)
-            _buildRow(
-              'Current Address:',
-              profiledata.addresses != null && profiledata.addresses!.length > 1
-                  ? '${profiledata.addresses![1].city ?? ""}, ${profiledata.addresses![1].country?.name ?? ""}'
-                  : 'N/A',
-            )
-          else
-            _buildRow('Address:', 'N/A'),
+          _buildRow('Current Address:', currentAddress),
+          _buildRow('Permanent Address:', permanentAddress),
           _buildRow('Email:',
               profiledata.email.isNotEmpty ? profiledata.email : 'N/A'),
         ],
@@ -197,18 +195,17 @@ class _ProfilePageState extends State<ProfilePage> {
           }
 
           final profileData = profilecontroller.profile;
-          return SizedBox(
-            height: 100,
-            child: ListView.builder(
-              padding: EdgeInsets.zero,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: profileData.length,
-              itemBuilder: (BuildContext context, int index) {
-                final profiledata = profileData[index];
-                return _buildDocumentDetails(profiledata, isDarkMode);
-              },
-            ),
+
+          // If no documents, return an empty state
+          if (profileData.isEmpty) {
+            return const Center(child: Text("No documents available."));
+          }
+
+          return Column(
+            children: profileData
+                .map((profiledata) =>
+                    _buildDocumentDetails(profiledata, isDarkMode))
+                .toList(),
           );
         }),
       ),
@@ -226,38 +223,63 @@ class _ProfilePageState extends State<ProfilePage> {
           if (profiledata.documents != null)
             for (final doc in profiledata.documents!)
               if (allowedTypes.contains(doc.type?.toLowerCase()))
-                _buildRow("Type:", doc.type ?? 'N/A'),
-          _buildRow(
-            "Citizenship No:",
-            profiledata.documents!
-                    .firstWhere(
-                      (doc) => doc.type?.toLowerCase() == 'citizenship',
-                      orElse: () => Document(identifier: 'N/A'),
-                    )
-                    .identifier ??
-                'N/A',
-          ),
-          _buildRow(
-            "Issued Date:",
-            profiledata.documents!
-                        .firstWhere(
-                          (doc) => doc.type?.toLowerCase() == 'citizenship',
-                          orElse: () => Document(issuedDate: DateTime.now()),
-                        )
-                        .issuedDate !=
-                    null
-                ? DateFormat('yyyy-MM-dd').format(
-                    profiledata.documents!
-                        .firstWhere(
-                          (doc) => doc.type?.toLowerCase() == 'citizenship',
-                          orElse: () => Document(issuedDate: DateTime.now()),
-                        )
-                        .issuedDate!,
-                  )
-                : 'N/A',
-          ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildRow("Title:", doc.title ?? 'N/A'),
+                    if (doc.files != null && doc.files!.isNotEmpty)
+                      // for (final file in doc.files!)
+                      // GestureDetector(
+                      //   onTap: () {
+                      //     _showFileDialog(file.file);
+                      //   },
+                      //   child: _buildRow(
+                      //       "File:", _extractFileName(file.file ?? "---")),
+                      // ),
+                      if (doc.type?.toLowerCase() == 'citizenship' &&
+                          doc.identifier != null)
+                        _buildRow("Citizenship No:", doc.identifier!),
+                    if (doc.type?.toLowerCase() == 'education' &&
+                        doc.identifier != null)
+                      _buildRow("Identifier (${doc.type}):", doc.identifier!),
+                    if (doc.type?.toLowerCase() == 'pan' &&
+                        doc.identifier != null)
+                      _buildRow("Identifier (${doc.type}):", doc.identifier!),
+                    if (doc.issuedDate != null)
+                      if (doc.issuedDate != null)
+                        _buildRow(
+                          "Issued Date (${doc.type}):",
+                          DateFormat('yyyy-MM-dd').format(doc.issuedDate!),
+                        ),
+                  ],
+                )
         ],
       ),
+    );
+  }
+
+  String _extractFileName(String fileUrl) {
+    return Uri.parse(fileUrl).pathSegments.last; // Gets the last segment of URL
+  }
+
+  void _showFileDialog(String? fileUrl) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: fileUrl != null
+              ? Image.network(fileUrl)
+              : const Text('No file available'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -273,24 +295,16 @@ class _ProfilePageState extends State<ProfilePage> {
           }
 
           final profileData = profilecontroller.profile;
-          return SizedBox(
-            height: profileData.isNotEmpty
-                ? profileData.fold(
-                    0,
-                    (totalHeight, datum) =>
-                        totalHeight! + (datum.bankDetails?.length ?? 0) * 130)
-                : 0,
-            child: ListView.builder(
-              padding: EdgeInsets.zero,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: profileData.length,
-              itemBuilder: (BuildContext context, int index) {
-                final datum = profileData[index];
-                final bankDetails = datum.bankDetails;
-                return _buildBankDetailList(bankDetails, isDarkMode);
-              },
-            ),
+
+          if (profileData.isEmpty) {
+            return const Center(child: Text("No bank details available."));
+          }
+
+          return Column(
+            children: profileData
+                .map((datum) =>
+                    _buildBankDetailList(datum.bankDetails, isDarkMode))
+                .toList(),
           );
         }),
       ),
@@ -446,7 +460,7 @@ class _ProfilePageState extends State<ProfilePage> {
         color: isDarkMode ? Colors.black : Colors.grey.shade50,
       ),
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(6.0),
         child: child,
       ),
     );

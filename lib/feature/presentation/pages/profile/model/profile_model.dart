@@ -171,7 +171,7 @@ class Address {
   String toRawJson() => json.encode(toJson());
 
   factory Address.fromJson(Map<String, dynamic> json) => Address(
-        id: json["id"],
+        id: json["id"] ?? 0,
         addressType: json["address_type"],
         province: json["province"],
         city: json["city"],

@@ -3,25 +3,25 @@ class ApiUrls {
   // static const String baseUrl = "http://192.168.254.49:8000/";
   // static const String baseUrl = "http://192.168.254.4:8000/";
 
-  static const String baseUrl = "http://192.168.10.109:8000/";
+  // static const String baseUrl = "http://192.168.10.109:8000/";
 
-  // static const String baseUrl = "http://192.168.10.67:8000/";
+  // static const String baseUrl = "http://192.168.10.65:8000/";
 
   // static const String baseUrl = "http://192.168.254.112:8000/";
 
   // static const String baseUrl = "http://192.168.254.44:8000/";
 
-  // static const String baseUrl = "http://192.168.10.76:8000/";
+  // static const String baseUrl = "http://192.168.10.71:8000/";
 
-  // static const String baseUrl = "http://192.168.10.67:8000/";
+//   static const String baseUrl = "http://192.168.10.65:8000/";
 
-  // static const String baseUrl = "http://192.168.254.50:8000/";
+  // static const String baseUrl = "http://192.168.254.107:8000/";
 
-  // static const String baseUrl = "http://192.168.0.104:8000/";
+  // static const String baseUrl = "http://192.168.0.102:8000/";
 
   // static const String baseUrl = "http://192.168.18.8:8000/";
 
-  // static const String baseUrl = "https://backend.ams.ayata.com.np/";
+  static const String baseUrl = "https://backend.ams.ayata.com.np/";
 
   static const String login = "api/login/";
 
@@ -31,6 +31,11 @@ class ApiUrls {
 
   static const String profile = "api/profiles/";
   static const String profiledetail = "api/profiles/";
+  static const String updateprofile = "api/profiles/";
+  static const String updateaddress = "api/address/";
+  static const String updatedocuments = "api/documents/";
+  static const String updatebankdetail = "api/bankdetails/";
+  static const String postnewbankdetail = "api/bankdetails/";
 
   static const String policydetail = "api/policies/policydetail/";
 

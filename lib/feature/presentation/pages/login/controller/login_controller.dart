@@ -33,7 +33,7 @@ class AuthController extends GetxController {
     authIsLoading.value = true;
     try {
       ApiResponse<LoginModel> response = await authRepo.login(email, password);
-
+      print(response);
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
         log("Successfully logged in. User Data: ${response.response}");
         alluserData.value = response.response!;

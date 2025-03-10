@@ -2,13 +2,20 @@ import 'dart:io';
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
+import 'package:ams/feature/presentation/pages/profile/model/profile_model.dart';
+import 'package:ams/feature/presentation/pages/profile/pages/edit_profile_view.dart';
+import 'package:ams/feature/presentation/pages/profile/pages/edit_profiles/edit_user_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 
 class ProfilePic extends StatefulWidget {
-  const ProfilePic({Key? key}) : super(key: key);
+  final Datum? profiledata;
+  const ProfilePic({
+    super.key,
+    this.profiledata,
+  });
 
   @override
   State<ProfilePic> createState() => _ProfilePicState();
@@ -139,81 +146,85 @@ class _ProfilePicState extends State<ProfilePic> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return Dialog(
-                                backgroundColor: Colors.transparent,
-                                insetPadding: const EdgeInsets.all(10.0),
-                                child: Stack(
-                                  children: [
-                                    // Full-screen image
-                                    GestureDetector(
-                                      onTap: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                            image: (_profileImage != null)
-                                                ? FileImage(_profileImage!)
-                                                : (profiledata.profileImage
-                                                        .isNotEmpty)
-                                                    ? NetworkImage(profiledata
-                                                        .profileImage)
-                                                    : const AssetImage(
-                                                            "assets/images/profile_image.png")
-                                                        as ImageProvider,
-                                            fit: BoxFit.contain,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
+                          Get.to(() => EditUserInfo(
+                                profileId: profiledata.id.toString(),
+                              ));
 
-                                    // "Change Image" button at the bottom
-                                    Positioned(
-                                      bottom: 20,
-                                      left: 0,
-                                      right: 0,
-                                      child: Center(
-                                        child: ElevatedButton(
-                                          onPressed: () {
-                                            _changeImage();
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: isDarkMode
-                                                ? Colors.white
-                                                : Colors.blue,
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 20, vertical: 10),
-                                          ),
-                                          child: Text(
-                                            "Change Image",
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              color: isDarkMode
-                                                  ? Colors.black
-                                                  : Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          );
+                          // showDialog(
+                          //   context: context,
+                          //   builder: (BuildContext context) {
+                          //     return Dialog(
+                          //       backgroundColor: Colors.transparent,
+                          //       insetPadding: const EdgeInsets.all(10.0),
+                          //       child: Stack(
+                          //         children: [
+                          //           // Full-screen image
+                          //           GestureDetector(
+                          //             onTap: () {
+                          //               Navigator.of(context).pop();
+                          //             },
+                          //             child: Container(
+                          //               width:
+                          //                   MediaQuery.of(context).size.width,
+                          //               height:
+                          //                   MediaQuery.of(context).size.height,
+                          //               decoration: BoxDecoration(
+                          //                 image: DecorationImage(
+                          //                   image: (_profileImage != null)
+                          //                       ? FileImage(_profileImage!)
+                          //                       : (profiledata.profileImage
+                          //                               .isNotEmpty)
+                          //                           ? NetworkImage(profiledata
+                          //                               .profileImage)
+                          //                           : const AssetImage(
+                          //                                   "assets/images/profile_image.png")
+                          //                               as ImageProvider,
+                          //                   fit: BoxFit.contain,
+                          //                 ),
+                          //               ),
+                          //             ),
+                          //           ),
+
+                          //           // "Change Image" button at the bottom
+                          //           Positioned(
+                          //             bottom: 20,
+                          //             left: 0,
+                          //             right: 0,
+                          //             child: Center(
+                          //               child: ElevatedButton(
+                          //                 onPressed: () {
+                          //                   _changeImage();
+                          //                 },
+                          //                 style: ElevatedButton.styleFrom(
+                          //                   backgroundColor: isDarkMode
+                          //                       ? Colors.white
+                          //                       : Colors.blue,
+                          //                   padding: const EdgeInsets.symmetric(
+                          //                       horizontal: 20, vertical: 10),
+                          //                 ),
+                          //                 child: Text(
+                          //                   "Change Image",
+                          //                   style: TextStyle(
+                          //                     fontSize: 16,
+                          //                     color: isDarkMode
+                          //                         ? Colors.black
+                          //                         : Colors.white,
+                          //                   ),
+                          //                 ),
+                          //               ),
+                          //             ),
+                          //           ),
+                          //         ],
+                          //       ),
+                          //     );
+                          //   },
+                          // );
                         },
                         child: Stack(
                           alignment: Alignment.bottomRight,
                           children: [
                             CircleAvatar(
-                              radius: 70,
+                              radius: 75,
                               backgroundColor:
                                   isDarkMode ? Colors.black : Colors.grey[300],
                               backgroundImage: (_profileImage != null)
@@ -231,7 +242,7 @@ class _ProfilePicState extends State<ProfilePic> {
                                 shape: BoxShape.circle,
                                 border: Border.all(
                                   color:
-                                      isDarkMode ? Colors.white : Colors.grey,
+                                      isDarkMode ? Colors.black : Colors.grey,
                                 ),
                               ),
                               child: const Icon(

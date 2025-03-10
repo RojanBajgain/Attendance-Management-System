@@ -151,6 +151,8 @@ Color _getContainerColor(String? status) {
       return Colors.orange;
     case 'rejected':
       return Colors.red;
+    case 're-apply':
+      return Colors.blue;
     default:
       return Colors.grey;
   }
@@ -164,6 +166,8 @@ String _getButtonText(String? status) {
       return 'Pending';
     case 'rejected':
       return 'Rejected';
+    case 're-apply':
+      return 'Reapplied';
     default:
       return 'Unknown';
   }

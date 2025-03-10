@@ -119,7 +119,7 @@ class _LoginPageState extends State<LoginPage> {
                               value: keepMeLoggedIn,
                               onChanged: (bool? value) {
                                 setState(() {
-                                  keepMeLoggedIn = value ?? false;
+                                  // keepMeLoggedIn = value ?? false;
                                 });
                               },
                             ),

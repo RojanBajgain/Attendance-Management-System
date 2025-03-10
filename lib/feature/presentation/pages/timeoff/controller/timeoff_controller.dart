@@ -105,12 +105,11 @@ class TimeoffController extends GetxController {
 
   // Filtered the timeoff
   void filterTimeoff(String status) {
-    selectedFilter.value = status; // Update the selected filter
+    selectedFilter.value = status;
 
     if (status == 'All') {
-      filteredTimeoff.assignAll(timeoff); // Show all entries
+      filteredTimeoff.assignAll(timeoff);
     } else {
-      // Filter entries based on the selected status
       filteredTimeoff.assignAll(
         timeoff
             .where((item) => item.status?.toLowerCase() == status.toLowerCase())
@@ -119,6 +118,7 @@ class TimeoffController extends GetxController {
     }
   }
 
+  // For reapply
   Future<void> reapply({
     required int id,
     required String reason,

@@ -11,11 +11,11 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class AddReapplyPage extends StatefulWidget {
-  final int id; // Add this parameter
+  final int id;
 
   const AddReapplyPage({
     super.key,
-    required this.id, // Require the id
+    required this.id,
   });
 
   @override

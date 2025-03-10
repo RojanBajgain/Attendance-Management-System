@@ -61,15 +61,12 @@ class TimeoffRepo {
       throw Exception('JWT token is missing or invalid');
     }
 
-    final url = '${ApiUrls.reapplytimeoff}$id/';
+    final url = '${ApiUrls.reapplytimeoff}$id/update_status/';
 
     final response = await ApiClient.patchApi(
       // Use POST instead of PATCH
       url,
-      requestBody: {
-        'reason': reason,
-        'status': 're-apply' // Only send the 'reason' field
-      },
+      requestBody: {'reason': reason, 'status': 're-apply'},
       token: token,
       fromJson: null,
     );
