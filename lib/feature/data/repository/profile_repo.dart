@@ -20,14 +20,26 @@ class ProfileRepo {
   Future<ApiResponse> getProfile() async {
     final token = apiClient.token;
 
-    if (token.isEmpty) {
-      throw Exception('JWT Token is missing or invalid');
-    }
+    // if (token.isEmpty) {
+    //   throw Exception('JWT Token is missing or invalid');
+    // }
 
     final response = await ApiClient.getApi(
       ApiUrls.profile,
       token: token,
       fromJson: (json) => ProfileModel.fromJson(json),
+    );
+    return response;
+  }
+
+  // Get country list
+  Future<ApiResponse> getCountryList() async {
+    final token = apiClient.token;
+
+    final response = await ApiClient.getApi(
+      ApiUrls.getcountry,
+      token: token,
+      fromJson: (json) => json,
     );
     return response;
   }
@@ -146,13 +158,51 @@ class ProfileRepo {
       } else {
         // Handle server errors
         throw Exception(
-            "Failed to update profile: ${jsonResponse['message'] ?? 'Unknown error'}");
+          "Failed to update profile: ${jsonResponse['message'] ?? 'Unknown error'}",
+        );
       }
     } catch (e) {
       // Log the error
       log("Error in postProfileUpdate: $e");
       throw Exception("An error occurred: $e");
     }
+  }
+
+  // Updating user new Address
+  Future<ApiResponse> postnewuserAddress(
+    int userID,
+    int issuedCountry,
+    String province,
+    String city,
+    String addressLineOne,
+    String addressLineTwo,
+    String zipcode,
+    String addressType,
+  ) async {
+    final token = apiClient.token;
+
+    if (token.isEmpty) {
+      throw Exception('JWT token is missing or invalid');
+    }
+
+    final url = ApiUrls.postuseraddress;
+
+    final response = await ApiClient.postApi(
+      url,
+      requestBody: {
+        "user": userID,
+        "issued_country": issuedCountry,
+        "province": province,
+        "postal_code": zipcode,
+        "city": city,
+        "address_type": addressType,
+        "address_line_one": addressLineOne,
+        "address_line_two": addressLineTwo,
+      },
+      token: token,
+      fromJson: null,
+    );
+    return response;
   }
 
   // Updating user Address
@@ -175,11 +225,13 @@ class ProfileRepo {
 
     final url = '${ApiUrls.updateaddress}$addressID/';
 
+    int countryId = int.tryParse(country) ?? 1;
+
     final response = await ApiClient.patchApi(
       url,
       requestBody: {
         "user": id,
-        "country": country,
+        "country": countryId,
         "province": province,
         "postal_code": zipcode,
         "city": city,
@@ -198,7 +250,7 @@ class ProfileRepo {
     int bankdetailID,
     int userID,
     String bankname,
-    int bankaccount,
+    String bankaccount,
     String bankaccountname,
     String bankbranch,
     String ispayroll,
@@ -221,6 +273,42 @@ class ProfileRepo {
         "bank_account_name": bankaccountname,
         "bank_branch": bankbranch,
         "is_payroll": ispayroll,
+      },
+      token: token,
+      fromJson: null,
+    );
+    return response;
+  }
+
+  // add new user bankk account
+  Future<ApiResponse> postnewBankDetails(
+    int userID,
+    String bankName,
+    String bankAccount,
+    String bankaccountName,
+    String bankBranch,
+    String isPayroll,
+  ) async {
+    final token = apiClient.token;
+
+    if (token.isEmpty) {
+      throw Exception("JWT token is missing or invalid");
+    }
+
+    const url = ApiUrls.postnewbankdetail;
+    if (kDebugMode) {
+      print(url);
+    }
+
+    final response = await ApiClient.postApi(
+      url,
+      requestBody: {
+        'user': userID,
+        "bank_name": bankName,
+        "bank_account": bankAccount,
+        "bank_account_name": bankaccountName,
+        "bank_branch": bankBranch,
+        "is_payroll": isPayroll,
       },
       token: token,
       fromJson: null,
@@ -311,34 +399,95 @@ class ProfileRepo {
     }
   }
 
-  Future<ApiResponse> postnewBankDetails(
-      int userID,
-      String bankName,
-      int bankAccount,
-      String bankaccountName,
-      String bankBranch,
-      String isPayroll) async {
+  // Post users new documents
+  Future<ApiResponse> postNewUserDocument({
+    required int userId,
+    required String type,
+    required String title,
+    required String? issuedDate,
+    required String? identifier,
+    required int profileId,
+    required File? documentFile,
+  }) async {
     final token = apiClient.token;
 
     if (token.isEmpty) {
-      throw Exception("JWT token is missing or invalid");
+      throw Exception('JWT token is missing or invalid');
     }
 
-    const url = ApiUrls.postnewbankdetail;
-    if (kDebugMode) {
-      print(url);
+    final url = '${ApiUrls.baseUrl}${ApiUrls.postnewedocuments}';
+
+    var request = http.MultipartRequest('POST', Uri.parse(url));
+
+    request.headers['Authorization'] = 'Bearer $token';
+
+    // Add fields according to the expected payload
+    request.fields['documents[1][type]'] = type;
+    request.fields['documents[1][title]'] = title;
+    if (issuedDate != null && issuedDate.isNotEmpty) {
+      request.fields['documents[1][issued_date]'] = issuedDate;
+    }
+    if (identifier != null && identifier.isNotEmpty) {
+      request.fields['documents[1][identifier]'] = identifier;
+    }
+    request.fields['documents[1][profile]'] = profileId.toString();
+
+    // Add the document file if provided
+    if (documentFile != null) {
+      request.files.add(await http.MultipartFile.fromPath(
+        'documents[1][document_file][]',
+        documentFile.path,
+      ));
     }
 
-    final response = await ApiClient.postApi(
-      url,
-      requestBody: {
-        'user': userID,
-        "bank_name": bankName,
-        "bank_account": bankAccount,
-        "bank_account_name": bankaccountName,
-        "bank_branch": bankBranch,
-        "is_payroll": isPayroll,
-      },
+    log("Request Fields: ${request.fields}");
+    log("Request Files: ${request.files}");
+
+    var response = await request.send();
+
+    // Read the response
+    var responseData = await response.stream.bytesToString();
+    var jsonResponse = jsonDecode(responseData);
+
+    // Log the response
+    log("Response Status Code: ${response.statusCode}");
+    log("Response Body: $responseData");
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      return ApiResponse.fromJson(jsonResponse, (json) {
+        log("Parsed JSON: $json");
+
+        if (json == null) {
+          throw Exception("Response data is null");
+        }
+
+        return json;
+      });
+    } else {
+      final errorMessage = jsonResponse['message'] ?? 'Unknown error';
+      log("Server Error: $errorMessage");
+      throw Exception("Failed to add new document: $errorMessage");
+    }
+  }
+
+  // Delete User Document
+  Future<ApiResponse> deleteuserDocument(int id) async {
+    final token = apiClient.token;
+
+    final response = await ApiClient.deleteApi(
+      '${ApiUrls.deletedocument}$id/',
+      token: token,
+      fromJson: null,
+    );
+    return response;
+  }
+
+  // Delete User Bank Details
+  Future<ApiResponse> deleteuserBankDetails(int id) async {
+    final token = apiClient.token;
+
+    final response = await ApiClient.deleteApi(
+      '${ApiUrls.deletebankdetails}$id/',
       token: token,
       fromJson: null,
     );

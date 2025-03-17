@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
 import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/repository/profile_repo.dart';
+import 'package:ams/feature/presentation/pages/profile/model/country_list_model.dart';
 import 'package:ams/feature/presentation/pages/profile/model/profile_detail_model.dart';
 import 'package:ams/feature/presentation/pages/profile/model/profile_model.dart';
 import 'package:flutter/foundation.dart';
@@ -14,8 +16,9 @@ class ProfileController extends GetxController {
   var isLoading = false.obs;
   var errorMessage = ''.obs;
   var profiledetail = ProfileDetailModel().obs;
+  final RxList<CountryListModel> countryList = <CountryListModel>[].obs;
 
-  final RxBool isSameAsPermanent = false.obs;
+  var isSameAsPermanent = false.obs;
 
   var isAddNewDocumentChecked = false.obs;
 
@@ -56,6 +59,42 @@ class ProfileController extends GetxController {
       errorMessage.value = 'An error occurred: $e';
     } finally {
       isLoading(false);
+    }
+  }
+
+  Future<void> getcountryList() async {
+    try {
+      ApiResponse response = await profileRepo.getCountryList();
+
+      if (response.status == ApiStatus.SUCCESS && response.response != null) {
+        log("Fetch country data: ${response.response}");
+
+        // If the response is a list of countries
+        if (response.response is List) {
+          List<dynamic> countryData = response.response;
+          countryList.value = countryData
+              .map((item) => CountryListModel.fromJson(item))
+              .toList();
+        }
+        // If the response is encoded as a JSON string
+        else if (response.response is String) {
+          List<dynamic> countryData = jsonDecode(response.response);
+          countryList.value = countryData
+              .map((item) => CountryListModel.fromJson(item))
+              .toList();
+        }
+        // If the response is already a CountryListModel
+        else if (response.response is CountryListModel) {
+          countryList.value = [response.response];
+        }
+
+        log("Country list loaded: ${countryList.length} countries");
+      } else {
+        log("Error: ${response.message}");
+      }
+    } catch (e) {
+      log('Error fetching country list: $e');
+      errorMessage.value = 'An error occurred: $e';
     }
   }
 
@@ -114,14 +153,15 @@ class ProfileController extends GetxController {
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
         print("Profile updated successfully: ${response.response}");
-        Get.snackbar(
-          'Updated Profile Info Detail',
-          response.message ?? 'Your profile info has been successfully updated',
-          snackPosition: SnackPosition.TOP,
-          duration: const Duration(seconds: 3),
-          colorText: Colors.white,
-          backgroundColor: Colors.green,
-        );
+
+        // Get.snackbar(
+        //   'Updated Profile Info Detail',
+        //   response.message ?? 'Your profile info has been successfully updated',
+        //   snackPosition: SnackPosition.TOP,
+        //   duration: const Duration(seconds: 3),
+        //   colorText: Colors.white,
+        //   backgroundColor: Colors.green,
+        // );
       } else {
         print("Error: ${response.message}");
         Get.snackbar(
@@ -146,6 +186,85 @@ class ProfileController extends GetxController {
     }
   }
 
+  Future<void> postnewuserAddress({
+    required int userID,
+    required int issuedCountry,
+    required String province,
+    required String city,
+    required String addressLineOne,
+    required String addressLineTwo,
+    required String zipcode,
+    required String addressType,
+  }) async {
+    try {
+      // Guard against any null values
+      if (province.isEmpty ||
+          city.isEmpty ||
+          addressLineOne.isEmpty ||
+          zipcode.isEmpty) {
+        Get.snackbar(
+          'Validation Error',
+          'All required fields must be filled',
+          snackPosition: SnackPosition.TOP,
+          duration: const Duration(seconds: 3),
+          colorText: Colors.white,
+          backgroundColor: Colors.red,
+        );
+        return;
+      }
+
+      ApiResponse response = await profileRepo.postnewuserAddress(
+        userID,
+        issuedCountry,
+        province,
+        city,
+        addressLineOne,
+        addressLineTwo,
+        zipcode,
+        addressType,
+      );
+
+      if (response.status == ApiStatus.SUCCESS && response.response != null) {
+        log("Created new user address: ${response.response}");
+
+        // Refresh profile data to get updated addresses
+        await getProfile();
+
+        // Get.snackbar(
+        //   'Success',
+        //   response.message ?? 'Your address has been successfully created',
+        //   snackPosition: SnackPosition.TOP,
+        //   duration: const Duration(seconds: 3),
+        //   colorText: Colors.white,
+        //   backgroundColor: Colors.green,
+        // );
+      } else {
+        log("Error: ${response.message}");
+        Get.snackbar(
+          'Server Error',
+          response.message ??
+              'Failed to create your address. Please try again later',
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 3),
+          colorText: Colors.white,
+          backgroundColor: Colors.redAccent,
+        );
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error creating address: $e");
+      }
+      Get.snackbar(
+        'Error',
+        'An unexpected error occurred: $e',
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 3),
+        colorText: Colors.white,
+        backgroundColor: Colors.red,
+      );
+    }
+  }
+
   Future<void> postuserAddress({
     required int id,
     required int addressID,
@@ -158,10 +277,30 @@ class ProfileController extends GetxController {
     required String addressType,
   }) async {
     try {
+      // Guard against any null values
+      if (country.isEmpty ||
+          province.isEmpty ||
+          city.isEmpty ||
+          addressLineOne.isEmpty ||
+          zipcode.isEmpty) {
+        Get.snackbar(
+          'Validation Error',
+          'All required fields must be filled',
+          snackPosition: SnackPosition.TOP,
+          duration: const Duration(seconds: 3),
+          colorText: Colors.white,
+          backgroundColor: Colors.red,
+        );
+        return;
+      }
+
+      // Parse country to int for API
+      int countryId = int.tryParse(country) ?? 1;
+
       ApiResponse response = await profileRepo.postuserAddress(
         id,
         addressID,
-        country,
+        countryId.toString(),
         province,
         city,
         addressLineOne,
@@ -171,13 +310,74 @@ class ProfileController extends GetxController {
       );
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
-        log("Fetched created user profile address data: ${response.response}");
+        log("Updated user address: ${response.response}");
+
+        // Refresh profile data to get updated addresses
+        await getProfile();
+
+        // Get.snackbar(
+        //   'Success',
+        //   response.message ?? 'Your address has been successfully updated',
+        //   snackPosition: SnackPosition.TOP,
+        //   duration: const Duration(seconds: 3),
+        //   colorText: Colors.white,
+        //   backgroundColor: Colors.green,
+        // );
+      } else {
+        log("Error: ${response.message}");
+        Get.snackbar(
+          'Server Error',
+          response.message ??
+              'Failed to update your address. Please try again later',
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 3),
+          colorText: Colors.white,
+          backgroundColor: Colors.redAccent,
+        );
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error updating address: $e");
+      }
+      Get.snackbar(
+        'Error',
+        'An unexpected error occurred: $e',
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 3),
+        colorText: Colors.white,
+        backgroundColor: Colors.red,
+      );
+    }
+  }
+
+  Future<void> postuserBankDetails({
+    required int bankdetailID,
+    required int userID,
+    required String bankname,
+    required String bankaccount,
+    required String bankaccountname,
+    required String bankbranch,
+    required String ispayroll,
+  }) async {
+    try {
+      ApiResponse response = await profileRepo.postuserBankDetails(
+        bankdetailID,
+        userID,
+        bankname,
+        bankaccount,
+        bankaccountname,
+        bankbranch,
+        ispayroll,
+      );
+
+      if (response.status == ApiStatus.SUCCESS && response.response != null) {
+        log("Fetched updated user bankk details data: ${response.response}");
 
         Get.back();
 
         Get.snackbar(
-          'Posted User profile address',
-          response.message ?? 'Your address have been successfully updated',
+          'User Details has been updated',
+          response.message ?? 'Your details has been successfully updated',
           snackPosition: SnackPosition.TOP,
           duration: const Duration(seconds: 3),
           colorText: Colors.white,
@@ -209,44 +409,44 @@ class ProfileController extends GetxController {
     }
   }
 
-  Future<void> postuserBankDetails({
-    required int bankdetailID,
+  Future<void> postnewBankDetails({
     required int userID,
-    required String bankname,
-    required int bankaccount,
-    required String bankaccountname,
-    required String bankbranch,
-    required String ispayroll,
+    required String bankName,
+    required String bankAccount,
+    required String bankaccountName,
+    required String bankBranch,
+    required String isPayroll,
   }) async {
     try {
-      ApiResponse response = await profileRepo.postuserBankDetails(
-        bankdetailID,
+      ApiResponse response = await profileRepo.postnewBankDetails(
         userID,
-        bankname,
-        bankaccount,
-        bankaccountname,
-        bankbranch,
-        ispayroll,
+        bankName,
+        bankAccount,
+        bankaccountName,
+        bankBranch,
+        isPayroll,
       );
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
-        log("Fetched updated user bankk details data: ${response.response}");
+        log("Fetched created new bank detail data: ${response.response}");
 
         Get.back();
 
         Get.snackbar(
-          'Updarted User bank detaisl',
-          response.message ?? 'Your bank details has been successfully updated',
+          'User Details has been updated',
+          response.message ?? 'Your details has been successfully updated',
           snackPosition: SnackPosition.TOP,
           duration: const Duration(seconds: 3),
           colorText: Colors.white,
           backgroundColor: Colors.green,
         );
+
+        // await getTimeoff();
       } else {
         log("Error: ${response.message}");
         Get.snackbar(
           'Server Error',
-          'Failed to update your address. Please try again later',
+          'Failed to post timeoff. Please try again later',
           snackPosition: SnackPosition.BOTTOM,
           duration: const Duration(seconds: 3),
           colorText: Colors.white,
@@ -255,7 +455,7 @@ class ProfileController extends GetxController {
       }
     } catch (e) {
       if (kDebugMode) {
-        print("Error fetching sub address data: $e");
+        print("Error fetching sub timeoff data: $e");
       }
       Get.snackbar(
         'Error',
@@ -296,18 +496,6 @@ class ProfileController extends GetxController {
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
         log("Fetched updated user documents details: ${response.response}");
-
-        Get.back();
-
-        Get.snackbar(
-          'Updated User Documents',
-          response.message ??
-              'Your document details have been successfully updated',
-          snackPosition: SnackPosition.TOP,
-          duration: const Duration(seconds: 3),
-          colorText: Colors.white,
-          backgroundColor: Colors.green,
-        );
       } else {
         log("Error: ${response.message}");
         Get.snackbar(
@@ -334,45 +522,43 @@ class ProfileController extends GetxController {
     }
   }
 
-  Future<void> postnewBankDetails({
-    required int userID,
-    required String bankName,
-    required int bankAccount,
-    required String bankaccountName,
-    required String bankBranch,
-    required String isPayroll,
+  Future<void> postNewUserDocument({
+    required String type,
+    required String title,
+    required String? issuedDateStr,
+    required String? identifier,
+    required int profileId,
+    required File? documentFile,
   }) async {
     try {
-      ApiResponse response = await profileRepo.postnewBankDetails(
-        userID,
-        bankName,
-        bankAccount,
-        bankaccountName,
-        bankBranch,
-        isPayroll,
+      ApiResponse response = await profileRepo.postNewUserDocument(
+        userId: profileId,
+        type: type,
+        title: title,
+        issuedDate: issuedDateStr,
+        identifier: identifier,
+        profileId: profileId,
+        documentFile: documentFile,
       );
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
-        log("Fetched created new bank detail data: ${response.response}");
+        log("Successfully added new user document: ${response.response}");
 
-        Get.back();
+        // Get.back();
 
-        Get.snackbar(
-          'Posted new bank details',
-          response.message ??
-              'Your new bank details have been successfully posted',
-          snackPosition: SnackPosition.TOP,
-          duration: const Duration(seconds: 3),
-          colorText: Colors.white,
-          backgroundColor: Colors.green,
-        );
-
-        // await getTimeoff();
+        // Get.snackbar(
+        //   'Added New Document',
+        //   response.message ?? 'Your new document has been successfully added',
+        //   snackPosition: SnackPosition.TOP,
+        //   duration: const Duration(seconds: 3),
+        //   colorText: Colors.white,
+        //   backgroundColor: Colors.green,
+        // );
       } else {
         log("Error: ${response.message}");
         Get.snackbar(
           'Server Error',
-          'Failed to post timeoff. Please try again later',
+          'Failed to add new document. Please try again later',
           snackPosition: SnackPosition.BOTTOM,
           duration: const Duration(seconds: 3),
           colorText: Colors.white,
@@ -381,7 +567,7 @@ class ProfileController extends GetxController {
       }
     } catch (e) {
       if (kDebugMode) {
-        print("Error fetching sub timeoff data: $e");
+        print("Error adding new document: $e");
       }
       Get.snackbar(
         'Error',
@@ -391,6 +577,58 @@ class ProfileController extends GetxController {
         colorText: Colors.white,
         backgroundColor: Colors.red,
       );
+    }
+  }
+
+  Future<void> deleteDocument({required int id}) async {
+    try {
+      ApiResponse response = await profileRepo.deleteuserDocument(id);
+
+      if (response.status == ApiStatus.SUCCESS && response.response != null) {
+        log("Fetched created timeoff data: ${response.response}");
+
+        Get.back();
+      } else {
+        log("Error: ${response.message}");
+        Get.snackbar(
+          'Server Error',
+          'Something went wrong. Please try again later',
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 3),
+          colorText: Colors.white,
+          backgroundColor: Colors.redAccent,
+        );
+      }
+    } catch (e) {
+      log("Error fetching delete document: $e");
+
+      errorMessage.value = "An error occurred: $e";
+    }
+  }
+
+  Future<void> deleteuserBankDetails({required int id}) async {
+    try {
+      ApiResponse response = await profileRepo.deleteuserBankDetails(id);
+
+      if (response.status == ApiStatus.SUCCESS && response.response != null) {
+        log("Fetched deleted bankdata data: ${response.response}");
+
+        // Get.back();
+      } else {
+        log("Error: ${response.message}");
+        // Get.snackbar(
+        //   'Server Error',
+        //   'Something went wrong. Please try again later',
+        //   snackPosition: SnackPosition.BOTTOM,
+        //   duration: const Duration(seconds: 3),
+        //   colorText: Colors.white,
+        //   backgroundColor: Colors.redAccent,
+        // );
+      }
+    } catch (e) {
+      log("Error fetching delete bank data: $e");
+
+      errorMessage.value = "An error occurred: $e";
     }
   }
 }

@@ -1,6 +1,7 @@
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/pages/edit_profiles/edit_user_document.dart';
 import 'package:ams/feature/presentation/pages/profile/pages/edit_profiles/edit_user_info.dart';
+import 'package:ams/feature/presentation/pages/profile/widget/country_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ams/config/resources/styles.dart';
@@ -21,7 +22,8 @@ class _EditUserAddressState extends State<EditUserAddress> {
   final ProfileController profileController =
       Get.put(ProfileController(profileRepo: Get.find()));
 
-  final TextEditingController countryController = TextEditingController();
+  final TextEditingController countryNameController = TextEditingController();
+  final TextEditingController countryIdController = TextEditingController();
   final TextEditingController provinceController = TextEditingController();
   final TextEditingController cityController = TextEditingController();
   final TextEditingController addressLineOneController =
@@ -30,7 +32,9 @@ class _EditUserAddressState extends State<EditUserAddress> {
       TextEditingController();
   final TextEditingController zipController = TextEditingController();
 
-  final TextEditingController currentCountryController =
+  final TextEditingController currentCountryNameController =
+      TextEditingController();
+  final TextEditingController currentCountryIdController =
       TextEditingController();
   final TextEditingController currentProvinceController =
       TextEditingController();
@@ -41,22 +45,51 @@ class _EditUserAddressState extends State<EditUserAddress> {
       TextEditingController();
   final TextEditingController currentZipController = TextEditingController();
 
-  // Temporary variables to store original current address data
-  String? _originalCurrentCountry;
+  String? _originalCurrentCountryName;
+  String? _originalCurrentCountryId;
   String? _originalCurrentProvince;
   String? _originalCurrentCity;
   String? _originalCurrentAddressLineOne;
   String? _originalCurrentAddressLineTwo;
   String? _originalCurrentZip;
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _initializeAddress());
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _initializeAddress();
+  //   profileController.getcountryList();
+  // }
 
   int? permanentAddressId;
   int? currentAddressId;
+
+  late final dynamic currentAddr;
+  late final dynamic permanentAddr;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeAddress();
+    profileController.getcountryList();
+
+    currentAddr = profileController.profile.first.addresses
+        ?.firstWhereOrNull((a) => a.addressType == "current");
+    permanentAddr = profileController.profile.first.addresses
+        ?.firstWhereOrNull((a) => a.addressType == "permanent");
+
+    if (currentAddr != null && permanentAddr != null) {
+      bool sameAddress = currentAddr.country?.id == permanentAddr.country?.id &&
+          currentAddr.province == permanentAddr.province &&
+          currentAddr.city == permanentAddr.city &&
+          currentAddr.addressLineOne == permanentAddr.addressLineOne &&
+          currentAddr.addressLineTwo == permanentAddr.addressLineTwo &&
+          currentAddr.postalCode == permanentAddr.postalCode;
+
+      profileController.isSameAsPermanent.value = sameAddress;
+    } else {
+      profileController.isSameAsPermanent.value = false;
+    }
+  }
 
   void _initializeAddress() {
     final profileData = profileController.profile;
@@ -68,7 +101,9 @@ class _EditUserAddressState extends State<EditUserAddress> {
 
       if (permanentAddress != null) {
         permanentAddressId = permanentAddress.id;
-        countryController.text = permanentAddress.country?.name ?? "";
+        countryNameController.text = permanentAddress.country?.name ?? "";
+        countryIdController.text =
+            permanentAddress.country?.id?.toString() ?? "";
         provinceController.text = permanentAddress.province ?? "";
         cityController.text = permanentAddress.city ?? "";
         addressLineOneController.text = permanentAddress.addressLineOne ?? "";
@@ -78,7 +113,9 @@ class _EditUserAddressState extends State<EditUserAddress> {
 
       if (currentAddress != null) {
         currentAddressId = currentAddress.id;
-        currentCountryController.text = currentAddress.country?.name ?? "";
+        currentCountryNameController.text = currentAddress.country?.name ?? "";
+        currentCountryIdController.text =
+            currentAddress.country?.id?.toString() ?? "";
         currentProvinceController.text = currentAddress.province ?? "";
         currentCityController.text = currentAddress.city ?? "";
         currentAddressLineOneController.text =
@@ -92,24 +129,30 @@ class _EditUserAddressState extends State<EditUserAddress> {
 
   void _copyPermanentToCurrent(bool isChecked) {
     if (isChecked) {
-      // Store the original current address data
-      _originalCurrentCountry = currentCountryController.text;
+      // Save original values
+      _originalCurrentCountryName = currentCountryNameController.text;
+      _originalCurrentCountryId = currentCountryIdController.text;
       _originalCurrentProvince = currentProvinceController.text;
       _originalCurrentCity = currentCityController.text;
       _originalCurrentAddressLineOne = currentAddressLineOneController.text;
       _originalCurrentAddressLineTwo = currentAddressLineTwoController.text;
       _originalCurrentZip = currentZipController.text;
 
-      // Copy permanent address data to current address fields
-      currentCountryController.text = countryController.text;
+      // Copy permanent address values to current address fields
+      currentCountryNameController.text = countryNameController.text;
+      currentCountryIdController.text = countryIdController.text;
       currentProvinceController.text = provinceController.text;
       currentCityController.text = cityController.text;
       currentAddressLineOneController.text = addressLineOneController.text;
       currentAddressLineTwoController.text = addressLineTwoController.text;
       currentZipController.text = zipController.text;
+
+      // Force rebuild
+      setState(() {});
     } else {
-      // Restore the original current address data
-      currentCountryController.text = _originalCurrentCountry ?? "";
+      // Restore original values
+      currentCountryNameController.text = _originalCurrentCountryName ?? "";
+      currentCountryIdController.text = _originalCurrentCountryId ?? "";
       currentProvinceController.text = _originalCurrentProvince ?? "";
       currentCityController.text = _originalCurrentCity ?? "";
       currentAddressLineOneController.text =
@@ -117,6 +160,9 @@ class _EditUserAddressState extends State<EditUserAddress> {
       currentAddressLineTwoController.text =
           _originalCurrentAddressLineTwo ?? "";
       currentZipController.text = _originalCurrentZip ?? "";
+
+      // Force rebuild
+      setState(() {});
     }
   }
 
@@ -124,12 +170,32 @@ class _EditUserAddressState extends State<EditUserAddress> {
     try {
       final userId = profileController.profile.first.id;
 
-      // Submit Permanent Address
+      // Parse country IDs consistently
+      int permanentCountryId = int.tryParse(countryIdController.text) ?? 1;
+      int currentCountryId = int.tryParse(currentCountryIdController.text) ?? 1;
+
+      // Add debug logging
+      print(
+          "Submitting permanent address with country ID: $permanentCountryId");
+      print("Submitting current address with country ID: $currentCountryId");
+
+      // Submit permanent address
       if (permanentAddressId != null) {
         await profileController.postuserAddress(
           id: userId,
           addressID: permanentAddressId!,
-          country: countryController.text,
+          country: permanentCountryId.toString(), // Make sure it's a string
+          province: provinceController.text,
+          city: cityController.text,
+          addressLineOne: addressLineOneController.text,
+          addressLineTwo: addressLineTwoController.text,
+          zipcode: zipController.text,
+          addressType: "permanent",
+        );
+      } else {
+        await profileController.postnewuserAddress(
+          userID: userId,
+          issuedCountry: permanentCountryId, // Make sure it's an integer
           province: provinceController.text,
           city: cityController.text,
           addressLineOne: addressLineOneController.text,
@@ -139,11 +205,23 @@ class _EditUserAddressState extends State<EditUserAddress> {
         );
       }
 
+      // Submit current address
       if (currentAddressId != null) {
         await profileController.postuserAddress(
           id: userId,
           addressID: currentAddressId!,
-          country: currentCountryController.text,
+          country: currentCountryId.toString(), // Make sure it's a string
+          province: currentProvinceController.text,
+          city: currentCityController.text,
+          addressLineOne: currentAddressLineOneController.text,
+          addressLineTwo: currentAddressLineTwoController.text,
+          zipcode: currentZipController.text,
+          addressType: "current",
+        );
+      } else {
+        await profileController.postnewuserAddress(
+          userID: userId,
+          issuedCountry: currentCountryId,
           province: currentProvinceController.text,
           city: currentCityController.text,
           addressLineOne: currentAddressLineOneController.text,
@@ -152,7 +230,15 @@ class _EditUserAddressState extends State<EditUserAddress> {
           addressType: "current",
         );
       }
+
+      Get.back();
+      Get.to(() => const EditUserDocument());
     } catch (e) {
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+
+      print("Error submitting address: $e");
       Get.snackbar(
         'Error',
         'An unexpected error occurred: $e',
@@ -165,14 +251,15 @@ class _EditUserAddressState extends State<EditUserAddress> {
   }
 
   bool _validateInputs() {
-    if (countryController.text.isEmpty ||
+    // Validate permanent address fields
+    if (countryIdController.text.isEmpty ||
         provinceController.text.isEmpty ||
         cityController.text.isEmpty ||
         addressLineOneController.text.isEmpty ||
         zipController.text.isEmpty) {
       Get.snackbar(
         'Error',
-        'Please fill out all required fields',
+        'Please fill out all required permanent address fields',
         snackPosition: SnackPosition.TOP,
         duration: const Duration(seconds: 3),
         colorText: Colors.white,
@@ -180,6 +267,25 @@ class _EditUserAddressState extends State<EditUserAddress> {
       );
       return false;
     }
+
+    if (!profileController.isSameAsPermanent.value) {
+      if (currentCountryIdController.text.isEmpty ||
+          currentProvinceController.text.isEmpty ||
+          currentCityController.text.isEmpty ||
+          currentAddressLineOneController.text.isEmpty ||
+          currentZipController.text.isEmpty) {
+        Get.snackbar(
+          'Error',
+          'Please fill out all required current address fields',
+          snackPosition: SnackPosition.TOP,
+          duration: const Duration(seconds: 3),
+          colorText: Colors.white,
+          backgroundColor: Colors.red,
+        );
+        return false;
+      }
+    }
+
     return true;
   }
 
@@ -196,94 +302,64 @@ class _EditUserAddressState extends State<EditUserAddress> {
     await _submitUserAddress();
 
     // Get.back();
-    Get.to(() => const EditUserDocument());
+    // Get.to(() => const EditUserDocument());
   }
 
   void _onPreviousPressed() {
     Get.back();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Edit User Address Detail",
-          style: smallStyle.copyWith(
-            fontWeight: FontWeight.w700,
+  Widget _buildSectionTitle(String title, bool isDarkMode) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Text(title,
+          style: normalStyle.copyWith(
+            fontWeight: FontWeight.bold,
             color: isDarkMode ? Colors.white : Colors.black,
-          ),
+          )),
+    );
+  }
+
+  Widget _buildTextField(
+      String title, TextEditingController controller, bool isDarkMode,
+      {bool enabled = true, TextInputType? keyboardType}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: TextField(
+        controller: controller,
+        enabled: enabled,
+        keyboardType: keyboardType,
+        decoration: InputDecoration(
+          labelText: title,
+          border: OutlineInputBorder(),
+          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+          labelStyle: smallStyle.copyWith(
+              color: isDarkMode ? Colors.white70 : Colors.black54),
+          filled: !enabled,
+          fillColor: !enabled
+              ? (isDarkMode ? Colors.grey[700] : Colors.grey[200])
+              : null,
         ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView(
-                children: [
-                  _buildAddressSection("Permanent Address", isDarkMode),
-                  ..._buildTextFields(isDarkMode),
-                  _buildSameAsPermanentCheckbox(isDarkMode),
-                  Obx(() {
-                    if (!profileController.isSameAsPermanent.value) {
-                      return Column(
-                        children: _buildCurrentAddressFields(isDarkMode),
-                      );
-                    } else {
-                      return const SizedBox.shrink();
-                    }
-                  }),
-                ],
-              ),
-            ),
-            _buildBottomButtons(isDarkMode),
-          ],
-        ),
+        style: smallStyle.copyWith(
+            color: isDarkMode ? Colors.white : Colors.black),
       ),
     );
   }
 
-  Widget _buildAddressSection(String title, bool isDarkMode) {
+  Widget _buildAddressSection(String title, IconData icon, bool isDarkMode) {
     return Row(
       children: [
-        const Icon(Icons.location_on),
+        Icon(icon, color: isDarkMode ? Colors.white70 : Colors.black54),
         const SizedBox(width: 10.0),
         Text(
           title,
           style: normalStyle.copyWith(
             color: isDarkMode ? Colors.white : Colors.black,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ],
     );
-  }
-
-  List<Widget> _buildTextFields(bool isDarkMode) {
-    return [
-      const SizedBox(height: 24),
-      _inputTextField("Country", countryController),
-      _inputTextField("Province", provinceController),
-      _inputTextField("City", cityController),
-      _inputTextField("Address Line 1", addressLineOneController),
-      _inputTextField("Address Line 2", addressLineTwoController),
-      _inputTextField("Zip Code", zipController),
-    ];
-  }
-
-  List<Widget> _buildCurrentAddressFields(bool isDarkMode) {
-    return [
-      _buildAddressSection("Current Address", isDarkMode),
-      const SizedBox(height: 15.0),
-      _inputTextField("Country", currentCountryController),
-      _inputTextField("Province", currentProvinceController),
-      _inputTextField("City", currentCityController),
-      _inputTextField("Address Line 1", currentAddressLineOneController),
-      _inputTextField("Address Line 2", currentAddressLineTwoController),
-      _inputTextField("Zip Code", currentZipController),
-    ];
   }
 
   Widget _buildSameAsPermanentCheckbox(bool isDarkMode) {
@@ -301,42 +377,6 @@ class _EditUserAddressState extends State<EditUserAddress> {
             color: isDarkMode ? Colors.white : Colors.black,
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _inputTextField(String title, TextEditingController controller) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: smallStyle.copyWith(
-              fontWeight: FontWeight.w700,
-              color: isDarkMode ? Colors.white : Colors.black,
-            ),
-          ),
-          const SizedBox(height: 6),
-          TextFormField(
-            controller: controller,
-            style: smallStyle.copyWith(
-              color: isDarkMode ? Colors.white : Colors.black,
-            ),
-            decoration: InputDecoration(
-              isDense: true,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(
-                  width: 1,
-                  color: isDarkMode ? Colors.white70 : Colors.grey.shade300,
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -396,6 +436,115 @@ class _EditUserAddressState extends State<EditUserAddress> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  List<Widget> _buildPermanentAddressFields(bool isDarkMode) {
+    return [
+      CountryDropdown(
+        valueId: countryIdController.text,
+        valueName: countryNameController.text,
+        onChanged: (CountryData? data) {
+          if (data != null) {
+            print(
+                "Permanent country selected: ID=${data.id}, Name=${data.name}");
+            setState(() {
+              countryIdController.text = data.id.toString();
+              countryNameController.text = data.name;
+
+              // If same as permanent is checked, update current address too
+              if (profileController.isSameAsPermanent.value) {
+                currentCountryIdController.text = data.id.toString();
+                currentCountryNameController.text = data.name;
+              }
+            });
+          }
+        },
+        isDarkMode: isDarkMode,
+      ),
+      _buildTextField("Province", provinceController, isDarkMode),
+      _buildTextField("City", cityController, isDarkMode),
+      _buildTextField("Address Line 1", addressLineOneController, isDarkMode),
+      _buildTextField("Address Line 2", addressLineTwoController, isDarkMode),
+      _buildTextField(
+        "Zip Code",
+        zipController,
+        isDarkMode,
+        keyboardType: const TextInputType.numberWithOptions(),
+      ),
+    ];
+  }
+
+  List<Widget> _buildCurrentAddressFields(bool isDarkMode) {
+    return [
+      _buildAddressSection("Current Address", Icons.location_on, isDarkMode),
+      const SizedBox(height: 15.0),
+      CountryDropdown(
+        valueId: currentCountryIdController.text,
+        valueName: currentCountryNameController.text,
+        onChanged: (CountryData? data) {
+          if (data != null) {
+            print("Current country selected: ID=${data.id}, Name=${data.name}");
+            setState(() {
+              currentCountryIdController.text = data.id.toString();
+              currentCountryNameController.text = data.name;
+            });
+          }
+        },
+        isDarkMode: isDarkMode,
+      ),
+      _buildTextField("Province", currentProvinceController, isDarkMode),
+      _buildTextField("City", currentCityController, isDarkMode),
+      _buildTextField(
+          "Address Line 1", currentAddressLineOneController, isDarkMode),
+      _buildTextField(
+          "Address Line 2", currentAddressLineTwoController, isDarkMode),
+      _buildTextField("Zip Code", currentZipController, isDarkMode),
+    ];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Edit User Address Detail",
+          style: smallStyle.copyWith(
+            fontWeight: FontWeight.w700,
+            color: isDarkMode ? Colors.white : Colors.black,
+          ),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                children: [
+                  _buildAddressSection(
+                      "Permanent Address", Icons.location_on, isDarkMode),
+                  const SizedBox(height: 16),
+                  ..._buildPermanentAddressFields(isDarkMode),
+                  _buildSameAsPermanentCheckbox(isDarkMode),
+                  Obx(() {
+                    if (!profileController.isSameAsPermanent.value) {
+                      return Column(
+                        children: _buildCurrentAddressFields(isDarkMode),
+                      );
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+                  }),
+                ],
+              ),
+            ),
+            _buildBottomButtons(isDarkMode),
+          ],
+        ),
       ),
     );
   }

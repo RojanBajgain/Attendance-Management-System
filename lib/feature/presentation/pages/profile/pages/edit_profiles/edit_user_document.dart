@@ -3,13 +3,13 @@ import 'dart:io';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/model/profile_model.dart';
 import 'package:ams/feature/presentation/pages/profile/pages/edit_profiles/edit_user_bank.dart';
+import 'package:ams/feature/presentation/pages/profile/pages/edit_profiles/edit_user_info.dart';
 import 'package:ams/feature/presentation/pages/profile/widget/image_uploader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
-import 'package:ams/feature/presentation/pages/profile/widget/file_uploader.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -29,6 +29,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
       Get.put(ProfileController(profileRepo: Get.find()));
 
   List<int> _deletedFileIds = [];
+  List<int> _deletedDocumentIds = [];
 
   Map<int, File?> _selectedFiles = {};
 
@@ -63,21 +64,21 @@ class _EditUserDocumentState extends State<EditUserDocument> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _initializeDocuments());
+    _initializeDocuments();
   }
 
-  @override
-  void dispose() {
-    for (var controllers in documentControllers.values) {
-      for (var controller in controllers.values) {
-        controller.dispose();
-      }
-    }
-    newDocumentTitleController.dispose();
-    newDocumentIssuedDateController.dispose();
-    newDocumentIdentifierController.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   for (var controllers in documentControllers.values) {
+  //     for (var controller in controllers.values) {
+  //       controller.dispose();
+  //     }
+  //   }
+  //   newDocumentTitleController.dispose();
+  //   newDocumentIssuedDateController.dispose();
+  //   newDocumentIdentifierController.dispose();
+  //   super.dispose();
+  // }
 
   void _initializeDocuments() {
     final profileData = profileController.profile;
@@ -108,50 +109,191 @@ class _EditUserDocumentState extends State<EditUserDocument> {
     }
   }
 
+  int get activeDocumentCount {
+    final profileData = profileController.profile;
+    if (profileData.isEmpty || profileData.first.documents == null) {
+      return 0;
+    }
+
+    return profileData.first.documents!
+        .where((doc) => doc.id != null && !_deletedDocumentIds.contains(doc.id))
+        .length;
+  }
+
+  Future<void> _deleteDocument(int documentId) async {
+    if (activeDocumentCount <= 1) {
+      Get.snackbar(
+        'Cannot Delete',
+        'You must keep at least one document',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.amber,
+        colorText: Colors.black,
+        duration: const Duration(seconds: 3),
+      );
+      return;
+    }
+
+    Get.dialog(
+      Builder(builder: (context) {
+        final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+        return AlertDialog(
+          title: Center(
+              child: Text(
+            'Confirm Deletion',
+            style: normalStyle.copyWith(
+              color: isDarkMode ? Colors.white : Colors.black,
+            ),
+          )),
+          content: Text(
+            'Are you sure you want to delete this document?',
+            style: smallStyle.copyWith(
+              color: isDarkMode ? Colors.white : Colors.black,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(),
+              child: Text(
+                'Cancel',
+                style: smallStyle.copyWith(
+                  color: Colors.blue,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                Get.back();
+
+                try {
+                  await profileController.deleteDocument(id: documentId);
+
+                  setState(() {
+                    _deletedDocumentIds.add(documentId);
+                    documentControllers.remove(documentId);
+                    selectedDocumentTypes.remove(documentId);
+                    _filesToKeep.remove(documentId);
+                    _selectedFiles.remove(documentId);
+                  });
+
+                  // Get.back();
+
+                  // Get.snackbar(
+                  //   'Success',
+                  //   'Document deleted successfully',
+                  //   snackPosition: SnackPosition.TOP,
+                  //   backgroundColor: Colors.green,
+                  //   colorText: Colors.white,
+                  // );
+
+                  await profileController.getProfile();
+                } catch (e) {
+                  Get.back();
+
+                  Get.snackbar(
+                    'Error',
+                    'Failed to delete document: $e',
+                    snackPosition: SnackPosition.TOP,
+                    backgroundColor: Colors.red,
+                    colorText: Colors.white,
+                  );
+                }
+              },
+              child: Text(
+                'Delete',
+                style: smallStyle.copyWith(
+                  color: Colors.red,
+                ),
+              ),
+            ),
+          ],
+        );
+      }),
+    );
+  }
+
   Future<void> _submitDocuments() async {
     try {
       final userId = profileController.profile.first.id;
+      bool hasError = false;
+      String errorMessage = '';
 
       for (var entry in documentControllers.entries) {
         int documentId = entry.key;
+        // Skip deleted documents
+        if (_deletedDocumentIds.contains(documentId)) {
+          continue;
+        }
+
         Map<String, TextEditingController> controllers = entry.value;
 
         List<int> filesToKeep = List<int>.from(_filesToKeep[documentId] ?? []);
 
         File? selectedFile = _selectedFiles[documentId];
 
-        await profileController.postuserDocuments(
-          documentID: documentId,
-          userID: userId,
-          type: selectedDocumentTypes[documentId] ?? "N/A",
-          title: controllers['title']?.text ?? "",
-          identifier: int.tryParse(controllers['identifier']?.text ?? ""),
-          issuedDate: controllers['issuedDate']?.text.isNotEmpty == true
-              ? DateFormat('yyyy-MM-dd').parse(controllers['issuedDate']!.text)
-              : null,
-          profileId: profileController.profile.first.id,
-          filesToKeep: filesToKeep,
-          documentImage: selectedFile,
-          documentFile: null,
-        );
+        try {
+          await profileController.postuserDocuments(
+            documentID: documentId,
+            userID: userId,
+            type: selectedDocumentTypes[documentId] ?? "N/A",
+            title: controllers['title']?.text ?? "",
+            identifier: int.tryParse(controllers['identifier']?.text ?? ""),
+            issuedDate: controllers['issuedDate']?.text.isNotEmpty == true
+                ? DateFormat('yyyy-MM-dd')
+                    .parse(controllers['issuedDate']!.text)
+                : null,
+            profileId: profileController.profile.first.id,
+            filesToKeep: filesToKeep,
+            documentImage: selectedFile,
+            documentFile: null,
+          );
+        } catch (e) {
+          hasError = true;
+          errorMessage = 'Failed to update document: $e';
+          break;
+        }
       }
 
-      if (profileController.isAddNewDocumentChecked.value) {
-        await profileController.postuserDocuments(
-          documentID: 0,
-          userID: userId,
-          type: newDocumentType,
-          title: newDocumentTitleController.text,
-          identifier: int.tryParse(newDocumentIdentifierController.text),
-          issuedDate: newDocumentIssuedDateController.text.isNotEmpty
-              ? DateFormat('yyyy-MM-dd')
-                  .parse(newDocumentIssuedDateController.text)
-              : null,
-          profileId: profileController.profile.first.id,
-          filesToKeep: [], // Empty list for new documents
-          documentImage: _selectedFiles[-1],
-          documentFile: _selectedFiles[-1],
+      if (!hasError && profileController.isAddNewDocumentChecked.value) {
+        String? issuedDateStr = newDocumentIssuedDateController.text.isNotEmpty
+            ? newDocumentIssuedDateController.text
+            : null;
+
+        try {
+          await profileController.postNewUserDocument(
+            type: newDocumentType,
+            title: newDocumentTitleController.text,
+            issuedDateStr: issuedDateStr,
+            identifier: newDocumentIdentifierController.text,
+            profileId: userId,
+            documentFile: _selectedFiles[-1],
+          );
+        } catch (e) {
+          hasError = true;
+          errorMessage = 'Failed to add new document: $e';
+        }
+      }
+
+      Get.back();
+
+      if (hasError) {
+        Get.snackbar(
+          'Error',
+          errorMessage,
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
         );
+        return Future.error(errorMessage);
+      } else {
+        // Get.snackbar(
+        //   'Success',
+        //   'Documents updated successfully',
+        //   snackPosition: SnackPosition.TOP,
+        //   backgroundColor: Colors.green,
+        //   colorText: Colors.white,
+        // );
+        Get.to(() => const EditUserBank());
       }
     } catch (e) {
       Get.snackbar(
@@ -161,11 +303,35 @@ class _EditUserDocumentState extends State<EditUserDocument> {
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
+      return Future.error(e);
     }
   }
 
   bool _validateInputs() {
-    for (var controllers in documentControllers.values) {
+    // Validate existing documents
+    for (var entry in documentControllers.entries) {
+      // Skip validation for deleted documents
+      if (_deletedDocumentIds.contains(entry.key)) {
+        continue;
+      }
+
+      int documentId = entry.key;
+      Map<String, TextEditingController> controllers = entry.value;
+
+      // Check document type
+      if (!selectedDocumentTypes.containsKey(documentId) ||
+          selectedDocumentTypes[documentId]!.isEmpty) {
+        Get.snackbar(
+          'Error',
+          'Please select a document type for all documents',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return false;
+      }
+
+      // Check title
       if (controllers['title']?.text.isEmpty ?? true) {
         Get.snackbar(
           'Error',
@@ -176,13 +342,87 @@ class _EditUserDocumentState extends State<EditUserDocument> {
         );
         return false;
       }
-    }
 
-    if (profileController.isAddNewDocumentChecked.value) {
-      if (newDocumentType.isEmpty || newDocumentTitleController.text.isEmpty) {
+      // Check issued date
+      if (controllers['issuedDate']?.text.isEmpty ?? true) {
         Get.snackbar(
           'Error',
-          'Please fill all required fields for the new document',
+          'Please select an issued date for all documents',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return false;
+      }
+
+      // Check identifier
+      if (controllers['identifier']?.text.isEmpty ?? true) {
+        Get.snackbar(
+          'Error',
+          'Please fill all required document identifier fields',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return false;
+      }
+    }
+
+    // Validate new document if checkbox is checked
+    if (profileController.isAddNewDocumentChecked.value) {
+      // Check new document type
+      if (newDocumentType.isEmpty) {
+        Get.snackbar(
+          'Error',
+          'Please select a type for the new document',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return false;
+      }
+
+      // Check new document title
+      if (newDocumentTitleController.text.isEmpty) {
+        Get.snackbar(
+          'Error',
+          'Please enter a title for the new document',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return false;
+      }
+
+      // Check new document issued date
+      if (newDocumentIssuedDateController.text.isEmpty) {
+        Get.snackbar(
+          'Error',
+          'Please select an issued date for the new document',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return false;
+      }
+
+      // Check new document identifier
+      if (newDocumentIdentifierController.text.isEmpty) {
+        Get.snackbar(
+          'Error',
+          'Please enter an identifier for the new document',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return false;
+      }
+
+      // Check if file is uploaded for new document
+      if (!_selectedFiles.containsKey(-1) || _selectedFiles[-1] == null) {
+        Get.snackbar(
+          'Error',
+          'Please upload a file for the new document',
           snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.red,
           colorText: Colors.white,
@@ -192,6 +432,108 @@ class _EditUserDocumentState extends State<EditUserDocument> {
     }
 
     return true;
+  }
+
+  Widget _buildDateField(
+      String title, TextEditingController controller, bool isDarkMode) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: TextField(
+        controller: controller,
+        readOnly: true,
+        decoration: InputDecoration(
+          labelText: title,
+          border: const OutlineInputBorder(),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+          labelStyle: smallStyle.copyWith(
+              color: isDarkMode ? Colors.white70 : Colors.black54),
+          suffixIcon: const Icon(Icons.calendar_today),
+        ),
+        style: smallStyle.copyWith(
+            color: isDarkMode ? Colors.white : Colors.black),
+        onTap: () => _selectDate(context, controller),
+      ),
+    );
+  }
+
+  Future<void> _selectDate(
+      BuildContext context, TextEditingController controller) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: controller.text.isNotEmpty
+          ? DateFormat('yyyy-MM-dd').parse(controller.text)
+          : DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            textTheme: const TextTheme(
+              headlineMedium: TextStyle(fontSize: 18),
+              bodyLarge: TextStyle(fontSize: 16),
+              bodyMedium: TextStyle(fontSize: 14),
+            ),
+            colorScheme: Theme.of(context).brightness == Brightness.dark
+                ? ColorScheme.dark(
+                    primary: Colors.blueAccent,
+                    onPrimary: Colors.white,
+                    surface: Colors.grey[800]!,
+                    onSurface: Colors.white,
+                  )
+                : const ColorScheme.light(
+                    primary: Colors.black,
+                    onPrimary: Colors.white,
+                    surface: Colors.white,
+                    onSurface: Colors.black,
+                  ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
+      controller.text = DateFormat('yyyy-MM-dd').format(picked);
+    }
+  }
+
+  Widget _buildSectionTitle(String title, bool isDarkMode) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Text(title,
+          style: smallStyle.copyWith(
+            fontWeight: FontWeight.bold,
+            color: isDarkMode ? Colors.white : Colors.black,
+          )),
+    );
+  }
+
+  Widget _buildTextField(
+      String title, TextEditingController controller, bool isDarkMode,
+      {bool enabled = true, TextInputType? keyboardType}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: TextField(
+        controller: controller,
+        enabled: enabled,
+        keyboardType: keyboardType,
+        decoration: InputDecoration(
+          labelText: title,
+          border: const OutlineInputBorder(),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+          labelStyle: smallStyle.copyWith(
+              color: isDarkMode ? Colors.white70 : Colors.black54),
+          filled: !enabled,
+          fillColor: !enabled
+              ? (isDarkMode ? Colors.grey[700] : Colors.grey[200])
+              : null,
+        ),
+        style: smallStyle.copyWith(
+            color: isDarkMode ? Colors.white : Colors.black),
+      ),
+    );
   }
 
   @override
@@ -218,7 +560,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
             "Citizenship",
             "Education",
             "Recommendation",
-            "Others"
+            // "Others"
           ];
 
           final documentTypes =
@@ -236,14 +578,20 @@ class _EditUserDocumentState extends State<EditUserDocument> {
           return Column(
             children: [
               if (profileData.isNotEmpty && profileData.first.documents != null)
-                ...profileData.first.documents!.map((document) {
+                ...profileData.first.documents!
+                    .where((doc) => !_deletedDocumentIds.contains(doc.id))
+                    .map((document) {
                   return _buildDocumentSection(
                     isDarkMode,
                     finalDocumentTypes,
                     document,
                   );
                 }).toList(),
-              const SizedBox(height: 16),
+              if (profileData.isNotEmpty &&
+                  profileData.first.documents != null &&
+                  profileData.first.documents!.isNotEmpty)
+                // const Divider(thickness: 2),
+                const SizedBox(height: 20),
               _buildAddNewDocumentCheckbox(isDarkMode, profileController),
               if (profileController.isAddNewDocumentChecked.value)
                 _buildAddNewDocumentSection(isDarkMode, finalDocumentTypes),
@@ -271,18 +619,36 @@ class _EditUserDocumentState extends State<EditUserDocument> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Icon(Icons.edit_calendar_outlined),
-            const SizedBox(width: 10.0),
-            Text(
-              "Edit Document - ${document.type ?? "N/A"}",
-              style: normalStyle.copyWith(
-                color: isDarkMode ? Colors.white : Colors.black,
+            Row(
+              children: [
+                const Icon(Icons.edit_calendar_outlined),
+                const SizedBox(width: 10.0),
+                Text(
+                  "Edit Document - ${document.type ?? "N/A"}",
+                  style: smallNStyle.copyWith(
+                    color: isDarkMode ? Colors.white : Colors.black,
+                  ),
+                ),
+              ],
+            ),
+            // Delete document button
+            IconButton(
+              icon: Icon(
+                Icons.delete,
+                color: activeDocumentCount > 1 ? Colors.red : Colors.grey,
               ),
+              onPressed: activeDocumentCount > 1
+                  ? () => _deleteDocument(document.id!)
+                  : null,
+              tooltip: activeDocumentCount > 1
+                  ? 'Delete Document'
+                  : 'Cannot delete the last document',
             ),
           ],
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 10),
         _buildDropdownField(
           title: "Type",
           items: documentTypes,
@@ -294,36 +660,23 @@ class _EditUserDocumentState extends State<EditUserDocument> {
             }
           },
         ),
-        const SizedBox(height: 16),
-        _buildInputTextField(
-          title: "Title",
-          controller: controllers['title']!,
-          isDarkMode: isDarkMode,
+        const SizedBox(height: 10),
+        _buildTextField("Title", controllers['title']!, isDarkMode),
+        const SizedBox(height: 10),
+        _buildDateField("Issued Date", controllers['issuedDate']!, isDarkMode),
+        const SizedBox(height: 10),
+        _buildTextField(
+          "Identifier",
+          controllers['identifier']!,
+          isDarkMode,
+          // keyboardType: const TextInputType.numberWithOptions(),
         ),
-        const SizedBox(height: 16),
-        _buildInputTextField(
-          title: "Issued Date",
-          controller: controllers['issuedDate']!,
-          isDarkMode: isDarkMode,
-        ),
-        const SizedBox(height: 16),
-        _buildInputTextField(
-          title: "Identifier",
-          controller: controllers['identifier']!,
-          isDarkMode: isDarkMode,
-        ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 10),
         if (document.files != null && document.files!.isNotEmpty)
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "Existing Documents",
-                style: smallStyle.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: isDarkMode ? Colors.white : Colors.black,
-                ),
-              ),
+              _buildSectionTitle("Existing Documents", isDarkMode),
               const SizedBox(height: 8),
               ...document.files!
                   .where((file) => !_deletedFileIds.contains(file.id))
@@ -395,7 +748,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
         ),
         const SizedBox(height: 24),
         const Divider(),
-        SizedBox(height: 10.0),
+        // const SizedBox(height: 10.0),
       ],
     );
   }
@@ -426,6 +779,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        const SizedBox(height: 16),
         _buildDropdownField(
           title: "Type",
           items: documentTypes,
@@ -437,22 +791,17 @@ class _EditUserDocumentState extends State<EditUserDocument> {
           },
         ),
         const SizedBox(height: 16),
-        _buildInputTextField(
-          title: "New Document Title",
-          controller: newDocumentTitleController,
-          isDarkMode: isDarkMode,
-        ),
+        _buildTextField(
+            "New Document Title", newDocumentTitleController, isDarkMode),
         const SizedBox(height: 16),
-        _buildInputTextField(
-          title: "New Document Issued Date",
-          controller: newDocumentIssuedDateController,
-          isDarkMode: isDarkMode,
-        ),
+        _buildDateField("New Document Issued Date",
+            newDocumentIssuedDateController, isDarkMode),
         const SizedBox(height: 16),
-        _buildInputTextField(
-          title: "New Document Identifier",
-          controller: newDocumentIdentifierController,
-          isDarkMode: isDarkMode,
+        _buildTextField(
+          "New Document Identifier",
+          newDocumentIdentifierController,
+          isDarkMode,
+          // keyboardType: const TextInputType.numberWithOptions(),
         ),
         const SizedBox(height: 16),
         ImageUploadField(
@@ -486,13 +835,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: smallStyle.copyWith(
-            fontWeight: FontWeight.bold,
-            color: isDarkMode ? Colors.white : Colors.black,
-          ),
-        ),
+        _buildSectionTitle(title, isDarkMode),
         const SizedBox(height: 8),
         Container(
           height: 50.0,
@@ -537,42 +880,6 @@ class _EditUserDocumentState extends State<EditUserDocument> {
     );
   }
 
-  Widget _buildInputTextField({
-    required String title,
-    required TextEditingController controller,
-    required bool isDarkMode,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: smallStyle.copyWith(
-            fontWeight: FontWeight.bold,
-            color: isDarkMode ? Colors.white : Colors.black,
-          ),
-        ),
-        const SizedBox(height: 8),
-        TextFormField(
-          controller: controller,
-          style: smallStyle.copyWith(
-            color: isDarkMode ? Colors.white : Colors.black,
-          ),
-          decoration: InputDecoration(
-            isDense: true,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(
-                width: 1,
-                color: isDarkMode ? Colors.white70 : Colors.grey.shade300,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildBottomButtons(bool isDarkMode) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -580,7 +887,14 @@ class _EditUserDocumentState extends State<EditUserDocument> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           ElevatedButton(
-            onPressed: () => Get.back(),
+            onPressed: () {
+              // Dismiss any open dialogs before navigating back
+              if (Get.isDialogOpen == true) {
+                Get.back();
+              }
+              Get.to(
+                  () => EditUserInfo()); // Navigate back to the previous page
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: isDarkMode ? Colors.blueAccent : Colors.black,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -613,12 +927,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
                   barrierDismissible: false,
                 );
 
-                _submitDocuments().then((_) {
-                  Get.back(); // Close loading dialog
-                  Get.to(() => EditUserBank());
-                }).catchError((error) {
-                  Get.back(); // Close loading dialog
-                });
+                _submitDocuments();
               }
             },
             style: ElevatedButton.styleFrom(

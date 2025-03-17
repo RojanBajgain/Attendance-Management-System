@@ -34,6 +34,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
   final ProfileController profilecontroller =
       Get.put(ProfileController(profileRepo: Get.find()));
 
+  // Text controllers
   final TextEditingController fullNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController genderController = TextEditingController();
@@ -44,10 +45,32 @@ class _EditUserInfoState extends State<EditUserInfo> {
   final TextEditingController joinedDateController = TextEditingController();
 
   File? _profileImage;
-
   File? _resume;
-
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeControllers();
+  }
+
+  void _initializeControllers() {
+    final profile = profilecontroller.profile.first;
+
+    // Initialize controllers with profile data
+    fullNameController.text = profile.username;
+    emailController.text = profile.email;
+    genderController.text = _mapGender(profile.gender);
+    phoneController.text = profile.phoneNumber;
+    designationController.text = profile.designation?.name ?? "";
+    skillsController.text = profile.skills?.join(", ") ?? "";
+    dobController.text = profile.dob != null
+        ? DateFormat('yyyy-MM-dd').format(profile.dob!)
+        : "";
+    joinedDateController.text = profile.joinedDate != null
+        ? DateFormat('yyyy-MM-dd').format(profile.joinedDate!)
+        : "";
+  }
 
   Future<void> _submitUserInfo() async {
     // Validate required fields
@@ -64,42 +87,43 @@ class _EditUserInfoState extends State<EditUserInfo> {
         colorText: Colors.white,
         backgroundColor: Colors.red,
       );
-
       return;
     }
 
     setState(() {
-      _isLoading = true; // Show loading indicator
+      _isLoading = true;
     });
 
     try {
       final genderCode = _mapGenderToCode(genderController.text);
-
       await Future.delayed(const Duration(seconds: 1));
 
       await profilecontroller.postProfileUpdate(
         id: profilecontroller.profile.first.id,
-        profileID: authcontroller.alluserData.value.user!.profileId,
+        profileID: authcontroller.alluserData.value.user?.profileId ??
+            profilecontroller.profile.first.id,
         profileImage: _profileImage,
         username: fullNameController.text,
         dob: dobController.text,
         phonenumber: phoneController.text,
         gender: genderCode,
         joinedDate: joinedDateController.text,
-        skills: skillsController.text.split(","),
+        // skills: skillsController.text.split(",").map((s) => s.trim()).toList(),
+
+        skills: skillsController.text
+            .split(",")
+            .map((s) => s.trim())
+            .where((s) => s.isNotEmpty)
+            .toList(),
         resume: _resume,
       );
 
-      // Navigate to the next page after successful submission
       Get.to(() => const EditUserAddress());
     } catch (e) {
       print("Error in _submitUserInfo: $e");
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   SnackBar(content: Text("Failed to update profile: $e")),
-      // );
     } finally {
       setState(() {
-        _isLoading = false; // Hide loading indicator
+        _isLoading = false;
       });
     }
   }
@@ -151,25 +175,291 @@ class _EditUserInfoState extends State<EditUserInfo> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
+  Widget _buildDateField(
+      String title, TextEditingController controller, bool isDarkMode) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: TextField(
+        controller: controller,
+        readOnly: true, // Make the field read-only
+        decoration: InputDecoration(
+          labelText: title,
+          border: OutlineInputBorder(),
+          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+          labelStyle: smallStyle.copyWith(
+              color: isDarkMode ? Colors.white70 : Colors.black54),
+          suffixIcon: Icon(Icons.calendar_today), // Add calendar icon
+        ),
+        style: smallStyle.copyWith(
+            color: isDarkMode ? Colors.white : Colors.black),
+        onTap: () =>
+            _selectDate(context, controller), // Show date picker on tap
+      ),
+    );
+  }
+
+  Future<void> _selectDate(
+      BuildContext context, TextEditingController controller) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: controller.text.isNotEmpty
+          ? DateFormat('yyyy-MM-dd').parse(controller.text)
+          : DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        // This adds theming to the date picker
+        return Theme(
+          data: Theme.of(context).copyWith(
+            textTheme: TextTheme(
+              headlineMedium: TextStyle(fontSize: 18), // Header (month & year)
+              bodyLarge: TextStyle(fontSize: 16), // Days of the month
+              bodyMedium:
+                  TextStyle(fontSize: 14), // Smaller text (e.g., weekdays)
+            ),
+            colorScheme: Theme.of(context).brightness == Brightness.dark
+                ? ColorScheme.dark(
+                    primary: Colors.blueAccent,
+                    onPrimary: Colors.white,
+                    surface: Colors.grey[800]!,
+                    onSurface: Colors.white,
+                  )
+                : ColorScheme.light(
+                    primary: Colors.black,
+                    onPrimary: Colors.white,
+                    surface: Colors.white,
+                    onSurface: Colors.black,
+                  ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
+      controller.text = DateFormat('yyyy-MM-dd').format(picked);
+    }
+  }
+
+  Widget _buildSectionTitle(String title, bool isDarkMode) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Text(title,
+          style: normalStyle.copyWith(
+            fontWeight: FontWeight.bold,
+            color: isDarkMode ? Colors.white : Colors.black,
+          )),
+    );
+  }
+
+  Widget _buildTextField(
+      String title, TextEditingController controller, bool isDarkMode,
+      {bool enabled = true, TextInputType? keyboardType}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: TextField(
+        controller: controller,
+        enabled: enabled,
+        keyboardType: keyboardType,
+        decoration: InputDecoration(
+          labelText: title,
+          border: OutlineInputBorder(),
+          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+          labelStyle: smallStyle.copyWith(
+              color: isDarkMode ? Colors.white70 : Colors.black54),
+          filled: !enabled,
+          fillColor: !enabled
+              ? (isDarkMode ? Colors.grey[700] : Colors.grey[200])
+              : null,
+        ),
+        style: smallStyle.copyWith(
+            color: isDarkMode ? Colors.white : Colors.black),
+      ),
+    );
+  }
+
+  Widget _buildProfileHeader(bool isDarkMode) {
     final profile = profilecontroller.profile.first;
 
-    // Initialize controllers with profile data
-    fullNameController.text = profile.username;
-    emailController.text = profile.email;
-    genderController.text =
-        _mapGender(profile.gender); // Map gender code to full name
-    phoneController.text = profile.phoneNumber;
-    designationController.text = profile.designation?.name ?? "";
-    skillsController.text = profile.skills?.join(", ") ?? "";
-    dobController.text = profile.dob != null
-        ? DateFormat('yyyy-MM-dd').format(profile.dob!)
-        : "";
-    joinedDateController.text = profile.joinedDate != null
-        ? DateFormat('yyyy-MM-dd').format(profile.joinedDate!)
-        : "";
+    return Row(
+      children: [
+        Container(
+          height: 80,
+          width: 80,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+                color: isDarkMode ? AppColors.white : AppColors.black,
+                width: 2),
+            image: DecorationImage(
+              image: _profileImage != null
+                  ? FileImage(_profileImage!)
+                  : (profile.profileImage.isNotEmpty
+                      ? NetworkImage(profile.profileImage) as ImageProvider
+                      : const AssetImage(AppImages.profileImage)),
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+        const SizedBox(width: 24),
+        Expanded(
+          child: GestureDetector(
+            onTap: _pickImage,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isDarkMode ? AppColors.white : AppColors.black,
+                ),
+              ),
+              width: double.infinity,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Edit Profile Picture",
+                      style: smallStyle.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: isDarkMode ? AppColors.white : AppColors.black,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildResumeSection(bool isDarkMode) {
+    final profile = profilecontroller.profile.first;
+
+    if (profile.resume != null && profile.resume.isNotEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildSectionTitle("Uploaded Resume", isDarkMode),
+          const SizedBox(height: 6),
+          InkWell(
+            onTap: () => _openResumeFile(profile.resume),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.file_present),
+                  color: isDarkMode ? Colors.white : Colors.blue.shade800,
+                  onPressed: () => _openResumeFile(profile.resume),
+                ),
+                Expanded(
+                  child: Text(
+                    profile.resume,
+                    style: smallStyle.copyWith(
+                      color: isDarkMode ? Colors.white : Colors.blue.shade800,
+                      // decoration: TextDecoration.underline,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
+      );
+    } else {
+      return Column(
+        children: [
+          FileUploadField(
+            title: "Add Resume",
+            hintText: "---",
+            onFilePicked: (FilePickerResult? result) {
+              if (result != null) {
+                setState(() {
+                  _resume = File(result.files.single.path!);
+                });
+                log("Picked file: ${result.files.single.name}");
+              } else {
+                log("No file picked");
+              }
+            },
+          ),
+          const SizedBox(height: 16),
+        ],
+      );
+    }
+  }
+
+// Add this method to your class to handle file opening
+  void _openResumeFile(String urlString) async {
+    try {
+      // Ensure URL has proper formatting
+      if (!urlString.startsWith('http://') &&
+          !urlString.startsWith('https://')) {
+        urlString = 'https://$urlString';
+      }
+
+      final Uri url = Uri.parse(urlString);
+
+      // Attempt to open URL
+      final bool launched = await launchUrl(
+        url,
+        mode: LaunchMode.externalApplication,
+      );
+
+      if (!launched) {
+        throw Exception('Could not launch $urlString');
+      }
+    } catch (e) {
+      print("Error opening resume: $e");
+      Get.snackbar(
+        'Error',
+        'Could not open the document',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
+
+  Widget _buildNextButton(bool isDarkMode) {
+    return Align(
+      alignment: Alignment.bottomRight,
+      child: Padding(
+        padding: const EdgeInsets.only(right: 20, bottom: 20),
+        child: ElevatedButton(
+          onPressed: _isLoading ? null : _submitUserInfo,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: isDarkMode ? Colors.blueAccent : Colors.black,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "Next",
+                style: smallStyle.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Icon(
+                Icons.arrow_forward,
+                color: Colors.white,
+                size: 20,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -194,211 +484,38 @@ class _EditUserInfoState extends State<EditUserInfo> {
             child: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Obx(
-                  () {
-                    final profile = profilecontroller.profile;
-
-                    return Column(
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              height: 80,
-                              width: 80,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                    color: isDarkMode
-                                        ? AppColors.white
-                                        : AppColors.black,
-                                    width: 2),
-                                image: DecorationImage(
-                                  image: _profileImage != null
-                                      ? FileImage(
-                                          _profileImage!) // Selected image
-                                      : (profile.isNotEmpty &&
-                                              profile
-                                                  .first.profileImage.isNotEmpty
-                                          ? NetworkImage(
-                                                  profile.first.profileImage)
-                                              as ImageProvider
-                                          : const AssetImage(
-                                              AppImages.profileImage)),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 24),
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: _pickImage,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color: isDarkMode
-                                          ? AppColors.white
-                                          : AppColors.black,
-                                    ),
-                                  ),
-                                  width: double.infinity,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 6.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          "Edit Profile Picture",
-                                          style: smallStyle.copyWith(
-                                            fontWeight: FontWeight.w700,
-                                            color: isDarkMode
-                                                ? AppColors.white
-                                                : AppColors.black,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 24),
-                        inputTextField(
-                            title: "Full Name", controller: fullNameController),
-                        const SizedBox(height: 16),
-                        inputTextField(
-                            title: "Email",
-                            controller: emailController,
-                            enabled: false),
-                        const SizedBox(height: 16),
-                        inputTextField(
-                            title: "Gender", controller: genderController),
-                        const SizedBox(height: 16),
-                        inputTextField(
-                            title: "Contact Number",
-                            controller: phoneController),
-                        const SizedBox(height: 16),
-                        inputTextField(
-                            title: "Designation",
-                            controller: designationController,
-                            enabled: false),
-                        const SizedBox(height: 16),
-                        inputTextField(
-                            title: "Skills", controller: skillsController),
-                        const SizedBox(height: 16),
-                        inputTextField(
-                            title: "Date of Birth", controller: dobController),
-                        const SizedBox(height: 16),
-                        inputTextField(
-                            title: "Joined Date",
-                            controller: joinedDateController,
-                            enabled: false),
-                        const SizedBox(height: 15),
-                        if (profile.isNotEmpty &&
-                            profile.first.resume != null &&
-                            profile.first.resume.isNotEmpty)
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Uploaded Resume",
-                                style: smallStyle.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                  color:
-                                      isDarkMode ? Colors.white : Colors.black,
-                                ),
-                              ),
-                              const SizedBox(height: 6),
-                              GestureDetector(
-                                onTap: () {
-                                  launch(profile.first.resume!);
-                                },
-                                child: Text(
-                                  profile.first.resume!,
-                                  style: smallStyle.copyWith(
-                                    color: Colors.blue,
-                                    // decoration: TextDecoration.underline,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        const SizedBox(height: 16),
-                        if (profile.isEmpty ||
-                            profile.first.resume == null ||
-                            profile.first.resume.isEmpty)
-                          FileUploadField(
-                            title: "Add Resume",
-                            hintText: "---",
-                            onFilePicked: (FilePickerResult? result) {
-                              if (result != null) {
-                                setState(() {
-                                  _resume = File(result.files.single.path!);
-                                });
-                                log("Picked file: ${result.files.single.name}");
-                              } else {
-                                log("No file picked");
-                              }
-                            },
-                          ),
-                        const SizedBox(height: 32),
-                        Align(
-                          alignment: Alignment.bottomRight,
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(right: 20, bottom: 20),
-                            child: ElevatedButton(
-                              onPressed: _isLoading ? null : _submitUserInfo,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: isDarkMode
-                                    ? Colors.blueAccent
-                                    : Colors.black,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: _isLoading
-                                  ? const SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                        color: Colors.white,
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          "Next",
-                                          style: smallStyle.copyWith(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                            width:
-                                                8), // Space between text and icon
-                                        const Icon(
-                                          Icons.arrow_forward, // Arrow icon
-                                          color: Colors.white,
-                                          size: 20,
-                                        ),
-                                      ],
-                                    ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
+                child: Obx(() {
+                  return Column(
+                    children: [
+                      _buildProfileHeader(isDarkMode),
+                      const SizedBox(height: 24),
+                      _buildTextField(
+                          "Full Name", fullNameController, isDarkMode),
+                      _buildTextField("Email", emailController, isDarkMode,
+                          enabled: false),
+                      _buildTextField("Gender", genderController, isDarkMode),
+                      _buildTextField(
+                        "Contact Number",
+                        phoneController,
+                        isDarkMode,
+                        keyboardType: TextInputType.numberWithOptions(),
+                      ),
+                      _buildTextField(
+                          "Designation", designationController, isDarkMode,
+                          enabled: false),
+                      _buildTextField("Skills", skillsController, isDarkMode),
+                      _buildDateField(
+                          "Date of Birth", dobController, isDarkMode),
+                      _buildTextField(
+                          "Joined Date", joinedDateController, isDarkMode,
+                          enabled: false),
+                      const SizedBox(height: 15),
+                      _buildResumeSection(isDarkMode),
+                      const SizedBox(height: 16),
+                      _buildNextButton(isDarkMode),
+                    ],
+                  );
+                }),
               ),
             ),
           ),
@@ -415,77 +532,4 @@ class _EditUserInfoState extends State<EditUserInfo> {
       ),
     );
   }
-}
-
-Widget inputTextField({
-  required String title,
-  required TextEditingController controller,
-  bool enabled = true,
-}) {
-  return Builder(builder: (context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: smallStyle.copyWith(
-            fontWeight: FontWeight.w700,
-            color: isDarkMode ? Colors.white : Colors.black,
-          ),
-        ),
-        const SizedBox(height: 6),
-        TextFormField(
-          controller: controller,
-          enabled: enabled,
-          style: smallStyle.copyWith(
-            color: isDarkMode ? Colors.white : Colors.black,
-          ),
-          decoration: InputDecoration(
-            isDense: true,
-            filled: !enabled,
-            fillColor: !enabled
-                ? (isDarkMode ? Colors.grey[700] : Colors.grey[200])
-                : null,
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                width: 1,
-                color: isDarkMode ? Colors.white70 : const Color(0xffCCCCCC),
-              ),
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(
-                width: 1,
-                color: isDarkMode ? Colors.white70 : const Color(0xffCCCCCC),
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                width: 1,
-                color: isDarkMode ? Colors.blueAccent : const Color(0xffCCCCCC),
-              ),
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: AppColors.red.withOpacity(0.5),
-                width: 1,
-              ),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: AppColors.red.withOpacity(0.5),
-                width: 1,
-              ),
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        ),
-      ],
-    );
-  });
 }
