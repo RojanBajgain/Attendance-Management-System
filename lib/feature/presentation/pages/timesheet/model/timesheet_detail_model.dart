@@ -9,15 +9,15 @@ class TimesheetDetailModel {
   String? verifyMode;
   String? pictureUrl;
   int? employeeNo;
-  int? totalHour;
+  String? totalHour; // Changed from int? to String?
   int? breakTime;
-  int? overTime;
+  String? overTime; // Changed from int? to String?
   String? designation;
   String? entryRemarks;
   String? exitRemarks;
 
   TimesheetDetailModel({
-    this.serialNo = 0,
+    this.serialNo,
     this.name = '',
     this.date,
     this.entryTime,
@@ -25,9 +25,9 @@ class TimesheetDetailModel {
     this.verifyMode = '',
     this.pictureUrl = '',
     this.employeeNo = 0,
-    this.totalHour = 0,
+    this.totalHour = '0', // Changed default value to '0'
     this.breakTime = 0,
-    this.overTime = 0,
+    this.overTime = '0', // Changed default value to '0'
     this.designation = '',
     this.entryRemarks,
     this.exitRemarks,
@@ -40,7 +40,11 @@ class TimesheetDetailModel {
 
   factory TimesheetDetailModel.fromJson(Map<String, dynamic> json) =>
       TimesheetDetailModel(
-        serialNo: json["serial_no"] ?? 0,
+        serialNo: json["serial_no"] == null
+            ? null
+            : json["serial_no"] is String
+                ? int.tryParse(json["serial_no"])
+                : json["serial_no"],
         name: json["name"] ?? '',
         date: DateTime.tryParse(json["date"] ?? '') ?? DateTime.now(),
         entryTime: DateTime.tryParse(json["entry_time"] ?? ''),
@@ -48,9 +52,9 @@ class TimesheetDetailModel {
         verifyMode: json["verify_mode"] ?? '',
         pictureUrl: json["picture_url"] ?? '',
         employeeNo: json["employee_no"] ?? 0,
-        totalHour: json["total_hour"] ?? 0,
+        totalHour: json["total_hour"]?.toString() ?? '0', // Convert to String
         breakTime: json["break_time"] ?? 0,
-        overTime: json["over_time"] ?? 0,
+        overTime: json["over_time"]?.toString() ?? '0', // Convert to String
         designation: json["designation"] ?? '',
         entryRemarks: json["entry_remarks"],
         exitRemarks: json["exit_remarks"],

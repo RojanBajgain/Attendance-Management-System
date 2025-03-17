@@ -1,7 +1,7 @@
 import 'package:ams/config/resources/styles.dart';
 import 'package:flutter/material.dart';
 
-class ProfileMenu extends StatefulWidget {
+class ProfileMenu extends StatelessWidget {
   const ProfileMenu({
     Key? key,
     required this.text,
@@ -9,26 +9,17 @@ class ProfileMenu extends StatefulWidget {
     this.press,
     this.showIcon = true,
     this.expandedContent,
+    this.isExpanded = false,
+    this.onExpandToggle,
   }) : super(key: key);
 
   final String text;
   final IconData icon;
   final VoidCallback? press;
   final bool showIcon;
-  final Widget? expandedContent; // Widget to show when expanded
-
-  @override
-  _ProfileMenuState createState() => _ProfileMenuState();
-}
-
-class _ProfileMenuState extends State<ProfileMenu> {
-  bool _isExpanded = false; // Tracks expanded state
-
-  void _toggleExpand() {
-    setState(() {
-      _isExpanded = !_isExpanded;
-    });
-  }
+  final Widget? expandedContent;
+  final bool isExpanded;
+  final VoidCallback? onExpandToggle;
 
   @override
   Widget build(BuildContext context) {
@@ -49,31 +40,33 @@ class _ProfileMenuState extends State<ProfileMenu> {
                   isDarkMode ? Colors.grey.shade700 : Colors.grey.shade200,
             ),
             onPressed: () {
-              _toggleExpand();
-              if (widget.press != null) {
-                widget.press!();
+              if (onExpandToggle != null && showIcon) {
+                onExpandToggle!();
+              }
+              if (press != null) {
+                press!();
               }
             },
             child: Row(
               children: [
                 Icon(
-                  widget.icon,
+                  icon,
                   size: 30,
                   color: isDarkMode ? Colors.black : Colors.black,
                 ),
                 const SizedBox(width: 20),
                 Expanded(
-                  child: Text(widget.text,
+                  child: Text(text,
                       style: smallStyle.copyWith(
                         fontWeight: FontWeight.w600,
                         color: isDarkMode ? Colors.white : Colors.black,
                       )),
                 ),
-                if (widget.showIcon)
+                if (showIcon)
                   GestureDetector(
-                    onTap: _toggleExpand,
+                    onTap: onExpandToggle,
                     child: Icon(
-                      _isExpanded ? Icons.expand_less : Icons.expand_more,
+                      isExpanded ? Icons.expand_less : Icons.expand_more,
                       size: 30.0,
                       color: isDarkMode ? Colors.white : Colors.black,
                     ),
@@ -82,11 +75,11 @@ class _ProfileMenuState extends State<ProfileMenu> {
             ),
           ),
           // Expanded content shown conditionally
-          if (_isExpanded && widget.expandedContent != null)
+          if (isExpanded && expandedContent != null)
             Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
-              child: widget.expandedContent,
+              child: expandedContent,
             ),
         ],
       ),

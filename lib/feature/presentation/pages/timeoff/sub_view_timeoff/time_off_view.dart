@@ -25,13 +25,16 @@ class TimeOffSheet extends StatelessWidget {
           showDialog(
             context: context,
             builder: (BuildContext context) {
+              final messageHeight = timeoffdata.reason != null
+                  ? (timeoffdata.reason!.length / 30 * 20).clamp(50.0, 200.0)
+                  : 50.0;
               return Dialog(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Container(
-                  height: 600,
-                  width: double.infinity,
+                  height: 450 + messageHeight,
+                  // width: double.infinity,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(13.0),
                       color: isDarkMode ? Colors.grey.shade800 : Colors.white),
@@ -222,7 +225,7 @@ class TimeOffSheet extends StatelessWidget {
                         ),
                         const SizedBox(height: 10.0),
                         Wrap(
-                          spacing: 8.0, // Optional spacing between elements
+                          spacing: 15.0, // Optional spacing between elements
                           children: [
                             Text(
                               'Reason:',
@@ -235,7 +238,7 @@ class TimeOffSheet extends StatelessWidget {
                               children: [
                                 Text(
                                   timeoffdata.reason.toString(),
-                                  maxLines: 4,
+                                  maxLines: 12,
                                   overflow: TextOverflow.ellipsis,
                                   style: smallStyle.copyWith(
                                     color: isDarkMode
@@ -247,7 +250,7 @@ class TimeOffSheet extends StatelessWidget {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 50.0),
+                        const SizedBox(height: 20.0),
                         Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -267,7 +270,7 @@ class TimeOffSheet extends StatelessWidget {
                             ),
                             const SizedBox(height: 10.0),
                             Container(
-                              height: 150,
+                              height: 100,
                               width: 270,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(13.0),

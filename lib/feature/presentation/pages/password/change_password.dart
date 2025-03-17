@@ -117,7 +117,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                     Expanded(
                       child: InkWell(
                         onTap: () {
-                          authcontroller.changePasswordmethod(oldPassword.text,
+                          authcontroller.changePasswordMethod(oldPassword.text,
                               newPassword.text, confirmPassword.text);
                         },
                         child: Container(

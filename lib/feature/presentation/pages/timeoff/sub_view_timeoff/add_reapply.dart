@@ -26,7 +26,10 @@ class _AddReapplyPageState extends State<AddReapplyPage> {
   final authcontroller = Get.find<AuthController>();
   final TimeoffController timeoffcontroller =
       Get.put(TimeoffController(timeoffRepo: Get.find()));
-  final _reasonController = TextEditingController();
+
+  final _formKey = GlobalKey<FormBuilderState>();
+
+  TextEditingController _reasonController = TextEditingController();
 
   @override
   void dispose() {
@@ -34,12 +37,34 @@ class _AddReapplyPageState extends State<AddReapplyPage> {
     super.dispose();
   }
 
+  void _clearForm() {
+    setState(
+      () {
+        _reasonController.clear();
+
+        if (_formKey.currentState != null) {
+          _formKey.currentState!.reset();
+
+          _formKey.currentState!.fields['leave']?.reset();
+        }
+
+        // Get.snackbar(
+        //   'Form Cleared',
+        //   'All fields have been reset.',
+        //   snackPosition: SnackPosition.TOP,
+        //   backgroundColor: Colors.green,
+        //   colorText: Colors.white,
+        // );
+      },
+    );
+  }
+
   Future<void> _submitReapply() async {
     if (_reasonController.text.isEmpty) {
       Get.snackbar(
-        'Error',
+        'Required',
         'Please fill in the reason field',
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
@@ -154,30 +179,34 @@ class _AddReapplyPageState extends State<AddReapplyPage> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(left: 105.0),
-                      child: Container(
-                        height: 45.0,
-                        width: 120.0,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          borderRadius: BorderRadius.circular(10.0),
-                          color: isDarkMode ? Colors.white : Colors.black,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.sort,
-                              color: isDarkMode ? Colors.black : Colors.white,
-                            ),
-                            const SizedBox(width: 4.0),
-                            Text(
-                              "Clear",
-                              style: smallStyle.copyWith(
-                                fontWeight: FontWeight.bold,
+                      child: InkWell(
+                        onTap: _clearForm,
+                        child: Container(
+                          height: 45.0,
+                          width: 120.0,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black),
+                            borderRadius: BorderRadius.circular(10.0),
+                            color: isDarkMode ? Colors.white : Colors.black,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.sort,
                                 color: isDarkMode ? Colors.black : Colors.white,
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 4.0),
+                              Text(
+                                "Clear",
+                                style: smallStyle.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color:
+                                      isDarkMode ? Colors.black : Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),

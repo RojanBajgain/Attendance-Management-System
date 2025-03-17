@@ -25,31 +25,32 @@ class NotificationsContent extends StatefulWidget {
 }
 
 class _NotificationsContentState extends State<NotificationsContent> {
+  bool _expanded = false;
+
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      height: 105.0,
-      width: double.infinity,
+      // Remove fixed height to allow dynamic resizing
+      // height: 115.0,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(13.0),
         color: isDarkMode ? Colors.grey.shade800 : Colors.grey.shade50,
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.5),
-            blurRadius: 5,
+            blurRadius: 2,
             spreadRadius: 1,
-            offset: const Offset(0, 1),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.only(
-          left: 20.0, top: 10.0, bottom: 10.0,
-          // right: 20.0,
-        ),
+        padding: const EdgeInsets.all(16.0),
         child: Row(
+          crossAxisAlignment:
+              CrossAxisAlignment.start, // Align to top for better expansion
           children: [
             Container(
               height: MediaQuery.of(context).size.height * 0.08,
@@ -119,16 +120,43 @@ class _NotificationsContentState extends State<NotificationsContent> {
                     ),
                   ),
                   const SizedBox(height: 5.0),
-                  Expanded(
-                    child: Text(
-                      widget.contextTxtDetail,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                      softWrap: false,
-                      style: miniStyle.copyWith(
-                        color: isDarkMode ? Colors.white : Colors.black,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.contextTxtDetail,
+                        overflow: _expanded
+                            ? TextOverflow.visible
+                            : TextOverflow.ellipsis,
+                        maxLines: _expanded
+                            ? null
+                            : 2, // Limit lines when not expanded
+                        softWrap: true,
+                        style: miniStyle.copyWith(
+                          color: isDarkMode ? Colors.white : Colors.black,
+                        ),
                       ),
-                    ),
+                      // Show "Show More" button if text is likely to overflow
+                      if (widget.contextTxtDetail.length >
+                          50) // Adjust this threshold as needed
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _expanded = !_expanded;
+                            });
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 4.0),
+                            child: Text(
+                              _expanded ? "Show less" : "Show more",
+                              style: miniStyle.copyWith(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                   const SizedBox(height: 5.0),
                   Text(

@@ -27,6 +27,20 @@ class _ProfilePageState extends State<ProfilePage> {
   final ProfileController profilecontroller =
       Get.put(ProfileController(profileRepo: Get.find()));
 
+  int? _currentlyExpandedIndex;
+
+  void _handleTileExpansion(int index) {
+    setState(() {
+      if (_currentlyExpandedIndex == index) {
+        // If the same tile is clicked again, collapse it
+        _currentlyExpandedIndex = null;
+      } else {
+        // Expand the clicked tile and collapse others
+        _currentlyExpandedIndex = index;
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -35,7 +49,14 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   // List of allowed types
-  List<String> allowedTypes = ['citizenship', 'education', 'pan', 'license'];
+  List<String> allowedTypes = [
+    'citizenship',
+    'education',
+    'pan',
+    'license',
+    'recommendation',
+    'other',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -88,10 +109,10 @@ class _ProfilePageState extends State<ProfilePage> {
           child: Column(
             children: [
               const SizedBox(height: 80.0),
-              _buildPersonalInfo(isDarkMode),
-              _buildDocuments(isDarkMode),
-              _buildBankDetails(isDarkMode),
-              _buildDeviceDetails(isDarkMode),
+              _buildPersonalInfo(isDarkMode, 0),
+              _buildDocuments(isDarkMode, 1),
+              _buildBankDetails(isDarkMode, 2),
+              _buildDeviceDetails(isDarkMode, 3),
               _buildChangePassword(),
               _buildLogout(isDarkMode),
             ],
@@ -101,11 +122,13 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildPersonalInfo(bool isDarkMode) {
+  Widget _buildPersonalInfo(bool isDarkMode, int index) {
     return ProfileMenu(
       text: "Personal Info",
       icon: Icons.account_circle_outlined,
       showIcon: true,
+      isExpanded: _currentlyExpandedIndex == index,
+      onExpandToggle: () => _handleTileExpansion(index),
       expandedContent: _buildExpandedContent(
         isDarkMode,
         child: Obx(() {
@@ -114,22 +137,33 @@ class _ProfilePageState extends State<ProfilePage> {
           }
 
           final profileData = profilecontroller.profile;
-          return SizedBox(
-            height: 250,
-            child: ListView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.zero,
-              shrinkWrap: true,
-              itemCount: profileData.length,
-              itemBuilder: (BuildContext context, int index) {
-                final profiledata = profileData[index];
-                return _buildProfileDetails(profiledata, isDarkMode);
-              },
-            ),
+
+          if (profileData.isEmpty) {
+            return const Center(child: Text("No Profile available."));
+          }
+
+          // return SizedBox(
+          //   height: 250,
+          //   child: ListView.builder(
+          //     physics: const NeverScrollableScrollPhysics(),
+          //     padding: EdgeInsets.zero,
+          //     shrinkWrap: true,
+          //     itemCount: profileData.length,
+          //     itemBuilder: (BuildContext context, int index) {
+          //       final profiledata = profileData[index];
+          //       return _buildProfileDetails(profiledata, isDarkMode);
+          //     },
+          //   ),
+          // );
+          return Column(
+            children: profileData
+                .map((profileData) =>
+                    _buildProfileDetails(profileData, isDarkMode))
+                .toList(),
           );
         }),
       ),
-      press: () {},
+      // press: () {},
     );
   }
 
@@ -183,10 +217,12 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildDocuments(bool isDarkMode) {
+  Widget _buildDocuments(bool isDarkMode, int index) {
     return ProfileMenu(
       text: "Documents",
       icon: Icons.card_travel_outlined,
+      isExpanded: _currentlyExpandedIndex == index,
+      onExpandToggle: () => _handleTileExpansion(index),
       expandedContent: _buildExpandedContent(
         isDarkMode,
         child: Obx(() {
@@ -196,7 +232,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
           final profileData = profilecontroller.profile;
 
-          // If no documents, return an empty state
           if (profileData.isEmpty) {
             return const Center(child: Text("No documents available."));
           }
@@ -209,7 +244,7 @@ class _ProfilePageState extends State<ProfilePage> {
           );
         }),
       ),
-      press: () {},
+      // press: () {},
     );
   }
 
@@ -245,6 +280,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     if (doc.type?.toLowerCase() == 'pan' &&
                         doc.identifier != null)
                       _buildRow("Identifier (${doc.type}):", doc.identifier!),
+                    if (doc.type?.toLowerCase() == 'recommendation' &&
+                        doc.identifier != null)
+                      _buildRow("Identifier (${doc.type}):", doc.identifier!),
+                    if (doc.type?.toLowerCase() == 'other' &&
+                        doc.identifier != null)
+                      _buildRow("Other (${doc.title}):", doc.identifier!),
                     if (doc.issuedDate != null)
                       if (doc.issuedDate != null)
                         _buildRow(
@@ -283,10 +324,12 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildBankDetails(bool isDarkMode) {
+  Widget _buildBankDetails(bool isDarkMode, int index) {
     return ProfileMenu(
       text: "Banking Details",
       icon: Icons.account_balance_outlined,
+      isExpanded: _currentlyExpandedIndex == index,
+      onExpandToggle: () => _handleTileExpansion(index),
       expandedContent: _buildExpandedContent(
         isDarkMode,
         child: Obx(() {
@@ -308,7 +351,7 @@ class _ProfilePageState extends State<ProfilePage> {
           );
         }),
       ),
-      press: () {},
+      // press: () {},
     );
   }
 
@@ -337,10 +380,12 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildDeviceDetails(bool isDarkMode) {
+  Widget _buildDeviceDetails(bool isDarkMode, int index) {
     return ProfileMenu(
       text: "Device Details",
       icon: Icons.tv_outlined,
+      isExpanded: _currentlyExpandedIndex == index,
+      onExpandToggle: () => _handleTileExpansion(index),
       expandedContent: _buildExpandedContent(
         isDarkMode,
         child: Obx(() {
@@ -350,7 +395,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
           final profileData = profilecontroller.profile;
           return SizedBox(
-            height: 60,
+            height: 70,
             width: MediaQuery.of(context).size.width,
             child: ListView.builder(
               padding: EdgeInsets.zero,
@@ -366,7 +411,7 @@ class _ProfilePageState extends State<ProfilePage> {
           );
         }),
       ),
-      press: () {},
+      // press: () {},
     );
   }
 
@@ -470,9 +515,10 @@ class _ProfilePageState extends State<ProfilePage> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5.0),
+      padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             label,
@@ -485,7 +531,9 @@ class _ProfilePageState extends State<ProfilePage> {
           Flexible(
             child: Text(
               value,
+              maxLines: 3,
               overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.right,
               style: smallStyle.copyWith(
                 color: isDarkMode ? Colors.white : Colors.black,
               ),

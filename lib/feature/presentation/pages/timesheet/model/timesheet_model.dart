@@ -33,23 +33,23 @@ class TimesheetModel {
 class Datum {
   int id;
   int? serialNo;
+  int? employeeNo;
   String? name;
   DateTime? date;
   DateTime? entryTime;
   DateTime? exitTime;
   String? verifyMode;
   String? pictureUrl;
-  int employeeNo;
-  int? totalHour;
+  String? totalHour;
   int? breakTime;
-  int? overTime;
+  String? overTime;
   String? designation;
   String? entryRemarks;
   String? exitRemarks;
 
   Datum({
     this.id = 0,
-    this.serialNo = 0,
+    this.serialNo,
     this.name = '',
     this.date,
     this.entryTime,
@@ -57,9 +57,9 @@ class Datum {
     this.verifyMode,
     this.pictureUrl = '',
     this.employeeNo = 0,
-    this.totalHour = 0,
+    this.totalHour = '0',
     this.breakTime = 0,
-    this.overTime = 0,
+    this.overTime = '0',
     this.designation = '',
     this.entryRemarks = '',
     this.exitRemarks = '',
@@ -67,7 +67,11 @@ class Datum {
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
         id: json["id"],
-        serialNo: json["serial_no"],
+        serialNo: json["serial_no"] == null
+            ? null
+            : json["serial_no"] is String
+                ? int.tryParse(json["serial_no"])
+                : json["serial_no"],
         name: json["name"],
         date: json["date"] != null ? DateTime.tryParse(json["date"]) : null,
         entryTime: json["entry_time"] != null
@@ -79,9 +83,9 @@ class Datum {
         verifyMode: json["verify_mode"],
         pictureUrl: json["picture_url"],
         employeeNo: json["employee_no"],
-        totalHour: json["total_hour"],
+        totalHour: json["total_hour"]?.toString(),
         breakTime: json["break_time"],
-        overTime: json["over_time"],
+        overTime: json["over_time"]?.toString(),
         designation: json["designation"],
         entryRemarks: json["entry_remarks"],
         exitRemarks: json["exit_remarks"],

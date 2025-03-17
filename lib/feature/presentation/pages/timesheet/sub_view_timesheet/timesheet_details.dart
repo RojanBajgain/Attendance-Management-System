@@ -111,18 +111,20 @@ class _TimeSheetDetailState extends State<TimeSheetDetail> {
                             timesheet.exitTime != null
                                 ? DateFormat('hh:mm a')
                                     .format(timesheet.exitTime!.toLocal())
-                                : "",
+                                : "N/A",
                           ),
                           _buildRow("Entry Remarks:",
                               timesheet.entryRemarks.toString()),
-                          _buildRow("Exit Remarks:",
-                              timesheet.exitRemarks.toString()),
+                          _buildRow(
+                              "Exit Remarks:",
+                              (timesheet.exitRemarks == null ||
+                                      timesheet.exitRemarks == "null")
+                                  ? "---"
+                                  : timesheet.exitRemarks.toString()),
                           _buildRow(
                               "Break Time:", timesheet.breakTime.toString()),
-                          // _buildRow(
-                          //     "Exit Remarks:", timesheet.remarks.toString()),
-                          _buildRow("Total Hour:",
-                              "${timesheet.totalHour.toString()} Hrs"),
+                          _buildRow(
+                              "Total Hour:", "${timesheet.totalHour} Hrs"),
                           _buildRow("Overtime:", "${timesheet.overTime} Hrs"),
                           _buildRow(
                               "Designation:", timesheet.designation ?? "N/A"),
