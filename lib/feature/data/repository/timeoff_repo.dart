@@ -13,10 +13,6 @@ class TimeoffRepo {
   Future<ApiResponse> getTimeoff() async {
     final token = apiClient.token;
 
-    if (token.isEmpty) {
-      throw Exception('JWT Token is missing or invalid');
-    }
-
     final response = await ApiClient.getApi(
       ApiUrls.timeoff,
       token: token,
@@ -30,9 +26,6 @@ class TimeoffRepo {
       String enddate, String reason) async {
     final token = apiClient.token;
 
-    if (token.isEmpty) {
-      throw Exception('JWT token is missing or invalid');
-    }
     const url = ApiUrls.posttimeoff;
     if (kDebugMode) {
       print(url);
