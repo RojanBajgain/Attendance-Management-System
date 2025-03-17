@@ -154,8 +154,8 @@ class AuthController extends GetxController {
     }
   }
 
-// Change Password
-  Future<void> changePasswordmethod(
+  // Change Password
+  Future<void> changePasswordMethod(
       String oldPassword, String newPassword, String confirmPassword) async {
     if (newPassword != confirmPassword) {
       Get.snackbar(
@@ -166,19 +166,24 @@ class AuthController extends GetxController {
       );
       return;
     }
-    if (newPassword != confirmPassword) {
+
+    String? passwordValidationMessage = _validatePassword(newPassword);
+    if (passwordValidationMessage != null) {
       Get.snackbar(
-        "Password does not match",
-        "Please check again",
+        "Invalid Password",
+        passwordValidationMessage,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
       );
+      return;
     }
+
+    // Call the API for password change
     ApiResponse response = await authRepo.changePassword(
         oldPassword, newPassword, confirmPassword);
-    if (response.status == ApiStatus.SUCCESS) {
-      log("Successfully changed Password.  Data: ${response.response}");
 
+    if (response.status == ApiStatus.SUCCESS) {
+      log("Successfully changed Password. Data: ${response.response}");
       Get.offAll(() => const LoginPage());
       apiClient.clearTokens();
 
@@ -194,19 +199,40 @@ class AuthController extends GetxController {
               .contains("old password is incorrect") ??
           false) {
         Get.snackbar(
-          'Old Password Incorrect',
+          'Incorrect Old Password',
           'Please enter the correct old password',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red,
         );
       } else {
-        // Get.snackbar(
-        //   'Failed to Change Password',
-        //   response.message ?? 'An unexpected error occurred',
-        //   snackPosition: SnackPosition.BOTTOM,
-        //   backgroundColor: Colors.red,
-        // );
+        Get.snackbar(
+          'Failed to Change Password',
+          'The password is too short \nPassword is similar to the email',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+        );
       }
     }
+  }
+
+  String? _validatePassword(String? password) {
+    // Ensure password is not null
+    if (password == null || password.isEmpty) {
+      return 'Password cannot be empty.';
+    }
+
+    if (password.length < 8) {
+      return 'Password must be at least 8 characters long.';
+    }
+    if (!RegExp(r'[A-Z]').hasMatch(password)) {
+      return 'Password must contain at least one uppercase letter.';
+    }
+    if (!RegExp(r'[0-9]').hasMatch(password)) {
+      return 'Password must contain at least one number.';
+    }
+    if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password)) {
+      return 'Password must contain at least one special character.';
+    }
+    return null; // Password is valid
   }
 }

@@ -49,10 +49,18 @@ class _ClockTimeState extends State<ClockTime> {
     });
   }
 
+  // @override
+  // void dispose() {
+  //   // Stop any active timers
+  //   timerController.stopTimer();
+  //   timerController.stopStopwatch();
+  //   super.dispose();
+  // }
+
   Future<void> _fetchOfficeLocation() async {
     Location? location = await clockInOutController.getOfficeLocation();
 
-    if (location != null) {
+    if (location != null && mounted) {
       setState(() {
         officeLocation = location;
       });
@@ -61,6 +69,8 @@ class _ClockTimeState extends State<ClockTime> {
 
   Future<void> _loadClockInState() async {
     await hasClockedinController.getClockData();
+    if (!mounted) return;
+
     DateTime now = DateTime.now();
     String todayDate = DateFormat('yyyy-MM-dd').format(now);
 
@@ -69,6 +79,8 @@ class _ClockTimeState extends State<ClockTime> {
 
     if (clockInTime != null &&
         DateFormat('yyyy-MM-dd').format(clockInTime) == todayDate) {
+      if (!mounted) return;
+
       setState(() {
         isClockedInToday = true;
         isClockedOut = false;
@@ -80,6 +92,8 @@ class _ClockTimeState extends State<ClockTime> {
       timerController.elapsedSeconds.value = elapsed;
       timerController.startTimer();
     } else {
+      if (!mounted) return;
+
       setState(() {
         isClockedInToday = false;
         isClockedOut = false;
@@ -148,6 +162,7 @@ class _ClockTimeState extends State<ClockTime> {
         timerController.startStopwatch(initialSeconds: totalElapsed);
       }
     }
+    if (!mounted) return;
 
     setState(() => isOnBreak = isOnBreakValue);
   }
@@ -198,6 +213,8 @@ class _ClockTimeState extends State<ClockTime> {
     }
 
     await hasClockedinController.getClockData();
+
+    if (!mounted) return;
 
     setState(() {
       isOnBreak = !isOnBreak;

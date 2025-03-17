@@ -25,7 +25,7 @@ class ResetPasswordController extends GetxController {
         Get.snackbar(
           'Reset Password',
           response.message ??
-              'Password Reset has been successfully posted, Please check yoyr mail',
+              'Password Reset has been successfully posted, Please check your mail',
           snackPosition: SnackPosition.TOP,
           duration: const Duration(seconds: 3),
           colorText: Colors.white,
@@ -33,14 +33,14 @@ class ResetPasswordController extends GetxController {
         );
       } else {
         log("Error: ${response.message}");
-        Get.snackbar(
-          'Server Error',
-          'Failed to post password reset. Please try again later',
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 3),
-          colorText: Colors.white,
-          backgroundColor: Colors.redAccent,
-        );
+        // Get.snackbar(
+        //   'Server Error',
+        //   'Failed to post password reset. Please try again later',
+        //   snackPosition: SnackPosition.BOTTOM,
+        //   duration: const Duration(seconds: 3),
+        //   colorText: Colors.white,
+        //   backgroundColor: Colors.redAccent,
+        // );
       }
     } catch (e) {
       if (kDebugMode) {

@@ -16,6 +16,9 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
   bool isEventSelected = false;
   bool isNoticeSelected = false;
 
+  // Map to track expanded state of each item
+  final Map<String, bool> _expandedItems = {};
+
   final NotificationController notificationcontroller =
       Get.put(NotificationController(notificationrepo: Get.find()));
 
@@ -46,6 +49,13 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
       isHolidaySelected = false;
       isEventSelected = false;
       isNoticeSelected = true;
+    });
+  }
+
+  // Toggle description expansion
+  void _toggleExpanded(String itemId) {
+    setState(() {
+      _expandedItems[itemId] = !(_expandedItems[itemId] ?? false);
     });
   }
 
@@ -180,6 +190,17 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
   }
 
   Widget _buildNotificationItem(Datum item, bool isDarkMode) {
+    // Generate a unique ID for each item
+    final itemId = item.id?.toString() ?? "${item.title}-${item.timestamp}";
+    final isExpanded = _expandedItems[itemId] ?? false;
+    final description = item.description ?? "No Description";
+
+    // Handle description length
+    final isLongDescription = description.length > 100;
+    final displayDescription = isLongDescription && !isExpanded
+        ? "${description.substring(0, 100)}..."
+        : description;
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
       padding: const EdgeInsets.all(8.0),
@@ -203,6 +224,7 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                   fontWeight: FontWeight.bold,
                   color: isDarkMode ? Colors.white : Colors.black,
                 ),
+                textAlign: TextAlign.start,
               ),
             ),
           ),
@@ -211,6 +233,21 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Timestamp at the top
+                Text(
+                  item.timestamp != null
+                      ? _getRelativeDate(item.timestamp!)
+                      : "---",
+                  style: smallStyle.copyWith(
+                    color: isDarkMode
+                        ? Colors.grey.shade400
+                        : Colors.grey.shade700,
+                    fontSize: 12,
+                  ),
+                ),
+                const SizedBox(height: 5.0),
+
+                // Title
                 Text(
                   item.title ?? "No Title",
                   style: smallNStyle.copyWith(
@@ -219,21 +256,30 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                   ),
                 ),
                 const SizedBox(height: 5.0),
+
+                // Description with show more/less
                 Text(
-                  item.description ?? "No Description",
+                  displayDescription,
                   style: smallStyle.copyWith(
                     color: isDarkMode ? Colors.white : Colors.black,
                   ),
                 ),
-                const SizedBox(height: 5.0),
-                Text(
-                  item.timestamp != null
-                      ? _getRelativeDate(item.timestamp!)
-                      : "---",
-                  style: smallStyle.copyWith(
-                    color: isDarkMode ? Colors.white : Colors.black,
+
+                // Show more/less button if description is long
+                if (isLongDescription)
+                  InkWell(
+                    onTap: () => _toggleExpanded(itemId),
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 4.0),
+                      child: Text(
+                        isExpanded ? "Show Less" : "Show More",
+                        style: smallStyle.copyWith(
+                          color: isDarkMode ? Colors.blueAccent : Colors.blue,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
               ],
             ),
           ),

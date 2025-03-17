@@ -110,27 +110,32 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 16.0),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          SizedBox(
-                            height: 24.0,
-                            width: 24.0,
-                            child: Checkbox(
-                              value: keepMeLoggedIn,
-                              onChanged: (bool? value) {
-                                setState(() {
-                                  // keepMeLoggedIn = value ?? false;
-                                });
-                              },
-                            ),
-                          ),
-                          SizedBox(width: 5.0),
-                          Text(
-                            "Keep me logged in",
-                            style: smallStyle.copyWith(
-                              color:
-                                  isDarkMode ? Colors.blue : AppColors.primary,
-                            ),
+                          Row(
+                            children: [
+                              SizedBox(
+                                height: 24.0,
+                                width: 24.0,
+                                child: Checkbox(
+                                  value: keepMeLoggedIn,
+                                  onChanged: (bool? value) {
+                                    setState(() {
+                                      keepMeLoggedIn = value ?? true;
+                                    });
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 5.0),
+                              Text(
+                                "Keep me logged in",
+                                style: smallStyle.copyWith(
+                                  color: isDarkMode
+                                      ? Colors.blue
+                                      : AppColors.primary,
+                                ),
+                              ),
+                            ],
                           ),
                           SizedBox(width: 35.0),
                           GestureDetector(
