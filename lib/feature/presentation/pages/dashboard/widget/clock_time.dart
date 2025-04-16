@@ -249,7 +249,7 @@ class _ClockTimeState extends State<ClockTime> {
   Widget build(BuildContext context) {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      height: 250.0,
+      height: 200.0,
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30.0),

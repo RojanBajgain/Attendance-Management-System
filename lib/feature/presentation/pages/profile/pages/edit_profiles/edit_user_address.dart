@@ -174,17 +174,17 @@ class _EditUserAddressState extends State<EditUserAddress> {
       int permanentCountryId = int.tryParse(countryIdController.text) ?? 1;
       int currentCountryId = int.tryParse(currentCountryIdController.text) ?? 1;
 
-      // Add debug logging
+      /*  // Add debug logging
       print(
           "Submitting permanent address with country ID: $permanentCountryId");
-      print("Submitting current address with country ID: $currentCountryId");
+      print("Submitting current address with country ID: $currentCountryId"); */
 
       // Submit permanent address
       if (permanentAddressId != null) {
         await profileController.postuserAddress(
           id: userId,
           addressID: permanentAddressId!,
-          country: permanentCountryId.toString(), // Make sure it's a string
+          country: permanentCountryId.toString(),
           province: provinceController.text,
           city: cityController.text,
           addressLineOne: addressLineOneController.text,
@@ -195,7 +195,7 @@ class _EditUserAddressState extends State<EditUserAddress> {
       } else {
         await profileController.postnewuserAddress(
           userID: userId,
-          issuedCountry: permanentCountryId, // Make sure it's an integer
+          issuedCountry: permanentCountryId,
           province: provinceController.text,
           city: cityController.text,
           addressLineOne: addressLineOneController.text,
@@ -210,7 +210,7 @@ class _EditUserAddressState extends State<EditUserAddress> {
         await profileController.postuserAddress(
           id: userId,
           addressID: currentAddressId!,
-          country: currentCountryId.toString(), // Make sure it's a string
+          country: currentCountryId.toString(),
           province: currentProvinceController.text,
           city: currentCityController.text,
           addressLineOne: currentAddressLineOneController.text,

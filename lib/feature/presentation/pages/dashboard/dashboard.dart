@@ -1,16 +1,12 @@
 import 'package:ams/config/resources/shimmer.dart';
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/dashboard/controller/dashboard_timesheet_controller.dart';
-import 'package:ams/feature/presentation/pages/dashboard/sub_view_dashboard/timeoff_view.dart';
+import 'package:ams/feature/presentation/pages/dashboard/sub_view_dashboard/timesheet_timeoff_tabbar.dart';
 import 'package:ams/feature/presentation/pages/dashboard/widget/clock_time.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/timeoff/controller/timeoff_controller.dart';
 import 'package:ams/feature/presentation/pages/timesheet/controller/timesheet_controller.dart';
-import 'package:ams/feature/presentation/pages/timesheet/sub_view_timesheet/time_sheet_view.dart';
-import 'package:ams/feature/presentation/pages/timesheet/time_sheet_page.dart';
 import 'package:ams/feature/presentation/widget/components/app_bar.dart';
-import 'package:ams/feature/presentation/pages/timeoff/time_off_page.dart';
-import 'package:ams/feature/presentation/pages/dashboard/sub_view_dashboard/logsheet_constant.dart';
 import 'package:ams/feature/presentation/pages/dashboard/sub_view_dashboard/holiday_event_notification_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -154,9 +150,11 @@ class _DashboardPageState extends State<DashboardPage> {
                 const SizedBox(height: 20.0),
                 Obx(() {
                   if (dashboardtimesheetcontroller.isLoading.value) {
-                    return const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: ShrimmerEffect.rectangular(height: 50),
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12.0),
+                          child: const ShrimmerEffect.rectangular(height: 50)),
                     );
                   } else {
                     return SingleChildScrollView(
@@ -219,7 +217,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                                               .thisWeek
                                                               ?.percentage /
                                                           100 ??
-                                                      0.0), // This should be a value between 0 and 1
+                                                      0.0),
                                               child: Container(
                                                 decoration: BoxDecoration(
                                                   color: isDarkMode
@@ -234,9 +232,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                           ],
                                         ),
                                       ),
-                                      const SizedBox(
-                                          width:
-                                              8), // Space between progress bar and text
+                                      const SizedBox(width: 8),
                                       Text(
                                         "${((dashboardtimesheetcontroller.dashboardtimesheet.value.thisWeek?.percentage ?? 0.0)).toStringAsFixed(0)} / 100",
                                         style: const TextStyle(
@@ -305,7 +301,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                                               .month
                                                               ?.percentage /
                                                           100 ??
-                                                      0.0), // This should be a value between 0 and 1
+                                                      0.0),
                                               child: Container(
                                                 decoration: BoxDecoration(
                                                   color: isDarkMode
@@ -320,9 +316,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                           ],
                                         ),
                                       ),
-                                      const SizedBox(
-                                          width:
-                                              8), // Space between progress bar and text
+                                      const SizedBox(width: 8),
                                       Text(
                                         "${((dashboardtimesheetcontroller.dashboardtimesheet.value.month?.percentage ?? 0.0)).toStringAsFixed(0)} / 100",
                                         style: const TextStyle(
@@ -331,15 +325,6 @@ class _DashboardPageState extends State<DashboardPage> {
                                       ),
                                     ],
                                   ),
-                                  // const SizedBox(height: 10.0),
-                                  // Text(
-                                  //   "01 Nov - 30 Nov",
-                                  //   style: smallStyle.copyWith(
-                                  //     color: isDarkMode
-                                  //         ? Colors.white
-                                  //         : Colors.black,
-                                  //   ),
-                                  // ),
                                 ],
                               ),
                             ),
@@ -350,196 +335,12 @@ class _DashboardPageState extends State<DashboardPage> {
                   }
                 }),
                 const SizedBox(height: 20.0),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Last 7 day log',
-                      style: smallNStyle.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: isDarkMode ? Colors.white : Colors.black,
-                      ),
-                    ),
-                  ],
+
+                TimesheetTimeoffTabView(
+                  timeoffcontroller: timeoffcontroller,
+                  timesheetcontroller: timesheetcontroller,
                 ),
-                const SizedBox(height: 15.0),
-                Obx(() {
-                  if (timesheetcontroller.isLoading.value) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ShrimmerEffect.rectangular(
-                        height: 200,
-                        width: MediaQuery.sizeOf(context).width,
-                      ),
-                    );
-                  } else if (timesheetcontroller.timesheet.isEmpty) {
-                    return SizedBox(
-                      child: Center(
-                        child: Text(
-                          "No available Timesheet data.",
-                          style: miniStyle.copyWith(
-                            color: isDarkMode ? Colors.white : Colors.black,
-                          ),
-                        ),
-                      ),
-                    );
-                  } else {
-                    int maxItems = 7;
 
-                    bool showViewAll =
-                        timesheetcontroller.timesheet.length > maxItems;
-
-                    int itemCount = showViewAll
-                        ? maxItems
-                        : timesheetcontroller.timesheet.length;
-
-                    double itemHeight = 120;
-                    double totalHeight = itemCount * itemHeight;
-
-                    return SizedBox(
-                      height: totalHeight,
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: showViewAll
-                                  ? maxItems
-                                  : timesheetcontroller.timesheet.length,
-                              itemBuilder: (context, index) {
-                                final timesheet =
-                                    timesheetcontroller.timesheet[index];
-                                return Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: TimeSheetWidget(
-                                    timesheetdata: timesheet,
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          if (showViewAll)
-                            TextButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const TimeSheetPage(),
-                                  ),
-                                );
-                              },
-                              child: const Text(
-                                "View All",
-                                style: TextStyle(
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue,
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    );
-                  }
-                }),
-
-                // TIme Offs
-                const SizedBox(height: 10.0),
-                Row(
-                  children: [
-                    Text(
-                      "Time offs",
-                      style: normalStyle.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: isDarkMode ? Colors.white : Colors.black,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20.0),
-                Obx(() {
-                  if (timeoffcontroller.isLoading.value) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ShrimmerEffect.rectangular(
-                        height: 200,
-                        width: MediaQuery.sizeOf(context).width,
-                      ),
-                    );
-                  } else if (timeoffcontroller.timeoff.isEmpty) {
-                    return SizedBox(
-                      child: Center(
-                        child: Text(
-                          "No available Timeoff data",
-                          style: miniStyle.copyWith(
-                            color: isDarkMode ? Colors.white : Colors.black,
-                          ),
-                        ),
-                      ),
-                    );
-                  } else {
-                    int maxItems = 3;
-                    bool showViewAll =
-                        timeoffcontroller.timeoff.length > maxItems;
-                    int itemCount = showViewAll
-                        ? maxItems
-                        : timeoffcontroller.timeoff.length;
-
-                    double itemHeight = 210;
-                    double totalHeight = itemCount * itemHeight;
-
-                    return Column(
-                      children: [
-                        SizedBox(
-                          height: totalHeight,
-                          child: Column(
-                            children: [
-                              Expanded(
-                                child: ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  scrollDirection: Axis.vertical,
-                                  itemCount: showViewAll
-                                      ? maxItems
-                                      : timeoffcontroller.timeoff.length,
-                                  itemBuilder: (context, index) {
-                                    final timeoff =
-                                        timeoffcontroller.timeoff[index];
-                                    return Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: TimeoffView(timeoffdata: timeoff),
-                                    );
-                                  },
-                                ),
-                              ),
-                              if (showViewAll)
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const TimeOffPage(),
-                                      ),
-                                    );
-                                  },
-                                  child: const Text(
-                                    "View All",
-                                    style: TextStyle(
-                                      fontSize: 16.0,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.blue,
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    );
-                  }
-                }),
                 const SizedBox(height: 20.0),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -562,50 +363,5 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
       ),
     );
-  }
-}
-
-class ProgressBarPainter extends CustomPainter {
-  final double percentage;
-  final Color backgroundColor;
-  final Color foregroundColor;
-  final double borderRadius;
-
-  ProgressBarPainter({
-    required this.percentage,
-    required this.backgroundColor,
-    required this.foregroundColor,
-    this.borderRadius = 8.0, // Default border radius
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final backgroundPaint = Paint()
-      ..color = backgroundColor
-      ..style = PaintingStyle.fill;
-
-    final foregroundPaint = Paint()
-      ..color = foregroundColor
-      ..style = PaintingStyle.fill;
-
-    // Draw the background with rounded corners
-    final backgroundRRect = RRect.fromRectAndRadius(
-      Rect.fromLTWH(0, 0, size.width, size.height),
-      Radius.circular(borderRadius),
-    );
-    canvas.drawRRect(backgroundRRect, backgroundPaint);
-
-    // Draw the filled portion with rounded corners
-    double filledWidth = size.width * percentage;
-    final foregroundRRect = RRect.fromRectAndRadius(
-      Rect.fromLTWH(0, 0, filledWidth, size.height),
-      Radius.circular(borderRadius),
-    );
-    canvas.drawRRect(foregroundRRect, foregroundPaint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true; // Repaint whenever there's a change
   }
 }

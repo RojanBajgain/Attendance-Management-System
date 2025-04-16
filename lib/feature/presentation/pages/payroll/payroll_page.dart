@@ -163,32 +163,32 @@ class _PayrollPageState extends State<PayrollPage> {
                   ],
                 ),
                 const SizedBox(height: 10.0),
-                if (_isPayrollVisible) // Conditionally render payroll widgets
-                  SizedBox(
-                    child: Obx(
-                      () {
-                        if (payrollcontroller.isLoading.value) {
-                          return const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: ShrimmerEffect.rectangular(
-                              height: 100,
-                            ),
-                          );
-                        } else if (payrollcontroller.payroll.isEmpty) {
-                          return SizedBox(
-                            height: 600,
-                            child: Center(
-                              child: Text(
-                                "No available payroll data",
-                                style: smallStyle.copyWith(
-                                  color:
-                                      isDarkMode ? Colors.white : Colors.black,
+                SizedBox(
+                  child: _isPayrollVisible
+                      ? Obx(() {
+                          if (payrollcontroller.isLoading.value) {
+                            return const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: ShrimmerEffect.rectangular(
+                                height: 100,
+                              ),
+                            );
+                          } else if (payrollcontroller.payroll.isEmpty) {
+                            return SizedBox(
+                              height: 600,
+                              child: Center(
+                                child: Text(
+                                  "No available payroll data",
+                                  style: smallStyle.copyWith(
+                                    color: isDarkMode
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
                                 ),
                               ),
-                            ),
-                          );
-                        } else {
-                          return ListView.builder(
+                            );
+                          } else {
+                            return ListView.builder(
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
                               scrollDirection: Axis.vertical,
@@ -206,20 +206,27 @@ class _PayrollPageState extends State<PayrollPage> {
                                             .format(payroll.dateOfPayment!)
                                         : "",
                                     mop: payroll.modeOfPayment.toString(),
-                                    bank: payroll.bank != null
-                                        ? payroll.bank!
-                                        : "---",
-                                    cheque: payroll.chequeNo != null
-                                        ? payroll.chequeNo!
-                                        : "---",
+                                    bank: payroll.bank ?? "---",
+                                    cheque: payroll.chequeNo ?? "---",
                                     salary: payroll.totalSalary.toString(),
                                   ),
                                 );
-                              });
-                        }
-                      },
-                    ),
-                  ),
+                              },
+                            );
+                          }
+                        })
+                      : SizedBox(
+                          height: 600,
+                          child: Center(
+                            child: Text(
+                              "Your Payroll is hidden...",
+                              style: normalStyle.copyWith(
+                                color: isDarkMode ? Colors.white : Colors.black,
+                              ),
+                            ),
+                          ),
+                        ),
+                ),
               ],
             ),
           ),

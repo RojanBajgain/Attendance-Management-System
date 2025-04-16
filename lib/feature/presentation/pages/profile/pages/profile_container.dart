@@ -232,7 +232,7 @@ class _ProfilePicState extends State<ProfilePic> {
                                   : (profiledata.profileImage.isNotEmpty)
                                       ? NetworkImage(profiledata.profileImage)
                                       : const AssetImage(
-                                              "assets/images/profile_image.png")
+                                              "assets/images/user_avatar.png")
                                           as ImageProvider,
                             ),
                             Container(
