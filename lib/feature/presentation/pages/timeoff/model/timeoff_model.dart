@@ -18,7 +18,7 @@ class TimeoffModel {
         currentPage: json["current_page"] ?? 1,
         count: json["count"] ?? 1,
         data: List<Datum>.from(
-          (json["data"] ?? []).map((x) => Datum.fromJson(x)),
+          (json["data"]?["data"] ?? []).map((x) => Datum.fromJson(x)),
         ),
       );
 

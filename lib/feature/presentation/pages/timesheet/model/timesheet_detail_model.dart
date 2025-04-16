@@ -9,9 +9,9 @@ class TimesheetDetailModel {
   String? verifyMode;
   String? pictureUrl;
   int? employeeNo;
-  String? totalHour; // Changed from int? to String?
-  int? breakTime;
-  String? overTime; // Changed from int? to String?
+  String? totalHour;
+  dynamic breakTime;
+  String? overTime;
   String? designation;
   String? entryRemarks;
   String? exitRemarks;
@@ -25,9 +25,9 @@ class TimesheetDetailModel {
     this.verifyMode = '',
     this.pictureUrl = '',
     this.employeeNo = 0,
-    this.totalHour = '0', // Changed default value to '0'
+    this.totalHour = '0',
     this.breakTime = 0,
-    this.overTime = '0', // Changed default value to '0'
+    this.overTime = '0',
     this.designation = '',
     this.entryRemarks,
     this.exitRemarks,
@@ -52,9 +52,9 @@ class TimesheetDetailModel {
         verifyMode: json["verify_mode"] ?? '',
         pictureUrl: json["picture_url"] ?? '',
         employeeNo: json["employee_no"] ?? 0,
-        totalHour: json["total_hour"]?.toString() ?? '0', // Convert to String
+        totalHour: json["total_hour"]?.toString() ?? '0',
         breakTime: json["break_time"] ?? 0,
-        overTime: json["over_time"]?.toString() ?? '0', // Convert to String
+        overTime: json["over_time"]?.toString() ?? '0',
         designation: json["designation"] ?? '',
         entryRemarks: json["entry_remarks"],
         exitRemarks: json["exit_remarks"],
