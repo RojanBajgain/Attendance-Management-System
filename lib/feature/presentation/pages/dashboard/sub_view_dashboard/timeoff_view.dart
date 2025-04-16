@@ -87,6 +87,7 @@ class TimeoffView extends StatelessWidget {
                         color: isDarkMode ? Colors.white : Colors.black,
                       ),
                     ),
+                    SizedBox(height: 5.0),
                     Text(
                       '${timeoffdata.days.toString()} days',
                       style: smallStyle.copyWith(
@@ -105,6 +106,7 @@ class TimeoffView extends StatelessWidget {
                         color: isDarkMode ? Colors.white : Colors.black,
                       ),
                     ),
+                    SizedBox(height: 5.0),
                     Text(
                       timeoffdata.type?.name ?? 'N/A',
                       style: smallStyle.copyWith(
@@ -123,10 +125,11 @@ class TimeoffView extends StatelessWidget {
                         color: isDarkMode ? Colors.white : Colors.black,
                       ),
                     ),
+                    SizedBox(height: 5.0),
                     Text(
                       timeoffdata.approvedBy != null
                           ? timeoffdata.approvedBy!
-                          : "N/A",
+                          : "---",
                       style: smallStyle.copyWith(
                         fontWeight: FontWeight.bold,
                         color: isDarkMode ? Colors.white : Colors.black,
