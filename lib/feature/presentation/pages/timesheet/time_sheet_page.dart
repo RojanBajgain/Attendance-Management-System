@@ -139,10 +139,13 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
                   child: Obx(
                     () {
                       if (timesheetcontroller.isLoading.value) {
-                        return const Padding(
+                        return Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: ShrimmerEffect.rectangular(
-                            height: 100,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12.0),
+                            child: ShrimmerEffect.rectangular(
+                              height: 100,
+                            ),
                           ),
                         );
                       } else if (timesheetcontroller.timesheet.isEmpty) {

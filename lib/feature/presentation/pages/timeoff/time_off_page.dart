@@ -185,9 +185,12 @@ class _TimeOffPageState extends State<TimeOffPage> {
                       if (timeoffcontroller.isLoading.value) {
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: ShrimmerEffect.rectangular(
-                            height: 200,
-                            width: MediaQuery.sizeOf(context).width,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12.0),
+                            child: ShrimmerEffect.rectangular(
+                              height: 200,
+                              width: MediaQuery.sizeOf(context).width,
+                            ),
                           ),
                         );
                       } else if (timeoffcontroller.timeoff.isEmpty) {
