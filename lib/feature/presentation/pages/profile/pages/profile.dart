@@ -6,6 +6,7 @@ import 'package:ams/feature/presentation/pages/profile/controller/profile_contro
 import 'package:ams/feature/presentation/pages/profile/model/profile_model.dart';
 import 'package:ams/feature/presentation/pages/profile/pages/profile_container.dart';
 import 'package:ams/feature/presentation/pages/profile/pages/profile_menu.dart';
+import 'package:ams/feature/presentation/pages/theme/change_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -114,6 +115,7 @@ class _ProfilePageState extends State<ProfilePage> {
               _buildBankDetails(isDarkMode, 2),
               _buildDeviceDetails(isDarkMode, 3),
               _buildChangePassword(),
+              _buildTheme(),
               _buildLogout(isDarkMode),
             ],
           ),
@@ -435,8 +437,24 @@ class _ProfilePageState extends State<ProfilePage> {
       text: "Change Password",
       icon: Icons.key_outlined,
       press: () {
-        Get.to(() => const ChangePassword(),
-            transition: Transition.rightToLeft);
+        Get.to(
+          () => const ChangePassword(),
+          transition: Transition.rightToLeft,
+        );
+      },
+      showIcon: false,
+    );
+  }
+
+  Widget _buildTheme() {
+    return ProfileMenu(
+      text: "Change Theme",
+      icon: Icons.color_lens,
+      press: () {
+        Get.to(
+          () => const ChangeTheme(),
+          transition: Transition.rightToLeft,
+        );
       },
       showIcon: false,
     );

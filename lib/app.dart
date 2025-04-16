@@ -1,14 +1,17 @@
 import 'package:ams/config/resources/app_theme.dart';
 import 'package:ams/feature/presentation/pages/bottom_nav/bottom_nav_page.dart';
 import 'package:ams/feature/presentation/pages/landing/landing_page.dart';
+import 'package:ams/feature/presentation/pages/theme/change_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class App extends StatelessWidget {
+  final ThemeController themeController = Get.put(ThemeController());
+
   final bool isLoggedIn;
 
-  const App({super.key, required this.isLoggedIn});
+  App({super.key, required this.isLoggedIn});
 
   @override
   Widget build(BuildContext context) {
@@ -16,9 +19,10 @@ class App extends StatelessWidget {
       return GetMaterialApp(
         debugShowCheckedModeBanner: false,
         title: "Attendance Management System",
-        themeMode: ThemeMode.system,
+        // themeMode: ThemeMode.system,
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
+        themeMode: themeController.currentThemeMode.value,
         home: isLoggedIn ? const BottomNavPage() : const LandingPage(),
       );
     });
