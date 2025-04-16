@@ -86,7 +86,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     height: 90.0,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30.0),
+                      borderRadius: BorderRadius.circular(10.0),
                       gradient: LinearGradient(
                         begin: Alignment.topRight,
                         end: Alignment.bottomLeft,
@@ -159,137 +159,193 @@ class _DashboardPageState extends State<DashboardPage> {
                       child: ShrimmerEffect.rectangular(height: 50),
                     );
                   } else {
-                    return Row(
-                      children: [
-                        Container(
-                          height: 110.0,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(30.0),
-                            color: isDarkMode
-                                ? Colors.grey.shade800
-                                : Colors.grey[200],
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "This week time",
-                                  style: smallStyle.copyWith(
-                                    color: isDarkMode
-                                        ? Colors.white
-                                        : Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 8.0),
-                                Text(
-                                  "${dashboardtimesheetcontroller.dashboardtimesheet.value.thisWeek?.totalHour ?? "---"} ",
-                                  style: smallStyle.copyWith(
-                                    color: isDarkMode
-                                        ? Colors.white
-                                        : Colors.black,
-                                  ),
-                                ),
-                                const SizedBox(height: 8.0),
-                                CustomPaint(
-                                  painter: ProgressBarPainter(
-                                    percentage: (dashboardtimesheetcontroller
-                                                .dashboardtimesheet
-                                                .value
-                                                .month
-                                                ?.percentage ??
-                                            0.0)
-                                        .toDouble(),
-                                    backgroundColor: isDarkMode
-                                        ? Colors.grey.shade600
-                                        : Colors.grey,
-                                    foregroundColor: isDarkMode
-                                        ? Colors.white
-                                        : Colors.black,
-                                    borderRadius: 10.0,
-                                  ),
-                                  size: const Size(150, 8),
-                                ),
-                                // const SizedBox(height: 10.0),
-                                // Text(
-                                //   "01 Nov - 07 Nov",
-                                //   style: smallStyle.copyWith(
-                                //     color: isDarkMode
-                                //         ? Colors.white
-                                //         : Colors.black,
-                                //   ),
-                                // ),
-                              ],
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          Container(
+                            height: 110.0,
+                            width: context.width * 0.5,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10.0),
+                              color: isDarkMode
+                                  ? Colors.grey.shade800
+                                  : Colors.grey[200],
                             ),
-                          ),
-                        ),
-                        const Spacer(),
-                        Container(
-                          height: 110.0,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(30.0),
-                            color: isDarkMode
-                                ? Colors.grey.shade800
-                                : Colors.grey[200],
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Month time",
-                                  style: smallStyle.copyWith(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "This week time",
+                                    style: smallStyle.copyWith(
                                       color: isDarkMode
                                           ? Colors.white
                                           : Colors.black,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                const SizedBox(height: 8.0),
-                                Text(
-                                  "${dashboardtimesheetcontroller.dashboardtimesheet.value.month?.totalHour ?? "---"} ",
-                                  style: smallStyle.copyWith(
-                                    color: isDarkMode
-                                        ? Colors.white
-                                        : Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 8.0),
-                                CustomPaint(
-                                  painter: ProgressBarPainter(
-                                    percentage: (dashboardtimesheetcontroller
-                                                .dashboardtimesheet
-                                                .value
-                                                .thisWeek
-                                                ?.percentage ??
-                                            0.0)
-                                        .toDouble(),
-                                    backgroundColor: isDarkMode
-                                        ? Colors.grey.shade600
-                                        : Colors.grey,
-                                    foregroundColor: isDarkMode
-                                        ? Colors.white
-                                        : Colors.black,
-                                    borderRadius: 10.0,
+                                  const SizedBox(height: 8.0),
+                                  Text(
+                                    "${dashboardtimesheetcontroller.dashboardtimesheet.value.thisWeek?.totalHour ?? "---"} ",
+                                    style: smallStyle.copyWith(
+                                      color: isDarkMode
+                                          ? Colors.white
+                                          : Colors.black,
+                                    ),
                                   ),
-                                  size: const Size(150, 8),
-                                ),
-                                // const SizedBox(height: 10.0),
-                                // Text(
-                                //   "01 Nov - 30 Nov",
-                                //   style: smallStyle.copyWith(
-                                //     color: isDarkMode
-                                //         ? Colors.white
-                                //         : Colors.black,
-                                //   ),
-                                // ),
-                              ],
+                                  const SizedBox(height: 8.0),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Stack(
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(5),
+                                                color: Colors.grey[300],
+                                              ),
+                                              height: 8,
+                                            ),
+                                            AnimatedFractionallySizedBox(
+                                              duration: const Duration(
+                                                  milliseconds: 200),
+                                              widthFactor:
+                                                  (dashboardtimesheetcontroller
+                                                              .dashboardtimesheet
+                                                              .value
+                                                              .thisWeek
+                                                              ?.percentage /
+                                                          100 ??
+                                                      0.0), // This should be a value between 0 and 1
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
+                                                  borderRadius:
+                                                      BorderRadius.circular(5),
+                                                ),
+                                                height: 8,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                          width:
+                                              8), // Space between progress bar and text
+                                      Text(
+                                        "${((dashboardtimesheetcontroller.dashboardtimesheet.value.thisWeek?.percentage ?? 0.0)).toStringAsFixed(0)} / 100",
+                                        style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 15),
+                          Container(
+                            height: 110.0,
+                            width: context.width * 0.5,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10.0),
+                              color: isDarkMode
+                                  ? Colors.grey.shade800
+                                  : Colors.grey[200],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Month time",
+                                    style: smallStyle.copyWith(
+                                        color: isDarkMode
+                                            ? Colors.white
+                                            : Colors.black,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  const SizedBox(height: 8.0),
+                                  Text(
+                                    "${dashboardtimesheetcontroller.dashboardtimesheet.value.month?.totalHour ?? "---"} ",
+                                    style: smallStyle.copyWith(
+                                      color: isDarkMode
+                                          ? Colors.white
+                                          : Colors.black,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8.0),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Stack(
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(5),
+                                                color: Colors.grey[300],
+                                              ),
+                                              height: 8,
+                                            ),
+                                            AnimatedFractionallySizedBox(
+                                              duration: const Duration(
+                                                  milliseconds: 200),
+                                              widthFactor:
+                                                  (dashboardtimesheetcontroller
+                                                              .dashboardtimesheet
+                                                              .value
+                                                              .month
+                                                              ?.percentage /
+                                                          100 ??
+                                                      0.0), // This should be a value between 0 and 1
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
+                                                  borderRadius:
+                                                      BorderRadius.circular(5),
+                                                ),
+                                                height: 8,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                          width:
+                                              8), // Space between progress bar and text
+                                      Text(
+                                        "${((dashboardtimesheetcontroller.dashboardtimesheet.value.month?.percentage ?? 0.0)).toStringAsFixed(0)} / 100",
+                                        style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
+                                  ),
+                                  // const SizedBox(height: 10.0),
+                                  // Text(
+                                  //   "01 Nov - 30 Nov",
+                                  //   style: smallStyle.copyWith(
+                                  //     color: isDarkMode
+                                  //         ? Colors.white
+                                  //         : Colors.black,
+                                  //   ),
+                                  // ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     );
                   }
                 }),

@@ -8,6 +8,7 @@ import 'package:ams/feature/presentation/pages/login/model/login_model.dart';
 import 'package:clock_loader/clock_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -45,6 +46,8 @@ class AuthController extends GetxController {
         }
 
         SharedPreferences prefs = await SharedPreferences.getInstance();
+        GetStorage box = GetStorage();
+        box.write('profileId', alluserData.value.user?.profileId);
         await prefs.setBool('isLoggedIn', keepMeLoggedIn);
 
         if (keepMeLoggedIn) {

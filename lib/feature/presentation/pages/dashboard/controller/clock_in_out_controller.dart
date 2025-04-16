@@ -9,6 +9,7 @@ import 'package:ams/feature/presentation/pages/dashboard/model/clock_out_model.d
 import 'package:ams/feature/presentation/pages/dashboard/model/get_clock_model.dart';
 import 'package:ams/feature/presentation/pages/dashboard/model/location_model.dart';
 import 'package:ams/feature/presentation/pages/dashboard/widget/clock_time.dart';
+import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -73,25 +74,32 @@ class ClockInOutController extends GetxController {
         hasClockedinController.clockedInTime.value = DateTime.now();
 
         Get.back();
-
-        Get.snackbar(
-          'Posted Clock in',
-          response.message ?? 'Your CLock In time has been successfully posted',
-          snackPosition: SnackPosition.TOP,
-          duration: const Duration(seconds: 3),
-          colorText: Colors.white,
-          backgroundColor: Colors.green,
-        );
+        SSnackbarUtil.showSnackbar(
+            "Posted Clock in",
+            response.message ?? 'Failed to post clock in time',
+            SnackbarType.error);
+        // Get.snackbar(
+        //   'Posted Clock in',
+        //   response.message ?? 'Your CLock In time has been successfully posted',
+        //   snackPosition: SnackPosition.TOP,
+        //   duration: const Duration(seconds: 3),
+        //   colorText: Colors.white,
+        //   backgroundColor: Colors.green,
+        // );
       } else {
         log("Error: ${response.message}");
-        Get.snackbar(
-          'Error',
-          response.message ?? 'Failed to post CLock in time',
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 3),
-          colorText: Colors.white,
-          backgroundColor: Colors.red,
-        );
+        SSnackbarUtil.showSnackbar(
+            "Error",
+            response.message ?? 'Failed to post CLock in time',
+            SnackbarType.error);
+        // Get.snackbar(
+        //   'Error',
+        //   response.message ?? 'Failed to post CLock in time',
+        //   snackPosition: SnackPosition.BOTTOM,
+        //   duration: const Duration(seconds: 3),
+        //   colorText: Colors.white,
+        //   backgroundColor: Colors.red,
+        // );
       }
     } catch (e) {
       if (kDebugMode) {
@@ -126,39 +134,48 @@ class ClockInOutController extends GetxController {
         hasClockedinController.clockedInTime.value = null;
 
         Get.back();
-
-        Get.snackbar(
-          'Posted Clock out',
-          response.message ??
-              'Your CLock out time has been successfully posted',
-          snackPosition: SnackPosition.TOP,
-          duration: const Duration(seconds: 3),
-          colorText: Colors.white,
-          backgroundColor: Colors.green,
-        );
+        SSnackbarUtil.showSnackbar(
+            "Posted Clock out",
+            "Your CLock out time has been successfully posted",
+            SnackbarType.success);
+        // Get.snackbar(
+        //   'Posted Clock out',
+        //   response.message ??
+        //       'Your CLock out time has been successfully posted',
+        //   snackPosition: SnackPosition.TOP,
+        //   duration: const Duration(seconds: 3),
+        //   colorText: Colors.white,
+        //   backgroundColor: Colors.green,
+        // );
       } else {
         log("Error: ${response.message}");
-        Get.snackbar(
-          'INFO',
-          'Already clocked out for today',
-          snackPosition: SnackPosition.TOP,
-          duration: const Duration(seconds: 3),
-          colorText: Colors.white,
-          backgroundColor: Colors.blue,
-        );
+        SSnackbarUtil.showSnackbar(
+            "Error",
+            response.message ?? "Already clocked out for today",
+            SnackbarType.error);
+        // Get.snackbar(
+        //   'INFO',
+        //   'Already clocked out for today',
+        //   snackPosition: SnackPosition.TOP,
+        //   duration: const Duration(seconds: 3),
+        //   colorText: Colors.white,
+        //   backgroundColor: Colors.blue,
+        // );
       }
     } catch (e) {
       if (kDebugMode) {
         print("Error fetching sub clock out data: $e");
       }
-      Get.snackbar(
-        'Error',
-        'An unexpected error occurred: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 3),
-        colorText: Colors.white,
-        backgroundColor: Colors.red,
-      );
+      // SSnackbarUtil.showSnackbar(
+      //     "Error", "Already clocked out for today", SnackbarType.error);
+      // Get.snackbar(
+      //   'Error',
+      //   'An unexpected error occurred: $e',
+      //   snackPosition: SnackPosition.BOTTOM,
+      //   duration: const Duration(seconds: 3),
+      //   colorText: Colors.white,
+      //   backgroundColor: Colors.red,
+      // );
     }
   }
 
@@ -176,38 +193,43 @@ class ClockInOutController extends GetxController {
         hasClockedinController.clockedInTime.value = null;
 
         Get.back();
-
-        Get.snackbar(
-          'Posted On Break',
-          response.message ?? 'Your Break time has been successfully posted',
-          snackPosition: SnackPosition.TOP,
-          duration: const Duration(seconds: 3),
-          colorText: Colors.white,
-          backgroundColor: Colors.green,
-        );
+        SSnackbarUtil.showSnackbar(
+            "Posted On Break",
+            "Your Break time has been successfully posted",
+            SnackbarType.success);
+        // Get.snackbar(
+        //   'Posted On Break',
+        //   response.message ?? 'Your Break time has been successfully posted',
+        //   snackPosition: SnackPosition.TOP,
+        //   duration: const Duration(seconds: 3),
+        //   colorText: Colors.white,
+        //   backgroundColor: Colors.green,
+        // );
       } else {
         log("Error: ${response.message}");
-        Get.snackbar(
-          'INFO',
-          response.message ?? 'Already clocked out for today',
-          snackPosition: SnackPosition.TOP,
-          duration: const Duration(seconds: 3),
-          colorText: Colors.white,
-          backgroundColor: Colors.blue,
-        );
+        SSnackbarUtil.showSnackbar(
+            "INFO", "Already clocked out for today", SnackbarType.error);
+        // Get.snackbar(
+        //   'INFO',
+        //   response.message ?? 'Already clocked out for today',
+        //   snackPosition: SnackPosition.TOP,
+        //   duration: const Duration(seconds: 3),
+        //   colorText: Colors.white,
+        //   backgroundColor: Colors.blue,
+        // );
       }
     } catch (e) {
       if (kDebugMode) {
         print("Error fetching sub Break time data: $e");
       }
-      Get.snackbar(
-        'Error',
-        'An unexpected error occurred: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 3),
-        colorText: Colors.white,
-        backgroundColor: Colors.red,
-      );
+      // Get.snackbar(
+      //   'Error',
+      //   'An unexpected error occurred: $e',
+      //   snackPosition: SnackPosition.BOTTOM,
+      //   duration: const Duration(seconds: 3),
+      //   colorText: Colors.white,
+      //   backgroundColor: Colors.red,
+      // );
     }
   }
 
@@ -228,15 +250,18 @@ class ClockInOutController extends GetxController {
         hasClockedinController.clockedInTime.value = null;
 
         Get.back();
-
-        Get.snackbar(
-          'Posted Resume',
-          response.message ?? 'Your Resume time has been successfully posted',
-          snackPosition: SnackPosition.TOP,
-          duration: const Duration(seconds: 3),
-          colorText: Colors.white,
-          backgroundColor: Colors.green,
-        );
+        SSnackbarUtil.showSnackbar(
+            "Posted Resume",
+            response.message ?? 'Your Resume time has been successfully posted',
+            SnackbarType.success);
+        // Get.snackbar(
+        //   'Posted Resume',
+        //   response.message ?? 'Your Resume time has been successfully posted',
+        //   snackPosition: SnackPosition.TOP,
+        //   duration: const Duration(seconds: 3),
+        //   colorText: Colors.white,
+        //   backgroundColor: Colors.green,
+        // );
       } else {
         log("Error: ${response.message}");
         Get.snackbar(

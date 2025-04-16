@@ -20,21 +20,23 @@ class DashboardTimesheetController extends GetxController {
   }
 
   Future<void> getDashboardTimesheet() async {
-    isLoading(true);
     try {
+      isLoading.value = true;
       ApiResponse response =
           await dashboardtimesheetrepo.getDashboardtimesheet();
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
         log("Fetched Dashboard Timesheet data: ${response.response}");
         dashboardtimesheet.value = response.response;
+        // isLoading(false);
       } else {
         log("Error: ${response.message}");
+        // isLoading(false);
       }
     } catch (e) {
       log("Error fetching dashboard timesheet: $e");
     } finally {
-      isLoading(false);
+      isLoading.value = false;
     }
   }
 }

@@ -8,6 +8,7 @@ import 'package:ams/feature/presentation/pages/timeoff/time_off_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 
 class AddTimeoff extends StatefulWidget {
@@ -27,7 +28,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
       Get.put(TimeoffController(timeoffRepo: Get.find()));
   final ProfileController profilecontroller =
       Get.put(ProfileController(profileRepo: Get.find()));
-
+  GetStorage box = GetStorage();
   // Form keys for FormBuilder widgets
   final _formKey = GlobalKey<FormBuilderState>();
 
@@ -99,11 +100,11 @@ class _AddTimeoffState extends State<AddTimeoff> {
       (policy) => policy.name == _selectedValue,
       orElse: () => throw Exception('Policy not found'),
     );
-
+    var profileId = box.read('profileId');
     // Call the API via the controller
     await timeoffcontroller.createtimeoff(
       // userID: profilecontroller.profiledetail.value.id,
-      userID: authcontroller.alluserData.value.user!.profileId,
+      userID: profileId,
       typeID: selectedPolicy.id,
       startdate: startDateIso,
       enddate: endDateIso,

@@ -3,8 +3,8 @@ import 'package:http/http.dart' as http;
 
 class ApiMessage {
   static String getMessage(int statusCode, http.Response response) {
-    Map<String, dynamic> jsonResponse = jsonDecode(response.body);
-    String message = jsonResponse["detail"];
+    // Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+    String message = response.body;
     switch (statusCode) {
       case 200:
         return 'Success Request. $message';
@@ -19,6 +19,8 @@ class ApiMessage {
       case 403:
         return 'Forbidden. $message';
       case 404:
+        return 'Not Found. $message';
+      case 416:
         return 'Not Found. $message';
       case 417:
         return 'Expectation Failed. $message';

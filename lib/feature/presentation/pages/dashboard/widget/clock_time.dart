@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/repository/clock_in_out_repo.dart';
+import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -109,8 +110,9 @@ class _ClockTimeState extends State<ClockTime> {
       permission = await Geolocator.requestPermission();
     }
     if (permission == LocationPermission.deniedForever) {
-      Get.snackbar('Error', 'Enable location permissions in settings.',
-          backgroundColor: Colors.red, colorText: Colors.white);
+      SSnackbarUtil.showSnackbar(
+          "Error", "Enable Location permission in setting", SnackbarType.error);
+
       return false;
     }
     return permission != LocationPermission.denied;
@@ -124,8 +126,10 @@ class _ClockTimeState extends State<ClockTime> {
 
     int? deviceId = profileController.profile.first.device?.deviceUserId;
     if (deviceId == null) {
-      Get.snackbar("Error", "Device info not found. Please log in again.",
-          backgroundColor: Colors.red, colorText: Colors.white);
+      SSnackbarUtil.showSnackbar("Error",
+          "Device info not found. Please log in again.", SnackbarType.error);
+      // Get.snackbar("Error", "Device info not found. Please log in again.",
+      //     backgroundColor: Colors.red, colorText: Colors.white);
       return;
     }
 
@@ -175,15 +179,19 @@ class _ClockTimeState extends State<ClockTime> {
         desiredAccuracy: LocationAccuracy.best);
 
     if (profileController.profile.value.isEmpty) {
-      Get.snackbar("Error", "Profile data not found. Please log in again.",
-          backgroundColor: Colors.red, colorText: Colors.white);
+      SSnackbarUtil.showSnackbar("Error",
+          "Profile data not found. Please log in again.", SnackbarType.error);
+      // Get.snackbar("Error", "Profile data not found. Please log in again.",
+      //     backgroundColor: Colors.red, colorText: Colors.white);
       return;
     }
 
     int? employeeId = profileController.profile.first.device?.deviceUserId;
     if (employeeId == null) {
-      Get.snackbar("Error", "Employee info not found. Please log in again.",
-          backgroundColor: Colors.red, colorText: Colors.white);
+      SSnackbarUtil.showSnackbar("Error",
+          "Employee info not found. Please log in again.", SnackbarType.error);
+      // Get.snackbar("Error", "Employee info not found. Please log in again.",
+      //     backgroundColor: Colors.red, colorText: Colors.white);
       return;
     }
 
@@ -248,12 +256,12 @@ class _ClockTimeState extends State<ClockTime> {
         color: isDarkMode ? Colors.grey.shade800 : Colors.grey[50],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _buildClockInTimeDisplay(isDarkMode),
-            const SizedBox(width: 50.0),
             Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -317,9 +325,12 @@ class _ClockTimeState extends State<ClockTime> {
     bool isClockingOut = isClockedInToday && !isClockedOut;
 
     return ElevatedButton(
-      style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(
-              isClockingOut ? Colors.red[700] : Colors.green[600])),
+      style: ElevatedButton.styleFrom(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(8)),
+        ),
+        backgroundColor: isClockingOut ? Colors.red[700] : Colors.green[600],
+      ),
       onPressed: () {
         if (isOnBreak) {
           _handleBreak();

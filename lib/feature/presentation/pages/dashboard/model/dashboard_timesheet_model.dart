@@ -26,9 +26,9 @@ class DashboardTimesheet {
 }
 
 class Day {
-  int totalHour;
-  int overTime;
-  int percentage;
+  dynamic totalHour;
+  dynamic overTime;
+  dynamic percentage;
 
   Day({
     this.totalHour = 0,
@@ -37,9 +37,9 @@ class Day {
   });
 
   factory Day.fromJson(Map<String, dynamic> json) => Day(
-        totalHour: json["total_hour"] ?? 0,
-        overTime: json["over_time"] ?? 0,
-        percentage: json["percentage"] ?? 0,
+        totalHour: json["total_hour"] ?? 0.0,
+        overTime: json["over_time"] ?? 0.0,
+        percentage: json["percentage"] ?? 0.0,
       );
 
   Map<String, dynamic> toJson() => {

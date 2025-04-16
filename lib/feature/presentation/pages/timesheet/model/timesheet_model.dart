@@ -31,8 +31,8 @@ class TimesheetModel {
 }
 
 class Datum {
-  int id;
-  int? serialNo;
+  dynamic id;
+  dynamic serialNo;
   int? employeeNo;
   String? name;
   DateTime? date;
@@ -41,7 +41,7 @@ class Datum {
   String? verifyMode;
   String? pictureUrl;
   String? totalHour;
-  int? breakTime;
+  dynamic breakTime;
   String? overTime;
   String? designation;
   String? entryRemarks;
