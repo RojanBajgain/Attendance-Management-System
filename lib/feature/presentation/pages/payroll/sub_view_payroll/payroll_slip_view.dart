@@ -1,5 +1,4 @@
 import 'package:ams/config/resources/styles.dart';
-import 'package:ams/feature/presentation/pages/payroll/controller/payroll_controller.dart';
 import 'package:ams/feature/presentation/pages/payroll/model/payroll_model.dart';
 import 'package:ams/feature/presentation/pages/payroll/sub_view_payroll/payment_slip_view.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +24,6 @@ class PayRollSlip extends StatelessWidget {
     required this.salary,
   });
 
-  // final PayrollController payrollcontroller =
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -87,7 +85,6 @@ class PayRollSlip extends StatelessWidget {
                       color: isDarkMode ? Colors.white : Colors.black,
                     ),
                   ),
-                  // SizedBox(width: 80.0),
                   Spacer(),
                   Text(
                     'Mode of Payment',
@@ -106,7 +103,6 @@ class PayRollSlip extends StatelessWidget {
                       color: isDarkMode ? Colors.white : Colors.black,
                     ),
                   ),
-                  // const SizedBox(width: 120.0),
                   Spacer(),
                   Text(
                     mop,

@@ -51,33 +51,50 @@ class _TimesheetTimeoffTabViewState extends State<TimesheetTimeoffTabView> {
       children: [
         Row(
           children: [
-            GestureDetector(
-              onTap: selectTimesheet,
-              child: Column(
-                children: [
-                  Text("Timesheet",
+            Expanded(
+              child: GestureDetector(
+                onTap: selectTimesheet,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Timesheet",
                       style: smallNStyle.copyWith(
                         color: isDarkMode ? Colors.white : Colors.black,
-                      )),
-                  if (isTimesheetSelected) _tabIndicator(isDarkMode),
-                ],
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    if (isTimesheetSelected) _tabIndicator(isDarkMode),
+                  ],
+                ),
               ),
             ),
-            const SizedBox(width: 20),
-            GestureDetector(
-              onTap: selectTimeOff,
-              child: Column(
-                children: [
-                  Text("Time Off Logs",
+            Container(
+              width: 2,
+              height: 40,
+              color: isDarkMode ? Colors.white30 : Colors.black26,
+            ),
+            Expanded(
+              child: GestureDetector(
+                onTap: selectTimeOff,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Time Off",
                       style: smallNStyle.copyWith(
                         color: isDarkMode ? Colors.white : Colors.black,
-                      )),
-                  if (isTimeOffSelected) _tabIndicator(isDarkMode),
-                ],
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    if (isTimeOffSelected) _tabIndicator(isDarkMode),
+                  ],
+                ),
               ),
             ),
           ],
         ),
+
         const SizedBox(height: 20),
 
         // Content
@@ -110,7 +127,7 @@ class _TimesheetTimeoffTabViewState extends State<TimesheetTimeoffTabView> {
     return Container(
       margin: const EdgeInsets.only(top: 2),
       height: 4,
-      width: 90,
+      width: 150,
       color: isDarkMode ? Colors.white : Colors.black,
     );
   }
