@@ -146,7 +146,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 const SizedBox(height: 10.0),
                 // const DateTimeWidget(),
                 const SizedBox(height: 10.0),
-                ClockTime(),
+                const ClockTime(),
                 const SizedBox(height: 20.0),
                 Obx(() {
                   if (dashboardtimesheetcontroller.isLoading.value) {

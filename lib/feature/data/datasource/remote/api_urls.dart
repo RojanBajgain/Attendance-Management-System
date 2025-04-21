@@ -79,6 +79,10 @@ class ApiUrls {
   static const String onbreak = "api/timesheets/breaktime/start/";
   static const String onresume = "api/timesheets/breaktime/resume/";
 
+  static const String chat = "api/message/chat/";
+
+  static const String eventpolicy = "api/policies/calender/";
+
   static const String passwordreset = "api/smtp/password-reset/";
 
   // static const String token = "";
