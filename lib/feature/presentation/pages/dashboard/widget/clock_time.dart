@@ -252,7 +252,7 @@ class _ClockTimeState extends State<ClockTime> {
       height: 200.0,
       width: double.infinity,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30.0),
+        borderRadius: BorderRadius.circular(12.0),
         color: isDarkMode ? Colors.grey.shade800 : Colors.grey[50],
       ),
       child: Padding(

@@ -2,11 +2,9 @@ import 'dart:developer';
 
 import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/repository/clock_in_out_repo.dart';
-import 'package:ams/feature/data/repository/has_clockedIn_repo.dart';
 import 'package:ams/feature/presentation/pages/dashboard/controller/has_clockedIn_controller.dart';
 import 'package:ams/feature/presentation/pages/dashboard/model/clock_in_model.dart';
 import 'package:ams/feature/presentation/pages/dashboard/model/clock_out_model.dart';
-import 'package:ams/feature/presentation/pages/dashboard/model/get_clock_model.dart';
 import 'package:ams/feature/presentation/pages/dashboard/model/location_model.dart';
 import 'package:ams/feature/presentation/pages/dashboard/widget/clock_time.dart';
 import 'package:ams/feature/utils/ssnackbar_utils.dart';
@@ -136,7 +134,7 @@ class ClockInOutController extends GetxController {
         Get.back();
         SSnackbarUtil.showSnackbar(
             "Posted Clock out",
-            "Your CLock out time has been successfully posted",
+            "Your Clock out time has been successfully posted",
             SnackbarType.success);
         // Get.snackbar(
         //   'Posted Clock out',

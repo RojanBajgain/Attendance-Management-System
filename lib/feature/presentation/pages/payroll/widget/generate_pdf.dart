@@ -1,21 +1,13 @@
 import 'dart:typed_data';
 
 import 'package:ams/config/resources/images.dart';
-import 'package:ams/config/resources/shimmer.dart';
-import 'package:ams/config/resources/styles.dart';
-import 'package:ams/feature/presentation/pages/payroll/controller/payroll_controller.dart';
 import 'package:ams/feature/presentation/pages/payroll/sub_view_payroll/payment_slip_view.dart';
-import 'package:ams/feature/presentation/widget/components/app_bar.dart';
 import 'package:double_to_words/double_to_words.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'dart:io';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:path_provider/path_provider.dart';
-import 'package:open_file/open_file.dart';
 import 'package:printing/printing.dart';
 
 pw.Widget _buildPdfDetailRow(pw.Font font, String label, String value) {

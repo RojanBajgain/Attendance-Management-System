@@ -3,7 +3,6 @@ import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/timeoff/controller/timeoff_controller.dart';
 import 'package:ams/feature/presentation/pages/timesheet/controller/timesheet_controller.dart';
 import 'package:ams/feature/presentation/pages/timesheet/sub_view_timesheet/time_sheet_view.dart';
-import 'package:ams/feature/presentation/pages/timesheet/time_sheet_page.dart';
 import 'package:ams/feature/presentation/pages/timeoff/time_off_page.dart';
 import 'package:ams/feature/presentation/pages/dashboard/sub_view_dashboard/timeoff_view.dart';
 import 'package:flutter/material.dart';
@@ -96,7 +95,6 @@ class _TimesheetTimeoffTabViewState extends State<TimesheetTimeoffTabView> {
         ),
 
         const SizedBox(height: 20),
-
         // Content
         Obx(() {
           if (isTimesheetSelected) {
@@ -126,8 +124,8 @@ class _TimesheetTimeoffTabViewState extends State<TimesheetTimeoffTabView> {
   Widget _tabIndicator(bool isDarkMode) {
     return Container(
       margin: const EdgeInsets.only(top: 2),
-      height: 4,
-      width: 150,
+      height: 3,
+      width: 100,
       color: isDarkMode ? Colors.white : Colors.black,
     );
   }
@@ -158,7 +156,7 @@ class _TimesheetTimeoffTabViewState extends State<TimesheetTimeoffTabView> {
 
   Widget _buildTimesheetList(
       List<dynamic> list, BuildContext context, bool isDarkMode) {
-    const maxItems = 7;
+    const maxItems = 5;
     final showViewAll = list.length > maxItems;
     final displayList = showViewAll ? list.take(maxItems).toList() : list;
 
@@ -175,19 +173,21 @@ class _TimesheetTimeoffTabViewState extends State<TimesheetTimeoffTabView> {
             );
           },
         ),
-        if (showViewAll)
-          TextButton(
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const TimeSheetPage()));
-            },
-            child: const Text("View All",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: Colors.blue,
-                )),
-          ),
+        // if (showViewAll)
+        //   TextButton(
+        //     onPressed: () {
+        //       Navigator.push(context,
+        //           MaterialPageRoute(builder: (_) => const TimeSheetPage()));
+        //     },
+        //     child: const Text(
+        //       "View All",
+        //       style: TextStyle(
+        //         fontWeight: FontWeight.bold,
+        //         fontSize: 16,
+        //         color: Colors.blue,
+        //       ),
+        //     ),
+        //   ),
       ],
     );
   }

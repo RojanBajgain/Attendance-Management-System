@@ -52,7 +52,7 @@ class ProfileMenu extends StatelessWidget {
                 Icon(
                   icon,
                   size: 30,
-                  color: isDarkMode ? Colors.black : Colors.black,
+                  color: isDarkMode ? Colors.grey.shade200 : Colors.black,
                 ),
                 const SizedBox(width: 20),
                 Expanded(
