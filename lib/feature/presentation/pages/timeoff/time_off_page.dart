@@ -46,7 +46,7 @@ class _TimeOffPageState extends State<TimeOffPage> {
                   children: [
                     Text(
                       "Time offs",
-                      style: normalStyle.copyWith(
+                      style: smallNStyle.copyWith(
                         fontWeight: FontWeight.bold,
                         color: isDarkMode ? Colors.white : Colors.black,
                       ),
@@ -61,8 +61,8 @@ class _TimeOffPageState extends State<TimeOffPage> {
                         );
                       },
                       child: Container(
-                        height: 45.0,
-                        width: 45.0,
+                        height: 35.0,
+                        width: 35.0,
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.black),
                           borderRadius: BorderRadius.circular(70.0),
@@ -88,10 +88,10 @@ class _TimeOffPageState extends State<TimeOffPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 5.0),
+                    const SizedBox(width: 10.0),
                     // FILTER BUTTON
                     Obx(() => Container(
-                          height: 45.0,
+                          height: 40.0,
                           // width: 80.0,
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           decoration: BoxDecoration(

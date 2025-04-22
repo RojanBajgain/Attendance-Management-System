@@ -32,8 +32,6 @@ class _NotificationsContentState extends State<NotificationsContent> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      // Remove fixed height to allow dynamic resizing
-      // height: 115.0,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(13.0),
         color: isDarkMode ? Colors.grey.shade800 : Colors.grey.shade50,
@@ -47,10 +45,9 @@ class _NotificationsContentState extends State<NotificationsContent> {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(12.0),
         child: Row(
-          crossAxisAlignment:
-              CrossAxisAlignment.start, // Align to top for better expansion
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
               height: MediaQuery.of(context).size.height * 0.08,
@@ -76,7 +73,7 @@ class _NotificationsContentState extends State<NotificationsContent> {
               child: Stack(
                 children: [
                   Positioned(
-                    top: 5.0,
+                    top: 4.0,
                     left: 22.0,
                     child: Text(
                       widget.calenderTxt,
@@ -88,7 +85,7 @@ class _NotificationsContentState extends State<NotificationsContent> {
                     ),
                   ),
                   Positioned(
-                    top: 33.0,
+                    top: 35.0,
                     left: 0,
                     right: 0,
                     child: SizedBox(
@@ -96,7 +93,7 @@ class _NotificationsContentState extends State<NotificationsContent> {
                       child: Text(
                         widget.calenderDate,
                         textAlign: TextAlign.center,
-                        style: normalStyle.copyWith(
+                        style: smallNStyle.copyWith(
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
                         ),
@@ -128,17 +125,13 @@ class _NotificationsContentState extends State<NotificationsContent> {
                         overflow: _expanded
                             ? TextOverflow.visible
                             : TextOverflow.ellipsis,
-                        maxLines: _expanded
-                            ? null
-                            : 2, // Limit lines when not expanded
+                        maxLines: _expanded ? null : 3,
                         softWrap: true,
                         style: miniStyle.copyWith(
-                          color: isDarkMode ? Colors.white : Colors.black,
+                          color: isDarkMode ? Colors.grey[400] : Colors.black,
                         ),
                       ),
-                      // Show "Show More" button if text is likely to overflow
-                      if (widget.contextTxtDetail.length >
-                          50) // Adjust this threshold as needed
+                      if (widget.contextTxtDetail.length > 100 && !_expanded)
                         GestureDetector(
                           onTap: () {
                             setState(() {
@@ -161,8 +154,8 @@ class _NotificationsContentState extends State<NotificationsContent> {
                   const SizedBox(height: 5.0),
                   Text(
                     widget.contextTime,
-                    style: smallStyle.copyWith(
-                      color: isDarkMode ? Colors.white : Colors.black,
+                    style: miniStyle.copyWith(
+                      color: isDarkMode ? Colors.grey[400] : Colors.black,
                     ),
                   ),
                 ],

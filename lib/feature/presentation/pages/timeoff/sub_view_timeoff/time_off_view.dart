@@ -1,7 +1,6 @@
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/timeoff/model/timeoff_model.dart';
 import 'package:ams/feature/presentation/pages/timeoff/sub_view_timeoff/add_reapply.dart';
-import 'package:ams/feature/presentation/pages/timeoff/sub_view_timeoff/add_timeoff.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -25,292 +24,350 @@ class TimeOffSheet extends StatelessWidget {
           showDialog(
             context: context,
             builder: (BuildContext context) {
+              bool _showFullReason = false;
+
               final messageHeight = timeoffdata.reason != null
                   ? (timeoffdata.reason!.length / 30 * 20).clamp(50.0, 200.0)
                   : 10.0;
-              return Dialog(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Container(
-                  height: 350 + messageHeight,
-                  // width: double.infinity,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(13.0),
-                      color: isDarkMode ? Colors.grey.shade800 : Colors.white),
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      left: 20.0,
-                      top: 15.0,
-                      right: 20.0,
+              return StatefulBuilder(
+                builder: (context, setState) {
+                  return Dialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Center(
-                          child: Text(
-                            "Time off Details",
-                            style: smallNStyle.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: isDarkMode ? Colors.white : Colors.black,
-                            ),
+                    child: SingleChildScrollView(
+                      child: Container(
+                        // height: 500 + messageHeight,
+                        // width: double.infinity,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(13.0),
+                            color: isDarkMode
+                                ? Colors.grey.shade800
+                                : Colors.white),
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                            left: 20.0,
+                            top: 15.0,
+                            right: 20.0,
+                            bottom: 20.0,
                           ),
-                        ),
-                        const Divider(
-                          color: Colors.grey,
-                          thickness: 1,
-                          height: 20,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  'Name:',
-                                  style: smallStyle.copyWith(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Center(
+                                child: Text(
+                                  "Time off Details",
+                                  style: smallNStyle.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: isDarkMode
                                         ? Colors.white
                                         : Colors.black,
                                   ),
                                 ),
-                              ],
-                            ),
-                            const SizedBox(width: 70.0),
-                            Text(
-                              timeoffdata.username.toString(),
-                              style: smallStyle.copyWith(
-                                color: isDarkMode ? Colors.white : Colors.black,
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  'Designation:',
-                                  style: smallStyle.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: isDarkMode
-                                        ? Colors.white
-                                        : Colors.black,
+                              const Divider(
+                                color: Colors.grey,
+                                thickness: 1,
+                                height: 20,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Name:',
+                                        style: smallStyle.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: isDarkMode
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(width: 30.0),
-                            Text(
-                              timeoffdata.designation.toString(),
-                              style: smallStyle.copyWith(
-                                color: isDarkMode ? Colors.white : Colors.black,
-                              ),
-                            ),
-                          ],
-                        ),
-                        // const SizedBox(height: 10.0),
-                        // Row(
-                        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        //   children: [
-                        //     Row(
-                        //       children: [
-                        //         Text(
-                        //           'Department:',
-                        //           style: smallStyle.copyWith(
-                        //             fontWeight: FontWeight.bold,
-                        //             color: isDarkMode
-                        //                 ? Colors.white
-                        //                 : Colors.black,
-                        //           ),
-                        //         ),
-                        //       ],
-                        //     ),
-                        //     // SizedBox(width: 30.0),
-                        //     Text(
-                        //       'Design',
-                        //       overflow: TextOverflow.fade,
-                        //       style: smallStyle.copyWith(
-                        //         color: isDarkMode ? Colors.white : Colors.black,
-                        //       ),
-                        //     ),
-                        //   ],
-                        // ),
-                        const SizedBox(height: 10.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  'Start Date:',
-                                  style: smallStyle.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: isDarkMode
-                                        ? Colors.white
-                                        : Colors.black,
+                                  const SizedBox(width: 70.0),
+                                  Text(
+                                    timeoffdata.username.toString(),
+                                    style: smallStyle.copyWith(
+                                      color: isDarkMode
+                                          ? Colors.white
+                                          : Colors.black,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            Text(
-                              timeoffdata.startDate != null
-                                  ? DateFormat('yyyy-MM-dd')
-                                      .format(timeoffdata.startDate!)
-                                  : "N/A",
-                              overflow: TextOverflow.fade,
-                              style: smallStyle.copyWith(
-                                color: isDarkMode ? Colors.white : Colors.black,
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  'End Date:',
-                                  style: smallStyle.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: isDarkMode
-                                        ? Colors.white
-                                        : Colors.black,
+                              const SizedBox(height: 10.0),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Designation:',
+                                        style: smallStyle.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: isDarkMode
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ],
-                            ),
-                            Text(
-                              timeoffdata.endDate != null
-                                  ? DateFormat('yyyy-MM-dd')
-                                      .format(timeoffdata.endDate!)
-                                  : "N/A",
-                              overflow: TextOverflow.fade,
-                              style: smallStyle.copyWith(
-                                color: isDarkMode ? Colors.white : Colors.black,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  'Type:',
-                                  style: smallStyle.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: isDarkMode
-                                        ? Colors.white
-                                        : Colors.black,
+                                  const SizedBox(width: 30.0),
+                                  Text(
+                                    timeoffdata.designation.toString(),
+                                    style: smallStyle.copyWith(
+                                      color: isDarkMode
+                                          ? Colors.white
+                                          : Colors.black,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(width: 80.0),
-                            Text(
-                              timeoffdata.type?.name ?? 'N/A',
-                              style: smallStyle.copyWith(
-                                color: isDarkMode ? Colors.white : Colors.black,
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10.0),
-                        Wrap(
-                          spacing: 5.0,
-                          children: [
-                            Text(
-                              'Reason:',
-                              style: smallStyle.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: isDarkMode ? Colors.white : Colors.black,
-                              ),
-                            ),
-                            Column(
-                              children: [
-                                Text(
-                                  timeoffdata.reason.toString(),
-                                  maxLines: 12,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: smallStyle.copyWith(
-                                    color: isDarkMode
-                                        ? Colors.white
-                                        : Colors.black,
+                              // const SizedBox(height: 10.0),
+                              // Row(
+                              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              //   children: [
+                              //     Row(
+                              //       children: [
+                              //         Text(
+                              //           'Department:',
+                              //           style: smallStyle.copyWith(
+                              //             fontWeight: FontWeight.bold,
+                              //             color: isDarkMode
+                              //                 ? Colors.white
+                              //                 : Colors.black,
+                              //           ),
+                              //         ),
+                              //       ],
+                              //     ),
+                              //     // SizedBox(width: 30.0),
+                              //     Text(
+                              //       'Design',
+                              //       overflow: TextOverflow.fade,
+                              //       style: smallStyle.copyWith(
+                              //         color: isDarkMode ? Colors.white : Colors.black,
+                              //       ),
+                              //     ),
+                              //   ],
+                              // ),
+                              const SizedBox(height: 10.0),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Start Date:',
+                                        style: smallStyle.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: isDarkMode
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 20.0),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  'Message',
-                                  style: smallStyle.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: isDarkMode
-                                        ? Colors.white
-                                        : Colors.black,
+                                  Text(
+                                    timeoffdata.startDate != null
+                                        ? DateFormat('yyyy-MM-dd')
+                                            .format(timeoffdata.startDate!)
+                                        : "N/A",
+                                    overflow: TextOverflow.fade,
+                                    style: smallStyle.copyWith(
+                                      color: isDarkMode
+                                          ? Colors.white
+                                          : Colors.black,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10.0),
-                            Container(
-                              height: 100,
-                              width: 270,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(13.0),
-                                color: isDarkMode
-                                    ? Colors.grey.shade800
-                                    : Colors.grey[50],
-                                border: Border.all(
-                                  color: isDarkMode
-                                      ? Colors.grey.shade400
-                                      : Colors.grey.shade800,
-                                  width: 1.0,
-                                ),
+                                ],
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      timeoffdata.comments != null
-                                          ? timeoffdata.comments.toString()
-                                          : "",
-                                      style: smallStyle.copyWith(
-                                        // fontWeight: FontWeight.bold,
+                              const SizedBox(height: 10.0),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'End Date:',
+                                        style: smallStyle.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: isDarkMode
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    timeoffdata.endDate != null
+                                        ? DateFormat('yyyy-MM-dd')
+                                            .format(timeoffdata.endDate!)
+                                        : "N/A",
+                                    overflow: TextOverflow.fade,
+                                    style: smallStyle.copyWith(
+                                      color: isDarkMode
+                                          ? Colors.white
+                                          : Colors.black,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10.0),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Type:',
+                                        style: smallStyle.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: isDarkMode
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(width: 80.0),
+                                  Text(
+                                    timeoffdata.type?.name ?? 'N/A',
+                                    style: smallStyle.copyWith(
+                                      color: isDarkMode
+                                          ? Colors.white
+                                          : Colors.black,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10.0),
+                              Wrap(
+                                spacing: 5.0,
+                                children: [
+                                  Text(
+                                    'Reason:',
+                                    style: smallStyle.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: isDarkMode
+                                          ? Colors.white
+                                          : Colors.black,
+                                    ),
+                                  ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        timeoffdata.reason.toString(),
+                                        maxLines: _showFullReason
+                                            ? null
+                                            : 2, // Show only 2 lines when collapsed
+                                        overflow: _showFullReason
+                                            ? TextOverflow.visible
+                                            : TextOverflow.ellipsis,
+                                        style: smallStyle.copyWith(
+                                          color: isDarkMode
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
+                                      ),
+                                      if ((timeoffdata.reason?.length ?? 0) >
+                                          50) // Only show button for long text
+                                        TextButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              _showFullReason =
+                                                  !_showFullReason;
+                                            });
+                                          },
+                                          child: Text(
+                                            _showFullReason
+                                                ? 'Show Less'
+                                                : 'Show More',
+                                            style: smallStyle.copyWith(
+                                              color: Colors.blue,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 20.0),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Message',
+                                        style: smallStyle.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: isDarkMode
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 10.0),
+                                  Container(
+                                    height: 100,
+                                    width: 270,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(13.0),
+                                      color: isDarkMode
+                                          ? Colors.grey.shade800
+                                          : Colors.grey[50],
+                                      border: Border.all(
                                         color: isDarkMode
-                                            ? Colors.white
-                                            : Colors.black,
+                                            ? Colors.grey.shade400
+                                            : Colors.grey.shade800,
+                                        width: 1.0,
                                       ),
                                     ),
-                                  ],
-                                ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            timeoffdata.comments != null
+                                                ? timeoffdata.comments
+                                                    .toString()
+                                                : "",
+                                            style: smallStyle.copyWith(
+                                              // fontWeight: FontWeight.bold,
+                                              color: isDarkMode
+                                                  ? Colors.white
+                                                  : Colors.black,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                ],
                               ),
-                            )
-                          ],
+                            ],
+                          ),
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                },
               );
             },
           );
