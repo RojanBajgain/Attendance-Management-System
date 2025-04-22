@@ -57,6 +57,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                     );
                   } else if (notificationcontroller.notification.isEmpty) {
                     return SizedBox(
+                      height: 650,
                       child: Center(
                         child: Text(
                           "No notification available",

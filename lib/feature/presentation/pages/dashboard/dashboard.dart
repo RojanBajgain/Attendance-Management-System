@@ -68,7 +68,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   padding: const EdgeInsets.only(left: 10.0),
                   child: Text(
                     "Dashboard",
-                    style: normalStyle.copyWith(
+                    style: smallNStyle.copyWith(
                       fontWeight: FontWeight.bold,
                       color: isDarkMode ? Colors.white : Colors.black,
                     ),
@@ -341,19 +341,19 @@ class _DashboardPageState extends State<DashboardPage> {
                   timesheetcontroller: timesheetcontroller,
                 ),
 
-                const SizedBox(height: 20.0),
+                const SizedBox(height: 35.0),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       "Holidays & Events",
-                      style: normalStyle.copyWith(
+                      style: smallNStyle.copyWith(
                         color: isDarkMode ? Colors.white : Colors.black,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 20.0),
+                    const SizedBox(height: 25.0),
                     HolidayEventNotification(),
                   ],
                 ),

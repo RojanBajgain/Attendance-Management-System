@@ -60,6 +60,7 @@ class _TimesheetTimeoffTabViewState extends State<TimesheetTimeoffTabView> {
                       "Timesheet",
                       style: smallNStyle.copyWith(
                         color: isDarkMode ? Colors.white : Colors.black,
+                        fontWeight: FontWeight.bold,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -83,6 +84,7 @@ class _TimesheetTimeoffTabViewState extends State<TimesheetTimeoffTabView> {
                       "Time Off",
                       style: smallNStyle.copyWith(
                         color: isDarkMode ? Colors.white : Colors.black,
+                        fontWeight: FontWeight.bold,
                       ),
                       textAlign: TextAlign.center,
                     ),
