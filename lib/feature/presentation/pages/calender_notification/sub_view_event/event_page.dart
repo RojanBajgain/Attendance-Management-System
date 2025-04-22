@@ -103,10 +103,9 @@ class _EventPageState extends State<EventPage>
       backgroundColor: isDarkMode ? Colors.black : Colors.grey[100],
       appBar: AppBar(
         title: Text(
-          'Events/Holidays',
+          'Events & Holidays',
           style: normalStyle.copyWith(
             color: isDarkMode ? Colors.white : Colors.black,
-            fontSize: 16,
           ),
         ),
         titleSpacing: 0,
@@ -149,7 +148,7 @@ class _EventPageState extends State<EventPage>
                 child: Text(
                   "Today's Event",
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -179,7 +178,7 @@ class _EventPageState extends State<EventPage>
                               Text(
                                 todayEvent?.name ?? "No events today",
                                 style: const TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 13,
                                   fontWeight: FontWeight.bold,
                                 ),
                                 maxLines: 1,
@@ -193,7 +192,7 @@ class _EventPageState extends State<EventPage>
                                   todayEvent!.description!.isNotEmpty)
                                 Text(
                                   todayEvent.description!,
-                                  style: const TextStyle(fontSize: 13),
+                                  style: const TextStyle(fontSize: 12),
                                   maxLines: 3,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -201,7 +200,7 @@ class _EventPageState extends State<EventPage>
                               Row(
                                 children: [
                                   const Icon(Icons.calendar_today,
-                                      size: 14, color: Colors.grey),
+                                      size: 13, color: Colors.grey),
                                   const SizedBox(width: 4),
                                   Text(
                                     todayEvent?.startDate != null &&

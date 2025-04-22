@@ -91,7 +91,7 @@ class EventTooltip extends StatelessWidget {
                   if (event.startDate != null && event.endDate != null) {
                     if (isSameDay(event.startDate!, event.endDate!)) {
                       dateText =
-                          DateFormat('d MMM yyyy').format(event.startDate!);
+                          "${DateFormat('d MMM yyyy').format(event.startDate!)} - ${DateFormat('d MMM yyyy').format(event.endDate!)}";
                     } else {
                       dateText =
                           "${DateFormat('d MMM yyyy').format(event.startDate!)} - ${DateFormat('d MMM yyyy').format(event.endDate!)}";
@@ -174,12 +174,14 @@ class EventTooltip extends StatelessWidget {
                               // Title
                               Text(
                                 event.name ?? "Untitled Event",
-                                style: smallStyle.copyWith(
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
                                   color: isDarkMode
                                       ? Colors.white
                                       : Colors.black87,
                                 ),
-                                maxLines: 2,
+                                maxLines: 3,
                               ),
 
                               const SizedBox(height: 8),
@@ -210,7 +212,7 @@ class EventTooltip extends StatelessWidget {
                                   child: Text(
                                     event.description!,
                                     style: TextStyle(
-                                      fontSize: 14,
+                                      fontSize: 11,
                                       color: isDarkMode
                                           ? Colors.white70
                                           : Colors.black54,
@@ -235,7 +237,7 @@ class EventTooltip extends StatelessWidget {
                                   Text(
                                     dateText,
                                     style: TextStyle(
-                                      fontSize: 12,
+                                      fontSize: 11,
                                       color: isDarkMode
                                           ? Colors.white70
                                           : Colors.black54,
