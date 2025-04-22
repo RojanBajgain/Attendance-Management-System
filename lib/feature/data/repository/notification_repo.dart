@@ -17,7 +17,7 @@ class NotificationRepo {
     }
 
     final response = await ApiClient.getApi(
-      ApiUrls.notification,
+      ApiUrls.eventpolicy,
       token: token,
       fromJson: (json) => NotificationModel.fromJson(json),
     );
