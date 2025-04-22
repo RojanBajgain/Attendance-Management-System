@@ -229,7 +229,7 @@ class _EventPageState extends State<EventPage>
                 child: Text(
                   "All ${getTabName(activeTabType)}",
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 15,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -292,7 +292,7 @@ class _EventPageState extends State<EventPage>
                                     Text(
                                       event.name ?? "",
                                       style: const TextStyle(
-                                        fontSize: 14,
+                                        fontSize: 13,
                                         fontWeight: FontWeight.bold,
                                       ),
                                       maxLines: 1,
@@ -314,7 +314,7 @@ class _EventPageState extends State<EventPage>
                                     Row(
                                       children: [
                                         const Icon(Icons.calendar_today,
-                                            size: 14, color: Colors.grey),
+                                            size: 13, color: Colors.grey),
                                         const SizedBox(width: 4),
                                         Text(
                                           event.endDate != null &&
@@ -326,7 +326,7 @@ class _EventPageState extends State<EventPage>
                                             color: isDarkMode
                                                 ? Colors.grey.shade400
                                                 : Colors.black,
-                                            fontSize: 12,
+                                            fontSize: 13,
                                           ),
                                         ),
                                       ],
