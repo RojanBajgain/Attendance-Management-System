@@ -1,3 +1,5 @@
+import 'package:ams/config/resources/styles.dart';
+import 'package:ams/feature/presentation/pages/chat/sub_view_chat/chat_input_field.dart';
 import 'package:flutter/material.dart';
 
 class MessagesScreen extends StatelessWidget {
@@ -5,48 +7,35 @@ class MessagesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDarkMode ? Colors.grey.shade300 : Colors.white,
       appBar: AppBar(
         centerTitle: false,
         elevation: 0,
-        backgroundColor: const Color(0xFF00BF6D),
+        backgroundColor: isDarkMode ? Colors.black : Colors.greenAccent,
         foregroundColor: Colors.white,
         automaticallyImplyLeading: false,
-        title: const Row(
+        title: Row(
           children: [
-            BackButton(),
-            CircleAvatar(
+            const BackButton(),
+            const CircleAvatar(
               backgroundImage:
                   NetworkImage("https://i.postimg.cc/cCsYDjvj/user-2.png"),
             ),
-            SizedBox(width: 16.0 * 0.75),
+            const SizedBox(width: 16.0 * 0.75),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   "Kristin Watson",
-                  style: TextStyle(fontSize: 16),
+                  style: smallStyle.copyWith(color: Colors.white),
                 ),
-                Text(
-                  "Active 3m ago",
-                  style: TextStyle(fontSize: 12),
-                )
               ],
             )
           ],
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.local_phone),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.videocam),
-            onPressed: () {},
-          ),
-          const SizedBox(width: 16.0 / 2),
-        ],
       ),
       body: Column(
         children: [
@@ -62,200 +51,6 @@ class MessagesScreen extends StatelessWidget {
           ),
           const ChatInputField(),
         ],
-      ),
-    );
-  }
-}
-
-class ChatInputField extends StatefulWidget {
-  const ChatInputField({super.key});
-
-  @override
-  State<ChatInputField> createState() => _ChatInputFieldState();
-}
-
-class _ChatInputFieldState extends State<ChatInputField> {
-  bool _showAttachment = false;
-
-  void _updateAttachmentState() {
-    setState(() {
-      _showAttachment = !_showAttachment;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16.0,
-        vertical: 16.0 / 2,
-      ),
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        boxShadow: [
-          BoxShadow(
-            offset: const Offset(0, -4),
-            blurRadius: 32,
-            color: const Color(0xFF087949).withOpacity(0.08),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Column(
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.mic, color: Color(0xFF00BF6D)),
-                const SizedBox(width: 16.0),
-                Expanded(
-                  child: Row(
-                    children: [
-                      const SizedBox(width: 16.0 / 4),
-                      Expanded(
-                        child: TextField(
-                          decoration: InputDecoration(
-                            hintText: "Type message",
-                            suffixIcon: SizedBox(
-                              width: 65,
-                              child: Row(
-                                children: [
-                                  InkWell(
-                                    onTap: _updateAttachmentState,
-                                    child: Icon(
-                                      Icons.attach_file,
-                                      color: _showAttachment
-                                          ? const Color(0xFF00BF6D)
-                                          : Theme.of(context)
-                                              .textTheme
-                                              .bodyLarge!
-                                              .color!
-                                              .withOpacity(0.64),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16.0 / 2),
-                                    child: Icon(
-                                      Icons.camera_alt_outlined,
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .bodyLarge!
-                                          .color!
-                                          .withOpacity(0.64),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            filled: true,
-                            fillColor:
-                                const Color(0xFF00BF6D).withOpacity(0.08),
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16.0 * 1.5, vertical: 16.0),
-                            border: const OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50)),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            if (_showAttachment) const MessageAttachment(),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class MessageAttachment extends StatelessWidget {
-  const MessageAttachment({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      // color: Theme.of(context).textTheme.bodyLarge!.color!.withOpacity(0.08),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          MessageAttachmentCard(
-            iconData: Icons.insert_drive_file,
-            title: "Document",
-            press: () {},
-          ),
-          MessageAttachmentCard(
-            iconData: Icons.image,
-            title: "Gallary",
-            press: () {},
-          ),
-          MessageAttachmentCard(
-            iconData: Icons.headset,
-            title: "Audio",
-            press: () {},
-          ),
-          MessageAttachmentCard(
-            iconData: Icons.videocam,
-            title: "Video",
-            press: () {},
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class MessageAttachmentCard extends StatelessWidget {
-  final VoidCallback press;
-  final IconData iconData;
-  final String title;
-
-  const MessageAttachmentCard(
-      {super.key,
-      required this.press,
-      required this.iconData,
-      required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: press,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0 / 2),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16.0 * 0.75),
-              decoration: const BoxDecoration(
-                color: Color(0xFF00BF6D),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                iconData,
-                size: 20,
-                color: Theme.of(context).scaffoldBackgroundColor,
-              ),
-            ),
-            const SizedBox(height: 16.0 / 2),
-            Text(
-              title,
-              style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                    color: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .color!
-                        .withOpacity(0.8),
-                  ),
-            )
-          ],
-        ),
       ),
     );
   }
@@ -417,6 +212,8 @@ class TextMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: 16.0 * 0.75,
@@ -428,10 +225,12 @@ class TextMessage extends StatelessWidget {
       ),
       child: Text(
         message!.text,
-        style: TextStyle(
+        style: normalStyle.copyWith(
           color: message!.isSender
               ? Colors.white
-              : Theme.of(context).textTheme.bodyLarge!.color,
+              : isDarkMode
+                  ? Colors.black
+                  : const Color(0xFF1D1D35),
         ),
       ),
     );
@@ -494,45 +293,9 @@ class ChatMessage {
 
 List demeChatMessages = [
   ChatMessage(
-    text: "Hi Sajol,",
+    text: "Hi Hello",
     messageType: ChatMessageType.text,
     messageStatus: MessageStatus.viewed,
     isSender: false,
-  ),
-  ChatMessage(
-    text: "Hello, How are you?",
-    messageType: ChatMessageType.text,
-    messageStatus: MessageStatus.viewed,
-    isSender: true,
-  ),
-  ChatMessage(
-    text: "",
-    messageType: ChatMessageType.audio,
-    messageStatus: MessageStatus.viewed,
-    isSender: false,
-  ),
-  ChatMessage(
-    text: "",
-    messageType: ChatMessageType.video,
-    messageStatus: MessageStatus.viewed,
-    isSender: true,
-  ),
-  ChatMessage(
-    text: "Error happend",
-    messageType: ChatMessageType.text,
-    messageStatus: MessageStatus.notSent,
-    isSender: true,
-  ),
-  ChatMessage(
-    text: "This looks great man!!",
-    messageType: ChatMessageType.text,
-    messageStatus: MessageStatus.viewed,
-    isSender: false,
-  ),
-  ChatMessage(
-    text: "Glad you like it",
-    messageType: ChatMessageType.text,
-    messageStatus: MessageStatus.notView,
-    isSender: true,
   ),
 ];
