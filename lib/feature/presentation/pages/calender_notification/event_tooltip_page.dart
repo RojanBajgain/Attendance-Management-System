@@ -46,11 +46,15 @@ class EventTooltip extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(16),
-            child: Text("Events",
-                style: normalStyle.copyWith(
+            child: Center(
+              child: Text(
+                "Events",
+                style: smallNStyle.copyWith(
                   fontWeight: FontWeight.bold,
                   color: isDarkMode ? Colors.white : Colors.black87,
-                )),
+                ),
+              ),
+            ),
           ),
           Divider(
             height: 1,
@@ -63,7 +67,7 @@ class EventTooltip extends StatelessWidget {
               child: Center(
                 child: Text(
                   "No events for today",
-                  style: smallNStyle.copyWith(
+                  style: smallStyle.copyWith(
                     color: isDarkMode ? Colors.white70 : Colors.grey[600],
                   ),
                 ),

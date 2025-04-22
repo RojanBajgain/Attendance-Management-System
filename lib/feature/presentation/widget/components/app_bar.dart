@@ -3,7 +3,6 @@ import 'package:ams/feature/presentation/pages/bottom_nav/bottom_nav_page.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/controller/calender_notification_controller.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/event_tooltip_page.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/sub_view_event/event_page.dart';
-import 'package:ams/feature/presentation/pages/chat/chat.dart';
 import 'package:ams/feature/presentation/pages/notification/notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';

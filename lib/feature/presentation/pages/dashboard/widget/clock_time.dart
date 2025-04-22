@@ -249,14 +249,14 @@ class _ClockTimeState extends State<ClockTime> {
   Widget build(BuildContext context) {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      height: 200.0,
+      height: 175.0,
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12.0),
-        color: isDarkMode ? Colors.grey.shade800 : Colors.grey[50],
+        color: isDarkMode ? Colors.grey.shade800 : Colors.grey[100],
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 26.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -284,11 +284,11 @@ class _ClockTimeState extends State<ClockTime> {
       alignment: Alignment.center,
       children: [
         SizedBox(
-          height: 150,
-          width: 150,
+          height: 130,
+          width: 130,
           child: CircularProgressIndicator(
             value: 1.0,
-            strokeWidth: 12.0,
+            strokeWidth: 8.0,
             valueColor: AlwaysStoppedAnimation(
                 (isClockingOut ? Colors.red[700] : Colors.green[600])),
             backgroundColor: Colors.grey[300],
@@ -298,7 +298,7 @@ class _ClockTimeState extends State<ClockTime> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(isOnBreak ? "Break Time" : "Clock In Time",
-                style: normalStyle.copyWith(
+                style: smallStyle.copyWith(
                   color: isDarkMode ? Colors.white : Colors.black,
                   fontWeight: FontWeight.bold,
                 )),
@@ -309,7 +309,7 @@ class _ClockTimeState extends State<ClockTime> {
                     ? _formatStopwatchTime(
                         timerController.stopwatchSeconds.value)
                     : _formatTime(hasClockedinController.clockedInTime.value),
-                style: normalStyle.copyWith(
+                style: smallNStyle.copyWith(
                   color: isDarkMode ? Colors.white : Colors.black,
                   fontWeight: FontWeight.bold,
                 ),
@@ -327,7 +327,7 @@ class _ClockTimeState extends State<ClockTime> {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(8)),
+          borderRadius: BorderRadius.all(Radius.circular(6)),
         ),
         backgroundColor: isClockingOut ? Colors.red[700] : Colors.green[600],
       ),
