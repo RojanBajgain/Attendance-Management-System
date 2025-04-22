@@ -27,13 +27,13 @@ class TimeOffSheet extends StatelessWidget {
             builder: (BuildContext context) {
               final messageHeight = timeoffdata.reason != null
                   ? (timeoffdata.reason!.length / 30 * 20).clamp(50.0, 200.0)
-                  : 50.0;
+                  : 10.0;
               return Dialog(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Container(
-                  height: 450 + messageHeight,
+                  height: 350 + messageHeight,
                   // width: double.infinity,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(13.0),
@@ -225,7 +225,7 @@ class TimeOffSheet extends StatelessWidget {
                         ),
                         const SizedBox(height: 10.0),
                         Wrap(
-                          spacing: 15.0, // Optional spacing between elements
+                          spacing: 5.0,
                           children: [
                             Text(
                               'Reason:',
@@ -258,7 +258,7 @@ class TimeOffSheet extends StatelessWidget {
                             Row(
                               children: [
                                 Text(
-                                  'Message:',
+                                  'Message',
                                   style: smallStyle.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: isDarkMode
@@ -274,9 +274,13 @@ class TimeOffSheet extends StatelessWidget {
                               width: 270,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(13.0),
-                                color: Colors.grey.shade50,
+                                color: isDarkMode
+                                    ? Colors.grey.shade800
+                                    : Colors.grey[50],
                                 border: Border.all(
-                                  color: Colors.black,
+                                  color: isDarkMode
+                                      ? Colors.grey.shade400
+                                      : Colors.grey.shade800,
                                   width: 1.0,
                                 ),
                               ),
@@ -291,8 +295,11 @@ class TimeOffSheet extends StatelessWidget {
                                           ? timeoffdata.comments.toString()
                                           : "",
                                       style: smallStyle.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black),
+                                        // fontWeight: FontWeight.bold,
+                                        color: isDarkMode
+                                            ? Colors.white
+                                            : Colors.black,
+                                      ),
                                     ),
                                   ],
                                 ),
