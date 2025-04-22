@@ -306,7 +306,9 @@ class _EventPageState extends State<EventPage>
                                         event.description!.isNotEmpty)
                                       Text(
                                         event.description!,
-                                        style: const TextStyle(fontSize: 13),
+                                        style: TextStyle(
+                                            fontSize: 13,
+                                            color: Colors.grey[300]),
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                       ),
