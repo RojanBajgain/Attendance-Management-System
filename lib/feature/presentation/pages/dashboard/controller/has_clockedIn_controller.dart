@@ -21,21 +21,16 @@ class HasClockedinController extends GetxController {
       ApiResponse response = await hasClockedIn.getClock();
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
-        // Assuming response.response is an instance of GetClockModel
         GetClockModel clockData = response.response;
 
-        // Check if clockedData exists and is not null
         if (clockData.clockedData != null) {
-          // Parse the UTC time from the API response
           DateTime utcTime = DateTime.parse(clockData.clockedData!.toString());
 
-          // Convert UTC time to Nepal Time (UTC+05:45)
           DateTime localTime = utcTime.add(Duration(hours: 5, minutes: 45));
 
-          // Update the clockedInTime value
           clockedInTime.value = localTime;
         } else {
-          clockedInTime.value = null; // No clock-in data
+          clockedInTime.value = null;
         }
       } else {
         log("Error: ${response.message}");

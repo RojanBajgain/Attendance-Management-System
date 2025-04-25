@@ -188,7 +188,7 @@ class _TimeOffPageState extends State<TimeOffPage> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(12.0),
                             child: ShrimmerEffect.rectangular(
-                              height: 200,
+                              height: 150,
                               width: MediaQuery.sizeOf(context).width,
                             ),
                           ),

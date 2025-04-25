@@ -45,7 +45,7 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
                   children: [
                     Text(
                       "Timesheets",
-                      style: normalStyle.copyWith(
+                      style: smallNStyle.copyWith(
                         fontWeight: FontWeight.bold,
                         color: isDarkMode ? Colors.white : Colors.black,
                       ),

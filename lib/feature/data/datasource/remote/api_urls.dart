@@ -80,6 +80,7 @@ class ApiUrls {
   static const String onresume = "api/timesheets/breaktime/resume/";
 
   static const String chat = "api/message/chat/";
+  static const String websocket = "ws://backend.ams.ayata.com.np/ws/chat/";
 
   static const String eventpolicy = "api/policies/calender/";
 

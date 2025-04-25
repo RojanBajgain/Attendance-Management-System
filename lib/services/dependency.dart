@@ -1,6 +1,7 @@
 import 'package:ams/feature/data/datasource/remote/api_client.dart';
 import 'package:ams/feature/data/repository/auth_repository_impl.dart';
 import 'package:ams/feature/data/repository/calender_notification.dart';
+import 'package:ams/feature/data/repository/chat_repo.dart';
 import 'package:ams/feature/data/repository/clock_in_out_repo.dart';
 import 'package:ams/feature/data/repository/dashboard_timesheet_repo.dart';
 import 'package:ams/feature/data/repository/has_clockedIn_repo.dart';
@@ -12,6 +13,7 @@ import 'package:ams/feature/data/repository/reset_password_repo.dart';
 import 'package:ams/feature/data/repository/timeoff_repo.dart';
 import 'package:ams/feature/data/repository/timesheet_repo.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/controller/calender_notification_controller.dart';
+import 'package:ams/feature/presentation/pages/chat/controller/chat_controller.dart';
 import 'package:ams/feature/presentation/pages/dashboard/controller/clock_in_out_controller.dart';
 import 'package:ams/feature/presentation/pages/dashboard/controller/dashboard_timesheet_controller.dart';
 import 'package:ams/feature/presentation/pages/dashboard/controller/has_clockedIn_controller.dart';
@@ -96,4 +98,8 @@ Future<void> init() async {
       EventCalenderRepo(apiClient: Get.find<ApiClient>()));
   Get.put<CalenderNotificationController>(CalenderNotificationController(
       eventCalenderrepo: Get.find<EventCalenderRepo>()));
+
+  // Chat
+  // Get.put<ChatRepo>(ChatRepo(apiClient: Get.find<ApiClient>()));
+  // Get.put<ChatController>(ChatController(chatRepo: Get.find<ChatRepo>()));
 }

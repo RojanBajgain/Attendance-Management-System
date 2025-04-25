@@ -266,9 +266,7 @@ class TimeOffSheet extends StatelessWidget {
                                     children: [
                                       Text(
                                         timeoffdata.reason.toString(),
-                                        maxLines: _showFullReason
-                                            ? null
-                                            : 2, // Show only 2 lines when collapsed
+                                        maxLines: _showFullReason ? null : 5,
                                         overflow: _showFullReason
                                             ? TextOverflow.visible
                                             : TextOverflow.ellipsis,
@@ -279,21 +277,23 @@ class TimeOffSheet extends StatelessWidget {
                                         ),
                                       ),
                                       if ((timeoffdata.reason?.length ?? 0) >
-                                          50) // Only show button for long text
-                                        TextButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              _showFullReason =
-                                                  !_showFullReason;
-                                            });
-                                          },
-                                          child: Text(
-                                            _showFullReason
-                                                ? 'Show Less'
-                                                : 'Show More',
-                                            style: smallStyle.copyWith(
-                                              color: Colors.blue,
-                                              fontWeight: FontWeight.bold,
+                                          100)
+                                        Center(
+                                          child: TextButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                _showFullReason =
+                                                    !_showFullReason;
+                                              });
+                                            },
+                                            child: Text(
+                                              _showFullReason
+                                                  ? 'Show Less'
+                                                  : 'Show More',
+                                              style: miniStyle.copyWith(
+                                                color: Colors.blue,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
                                           ),
                                         ),

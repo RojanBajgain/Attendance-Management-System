@@ -1,301 +1,218 @@
-import 'package:ams/config/resources/styles.dart';
-import 'package:ams/feature/presentation/pages/chat/sub_view_chat/chat_input_field.dart';
-import 'package:flutter/material.dart';
+// import 'package:ams/config/resources/styles.dart';
+// import 'package:ams/feature/presentation/pages/chat/controller/chat_controller.dart';
+// import 'package:ams/feature/presentation/pages/chat/model/chat_model.dart';
+// import 'package:ams/feature/presentation/pages/chat/sub_view_chat/chat_input_field.dart';
+// import 'package:flutter/material.dart';
+// import 'package:get/get.dart';
 
-class MessagesScreen extends StatelessWidget {
-  const MessagesScreen({super.key});
+// class MessagesScreen extends StatefulWidget {
+//   final int receiverId;
+//   final String receiverName;
+//   final String receiverImage;
+//   final bool isReceiverActive;
 
-  @override
-  Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+//   const MessagesScreen({
+//     Key? key,
+//     required this.receiverId,
+//     required this.receiverName,
+//     required this.receiverImage,
+//     this.isReceiverActive = false,
+//   }) : super(key: key);
 
-    return Scaffold(
-      backgroundColor: isDarkMode ? Colors.grey.shade300 : Colors.white,
-      appBar: AppBar(
-        centerTitle: false,
-        elevation: 0,
-        backgroundColor: isDarkMode ? Colors.black : Colors.greenAccent,
-        foregroundColor: Colors.white,
-        automaticallyImplyLeading: false,
-        title: Row(
-          children: [
-            const BackButton(),
-            const CircleAvatar(
-              backgroundImage:
-                  NetworkImage("https://i.postimg.cc/cCsYDjvj/user-2.png"),
-            ),
-            const SizedBox(width: 16.0 * 0.75),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Kristin Watson",
-                  style: smallStyle.copyWith(color: Colors.white),
-                ),
-              ],
-            )
-          ],
-        ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: ListView.builder(
-                itemCount: demeChatMessages.length,
-                itemBuilder: (context, index) =>
-                    Message(message: demeChatMessages[index]),
-              ),
-            ),
-          ),
-          const ChatInputField(),
-        ],
-      ),
-    );
-  }
-}
+//   @override
+//   State<MessagesScreen> createState() => _MessagesScreenState();
+// }
 
-class Message extends StatelessWidget {
-  const Message({
-    super.key,
-    required this.message,
-  });
+// class _MessagesScreenState extends State<MessagesScreen> {
+//   final ChatController _chatController = Get.find<ChatController>();
+//   final TextEditingController _textController = TextEditingController();
 
-  final ChatMessage message;
+//   @override
+//   void initState() {
+//     super.initState();
+//     // Load chat history when screen opens
+//     _chatController.getChatHistory(widget.receiverId);
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    Widget messageContaint(ChatMessage message) {
-      switch (message.messageType) {
-        case ChatMessageType.text:
-          return TextMessage(message: message);
-        case ChatMessageType.audio:
-          return AudioMessage(message: message);
-        case ChatMessageType.video:
-          return const VideoMessage();
-        default:
-          return const SizedBox();
-      }
-    }
+//   @override
+//   Widget build(BuildContext context) {
+//     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    return Padding(
-      padding: const EdgeInsets.only(top: 16.0),
-      child: Row(
-        mainAxisAlignment:
-            message.isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
-        children: [
-          if (!message.isSender) ...[
-            const CircleAvatar(
-              radius: 12,
-              backgroundImage:
-                  NetworkImage("https://i.postimg.cc/cCsYDjvj/user-2.png"),
-            ),
-            const SizedBox(width: 16.0 / 2),
-          ],
-          messageContaint(message),
-          if (message.isSender) MessageStatusDot(status: message.messageStatus)
-        ],
-      ),
-    );
-  }
-}
+//     return Scaffold(
+//       backgroundColor: isDarkMode ? Colors.grey.shade300 : Colors.white,
+//       appBar: AppBar(
+//         centerTitle: false,
+//         elevation: 0,
+//         backgroundColor: isDarkMode ? Colors.black : Colors.greenAccent,
+//         foregroundColor: Colors.white,
+//         automaticallyImplyLeading: false,
+//         title: Row(
+//           children: [
+//             const BackButton(),
+//             CircleAvatar(
+//               backgroundImage: NetworkImage(widget.receiverImage),
+//             ),
+//             const SizedBox(width: 16.0 * 0.75),
+//             Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 Text(
+//                   widget.receiverName,
+//                   style: smallStyle.copyWith(color: Colors.white),
+//                 ),
+//                 if (widget.isReceiverActive)
+//                   Text(
+//                     "Online",
+//                     style: TextStyle(
+//                       fontSize: 12,
+//                       color: Colors.white.withOpacity(0.8),
+//                     ),
+//                   ),
+//               ],
+//             )
+//           ],
+//         ),
+//       ),
+//       body: Column(
+//         children: [
+//           Expanded(
+//             child: Padding(
+//               padding: const EdgeInsets.symmetric(horizontal: 16.0),
+//               child: Obx(() {
+//                 if (_chatController.isLoading.value) {
+//                   return const Center(child: CircularProgressIndicator());
+//                 } else if (_chatController.errorMessage.value.isNotEmpty) {
+//                   return Center(
+//                     child: Text(_chatController.errorMessage.value),
+//                   );
+//                 } else {
+//                   return ListView.builder(
+//                     itemCount: _chatController.chatHistory.length,
+//                     itemBuilder: (context, index) {
+//                       final message = _chatController.chatHistory[index];
+//                       final bool isSender =
+//                           message.sender?.id == _chatController.getUserId();
+//                       return MessageBubble(
+//                         message: message,
+//                         isSender: isSender,
+//                       );
+//                     },
+//                   );
+//                 }
+//               }),
+//             ),
+//           ),
+//           ChatInputField(
+//             onSendMessage: (message) {
+//               _chatController.sendMessage(message, widget.receiverId);
+//               _textController.clear();
+//             },
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
-class VideoMessage extends StatelessWidget {
-  const VideoMessage({super.key});
+// class MessageBubble extends StatelessWidget {
+//   final ChatModel message;
+//   final bool isSender;
 
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.45, // 45% of total width
-      child: AspectRatio(
-        aspectRatio: 1.6,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                  "https://i.postimg.cc/Ls1WtygL/Video-Place-Here.png"),
-            ),
-            Container(
-              height: 25,
-              width: 25,
-              decoration: const BoxDecoration(
-                color: Color(0xFF00BF6D),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.play_arrow,
-                size: 16,
-                color: Colors.white,
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-}
+//   const MessageBubble({
+//     Key? key,
+//     required this.message,
+//     required this.isSender,
+//   }) : super(key: key);
 
-class AudioMessage extends StatelessWidget {
-  final ChatMessage? message;
+//   @override
+//   Widget build(BuildContext context) {
+//     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-  const AudioMessage({super.key, this.message});
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width * 0.55,
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16.0 * 0.75,
-        vertical: 16.0 / 2.5,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
-        color: const Color(0xFF00BF6D).withOpacity(message!.isSender ? 1 : 0.1),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            Icons.play_arrow,
-            color: message!.isSender ? Colors.white : const Color(0xFF00BF6D),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0 / 2),
-              child: Stack(
-                clipBehavior: Clip.none,
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    width: double.infinity,
-                    height: 2,
-                    color: message!.isSender
-                        ? Colors.white
-                        : const Color(0xFF00BF6D).withOpacity(0.4),
-                  ),
-                  Positioned(
-                    left: 0,
-                    child: Container(
-                      height: 8,
-                      width: 8,
-                      decoration: BoxDecoration(
-                        color: message!.isSender
-                            ? Colors.white
-                            : const Color(0xFF00BF6D),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
-          Text(
-            "0.37",
-            style: TextStyle(
-                fontSize: 12, color: message!.isSender ? Colors.white : null),
-          ),
-        ],
-      ),
-    );
-  }
-}
+//     return Padding(
+//       padding: const EdgeInsets.only(top: 16.0),
+//       child: Row(
+//         mainAxisAlignment:
+//             isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
+//         children: [
+//           if (!isSender) ...[
+//             CircleAvatar(
+//               radius: 12,
+//               backgroundImage: NetworkImage(
+//                 message.sender?.profileImage ??
+//                     "https://i.postimg.cc/cCsYDjvj/user-2.png",
+//               ),
+//             ),
+//             const SizedBox(width: 16.0 / 2),
+//           ],
+//           Container(
+//             padding: const EdgeInsets.symmetric(
+//               horizontal: 16.0 * 0.75,
+//               vertical: 16.0 / 2,
+//             ),
+//             decoration: BoxDecoration(
+//               color: const Color(0xFF00BF6D).withOpacity(isSender ? 1 : 0.1),
+//               borderRadius: BorderRadius.circular(30),
+//             ),
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 Text(
+//                   message.message ?? "",
+//                   style: normalStyle.copyWith(
+//                     color: isSender
+//                         ? Colors.white
+//                         : isDarkMode
+//                             ? Colors.black
+//                             : const Color(0xFF1D1D35),
+//                   ),
+//                 ),
+//                 const SizedBox(height: 2),
+//                 Text(
+//                   _formatTimestamp(message.timestamp),
+//                   style: TextStyle(
+//                     fontSize: 10,
+//                     color: isSender
+//                         ? Colors.white.withOpacity(0.7)
+//                         : Colors.black.withOpacity(0.5),
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//           if (isSender)
+//             Padding(
+//               padding: const EdgeInsets.only(left: 8.0),
+//               child: Icon(
+//                 message.hasRead == true ? Icons.done_all : Icons.done,
+//                 size: 16,
+//                 color: message.hasRead == true ? Colors.blue : Colors.grey,
+//               ),
+//             ),
+//         ],
+//       ),
+//     );
+//   }
 
-class TextMessage extends StatelessWidget {
-  const TextMessage({
-    super.key,
-    this.message,
-  });
+//   String _formatTimestamp(DateTime? timestamp) {
+//     if (timestamp == null) return "";
 
-  final ChatMessage? message;
+//     // Today's date formatting - just show time
+//     final now = DateTime.now();
+//     if (timestamp.year == now.year &&
+//         timestamp.month == now.month &&
+//         timestamp.day == now.day) {
+//       return "${timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')}";
+//     }
 
-  @override
-  Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+//     // Yesterday
+//     final yesterday = now.subtract(const Duration(days: 1));
+//     if (timestamp.year == yesterday.year &&
+//         timestamp.month == yesterday.month &&
+//         timestamp.day == yesterday.day) {
+//       return "Yesterday ${timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')}";
+//     }
 
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16.0 * 0.75,
-        vertical: 16.0 / 2,
-      ),
-      decoration: BoxDecoration(
-        color: const Color(0xFF00BF6D).withOpacity(message!.isSender ? 1 : 0.1),
-        borderRadius: BorderRadius.circular(30),
-      ),
-      child: Text(
-        message!.text,
-        style: normalStyle.copyWith(
-          color: message!.isSender
-              ? Colors.white
-              : isDarkMode
-                  ? Colors.black
-                  : const Color(0xFF1D1D35),
-        ),
-      ),
-    );
-  }
-}
-
-class MessageStatusDot extends StatelessWidget {
-  final MessageStatus? status;
-
-  const MessageStatusDot({super.key, this.status});
-  @override
-  Widget build(BuildContext context) {
-    Color dotColor(MessageStatus status) {
-      switch (status) {
-        case MessageStatus.notSent:
-          return const Color(0xFFF03738);
-        case MessageStatus.notView:
-          return Theme.of(context).textTheme.bodyLarge!.color!.withOpacity(0.1);
-        case MessageStatus.viewed:
-          return const Color(0xFF00BF6D);
-        default:
-          return Colors.transparent;
-      }
-    }
-
-    return Container(
-      margin: const EdgeInsets.only(left: 16.0 / 2),
-      height: 12,
-      width: 12,
-      decoration: BoxDecoration(
-        color: dotColor(status!),
-        shape: BoxShape.circle,
-      ),
-      child: Icon(
-        status == MessageStatus.notSent ? Icons.close : Icons.done,
-        size: 8,
-        color: Theme.of(context).scaffoldBackgroundColor,
-      ),
-    );
-  }
-}
-
-enum ChatMessageType { text, audio, image, video }
-
-enum MessageStatus { notSent, notView, viewed }
-
-class ChatMessage {
-  final String text;
-  final ChatMessageType messageType;
-  final MessageStatus messageStatus;
-  final bool isSender;
-
-  ChatMessage({
-    this.text = '',
-    required this.messageType,
-    required this.messageStatus,
-    required this.isSender,
-  });
-}
-
-List demeChatMessages = [
-  ChatMessage(
-    text: "Hi Hello",
-    messageType: ChatMessageType.text,
-    messageStatus: MessageStatus.viewed,
-    isSender: false,
-  ),
-];
+//     // Older messages
+//     return "${timestamp.day}/${timestamp.month}/${timestamp.year} ${timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')}";
+//   }
+// }

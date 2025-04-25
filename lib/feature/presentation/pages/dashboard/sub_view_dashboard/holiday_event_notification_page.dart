@@ -144,11 +144,11 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
           ),
           const SizedBox(height: 15.0),
           Obx(() {
-            // if (calenderController.isLoading.value) {
-            //   return const Center(
-            //     child: CircularProgressIndicator(),
-            //   );
-            // }
+            if (calenderController.isLoading.value) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
 
             if (calenderController.errorMessage.value.isNotEmpty) {
               return Center(
@@ -259,7 +259,7 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
         : description;
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+      margin: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0),
       padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10.0),
@@ -268,11 +268,11 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
       child: Row(
         children: [
           Container(
-            height: 50.0,
-            width: 50.0,
+            height: 40.0,
+            width: 40.0,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10.0),
-              color: Colors.red,
+              color: _getEventTypeColor(item.type),
             ),
             child: Center(
               child: Text(
@@ -305,7 +305,7 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                 // Name/Title
                 Text(
                   item.name ?? "",
-                  style: smallNStyle.copyWith(
+                  style: smallStyle.copyWith(
                     fontWeight: FontWeight.w500,
                     color: isDarkMode ? Colors.white : Colors.black,
                   ),
@@ -365,6 +365,19 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
       return "Coming in $difference ${difference == 1 ? 'day' : 'days'}";
     } else {
       return "${difference.abs()} ${difference == -1 ? 'day' : 'days'} ago";
+    }
+  }
+
+  Color _getEventTypeColor(EventType? type) {
+    switch (type) {
+      case EventType.HOLIDAY:
+        return Colors.red;
+      case EventType.EVENT:
+        return Colors.blue;
+      case EventType.NOTICE:
+        return Colors.orange;
+      default:
+        return Colors.grey;
     }
   }
 }

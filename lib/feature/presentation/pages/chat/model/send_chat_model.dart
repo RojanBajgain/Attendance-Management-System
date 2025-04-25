@@ -1,17 +1,17 @@
 import 'dart:convert';
 
-class ChatModel {
+class SendChatModel {
   int id;
   dynamic document;
-  dynamic receiver;
-  Sender? sender;
-  int? department;
+  Receiver? receiver;
+  Receiver? sender;
+  dynamic department;
   String? message;
   DateTime? timestamp;
   bool? hasRead;
   dynamic mediaUrl;
 
-  ChatModel({
+  SendChatModel({
     this.id = 0,
     this.document,
     this.receiver,
@@ -23,20 +23,23 @@ class ChatModel {
     this.mediaUrl,
   });
 
-  factory ChatModel.fromRawJson(String str) =>
-      ChatModel.fromJson(json.decode(str));
+  factory SendChatModel.fromRawJson(String str) =>
+      SendChatModel.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
 
-  factory ChatModel.fromJson(Map<String, dynamic> json) => ChatModel(
+  factory SendChatModel.fromJson(Map<String, dynamic> json) => SendChatModel(
         id: json["id"] ?? 0,
         document: json["document"],
-        receiver: json["receiver"],
-        sender: json["sender"] != null ? Sender.fromJson(json["sender"]) : null,
+        receiver: json["receiver"] != null
+            ? Receiver.fromJson(json["receiver"])
+            : null,
+        sender:
+            json["sender"] != null ? Receiver.fromJson(json["sender"]) : null,
         department: json["department"],
         message: json["message"],
         timestamp: json["timestamp"] != null
-            ? DateTime.parse(json["timestamp"])
+            ? DateTime.tryParse(json["timestamp"])
             : null,
         hasRead: json["has_read"],
         mediaUrl: json["media_url"],
@@ -45,7 +48,7 @@ class ChatModel {
   Map<String, dynamic> toJson() => {
         "id": id,
         "document": document,
-        "receiver": receiver,
+        "receiver": receiver?.toJson(),
         "sender": sender?.toJson(),
         "department": department,
         "message": message,
@@ -55,25 +58,26 @@ class ChatModel {
       };
 }
 
-class Sender {
+class Receiver {
   int id;
   String? user;
   bool? isActive;
-  dynamic profileImage;
+  String? profileImage;
 
-  Sender({
+  Receiver({
     this.id = 0,
     this.user,
     this.isActive,
     this.profileImage,
   });
 
-  factory Sender.fromRawJson(String str) => Sender.fromJson(json.decode(str));
+  factory Receiver.fromRawJson(String str) =>
+      Receiver.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
 
-  factory Sender.fromJson(Map<String, dynamic> json) => Sender(
-        id: json["id"],
+  factory Receiver.fromJson(Map<String, dynamic> json) => Receiver(
+        id: json["id"] ?? 0,
         user: json["user"],
         isActive: json["is_active"],
         profileImage: json["profile_image"],

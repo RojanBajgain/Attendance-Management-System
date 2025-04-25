@@ -18,7 +18,7 @@ class ClockInOutController extends GetxController {
   var officelocation = <Datum>[].obs;
   var isLoading = false.obs;
 
-  var officeLocationError = ''.obs; // Add this observable
+  var officeLocationError = ''.obs;
 
   final ClockInOutRepo clockinoutrepo;
 
@@ -73,9 +73,10 @@ class ClockInOutController extends GetxController {
 
         Get.back();
         SSnackbarUtil.showSnackbar(
-            "Posted Clock in",
-            response.message ?? 'Failed to post clock in time',
-            SnackbarType.error);
+          "Posted Clock in",
+          response.message ?? 'Your Clock In time has been successfully posted',
+          SnackbarType.success,
+        );
         // Get.snackbar(
         //   'Posted Clock in',
         //   response.message ?? 'Your CLock In time has been successfully posted',

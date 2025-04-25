@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/repository/clock_in_out_repo.dart';
@@ -24,19 +23,18 @@ class ClockTime extends StatefulWidget {
 class _ClockTimeState extends State<ClockTime> {
   final ProfileController profileController =
       Get.put(ProfileController(profileRepo: Get.find()));
-
   final ClockInOutController clockInOutController =
       Get.put(ClockInOutController(clockinoutrepo: Get.find()));
-
   final TimerController timerController = Get.put(TimerController());
-
   final HasClockedinController hasClockedinController =
       Get.put(HasClockedinController(hasClockedIn: Get.find()));
 
-  bool isClockedInToday = false;
-  bool isClockedOut = false;
-  bool isOnBreak = false;
+  RxBool isClockedInToday = false.obs;
+  RxBool isClockedOut = false.obs;
+  RxBool isOnBreak = false.obs;
   Location? officeLocation;
+  DateTime? clockInTime;
+  DateTime? clockOutTime;
 
   @override
   void initState() {
@@ -50,17 +48,8 @@ class _ClockTimeState extends State<ClockTime> {
     });
   }
 
-  // @override
-  // void dispose() {
-  //   // Stop any active timers
-  //   timerController.stopTimer();
-  //   timerController.stopStopwatch();
-  //   super.dispose();
-  // }
-
   Future<void> _fetchOfficeLocation() async {
     Location? location = await clockInOutController.getOfficeLocation();
-
     if (location != null && mounted) {
       setState(() {
         officeLocation = location;
@@ -72,35 +61,58 @@ class _ClockTimeState extends State<ClockTime> {
     await hasClockedinController.getClockData();
     if (!mounted) return;
 
+    final prefs = await SharedPreferences.getInstance();
     DateTime now = DateTime.now();
     String todayDate = DateFormat('yyyy-MM-dd').format(now);
 
-    DateTime? clockInTime = hasClockedinController.clockedInTime.value;
-    log("Loaded Clock-In Time from API: $clockInTime");
+    DateTime? apiClockInTime = hasClockedinController.clockedInTime.value;
+    log("Loaded Clock-In Time from API: $apiClockInTime");
 
-    if (clockInTime != null &&
-        DateFormat('yyyy-MM-dd').format(clockInTime) == todayDate) {
-      if (!mounted) return;
+    if (apiClockInTime != null &&
+        DateFormat('yyyy-MM-dd').format(apiClockInTime) == todayDate) {
+      // Truncate to minute
+      DateTime clockInMinute = DateTime(
+        apiClockInTime.year,
+        apiClockInTime.month,
+        apiClockInTime.day,
+        apiClockInTime.hour,
+        apiClockInTime.minute,
+      );
 
-      setState(() {
-        isClockedInToday = true;
-        isClockedOut = false;
-        isOnBreak = false;
-      });
+      isClockedInToday.value = true;
+      isClockedOut.value = false;
+      isOnBreak.value = prefs.getBool('isOnBreak') ?? false;
+      clockInTime = apiClockInTime;
 
-      timerController.clockInTime = clockInTime.toString();
-      int elapsed = now.difference(clockInTime).inSeconds;
-      timerController.elapsedSeconds.value = elapsed;
-      timerController.startTimer();
+      timerController.clockInTime = clockInMinute.toIso8601String();
+
+      if (!timerController.isRunning.value && !isOnBreak.value) {
+        int elapsed = now.difference(clockInMinute).inSeconds;
+        if (elapsed < 0) elapsed = 0;
+
+        await prefs.setString('clockInTime', clockInMinute.toIso8601String());
+        await prefs.setBool('isTimerRunning', true);
+        timerController.resetTimer(); // Reset to 0
+        timerController.startTimer(initialSeconds: elapsed);
+      }
     } else {
-      if (!mounted) return;
-
-      setState(() {
-        isClockedInToday = false;
-        isClockedOut = false;
-        isOnBreak = false;
-      });
+      isClockedInToday.value = false;
+      isClockedOut.value = false;
+      isOnBreak.value = false;
+      clockInTime = null;
+      clockOutTime = null;
       timerController.stopTimer();
+      timerController.resetTimer(); // Reset to 0
+      await prefs.remove('clockInTime');
+      await prefs.setBool('isTimerRunning', false);
+    }
+
+    // Load clock-out time
+    String? storedClockOutTime = prefs.getString('clockOutTime');
+    if (storedClockOutTime != null) {
+      setState(() {
+        clockOutTime = DateTime.parse(storedClockOutTime);
+      });
     }
   }
 
@@ -112,7 +124,6 @@ class _ClockTimeState extends State<ClockTime> {
     if (permission == LocationPermission.deniedForever) {
       SSnackbarUtil.showSnackbar(
           "Error", "Enable Location permission in setting", SnackbarType.error);
-
       return false;
     }
     return permission != LocationPermission.denied;
@@ -123,26 +134,54 @@ class _ClockTimeState extends State<ClockTime> {
 
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.best);
-
     int? deviceId = profileController.profile.first.device?.deviceUserId;
     if (deviceId == null) {
       SSnackbarUtil.showSnackbar("Error",
           "Device info not found. Please log in again.", SnackbarType.error);
-      // Get.snackbar("Error", "Device info not found. Please log in again.",
-      //     backgroundColor: Colors.red, colorText: Colors.white);
       return;
     }
 
-    if (!isClockedInToday) {
+    final prefs = await SharedPreferences.getInstance();
+    if (!isClockedInToday.value) {
       await clockInOutController.postClockin(
-          deviceId: deviceId,
-          latitude: position.latitude.toString(),
-          longitude: position.longitude.toString());
+        deviceId: deviceId,
+        latitude: position.latitude.toString(),
+        longitude: position.longitude.toString(),
+      );
+      DateTime now = DateTime.now();
+      // Truncate to current minute
+      DateTime clockInMinute = DateTime(
+        now.year,
+        now.month,
+        now.day,
+        now.hour,
+        now.minute,
+      );
+      setState(() {
+        clockInTime = now;
+      });
+      isClockedInToday.value = true;
+      isClockedOut.value = false;
+      // Persist clock-in time and start timer
+      await prefs.setString('clockInTime', clockInMinute.toIso8601String());
+      timerController.clockInTime = clockInMinute.toIso8601String();
+      timerController.resetTimer(); // Reset to 0
+      timerController.startTimer(initialSeconds: 0);
     } else {
       await clockInOutController.postClockout(
-          deviceId: deviceId,
-          latitude: position.latitude.toString(),
-          longitude: position.longitude.toString());
+        deviceId: deviceId,
+        latitude: position.latitude.toString(),
+        longitude: position.longitude.toString(),
+      );
+      setState(() {
+        clockOutTime = DateTime.now();
+      });
+      isClockedInToday.value = false;
+      isClockedOut.value = true;
+      await prefs.setString('clockOutTime', clockOutTime!.toIso8601String());
+      await prefs.remove('clockInTime');
+      timerController.stopTimer();
+      timerController.resetTimer(); // Reset to 0
     }
 
     await hasClockedinController.getClockData();
@@ -162,13 +201,12 @@ class _ClockTimeState extends State<ClockTime> {
         int additionalSeconds =
             DateTime.now().difference(breakStartTime).inSeconds;
         int totalElapsed = elapsedSeconds + additionalSeconds;
-
         timerController.startStopwatch(initialSeconds: totalElapsed);
       }
     }
     if (!mounted) return;
 
-    setState(() => isOnBreak = isOnBreakValue);
+    isOnBreak.value = isOnBreakValue;
   }
 
   Future<void> _handleBreak() async {
@@ -177,58 +215,38 @@ class _ClockTimeState extends State<ClockTime> {
 
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.best);
-
-    if (profileController.profile.value.isEmpty) {
-      SSnackbarUtil.showSnackbar("Error",
-          "Profile data not found. Please log in again.", SnackbarType.error);
-      // Get.snackbar("Error", "Profile data not found. Please log in again.",
-      //     backgroundColor: Colors.red, colorText: Colors.white);
-      return;
-    }
-
     int? employeeId = profileController.profile.first.device?.deviceUserId;
     if (employeeId == null) {
       SSnackbarUtil.showSnackbar("Error",
           "Employee info not found. Please log in again.", SnackbarType.error);
-      // Get.snackbar("Error", "Employee info not found. Please log in again.",
-      //     backgroundColor: Colors.red, colorText: Colors.white);
       return;
     }
 
-    if (!isOnBreak) {
-      log("Calling postOnBreak API");
+    if (!isOnBreak.value) {
       await clockInOutController.postOnBreak(employeeId: employeeId);
-
       await prefs.setString('breakStartTime', DateTime.now().toIso8601String());
       await prefs.setInt('stopwatchElapsedSeconds', 0);
-
+      await prefs.setBool('isOnBreak', true);
       timerController.pauseTimer();
       timerController.startStopwatch();
+      isOnBreak.value = true;
     } else {
-      log("Calling postResume API");
       await clockInOutController.postResume(
-          employeeId: employeeId,
-          latitude: position.latitude.toString(),
-          longitude: position.longitude.toString());
-
+        employeeId: employeeId,
+        latitude: position.latitude.toString(),
+        longitude: position.longitude.toString(),
+      );
       int elapsedTime = timerController.stopwatchSeconds.value;
       await prefs.setInt('stopwatchElapsedSeconds', elapsedTime);
       await prefs.remove('breakStartTime');
       await prefs.remove('stopwatchElapsedSeconds');
-
+      await prefs.setBool('isOnBreak', false);
       timerController.stopStopwatch();
       timerController.resumeTimer();
+      isOnBreak.value = false;
     }
 
     await hasClockedinController.getClockData();
-
-    if (!mounted) return;
-
-    setState(() {
-      isOnBreak = !isOnBreak;
-    });
-
-    await prefs.setBool('isOnBreak', isOnBreak);
   }
 
   getCurrentLocation() async {
@@ -236,12 +254,12 @@ class _ClockTimeState extends State<ClockTime> {
     if (permission == LocationPermission.denied ||
         permission == LocationPermission.deniedForever) {
       log("Location denied");
-      LocationPermission ask = await Geolocator.requestPermission();
+      await Geolocator.requestPermission();
     } else {
-      Position currentposition = await Geolocator.getCurrentPosition(
+      Position currentPosition = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.best);
-      log("Latitude: ${currentposition.latitude.toString()}");
-      log("Longitude: ${currentposition.longitude.toString()}");
+      log("Latitude: ${currentPosition.latitude}");
+      log("Longitude: ${currentPosition.longitude}");
     }
   }
 
@@ -249,113 +267,181 @@ class _ClockTimeState extends State<ClockTime> {
   Widget build(BuildContext context) {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      height: 175.0,
+      height: 225.0,
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12.0),
         color: isDarkMode ? Colors.grey.shade800 : Colors.grey[100],
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 26.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _buildClockInTimeDisplay(isDarkMode),
-            Column(
-              mainAxisSize: MainAxisSize.min,
+      child: Stack(
+        children: [
+          Positioned(
+            top: 10.0,
+            left: 26.0,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildClockInOutButton(isDarkMode),
-                const SizedBox(height: 10.0),
-                if (isClockedInToday && !isClockedOut && !isOnBreak)
-                  _buildBreakButton(isDarkMode),
+                Text(
+                  "Clock In at",
+                  style: smallStyle.copyWith(
+                    color: isDarkMode ? Colors.white : Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  _formatTime(clockInTime),
+                  style: smallStyle.copyWith(
+                    color: isDarkMode ? Colors.white70 : Colors.black87,
+                  ),
+                ),
               ],
             ),
-          ],
-        ),
+          ),
+          Positioned(
+            top: 10.0,
+            right: 26.0,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  "Clock Out at",
+                  style: smallStyle.copyWith(
+                    color: isDarkMode ? Colors.white : Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  _formatTime(clockOutTime),
+                  style: smallStyle.copyWith(
+                    color: isDarkMode ? Colors.white70 : Colors.black87,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(26.0, 70.0, 26.0, 0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                _buildClockInTimeDisplay(isDarkMode),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildClockInOutButton(isDarkMode),
+                    const SizedBox(height: 6.0),
+                    Obx(() => isClockedInToday.value &&
+                            !isClockedOut.value &&
+                            !isOnBreak.value
+                        ? _buildBreakButton(isDarkMode)
+                        : const SizedBox.shrink()),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildClockInTimeDisplay(bool isDarkMode) {
-    bool isClockingOut = isClockedInToday && !isClockedOut;
+    return Obx(() {
+      bool isClockingOut = isClockedInToday.value && !isClockedOut.value;
+      double progress = isClockingOut
+          ? (timerController.elapsedSeconds.value % 28800) / 28800 // 8 hours
+          : 0.0;
 
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        SizedBox(
-          height: 130,
-          width: 130,
-          child: CircularProgressIndicator(
-            value: 1.0,
-            strokeWidth: 8.0,
-            valueColor: AlwaysStoppedAnimation(
-                (isClockingOut ? Colors.red[700] : Colors.green[600])),
-            backgroundColor: Colors.grey[300],
+      return Stack(
+        alignment: Alignment.center,
+        children: [
+          SizedBox(
+            height: 130,
+            width: 130,
+            child: CircularProgressIndicator(
+              value: progress,
+              strokeWidth: 8.0,
+              valueColor: AlwaysStoppedAnimation(
+                  isClockingOut ? Colors.red[700] : Colors.green[600]),
+              backgroundColor: Colors.grey[300],
+            ),
           ),
-        ),
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(isOnBreak ? "Break Time" : "Clock In Time",
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                isOnBreak.value ? "Break Time" : "Clock In Time",
                 style: smallStyle.copyWith(
                   color: isDarkMode ? Colors.white : Colors.black,
                   fontWeight: FontWeight.bold,
-                )),
-            const SizedBox(height: 8),
-            Obx(
-              () => Text(
-                isOnBreak
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                isOnBreak.value
                     ? _formatStopwatchTime(
                         timerController.stopwatchSeconds.value)
-                    : _formatTime(hasClockedinController.clockedInTime.value),
+                    : _formatStopwatchTime(
+                        timerController.elapsedSeconds.value),
                 style: smallNStyle.copyWith(
                   color: isDarkMode ? Colors.white : Colors.black,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-            ),
-          ],
-        ),
-      ],
-    );
+            ],
+          ),
+        ],
+      );
+    });
   }
 
   Widget _buildClockInOutButton(bool isDarkMode) {
-    bool isClockingOut = isClockedInToday && !isClockedOut;
+    return Obx(() {
+      bool isClockingOut = isClockedInToday.value && !isClockedOut.value;
 
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(6)),
+      return ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(6)),
+          ),
+          backgroundColor: isClockingOut ? Colors.red[700] : Colors.green[600],
         ),
-        backgroundColor: isClockingOut ? Colors.red[700] : Colors.green[600],
-      ),
-      onPressed: () {
-        if (isOnBreak) {
-          _handleBreak();
-        } else {
-          _handleClockInOut();
-        }
-      },
-      child: Text(
-          isClockedOut
+        onPressed: () {
+          if (isOnBreak.value) {
+            _handleBreak();
+          } else {
+            _handleClockInOut();
+          }
+        },
+        child: Text(
+          isClockedOut.value
               ? 'Clocked Out'
-              : (isOnBreak
+              : (isOnBreak.value
                   ? 'Resume'
-                  : (isClockedInToday ? 'Clock Out' : 'Clock In')),
+                  : (isClockedInToday.value ? 'Clock Out' : 'Clock In')),
           style: const TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold)),
-    );
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      );
+    });
   }
 
   Widget _buildBreakButton(bool isDarkMode) {
     return ElevatedButton(
       style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(Colors.orange[700])),
+        backgroundColor: MaterialStateProperty.all(Colors.orange[700]),
+      ),
       onPressed: _handleBreak,
-      child: const Text('Break',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+      child: const Text(
+        'Break',
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
     );
   }
 
@@ -363,9 +449,13 @@ class _ClockTimeState extends State<ClockTime> {
       dateTime == null ? "--:--:--" : DateFormat("h:mm:ss a").format(dateTime);
 
   String _formatStopwatchTime(int seconds) {
-    int hours = seconds ~/ 3600;
-    int minutes = (seconds % 3600) ~/ 60;
-    int secs = seconds % 60;
+    // Force seconds to be non-negative
+    int positiveSeconds = seconds.abs();
+
+    int hours = positiveSeconds ~/ 3600;
+    int minutes = (positiveSeconds % 3600) ~/ 60;
+    int secs = positiveSeconds % 60;
+
     return '${hours.toString().padLeft(2, '0')}:'
         '${minutes.toString().padLeft(2, '0')}:'
         '${secs.toString().padLeft(2, '0')}';

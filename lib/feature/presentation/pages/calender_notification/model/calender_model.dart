@@ -28,7 +28,10 @@ class EventCalenderModel {
             : DateTime.parse(json["start_date"]),
         endDate:
             json["end_date"] == null ? null : DateTime.parse(json["end_date"]),
-        type: eventTypeValues.map[json["type"]],
+        type: json["type"] != null &&
+                eventTypeValues.map.containsKey(json["type"])
+            ? eventTypeValues.map[json["type"]]
+            : null,
         description: json["description"],
         createdBy: json["created_by"],
       );

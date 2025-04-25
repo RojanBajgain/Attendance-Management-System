@@ -146,11 +146,14 @@ class _TimesheetTimeoffTabViewState extends State<TimesheetTimeoffTabView> {
   }
 
   Widget _noDataText(String text, bool isDarkMode) {
-    return Center(
-      child: Text(
-        text,
-        style: miniStyle.copyWith(
-          color: isDarkMode ? Colors.white : Colors.black,
+    return SizedBox(
+      height: 50.0,
+      child: Center(
+        child: Text(
+          text,
+          style: miniStyle.copyWith(
+            color: isDarkMode ? Colors.white : Colors.black,
+          ),
         ),
       ),
     );
