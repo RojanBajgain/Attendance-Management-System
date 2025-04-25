@@ -5,8 +5,6 @@ import 'package:ams/feature/data/repository/has_clockedIn_repo.dart';
 import 'package:ams/feature/presentation/pages/dashboard/model/get_clock_model.dart';
 import 'package:get/get.dart';
 
-import 'package:intl/intl.dart'; // For date formatting
-
 class HasClockedinController extends GetxController {
   var clockedInTime = Rx<DateTime?>(null); // Store clock-in time as DateTime
   var isLoading = false.obs;

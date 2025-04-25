@@ -56,15 +56,15 @@ class AuthController extends GetxController {
         }
 
         // Show loading dialog before navigation
-        Get.dialog(
-          Center(
-            child: LoadingAnimationWidget.staggeredDotsWave(
-                color: Colors.white, size: 80),
-          ),
-          barrierDismissible: false,
-        );
+        // Get.dialog(
+        //   Center(
+        //     child: LoadingAnimationWidget.staggeredDotsWave(
+        //         color: Colors.white, size: 80),
+        //   ),
+        //   barrierDismissible: false,
+        // );
 
-        await Future.delayed(const Duration(seconds: 3));
+        // await Future.delayed(const Duration(seconds: 3));
 
         Get.offAll(() => const BottomNavPage());
       } else {

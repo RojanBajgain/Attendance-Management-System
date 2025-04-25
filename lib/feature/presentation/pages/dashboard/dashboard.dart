@@ -48,10 +48,14 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
-    timeoffcontroller.getTimeoff();
-    timesheetcontroller.getTimesheet();
     dashboardtimesheetcontroller.getDashboardTimesheet();
-    calenderNotificationController.getEventCalenders();
+
+    // Defer less-important data
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      timeoffcontroller.getTimeoff();
+      timesheetcontroller.getTimesheet();
+      calenderNotificationController.getEventCalenders();
+    });
   }
 
   @override
@@ -65,12 +69,10 @@ class _DashboardPageState extends State<DashboardPage> {
           child: Padding(
             padding: const EdgeInsets.all(10),
             child: Obx(() {
-              // Show skeleton loading while data is being fetched
               if (dashboardtimesheetcontroller.isLoading.value) {
                 return const DashboardSkeletonLoading();
               }
 
-              // Show actual content when data is loaded
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

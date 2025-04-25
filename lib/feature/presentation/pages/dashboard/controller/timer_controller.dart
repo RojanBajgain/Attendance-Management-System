@@ -63,7 +63,6 @@ class TimerController extends GetxController {
     }
   }
 
-  // Private method to start timer without saving state (for initialization)
   void _startTimerWithoutSaving({int initialSeconds = 0}) {
     isRunning.value = true;
     elapsedSeconds.value = initialSeconds;
@@ -74,7 +73,6 @@ class TimerController extends GetxController {
     });
   }
 
-  // Private method to start stopwatch without saving state (for initialization)
   void _startStopwatchWithoutSaving({int initialSeconds = 0}) {
     isStopwatchRunning.value = true;
     stopwatchSeconds.value = initialSeconds;
@@ -92,19 +90,16 @@ class TimerController extends GetxController {
     isRunning.value = true;
     elapsedSeconds.value = initialSeconds;
 
-    // Save that timer is running
     await prefs.setBool('isTimerRunning', true);
 
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       elapsedSeconds.value++;
-      // Persist elapsed seconds periodically to avoid excessive writes
       if (elapsedSeconds.value % 10 == 0) {
         await prefs.setInt('elapsedSeconds', elapsedSeconds.value);
       }
     });
 
-    // Persist clock-in time if provided
     if (clockInTime != null) {
       await prefs.setString('clockInTime', clockInTime!);
     }
@@ -158,7 +153,6 @@ class TimerController extends GetxController {
       }
     });
 
-    // Record that stopwatch is running
     await prefs.setBool('isStopwatchRunning', true);
   }
 

@@ -131,9 +131,9 @@ class _EventPageState extends State<EventPage>
                 child: TabBar(
                   controller: _tabController,
                   isScrollable: true,
-                  labelColor: Colors.blue,
+                  labelColor: isDarkMode ? Colors.white : Colors.black,
                   unselectedLabelColor: Colors.grey,
-                  indicatorColor: Colors.blue,
+                  indicatorColor: isDarkMode ? Colors.white : Colors.black,
                   indicatorWeight: 3,
                   tabs: const [
                     Tab(text: 'Events'),
@@ -307,8 +307,11 @@ class _EventPageState extends State<EventPage>
                                       Text(
                                         event.description!,
                                         style: TextStyle(
-                                            fontSize: 13,
-                                            color: Colors.grey[300]),
+                                          fontSize: 13,
+                                          color: isDarkMode
+                                              ? Colors.grey.shade400
+                                              : Colors.black,
+                                        ),
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                       ),

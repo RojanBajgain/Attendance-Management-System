@@ -1,17 +1,18 @@
-import 'dart:developer';
-import 'package:ams/config/resources/styles.dart';
-import 'package:ams/feature/data/datasource/remote/api_response.dart';
-import 'package:ams/feature/data/repository/clock_in_out_repo.dart';
-import 'package:ams/feature/utils/ssnackbar_utils.dart';
+import 'package:ams/feature/presentation/pages/dashboard/widget/skeleton_box.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ams/config/resources/styles.dart';
+import 'package:ams/feature/data/datasource/remote/api_response.dart';
+import 'package:ams/feature/data/repository/clock_in_out_repo.dart';
+import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:ams/feature/presentation/pages/dashboard/controller/clock_in_out_controller.dart';
 import 'package:ams/feature/presentation/pages/dashboard/controller/has_clockedIn_controller.dart';
 import 'package:ams/feature/presentation/pages/dashboard/controller/timer_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
+import 'dart:developer';
 
 class ClockTime extends StatefulWidget {
   const ClockTime({super.key});
@@ -35,16 +36,25 @@ class _ClockTimeState extends State<ClockTime> {
   Location? officeLocation;
   DateTime? clockInTime;
   DateTime? clockOutTime;
+  bool isLoading = true; // Add loading state
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      setState(() {
+        isLoading = true; // Start loading
+      });
       await profileController.getProfile();
       await hasClockedinController.getClockData();
       await _loadClockInState();
       await _loadBreakState();
       await _fetchOfficeLocation();
+      if (mounted) {
+        setState(() {
+          isLoading = false; // End loading
+        });
+      }
     });
   }
 
@@ -70,7 +80,6 @@ class _ClockTimeState extends State<ClockTime> {
 
     if (apiClockInTime != null &&
         DateFormat('yyyy-MM-dd').format(apiClockInTime) == todayDate) {
-      // Truncate to minute
       DateTime clockInMinute = DateTime(
         apiClockInTime.year,
         apiClockInTime.month,
@@ -92,7 +101,7 @@ class _ClockTimeState extends State<ClockTime> {
 
         await prefs.setString('clockInTime', clockInMinute.toIso8601String());
         await prefs.setBool('isTimerRunning', true);
-        timerController.resetTimer(); // Reset to 0
+        timerController.resetTimer();
         timerController.startTimer(initialSeconds: elapsed);
       }
     } else {
@@ -102,12 +111,11 @@ class _ClockTimeState extends State<ClockTime> {
       clockInTime = null;
       clockOutTime = null;
       timerController.stopTimer();
-      timerController.resetTimer(); // Reset to 0
+      timerController.resetTimer();
       await prefs.remove('clockInTime');
       await prefs.setBool('isTimerRunning', false);
     }
 
-    // Load clock-out time
     String? storedClockOutTime = prefs.getString('clockOutTime');
     if (storedClockOutTime != null) {
       setState(() {
@@ -149,7 +157,6 @@ class _ClockTimeState extends State<ClockTime> {
         longitude: position.longitude.toString(),
       );
       DateTime now = DateTime.now();
-      // Truncate to current minute
       DateTime clockInMinute = DateTime(
         now.year,
         now.month,
@@ -162,10 +169,9 @@ class _ClockTimeState extends State<ClockTime> {
       });
       isClockedInToday.value = true;
       isClockedOut.value = false;
-      // Persist clock-in time and start timer
       await prefs.setString('clockInTime', clockInMinute.toIso8601String());
       timerController.clockInTime = clockInMinute.toIso8601String();
-      timerController.resetTimer(); // Reset to 0
+      timerController.resetTimer();
       timerController.startTimer(initialSeconds: 0);
     } else {
       await clockInOutController.postClockout(
@@ -181,7 +187,7 @@ class _ClockTimeState extends State<ClockTime> {
       await prefs.setString('clockOutTime', clockOutTime!.toIso8601String());
       await prefs.remove('clockInTime');
       timerController.stopTimer();
-      timerController.resetTimer(); // Reset to 0
+      timerController.resetTimer();
     }
 
     await hasClockedinController.getClockData();
@@ -273,76 +279,132 @@ class _ClockTimeState extends State<ClockTime> {
         borderRadius: BorderRadius.circular(12.0),
         color: isDarkMode ? Colors.grey.shade800 : Colors.grey[100],
       ),
-      child: Stack(
-        children: [
-          Positioned(
-            top: 10.0,
-            left: 26.0,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: isLoading
+          ? _buildSkeletonUI(isDarkMode)
+          : Stack(
               children: [
-                Text(
-                  "Clock In at",
-                  style: smallStyle.copyWith(
-                    color: isDarkMode ? Colors.white : Colors.black,
-                    fontWeight: FontWeight.bold,
+                Positioned(
+                  top: 10.0,
+                  left: 26.0,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Clock In at",
+                        style: smallStyle.copyWith(
+                          color: isDarkMode ? Colors.white : Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        _formatTime(clockInTime),
+                        style: smallStyle.copyWith(
+                          color: isDarkMode ? Colors.white70 : Colors.black87,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Text(
-                  _formatTime(clockInTime),
-                  style: smallStyle.copyWith(
-                    color: isDarkMode ? Colors.white70 : Colors.black87,
+                Positioned(
+                  top: 10.0,
+                  right: 26.0,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        "Clock Out at",
+                        style: smallStyle.copyWith(
+                          color: isDarkMode ? Colors.white : Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        _formatTime(clockOutTime),
+                        style: smallStyle.copyWith(
+                          color: isDarkMode ? Colors.white70 : Colors.black87,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(26.0, 70.0, 26.0, 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      _buildClockInTimeDisplay(isDarkMode),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _buildClockInOutButton(isDarkMode),
+                          const SizedBox(height: 6.0),
+                          Obx(() => isClockedInToday.value &&
+                                  !isClockedOut.value &&
+                                  !isOnBreak.value
+                              ? _buildBreakButton(isDarkMode)
+                              : const SizedBox.shrink()),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
+    );
+  }
+
+  Widget _buildSkeletonUI(bool isDarkMode) {
+    return const Stack(
+      children: [
+        // Clock In Text
+        Positioned(
+          top: 10.0,
+          left: 26.0,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SkeletonBox(height: 16, width: 80, borderRadius: 4),
+              SizedBox(height: 8),
+              SkeletonBox(height: 14, width: 60, borderRadius: 4),
+            ],
           ),
-          Positioned(
-            top: 10.0,
-            right: 26.0,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  "Clock Out at",
-                  style: smallStyle.copyWith(
-                    color: isDarkMode ? Colors.white : Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  _formatTime(clockOutTime),
-                  style: smallStyle.copyWith(
-                    color: isDarkMode ? Colors.white70 : Colors.black87,
-                  ),
-                ),
-              ],
-            ),
+        ),
+        // Clock Out Text
+        Positioned(
+          top: 10.0,
+          right: 26.0,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              SkeletonBox(height: 16, width: 80, borderRadius: 4),
+              SizedBox(height: 8),
+              SkeletonBox(height: 14, width: 60, borderRadius: 4),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(26.0, 70.0, 26.0, 0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                _buildClockInTimeDisplay(isDarkMode),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _buildClockInOutButton(isDarkMode),
-                    const SizedBox(height: 6.0),
-                    Obx(() => isClockedInToday.value &&
-                            !isClockedOut.value &&
-                            !isOnBreak.value
-                        ? _buildBreakButton(isDarkMode)
-                        : const SizedBox.shrink()),
-                  ],
-                ),
-              ],
-            ),
+        ),
+        // Clock In Time Display and Buttons
+        Padding(
+          padding: EdgeInsets.fromLTRB(26.0, 70.0, 26.0, 0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Circular Progress Indicator
+              SkeletonBox(height: 130, width: 130, borderRadius: 65),
+              // Buttons
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SkeletonBox(height: 40, width: 100, borderRadius: 6),
+                  SizedBox(height: 6),
+                  SkeletonBox(height: 40, width: 100, borderRadius: 6),
+                ],
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -350,7 +412,7 @@ class _ClockTimeState extends State<ClockTime> {
     return Obx(() {
       bool isClockingOut = isClockedInToday.value && !isClockedOut.value;
       double progress = isClockingOut
-          ? (timerController.elapsedSeconds.value % 28800) / 28800 // 8 hours
+          ? (timerController.elapsedSeconds.value % 28800) / 28800
           : 0.0;
 
       return Stack(
@@ -449,9 +511,7 @@ class _ClockTimeState extends State<ClockTime> {
       dateTime == null ? "--:--:--" : DateFormat("h:mm:ss a").format(dateTime);
 
   String _formatStopwatchTime(int seconds) {
-    // Force seconds to be non-negative
     int positiveSeconds = seconds.abs();
-
     int hours = positiveSeconds ~/ 3600;
     int minutes = (positiveSeconds % 3600) ~/ 60;
     int secs = positiveSeconds % 60;
