@@ -6,7 +6,7 @@ import 'package:ams/feature/presentation/pages/dashboard/model/get_clock_model.d
 import 'package:get/get.dart';
 
 class HasClockedinController extends GetxController {
-  var clockedInTime = Rx<DateTime?>(null); // Store clock-in time as DateTime
+  var clockedInTime = Rx<DateTime?>(null);
   var isLoading = false.obs;
 
   final HasClockRepo hasClockedIn;
@@ -24,7 +24,8 @@ class HasClockedinController extends GetxController {
         if (clockData.clockedData != null) {
           DateTime utcTime = DateTime.parse(clockData.clockedData!.toString());
 
-          DateTime localTime = utcTime.add(Duration(hours: 5, minutes: 45));
+          DateTime localTime =
+              utcTime.add(const Duration(hours: 5, minutes: 45));
 
           clockedInTime.value = localTime;
         } else {

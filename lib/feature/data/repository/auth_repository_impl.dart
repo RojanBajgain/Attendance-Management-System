@@ -21,22 +21,6 @@ class AuthRepositoryImpl implements AuthRepository {
     return response;
   }
 
-  // Future<ApiResponse> register(String identity, String password,
-  //     String confirmPassword, String collageName) async {
-  //   final response = await ApiClient.postApi(
-  //     ApiUrls.register,
-  //     requestBody: {
-  //       'identity': identity,
-  //       'password': password,
-  //       'confirmPassword': confirmPassword,
-  //       'collegeName': collageName,
-  //     },
-  //     token: '',
-  //     fromJson: null,
-  //   );
-  //   return response;
-  // }
-
   // Logout
   Future<ApiResponse> logOut(String refreshToken, String accessToken) async {
     final response = await ApiClient.postApi(

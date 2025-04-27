@@ -11,8 +11,6 @@ class EventCalenderRepo {
   Future<ApiResponse> getEventCalenders() async {
     final token = apiClient.token;
 
-    // print("Token inside repo method: $token");
-
     if (token.isEmpty) {
       throw Exception('JWT Token is missing or invalid');
     }

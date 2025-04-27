@@ -17,12 +17,11 @@ class CalenderNotificationController extends GetxController {
 
   @override
   void onInit() {
-    getEventCalenders();
     super.onInit();
+    getEventCalenders();
   }
 
   Future<void> getEventCalenders() async {
-    isLoading(true);
     try {
       ApiResponse response = await eventCalenderrepo.getEventCalenders();
 
@@ -41,8 +40,6 @@ class CalenderNotificationController extends GetxController {
     } catch (e) {
       log("Error fetching calendar events: $e");
       errorMessage.value = "An error occurred: $e";
-    } finally {
-      isLoading(false);
     }
   }
 }

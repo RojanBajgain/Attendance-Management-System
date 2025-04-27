@@ -24,9 +24,12 @@ class ClockTime extends StatefulWidget {
 class _ClockTimeState extends State<ClockTime> {
   final ProfileController profileController =
       Get.put(ProfileController(profileRepo: Get.find()));
+
   final ClockInOutController clockInOutController =
       Get.put(ClockInOutController(clockinoutrepo: Get.find()));
+
   final TimerController timerController = Get.put(TimerController());
+
   final HasClockedinController hasClockedinController =
       Get.put(HasClockedinController(hasClockedIn: Get.find()));
 
@@ -36,14 +39,14 @@ class _ClockTimeState extends State<ClockTime> {
   Location? officeLocation;
   DateTime? clockInTime;
   DateTime? clockOutTime;
-  bool isLoading = true; // Add loading state
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       setState(() {
-        isLoading = true; // Start loading
+        isLoading = true;
       });
       await profileController.getProfile();
       await hasClockedinController.getClockData();
@@ -52,7 +55,7 @@ class _ClockTimeState extends State<ClockTime> {
       await _fetchOfficeLocation();
       if (mounted) {
         setState(() {
-          isLoading = false; // End loading
+          isLoading = false;
         });
       }
     });

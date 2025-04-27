@@ -5,6 +5,7 @@ import 'package:ams/feature/data/repository/auth_repository_impl.dart';
 import 'package:ams/feature/presentation/pages/bottom_nav/bottom_nav_page.dart';
 import 'package:ams/feature/presentation/pages/login/login_page.dart';
 import 'package:ams/feature/presentation/pages/login/model/login_model.dart';
+import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:clock_loader/clock_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -96,25 +97,6 @@ class AuthController extends GetxController {
     }
   }
 
-//REGISTER
-  /* Future<void> registerMethod(String identity, String password,
-      String confirmPassword, String collegeName) async {
-    ApiResponse response = await authRepo.register(
-        identity, password, confirmPassword, collegeName);
-
-    if (response.status == ApiStatus.SUCCESS) {
-      log("Successfully logged in. User Data: ${response.response}");
-      Get.off(() => DashboardPage());
-    } else {
-      log("Error: ${response.message ?? 'register failed'}");
-      Get.snackbar(
-        'Login Failed',
-        response.message ?? 'An unexpected error occurred',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    }
-  } */
-
 //LOGOUT
   Future<void> logoutmethod(String refreshToken, String accessToken) async {
     ApiResponse response = await authRepo.logOut(refreshToken, accessToken);
@@ -142,18 +124,28 @@ class AuthController extends GetxController {
       await Future.delayed(const Duration(seconds: 2));
 
       Get.offAll(() => const LoginPage());
-      Get.snackbar(
+      SSnackbarUtil.showSnackbar(
         'Logout Successful',
         response.message ?? 'Thank you for using AYATA Attendence.',
-        snackPosition: SnackPosition.BOTTOM,
+        SnackbarType.success,
       );
+      // Get.snackbar(
+      //   'Logout Successful',
+      //   response.message ?? 'Thank you for using AYATA Attendence.',
+      //   snackPosition: SnackPosition.BOTTOM,
+      // );
     } else {
       log("Error: ${response.message ?? 'logout failed'}");
-      Get.snackbar(
-        'logout Failed',
+      SSnackbarUtil.showSnackbar(
+        'Logout Failed',
         response.message ?? 'An unexpected error occurred',
-        snackPosition: SnackPosition.BOTTOM,
+        SnackbarType.error,
       );
+      // Get.snackbar(
+      //   'logout Failed',
+      //   response.message ?? 'An unexpected error occurred',
+      //   snackPosition: SnackPosition.BOTTOM,
+      // );
     }
   }
 

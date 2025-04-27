@@ -150,16 +150,16 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
               );
             }
 
-            if (calenderController.errorMessage.value.isNotEmpty) {
-              return Center(
-                child: Text(
-                  calenderController.errorMessage.value,
-                  style: smallNStyle.copyWith(
-                    color: isDarkMode ? Colors.white : Colors.black,
-                  ),
-                ),
-              );
-            }
+            // if (calenderController.errorMessage.value.isNotEmpty) {
+            //   return Center(
+            //     child: Text(
+            //       calenderController.errorMessage.value,
+            //       style: smallNStyle.copyWith(
+            //         color: isDarkMode ? Colors.white : Colors.black,
+            //       ),
+            //     ),
+            //   );
+            // }
 
             if (calenderController.eventCalenders.isEmpty) {
               return Center(
@@ -290,7 +290,6 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Date range at the top
                 Text(
                   _getDateRangeText(item.startDate, item.endDate),
                   style: smallStyle.copyWith(
@@ -301,8 +300,6 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                   ),
                 ),
                 const SizedBox(height: 5.0),
-
-                // Name/Title
                 Text(
                   item.name ?? "",
                   style: smallStyle.copyWith(
@@ -311,16 +308,12 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                   ),
                 ),
                 const SizedBox(height: 5.0),
-
-                // Description with show more/less
                 Text(
                   displayDescription,
                   style: smallStyle.copyWith(
                     color: isDarkMode ? Colors.grey.shade400 : Colors.black,
                   ),
                 ),
-
-                // Show more/less button if description is long
                 if (isLongDescription)
                   InkWell(
                     onTap: () => _toggleExpanded(itemId),
