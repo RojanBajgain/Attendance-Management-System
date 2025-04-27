@@ -8,6 +8,7 @@ import 'package:ams/feature/presentation/widget/custom_textfield.dart';
 import 'package:ams/feature/utils/validator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -22,7 +23,31 @@ class _LoginPageState extends State<LoginPage> {
   final email = TextEditingController();
   final pw = TextEditingController();
 
-  final authcontroller = Get.find<AuthController>();
+  final authController = Get.find<AuthController>();
+
+  @override
+  void initState() {
+    super.initState();
+    // Load saved email when the page is initialized
+    _loadSavedEmail();
+  }
+
+  // Load email from SharedPreferences
+  Future<void> _loadSavedEmail() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedEmail = prefs.getString('user_email') ?? '';
+    if (savedEmail.isNotEmpty) {
+      setState(() {
+        email.text = savedEmail;
+      });
+    }
+  }
+
+  // Save email to SharedPreferences
+  Future<void> _saveEmail(String email) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_email', email);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +119,6 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(height: 100.0),
                       CustomTextField(
                         hint: "Email",
-                        // icon: Icon(Icons.mail),
                         textEditingController: email,
                         validator: (string) =>
                             Validator.validateEmail(string: string ?? ""),
@@ -102,7 +126,6 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(height: 12.0),
                       CustomTextField(
                         hint: "Password",
-                        // icon: Icon(Icons.key),
                         textEditingController: pw,
                         validator: (string) =>
                             Validator.validateIsEmpty(string: string ?? ""),
@@ -146,7 +169,6 @@ class _LoginPageState extends State<LoginPage> {
                               "Forget your password?",
                               style: smallStyle.copyWith(
                                 color: Colors.redAccent,
-                                // decoration: TextDecoration.underline,
                               ),
                             ),
                           ),
@@ -159,7 +181,11 @@ class _LoginPageState extends State<LoginPage> {
                         child: InkWell(
                           borderRadius: BorderRadius.circular(8.0),
                           onTap: () {
-                            authcontroller.loginMethod(
+                            // Save email when login is triggered
+                            if (email.text.isNotEmpty) {
+                              _saveEmail(email.text);
+                            }
+                            authController.loginMethod(
                                 email.text, pw.text, keepMeLoggedIn);
                           },
                           child: const LargeButton(title: "Log in"),
@@ -167,34 +193,6 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 250),
                       Image.asset("assets/images/logo.png"),
-                      // const SizedBox(height: 50.0),
-                      // Row(
-                      //   mainAxisAlignment: MainAxisAlignment.center,
-                      //   children: [
-                      //     Text(
-                      //       "Don’t have an account? ",
-                      //       style: smallStyle.copyWith(
-                      //         color: isDarkMode ? Colors.white : AppColors.grey,
-                      //       ),
-                      //     ),
-                      //     const SizedBox(width: 4.0),
-                      //     GestureDetector(
-                      //       onTap: () {
-                      //         Get.to(() => SignupPage());
-                      //       },
-                      //       child: Text(
-                      //         "Sign Up",
-                      //         style: smallStyle.copyWith(
-                      //           color: isDarkMode
-                      //               ? Colors.blue
-                      //               : AppColors.primary,
-                      //           // decoration: TextDecoration.underline,
-                      //         ),
-                      //       ),
-                      //     ),
-                      //   ],
-                      // ),
-                      // const SizedBox(height: 300.0),
                     ],
                   ),
                 ),
@@ -218,5 +216,12 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    email.dispose();
+    pw.dispose();
+    super.dispose();
   }
 }

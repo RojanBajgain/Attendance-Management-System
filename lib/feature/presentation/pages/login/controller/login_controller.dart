@@ -113,13 +113,6 @@ class AuthController extends GetxController {
       // Clear tokens in app memory
       apiClient.clearTokens();
 
-      // Get.dialog(
-      //   Center(
-      //     child: LoadingAnimationWidget.inkDrop(color: Colors.white, size: 50),
-      //   ),
-      //   barrierDismissible: false, // Prevent closing before transition,
-      // );
-
       // Wait a bit for animation effect before navigation
       await Future.delayed(const Duration(seconds: 2));
 
@@ -129,11 +122,6 @@ class AuthController extends GetxController {
         response.message ?? 'Thank you for using AYATA Attendence.',
         SnackbarType.success,
       );
-      // Get.snackbar(
-      //   'Logout Successful',
-      //   response.message ?? 'Thank you for using AYATA Attendence.',
-      //   snackPosition: SnackPosition.BOTTOM,
-      // );
     } else {
       log("Error: ${response.message ?? 'logout failed'}");
       SSnackbarUtil.showSnackbar(
@@ -141,11 +129,6 @@ class AuthController extends GetxController {
         response.message ?? 'An unexpected error occurred',
         SnackbarType.error,
       );
-      // Get.snackbar(
-      //   'logout Failed',
-      //   response.message ?? 'An unexpected error occurred',
-      //   snackPosition: SnackPosition.BOTTOM,
-      // );
     }
   }
 
