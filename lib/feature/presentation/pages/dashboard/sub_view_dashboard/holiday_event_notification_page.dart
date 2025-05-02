@@ -216,29 +216,29 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                     return _buildCalendarItem(item, isDarkMode);
                   },
                 ),
-                if (filteredList.length > 3)
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        top: 10.0, bottom: 10.0, left: 270.0),
-                    child: InkWell(
-                      onTap: navigateToEventPage,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 8.0, horizontal: 16.0),
-                        decoration: BoxDecoration(
-                          color: isDarkMode ? Colors.blueAccent : Colors.blue,
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: Text(
-                          'View All',
-                          style: smallStyle.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                // if (filteredList.length > 3)
+                //   Padding(
+                //     padding: const EdgeInsets.only(
+                //         top: 10.0, bottom: 10.0, left: 270.0),
+                //     child: InkWell(
+                //       onTap: navigateToEventPage,
+                //       child: Container(
+                //         padding: const EdgeInsets.symmetric(
+                //             vertical: 8.0, horizontal: 16.0),
+                //         decoration: BoxDecoration(
+                //           color: isDarkMode ? Colors.blueAccent : Colors.blue,
+                //           borderRadius: BorderRadius.circular(8.0),
+                //         ),
+                //         child: Text(
+                //           'View All',
+                //           style: smallStyle.copyWith(
+                //             color: Colors.white,
+                //             fontWeight: FontWeight.w500,
+                //           ),
+                //         ),
+                //       ),
+                //     ),
+                //   ),
               ],
             );
           }),

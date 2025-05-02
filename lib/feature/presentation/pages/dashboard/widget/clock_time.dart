@@ -5,8 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ams/config/resources/styles.dart';
-import 'package:ams/feature/data/datasource/remote/api_response.dart';
-import 'package:ams/feature/data/repository/clock_in_out_repo.dart';
 import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:ams/feature/presentation/pages/dashboard/controller/clock_in_out_controller.dart';
 import 'package:ams/feature/presentation/pages/dashboard/controller/has_clockedIn_controller.dart';

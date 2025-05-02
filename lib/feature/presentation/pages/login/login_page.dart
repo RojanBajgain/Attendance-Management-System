@@ -1,8 +1,6 @@
-import 'package:ams/config/resources/colors.dart';
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/forget_password/forget_password.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
-import 'package:ams/feature/presentation/pages/signup/signup_page.dart';
 import 'package:ams/feature/presentation/widget/button_large.dart';
 import 'package:ams/feature/presentation/widget/custom_textfield.dart';
 import 'package:ams/feature/utils/validator.dart';
@@ -19,6 +17,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool keepMeLoggedIn = false;
+  bool _showBiometricOption = false;
 
   final email = TextEditingController();
   final pw = TextEditingController();
@@ -28,11 +27,10 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    // Load saved email when the page is initialized
     _loadSavedEmail();
+    _checkBiometricAvailability();
   }
 
-  // Load email from SharedPreferences
   Future<void> _loadSavedEmail() async {
     final prefs = await SharedPreferences.getInstance();
     final savedEmail = prefs.getString('user_email') ?? '';
@@ -43,10 +41,50 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  // Save email to SharedPreferences
   Future<void> _saveEmail(String email) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('user_email', email);
+  }
+
+  // Update the _checkBiometricAvailability method in LoginPage
+  Future<void> _checkBiometricAvailability() async {
+    try {
+      // First, check if device has biometric hardware
+      bool deviceSupported = await authController.canUseBiometrics();
+      if (!deviceSupported) {
+        setState(() {
+          _showBiometricOption = false;
+        });
+        return;
+      }
+
+      // Then check if biometrics is enabled in both storage locations
+      final prefs = await SharedPreferences.getInstance();
+      final isBiometricsEnabled = prefs.getBool('biometrics_enabled') ?? false;
+      final secureBiometrics =
+          await authController.secureStorage.read(key: 'biometrics_enabled');
+      final isSecureBiometricsEnabled = secureBiometrics == 'true';
+
+      // Check if credentials exist
+      final hasCredentials = await authController.hasSavedCredentials();
+
+      // Show option if biometrics are enabled and credentials exist
+      setState(() {
+        _showBiometricOption =
+            (isBiometricsEnabled || isSecureBiometricsEnabled) &&
+                hasCredentials;
+      });
+
+      // Log this to help with debugging
+      // print("Biometric login available: $_showBiometricOption");
+      // print(
+      //     "Prefs enabled: $isBiometricsEnabled, Secure storage enabled: $isSecureBiometricsEnabled, Has credentials: $hasCredentials");
+    } catch (e) {
+      // print("Error checking biometric availability: $e");
+      setState(() {
+        _showBiometricOption = false;
+      });
+    }
   }
 
   @override
@@ -135,32 +173,31 @@ class _LoginPageState extends State<LoginPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
+                          const Row(
                             children: [
-                              SizedBox(
-                                height: 24.0,
-                                width: 24.0,
-                                child: Checkbox(
-                                  value: keepMeLoggedIn,
-                                  onChanged: (bool? value) {
-                                    setState(() {
-                                      keepMeLoggedIn = value ?? true;
-                                    });
-                                  },
-                                ),
-                              ),
-                              const SizedBox(width: 5.0),
-                              Text(
-                                "Keep me logged in",
-                                style: smallStyle.copyWith(
-                                  color: isDarkMode
-                                      ? Colors.blue
-                                      : AppColors.primary,
-                                ),
-                              ),
+                              // SizedBox(
+                              //   height: 24.0,
+                              //   width: 24.0,
+                              //   child: Checkbox(
+                              //     value: keepMeLoggedIn,
+                              //     onChanged: (bool? value) {
+                              //       setState(() {
+                              //         keepMeLoggedIn = value ?? false;
+                              //       });
+                              //     },
+                              //   ),
+                              // ),
+                              // const SizedBox(width: 5.0),
+                              // Text(
+                              //   "Keep me logged in",
+                              //   style: smallStyle.copyWith(
+                              //     color: isDarkMode
+                              //         ? Colors.blue
+                              //         : AppColors.primary,
+                              //   ),
+                              // ),
                             ],
                           ),
-                          SizedBox(width: 35.0),
                           GestureDetector(
                             onTap: () {
                               Get.to(() => const ForgetPassword());
@@ -175,23 +212,74 @@ class _LoginPageState extends State<LoginPage> {
                         ],
                       ),
                       const SizedBox(height: 24.0),
-                      Material(
-                        borderRadius: BorderRadius.circular(12.0),
-                        color: isDarkMode ? Colors.grey.shade700 : Colors.black,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(8.0),
-                          onTap: () {
-                            // Save email when login is triggered
-                            if (email.text.isNotEmpty) {
-                              _saveEmail(email.text);
-                            }
-                            authController.loginMethod(
-                                email.text, pw.text, keepMeLoggedIn);
-                          },
-                          child: const LargeButton(title: "Log in"),
-                        ),
+
+                      // Login button row with biometric option
+                      Row(
+                        children: [
+                          // Login button
+                          Expanded(
+                            child: Material(
+                              borderRadius: BorderRadius.circular(12.0),
+                              color: isDarkMode
+                                  ? Colors.grey.shade700
+                                  : Colors.black,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(8.0),
+                                onTap: () {
+                                  if (email.text.isNotEmpty) {
+                                    _saveEmail(email.text);
+                                  }
+                                  authController.loginMethod(
+                                      email.text, pw.text, keepMeLoggedIn);
+                                },
+                                child: const LargeButton(title: "Log in"),
+                              ),
+                            ),
+                          ),
+
+                          // Biometric login button
+                          if (_showBiometricOption) ...[
+                            const SizedBox(width: 16.0),
+                            Container(
+                              height: 55,
+                              width: 55,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12.0),
+                                color: isDarkMode
+                                    ? Colors.grey.shade700
+                                    : Colors.black,
+                              ),
+                              child: Obx(
+                                () => authController.authIsLoading.value
+                                    ? const Center(
+                                        child: SizedBox(
+                                          width: 24,
+                                          height: 24,
+                                          child: CircularProgressIndicator(
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
+                                                    Colors.white),
+                                            strokeWidth: 2.0,
+                                          ),
+                                        ),
+                                      )
+                                    : IconButton(
+                                        icon: const Icon(
+                                          Icons.fingerprint,
+                                          size: 30,
+                                          color: Colors.white,
+                                        ),
+                                        onPressed: () {
+                                          authController.loginWithBiometrics();
+                                        },
+                                      ),
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
-                      const SizedBox(height: 250),
+
+                      const SizedBox(height: 200),
                       Image.asset("assets/images/logo.png"),
                     ],
                   ),

@@ -11,6 +11,7 @@ class ProfileMenu extends StatelessWidget {
     this.expandedContent,
     this.isExpanded = false,
     this.onExpandToggle,
+    this.trailing,
   }) : super(key: key);
 
   final String text;
@@ -20,6 +21,7 @@ class ProfileMenu extends StatelessWidget {
   final Widget? expandedContent;
   final bool isExpanded;
   final VoidCallback? onExpandToggle;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -56,13 +58,17 @@ class ProfileMenu extends StatelessWidget {
                 ),
                 const SizedBox(width: 20),
                 Expanded(
-                  child: Text(text,
-                      style: smallStyle.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: isDarkMode ? Colors.white : Colors.black,
-                      )),
+                  child: Text(
+                    text,
+                    style: smallStyle.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: isDarkMode ? Colors.white : Colors.black,
+                    ),
+                  ),
                 ),
-                if (showIcon)
+                if (trailing != null) trailing!, // Add trailing widget
+                if (showIcon &&
+                    trailing == null) // Show expand icon only if no trailing
                   GestureDetector(
                     onTap: onExpandToggle,
                     child: Icon(

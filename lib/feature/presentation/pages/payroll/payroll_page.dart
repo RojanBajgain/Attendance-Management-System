@@ -17,10 +17,8 @@ class PayrollPage extends StatefulWidget {
 
 class _PayrollPageState extends State<PayrollPage> {
   final authcontroller = Get.find<AuthController>();
-
   final PayrollController payrollcontroller =
       Get.put(PayrollController(payrollRepo: Get.find()));
-
   bool _isPayrollVisible = false;
 
   @override
@@ -53,7 +51,6 @@ class _PayrollPageState extends State<PayrollPage> {
                       ),
                     ),
                     const Spacer(),
-                    // Eye Icon Container
                     GestureDetector(
                       onTap: () {
                         setState(() {
@@ -79,7 +76,6 @@ class _PayrollPageState extends State<PayrollPage> {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    // Date Picker Container
                     GestureDetector(
                       onTap: () async {
                         final ThemeData datePickerTheme =
@@ -218,11 +214,68 @@ class _PayrollPageState extends State<PayrollPage> {
                       : SizedBox(
                           height: 600,
                           child: Center(
-                            child: Text(
-                              "Your Payroll is hidden...",
-                              style: normalStyle.copyWith(
-                                color: isDarkMode ? Colors.white : Colors.black,
-                              ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                // Image
+                                Image.asset(
+                                  'assets/images/pay.png',
+                                  height: 150,
+                                  width: 250,
+                                  fit: BoxFit.cover,
+                                ),
+                                const SizedBox(height: 20),
+                                // Title
+                                Text(
+                                  "Payroll Hidden",
+                                  style: smallNStyle.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: isDarkMode
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  "Your payroll details are currently hidden.",
+                                  textAlign: TextAlign.center,
+                                  style: smallStyle.copyWith(
+                                    color: isDarkMode
+                                        ? Colors.grey.shade300
+                                        : Colors.grey.shade700,
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                // ElevatedButton(
+                                //   onPressed: () {
+                                //     setState(() {
+                                //       _isPayrollVisible = true;
+                                //     });
+                                //   },
+                                //   style: ElevatedButton.styleFrom(
+                                //     backgroundColor: isDarkMode
+                                //         ? Colors.grey.shade700
+                                //         : Colors.black,
+                                //     foregroundColor: Colors.white,
+                                //     padding: const EdgeInsets.symmetric(
+                                //       horizontal: 30,
+                                //       vertical: 15,
+                                //     ),
+                                //     shape: RoundedRectangleBorder(
+                                //       borderRadius: BorderRadius.circular(30),
+                                //     ),
+                                //     elevation: 5,
+                                //   ),
+                                //   child: Text(
+                                //     "Reveal Payroll",
+                                //     style: smallStyle.copyWith(
+                                //       fontSize: 16,
+                                //       color: Colors.white,
+                                //       fontWeight: FontWeight.bold,
+                                //     ),
+                                //   ),
+                                // ),
+                              ],
                             ),
                           ),
                         ),

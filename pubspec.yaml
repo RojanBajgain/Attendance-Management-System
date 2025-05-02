@@ -68,6 +68,10 @@ dependencies:
   flutter_skeleton_ui: ^0.0.6
   flutter_launcher_icons: ^0.14.3
   provider: ^6.1.4
+  local_auth: ^2.3.0
+  flutter_secure_storage: ^9.2.4
+  percent_indicator: ^4.2.5
+  flutter_switch: ^0.3.2
 
 dev_dependencies:
   flutter_test:
