@@ -7,6 +7,7 @@ import 'package:ams/feature/data/repository/profile_repo.dart';
 import 'package:ams/feature/presentation/pages/profile/model/country_list_model.dart';
 import 'package:ams/feature/presentation/pages/profile/model/profile_detail_model.dart';
 import 'package:ams/feature/presentation/pages/profile/model/profile_model.dart';
+import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -152,36 +153,22 @@ class ProfileController extends GetxController {
       );
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
-        print("Profile updated successfully: ${response.response}");
-
-        // Get.snackbar(
-        //   'Updated Profile Info Detail',
-        //   response.message ?? 'Your profile info has been successfully updated',
-        //   snackPosition: SnackPosition.TOP,
-        //   duration: const Duration(seconds: 3),
-        //   colorText: Colors.white,
-        //   backgroundColor: Colors.green,
-        // );
+        // print("Profile updated successfully: ${response.response}");
       } else {
-        print("Error: ${response.message}");
-        Get.snackbar(
+        // print("Error: ${response.message}");
+
+        SSnackbarUtil.showSnackbar(
           'Server Error',
           'Failed to update profile. Please try again later',
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 3),
-          colorText: Colors.white,
-          backgroundColor: Colors.redAccent,
+          SnackbarType.error,
         );
       }
     } catch (e) {
-      print("Error updating profile: $e");
-      Get.snackbar(
+      // print("Error updating profile: $e");
+      SSnackbarUtil.showSnackbar(
         'Error',
         'An unexpected error occurred: $e',
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 3),
-        colorText: Colors.white,
-        backgroundColor: Colors.red,
+        SnackbarType.error,
       );
     }
   }
@@ -202,13 +189,10 @@ class ProfileController extends GetxController {
           city.isEmpty ||
           addressLineOne.isEmpty ||
           zipcode.isEmpty) {
-        Get.snackbar(
+        SSnackbarUtil.showSnackbar(
           'Validation Error',
           'All required fields must be filled',
-          snackPosition: SnackPosition.TOP,
-          duration: const Duration(seconds: 3),
-          colorText: Colors.white,
-          backgroundColor: Colors.red,
+          SnackbarType.error,
         );
         return;
       }
@@ -225,42 +209,27 @@ class ProfileController extends GetxController {
       );
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
-        log("Created new user address: ${response.response}");
+        // log("Created new user address: ${response.response}");
 
         // Refresh profile data to get updated addresses
         await getProfile();
-
-        // Get.snackbar(
-        //   'Success',
-        //   response.message ?? 'Your address has been successfully created',
-        //   snackPosition: SnackPosition.TOP,
-        //   duration: const Duration(seconds: 3),
-        //   colorText: Colors.white,
-        //   backgroundColor: Colors.green,
-        // );
       } else {
         log("Error: ${response.message}");
-        Get.snackbar(
+        SSnackbarUtil.showSnackbar(
           'Server Error',
           response.message ??
               'Failed to create your address. Please try again later',
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 3),
-          colorText: Colors.white,
-          backgroundColor: Colors.redAccent,
+          SnackbarType.error,
         );
       }
     } catch (e) {
       if (kDebugMode) {
-        print("Error creating address: $e");
+        // print("Error creating address: $e");
       }
-      Get.snackbar(
+      SSnackbarUtil.showSnackbar(
         'Error',
         'An unexpected error occurred: $e',
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 3),
-        colorText: Colors.white,
-        backgroundColor: Colors.red,
+        SnackbarType.error,
       );
     }
   }
@@ -283,13 +252,10 @@ class ProfileController extends GetxController {
           city.isEmpty ||
           addressLineOne.isEmpty ||
           zipcode.isEmpty) {
-        Get.snackbar(
+        SSnackbarUtil.showSnackbar(
           'Validation Error',
           'All required fields must be filled',
-          snackPosition: SnackPosition.TOP,
-          duration: const Duration(seconds: 3),
-          colorText: Colors.white,
-          backgroundColor: Colors.red,
+          SnackbarType.error,
         );
         return;
       }
@@ -314,38 +280,23 @@ class ProfileController extends GetxController {
 
         // Refresh profile data to get updated addresses
         await getProfile();
-
-        // Get.snackbar(
-        //   'Success',
-        //   response.message ?? 'Your address has been successfully updated',
-        //   snackPosition: SnackPosition.TOP,
-        //   duration: const Duration(seconds: 3),
-        //   colorText: Colors.white,
-        //   backgroundColor: Colors.green,
-        // );
       } else {
-        log("Error: ${response.message}");
-        Get.snackbar(
+        // log("Error: ${response.message}");
+        SSnackbarUtil.showSnackbar(
           'Server Error',
           response.message ??
               'Failed to update your address. Please try again later',
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 3),
-          colorText: Colors.white,
-          backgroundColor: Colors.redAccent,
+          SnackbarType.error,
         );
       }
     } catch (e) {
       if (kDebugMode) {
         print("Error updating address: $e");
       }
-      Get.snackbar(
+      SSnackbarUtil.showSnackbar(
         'Error',
         'An unexpected error occurred: $e',
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 3),
-        colorText: Colors.white,
-        backgroundColor: Colors.red,
+        SnackbarType.error,
       );
     }
   }
@@ -375,36 +326,27 @@ class ProfileController extends GetxController {
 
         Get.back();
 
-        Get.snackbar(
+        SSnackbarUtil.showSnackbar(
           'User Details has been updated',
           response.message ?? 'Your details has been successfully updated',
-          snackPosition: SnackPosition.TOP,
-          duration: const Duration(seconds: 3),
-          colorText: Colors.white,
-          backgroundColor: Colors.green,
+          SnackbarType.success,
         );
       } else {
         log("Error: ${response.message}");
-        Get.snackbar(
+        SSnackbarUtil.showSnackbar(
           'Server Error',
           'Failed to update your address. Please try again later',
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 3),
-          colorText: Colors.white,
-          backgroundColor: Colors.redAccent,
+          SnackbarType.error,
         );
       }
     } catch (e) {
       if (kDebugMode) {
-        print("Error fetching sub address data: $e");
+        // print("Error fetching sub address data: $e");
       }
-      Get.snackbar(
+      SSnackbarUtil.showSnackbar(
         'Error',
         'An unexpected error occurred: $e',
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 3),
-        colorText: Colors.white,
-        backgroundColor: Colors.red,
+        SnackbarType.error,
       );
     }
   }
@@ -428,42 +370,32 @@ class ProfileController extends GetxController {
       );
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
-        log("Fetched created new bank detail data: ${response.response}");
+        // log("Fetched created new bank detail data: ${response.response}");
 
         Get.back();
-
-        Get.snackbar(
+        SSnackbarUtil.showSnackbar(
           'User Details has been updated',
           response.message ?? 'Your details has been successfully updated',
-          snackPosition: SnackPosition.TOP,
-          duration: const Duration(seconds: 3),
-          colorText: Colors.white,
-          backgroundColor: Colors.green,
+          SnackbarType.success,
         );
 
         // await getTimeoff();
       } else {
-        log("Error: ${response.message}");
-        Get.snackbar(
+        // log("Error: ${response.message}");
+        SSnackbarUtil.showSnackbar(
           'Server Error',
           'Failed to post timeoff. Please try again later',
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 3),
-          colorText: Colors.white,
-          backgroundColor: Colors.redAccent,
+          SnackbarType.error,
         );
       }
     } catch (e) {
       if (kDebugMode) {
         print("Error fetching sub timeoff data: $e");
       }
-      Get.snackbar(
+      SSnackbarUtil.showSnackbar(
         'Error',
         'An unexpected error occurred: $e',
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 3),
-        colorText: Colors.white,
-        backgroundColor: Colors.red,
+        SnackbarType.error,
       );
     }
   }
@@ -495,29 +427,23 @@ class ProfileController extends GetxController {
       );
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
-        log("Fetched updated user documents details: ${response.response}");
+        // log("Fetched updated user documents details: ${response.response}");
       } else {
-        log("Error: ${response.message}");
-        Get.snackbar(
+        // log("Error: ${response.message}");
+        SSnackbarUtil.showSnackbar(
           'Server Error',
           'Failed to update your documents. Please try again later',
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 3),
-          colorText: Colors.white,
-          backgroundColor: Colors.redAccent,
+          SnackbarType.error,
         );
       }
     } catch (e) {
       if (kDebugMode) {
         print("Error updating document: $e");
       }
-      Get.snackbar(
+      SSnackbarUtil.showSnackbar(
         'Error',
         'An unexpected error occurred: $e',
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 3),
-        colorText: Colors.white,
-        backgroundColor: Colors.red,
+        SnackbarType.error,
       );
     }
   }
@@ -542,40 +468,25 @@ class ProfileController extends GetxController {
       );
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
-        log("Successfully added new user document: ${response.response}");
+        // log("Successfully added new user document: ${response.response}");
 
         // Get.back();
-
-        // Get.snackbar(
-        //   'Added New Document',
-        //   response.message ?? 'Your new document has been successfully added',
-        //   snackPosition: SnackPosition.TOP,
-        //   duration: const Duration(seconds: 3),
-        //   colorText: Colors.white,
-        //   backgroundColor: Colors.green,
-        // );
       } else {
-        log("Error: ${response.message}");
-        Get.snackbar(
+        // log("Error: ${response.message}");
+        SSnackbarUtil.showSnackbar(
           'Server Error',
           'Failed to add new document. Please try again later',
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 3),
-          colorText: Colors.white,
-          backgroundColor: Colors.redAccent,
+          SnackbarType.error,
         );
       }
     } catch (e) {
       if (kDebugMode) {
         print("Error adding new document: $e");
       }
-      Get.snackbar(
+      SSnackbarUtil.showSnackbar(
         'Error',
         'An unexpected error occurred: $e',
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 3),
-        colorText: Colors.white,
-        backgroundColor: Colors.red,
+        SnackbarType.error,
       );
     }
   }
@@ -585,18 +496,15 @@ class ProfileController extends GetxController {
       ApiResponse response = await profileRepo.deleteuserDocument(id);
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
-        log("Fetched created timeoff data: ${response.response}");
+        // log("Fetched created timeoff data: ${response.response}");
 
         Get.back();
       } else {
         log("Error: ${response.message}");
-        Get.snackbar(
+        SSnackbarUtil.showSnackbar(
           'Server Error',
           'Something went wrong. Please try again later',
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 3),
-          colorText: Colors.white,
-          backgroundColor: Colors.redAccent,
+          SnackbarType.error,
         );
       }
     } catch (e) {
@@ -611,19 +519,11 @@ class ProfileController extends GetxController {
       ApiResponse response = await profileRepo.deleteuserBankDetails(id);
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
-        log("Fetched deleted bankdata data: ${response.response}");
+        // log("Fetched deleted bankdata data: ${response.response}");
 
         // Get.back();
       } else {
         log("Error: ${response.message}");
-        // Get.snackbar(
-        //   'Server Error',
-        //   'Something went wrong. Please try again later',
-        //   snackPosition: SnackPosition.BOTTOM,
-        //   duration: const Duration(seconds: 3),
-        //   colorText: Colors.white,
-        //   backgroundColor: Colors.redAccent,
-        // );
       }
     } catch (e) {
       log("Error fetching delete bank data: $e");

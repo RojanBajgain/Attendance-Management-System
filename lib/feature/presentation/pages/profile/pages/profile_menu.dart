@@ -66,9 +66,8 @@ class ProfileMenu extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (trailing != null) trailing!, // Add trailing widget
-                if (showIcon &&
-                    trailing == null) // Show expand icon only if no trailing
+                if (trailing != null) trailing!,
+                if (showIcon && trailing == null)
                   GestureDetector(
                     onTap: onExpandToggle,
                     child: Icon(

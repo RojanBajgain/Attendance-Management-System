@@ -495,11 +495,11 @@ class _ProfilePageState extends State<ProfilePage> {
                   }
                   // User confirmed, disable biometrics
                   await authcontroller.toggleBiometrics(false);
-                  SSnackbarUtil.showSnackbar(
-                    'Success',
-                    'Biometrics disabled successfully.',
-                    SnackbarType.success,
-                  );
+                  // SSnackbarUtil.showSnackbar(
+                  //   'Success',
+                  //   'Biometrics disabled successfully.',
+                  //   SnackbarType.success,
+                  // );
                   return;
                 }
 
@@ -532,7 +532,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   return;
                 }
 
-                // Prompt for password
+                // for password
                 bool isPasswordCorrect = await _showPasswordPrompt(
                   context: Get.context!,
                   storedPassword: storedPassword,
@@ -550,11 +550,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 // Password is correct, enable biometrics
                 await authcontroller.toggleBiometrics(true);
 
-                SSnackbarUtil.showSnackbar(
-                  'Success',
-                  'Biometrics enabled successfully.',
-                  SnackbarType.success,
-                );
+                // SSnackbarUtil.showSnackbar(
+                //   'Success',
+                //   'Biometrics enabled successfully.',
+                //   SnackbarType.success,
+                // );
               } catch (e) {
                 // print("Error toggling biometrics: $e");
                 SSnackbarUtil.showSnackbar(
