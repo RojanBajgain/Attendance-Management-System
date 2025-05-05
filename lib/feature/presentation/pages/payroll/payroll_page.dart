@@ -1,5 +1,6 @@
 import 'package:ams/config/resources/shimmer.dart';
 import 'package:ams/config/resources/styles.dart';
+import 'package:ams/feature/presentation/pages/dashboard/widget/skeleton_box.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/payroll/controller/payroll_controller.dart';
 import 'package:ams/feature/presentation/pages/payroll/sub_view_payroll/payroll_slip_view.dart';
@@ -34,256 +35,266 @@ class _PayrollPageState extends State<PayrollPage> {
 
     return Scaffold(
       appBar: const ConstantAppBar(),
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(15),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await payrollcontroller.getPayroll();
+          // payrollcontroller.clearSelectedDate();
+        },
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(16.0),
+          children: [
+            Row(
               children: [
-                Row(
-                  children: [
-                    Text(
-                      "Pay Roll",
-                      style: normalStyle.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: isDarkMode ? Colors.white : Colors.black,
-                      ),
+                Text(
+                  "Pay Roll",
+                  style: normalStyle.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: isDarkMode ? Colors.white : Colors.black,
+                  ),
+                ),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _isPayrollVisible = !_isPayrollVisible;
+                    });
+                  },
+                  child: Container(
+                    height: 40.0,
+                    width: 55.0,
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black),
+                      borderRadius: BorderRadius.circular(70.0),
+                      color: isDarkMode ? Colors.grey.shade500 : Colors.white,
                     ),
-                    const Spacer(),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _isPayrollVisible = !_isPayrollVisible;
-                        });
+                    child: Icon(
+                      _isPayrollVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                GestureDetector(
+                  onTap: () async {
+                    final ThemeData datePickerTheme =
+                        Theme.of(context).copyWith(
+                      textTheme: TextTheme(
+                        bodyLarge: TextStyle(
+                          fontSize: 14.0,
+                          color: isDarkMode ? Colors.white : Colors.black,
+                        ),
+                        bodyMedium: TextStyle(
+                          fontSize: 12.0,
+                          color: isDarkMode ? Colors.white : Colors.black,
+                        ),
+                      ),
+                    );
+                    DateTime? selectedDate = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2100),
+                      builder: (BuildContext context, Widget? child) {
+                        return Theme(
+                          data: datePickerTheme,
+                          child: child!,
+                        );
                       },
-                      child: Container(
-                        height: 40.0,
-                        width: 55.0,
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          borderRadius: BorderRadius.circular(70.0),
-                          color:
-                              isDarkMode ? Colors.grey.shade500 : Colors.white,
-                        ),
-                        child: Icon(
-                          _isPayrollVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    GestureDetector(
-                      onTap: () async {
-                        final ThemeData datePickerTheme =
-                            Theme.of(context).copyWith(
-                          textTheme: TextTheme(
-                            bodyLarge: TextStyle(
-                              fontSize: 14.0,
-                              color: isDarkMode ? Colors.white : Colors.black,
-                            ),
-                            bodyMedium: TextStyle(
-                              fontSize: 12.0,
-                              color: isDarkMode ? Colors.white : Colors.black,
-                            ),
-                          ),
-                        );
-                        DateTime? selectedDate = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime(2100),
-                          builder: (BuildContext context, Widget? child) {
-                            return Theme(
-                              data: datePickerTheme,
-                              child: child!,
-                            );
-                          },
-                        );
+                    );
 
-                        if (selectedDate != null) {
-                          payrollcontroller.selectedDate.value = selectedDate;
-                          payrollcontroller.filterPayrollByDate(selectedDate);
-                        }
-                      },
-                      child: Obx(() {
-                        return Container(
-                          height: 40.0,
-                          width: payrollcontroller.selectedDate.value != null
-                              ? 165.0
-                              : 55.0,
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black),
-                            borderRadius: BorderRadius.circular(70.0),
-                            color: isDarkMode
-                                ? Colors.grey.shade500
-                                : Colors.white,
+                    if (selectedDate != null) {
+                      payrollcontroller.selectedDate.value = selectedDate;
+                      payrollcontroller.filterPayrollByDate(selectedDate);
+                    }
+                  },
+                  child: Obx(() {
+                    return Container(
+                      height: 40.0,
+                      width: payrollcontroller.selectedDate.value != null
+                          ? 165.0
+                          : 55.0,
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black),
+                        borderRadius: BorderRadius.circular(70.0),
+                        color: isDarkMode ? Colors.grey.shade500 : Colors.white,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.date_range_outlined,
+                            color: Colors.black,
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.date_range_outlined,
+                          if (payrollcontroller.selectedDate.value != null) ...[
+                            const SizedBox(width: 5),
+                            Text(
+                              DateFormat('MMM d, yyyy').format(
+                                  payrollcontroller.selectedDate.value!),
+                              style: smallStyle.copyWith(color: Colors.black),
+                            ),
+                            const SizedBox(width: 5),
+                            GestureDetector(
+                              onTap: () {
+                                payrollcontroller.clearSelectedDate();
+                              },
+                              child: const Icon(
+                                Icons.clear,
+                                size: 20.0,
                                 color: Colors.black,
                               ),
-                              if (payrollcontroller.selectedDate.value !=
-                                  null) ...[
-                                const SizedBox(width: 5),
-                                Text(
-                                  DateFormat('MMM d, yyyy').format(
-                                      payrollcontroller.selectedDate.value!),
-                                  style:
-                                      smallStyle.copyWith(color: Colors.black),
-                                ),
-                                const SizedBox(width: 5),
-                                GestureDetector(
-                                  onTap: () {
-                                    payrollcontroller.clearSelectedDate();
-                                  },
-                                  child: const Icon(
-                                    Icons.clear,
-                                    size: 20.0,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        );
-                      }),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10.0),
-                SizedBox(
-                  child: _isPayrollVisible
-                      ? Obx(() {
-                          if (payrollcontroller.isLoading.value) {
-                            return const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: ShrimmerEffect.rectangular(
-                                height: 100,
-                              ),
-                            );
-                          } else if (payrollcontroller.payroll.isEmpty) {
-                            return SizedBox(
-                              height: 600,
-                              child: Center(
-                                child: Text(
-                                  "No available payroll data",
-                                  style: smallStyle.copyWith(
-                                    color: isDarkMode
-                                        ? Colors.white
-                                        : Colors.black,
-                                  ),
-                                ),
-                              ),
-                            );
-                          } else {
-                            return ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              scrollDirection: Axis.vertical,
-                              itemCount:
-                                  payrollcontroller.filteredPayroll.length,
-                              itemBuilder: (context, index) {
-                                final payroll =
-                                    payrollcontroller.filteredPayroll[index];
-                                return Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: PayRollSlip(
-                                    payrolldata: payroll,
-                                    dop: payroll.dateOfPayment != null
-                                        ? DateFormat.yMMMd('en_US')
-                                            .format(payroll.dateOfPayment!)
-                                        : "",
-                                    mop: payroll.modeOfPayment.toString(),
-                                    bank: payroll.bank ?? "---",
-                                    cheque: payroll.chequeNo ?? "---",
-                                    salary: payroll.totalSalary.toString(),
-                                  ),
-                                );
-                              },
-                            );
-                          }
-                        })
-                      : SizedBox(
-                          height: 600,
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                // Image
-                                Image.asset(
-                                  'assets/images/pay.png',
-                                  height: 150,
-                                  width: 250,
-                                  fit: BoxFit.cover,
-                                ),
-                                const SizedBox(height: 20),
-                                // Title
-                                Text(
-                                  "Payroll Hidden",
-                                  style: smallNStyle.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: isDarkMode
-                                        ? Colors.white
-                                        : Colors.black,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  "Your payroll details are currently hidden.",
-                                  textAlign: TextAlign.center,
-                                  style: smallStyle.copyWith(
-                                    color: isDarkMode
-                                        ? Colors.grey.shade300
-                                        : Colors.grey.shade700,
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-                                // ElevatedButton(
-                                //   onPressed: () {
-                                //     setState(() {
-                                //       _isPayrollVisible = true;
-                                //     });
-                                //   },
-                                //   style: ElevatedButton.styleFrom(
-                                //     backgroundColor: isDarkMode
-                                //         ? Colors.grey.shade700
-                                //         : Colors.black,
-                                //     foregroundColor: Colors.white,
-                                //     padding: const EdgeInsets.symmetric(
-                                //       horizontal: 30,
-                                //       vertical: 15,
-                                //     ),
-                                //     shape: RoundedRectangleBorder(
-                                //       borderRadius: BorderRadius.circular(30),
-                                //     ),
-                                //     elevation: 5,
-                                //   ),
-                                //   child: Text(
-                                //     "Reveal Payroll",
-                                //     style: smallStyle.copyWith(
-                                //       fontSize: 16,
-                                //       color: Colors.white,
-                                //       fontWeight: FontWeight.bold,
-                                //     ),
-                                //   ),
-                                // ),
-                              ],
                             ),
-                          ),
-                        ),
+                          ],
+                        ],
+                      ),
+                    );
+                  }),
                 ),
               ],
             ),
-          ),
+            const SizedBox(height: 10.0),
+            SizedBox(
+              child: _isPayrollVisible
+                  ? Obx(() {
+                      if (payrollcontroller.isLoading.value) {
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          scrollDirection: Axis.vertical,
+                          itemCount: 5,
+                          itemBuilder: (context, index) {
+                            return const PayrollSkeleton();
+                          },
+                        );
+                      } else if (payrollcontroller.payroll.isEmpty) {
+                        return SizedBox(
+                          height: 600,
+                          child: Center(
+                            child: Text(
+                              "No available payroll data",
+                              style: smallStyle.copyWith(
+                                color: isDarkMode ? Colors.white : Colors.black,
+                              ),
+                            ),
+                          ),
+                        );
+                      } else {
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          scrollDirection: Axis.vertical,
+                          itemCount: payrollcontroller.filteredPayroll.length,
+                          itemBuilder: (context, index) {
+                            final payroll =
+                                payrollcontroller.filteredPayroll[index];
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: PayRollSlip(
+                                payrolldata: payroll,
+                                dop: payroll.dateOfPayment != null
+                                    ? DateFormat.yMMMd('en_US')
+                                        .format(payroll.dateOfPayment!)
+                                    : "",
+                                mop: payroll.modeOfPayment.toString(),
+                                bank: payroll.bank ?? "---",
+                                cheque: payroll.chequeNo ?? "---",
+                                salary: payroll.totalSalary.toString(),
+                              ),
+                            );
+                          },
+                        );
+                      }
+                    })
+                  : SizedBox(
+                      height: 600,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // Image
+                            Image.asset(
+                              'assets/images/pay.png',
+                              height: 150,
+                              width: 250,
+                              fit: BoxFit.cover,
+                            ),
+                            const SizedBox(height: 20),
+                            // Title
+                            Text(
+                              "Payroll Hidden",
+                              style: smallNStyle.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: isDarkMode ? Colors.white : Colors.black,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              "Your payroll details are currently hidden.",
+                              textAlign: TextAlign.center,
+                              style: smallStyle.copyWith(
+                                color: isDarkMode
+                                    ? Colors.grey.shade300
+                                    : Colors.grey.shade700,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            // ElevatedButton(
+                            //   onPressed: () {
+                            //     setState(() {
+                            //       _isPayrollVisible = true;
+                            //     });
+                            //   },
+                            //   style: ElevatedButton.styleFrom(
+                            //     backgroundColor: isDarkMode
+                            //         ? Colors.grey.shade700
+                            //         : Colors.black,
+                            //     foregroundColor: Colors.white,
+                            //     padding: const EdgeInsets.symmetric(
+                            //       horizontal: 30,
+                            //       vertical: 15,
+                            //     ),
+                            //     shape: RoundedRectangleBorder(
+                            //       borderRadius: BorderRadius.circular(30),
+                            //     ),
+                            //     elevation: 5,
+                            //   ),
+                            //   child: Text(
+                            //     "Reveal Payroll",
+                            //     style: smallStyle.copyWith(
+                            //       fontSize: 16,
+                            //       color: Colors.white,
+                            //       fontWeight: FontWeight.bold,
+                            //     ),
+                            //   ),
+                            // ),
+                          ],
+                        ),
+                      ),
+                    ),
+            ),
+          ],
         ),
+      ),
+    );
+  }
+}
+
+class PayrollSkeleton extends StatelessWidget {
+  const PayrollSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SkeletonBox(height: 100, width: double.infinity, borderRadius: 8),
+        ],
       ),
     );
   }

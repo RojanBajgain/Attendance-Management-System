@@ -1,5 +1,6 @@
 import 'package:ams/config/resources/shimmer.dart';
 import 'package:ams/config/resources/styles.dart';
+import 'package:ams/feature/presentation/pages/dashboard/widget/skeleton_box.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/timeoff/controller/timeoff_controller.dart';
 import 'package:ams/feature/presentation/pages/timeoff/sub_view_timeoff/time_off_view.dart';
@@ -125,15 +126,23 @@ class _TimeOffPageState extends State<TimeOffPage> {
             const SizedBox(height: 20.0),
             Obx(() {
               if (timeoffcontroller.isLoading.value) {
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12.0),
-                    child: ShrimmerEffect.rectangular(
-                      height: 150,
-                      width: MediaQuery.sizeOf(context).width,
-                    ),
-                  ),
+                // return Padding(
+                //   padding: const EdgeInsets.all(8.0),
+                //   child: ClipRRect(
+                //     borderRadius: BorderRadius.circular(12.0),
+                //     child: ShrimmerEffect.rectangular(
+                //       height: 150,
+                //       width: MediaQuery.sizeOf(context).width,
+                //     ),
+                //   ),
+                // );
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: 6,
+                  itemBuilder: (context, index) {
+                    return const TimeoffSkeleton();
+                  },
                 );
               } else if (timeoffcontroller.timeoff.isEmpty) {
                 return SizedBox(
@@ -160,6 +169,23 @@ class _TimeOffPageState extends State<TimeOffPage> {
             }),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class TimeoffSkeleton extends StatelessWidget {
+  const TimeoffSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SkeletonBox(height: 80, width: double.infinity, borderRadius: 8),
+        ],
       ),
     );
   }

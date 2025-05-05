@@ -1,5 +1,6 @@
 import 'package:ams/config/resources/shimmer.dart';
 import 'package:ams/config/resources/styles.dart';
+import 'package:ams/feature/presentation/pages/dashboard/widget/skeleton_box.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/timesheet/controller/timesheet_controller.dart';
 import 'package:ams/feature/presentation/pages/timesheet/sub_view_timesheet/time_sheet_view.dart';
@@ -137,14 +138,13 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
               child: Obx(
                 () {
                   if (timesheetcontroller.isLoading.value) {
-                    return Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12.0),
-                        child: ShrimmerEffect.rectangular(
-                          height: 100,
-                        ),
-                      ),
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: 6,
+                      itemBuilder: (context, index) {
+                        return const TimesheetSkeleton();
+                      },
                     );
                   } else if (timesheetcontroller.timesheet.isEmpty) {
                     return SizedBox(
@@ -178,6 +178,23 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class TimesheetSkeleton extends StatelessWidget {
+  const TimesheetSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SkeletonBox(height: 80, width: double.infinity, borderRadius: 8),
+        ],
       ),
     );
   }
