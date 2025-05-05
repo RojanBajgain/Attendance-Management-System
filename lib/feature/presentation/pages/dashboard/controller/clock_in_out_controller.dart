@@ -77,28 +77,12 @@ class ClockInOutController extends GetxController {
           response.message ?? 'Your Clock In time has been successfully posted',
           SnackbarType.success,
         );
-        // Get.snackbar(
-        //   'Posted Clock in',
-        //   response.message ?? 'Your CLock In time has been successfully posted',
-        //   snackPosition: SnackPosition.TOP,
-        //   duration: const Duration(seconds: 3),
-        //   colorText: Colors.white,
-        //   backgroundColor: Colors.green,
-        // );
       } else {
         log("Error: ${response.message}");
         SSnackbarUtil.showSnackbar(
             "Error",
             response.message ?? 'Failed to post CLock in time',
             SnackbarType.error);
-        // Get.snackbar(
-        //   'Error',
-        //   response.message ?? 'Failed to post CLock in time',
-        //   snackPosition: SnackPosition.BOTTOM,
-        //   duration: const Duration(seconds: 3),
-        //   colorText: Colors.white,
-        //   backgroundColor: Colors.red,
-        // );
       }
     } catch (e) {
       if (kDebugMode) {
@@ -137,29 +121,12 @@ class ClockInOutController extends GetxController {
             "Posted Clock out",
             "Your Clock out time has been successfully posted",
             SnackbarType.success);
-        // Get.snackbar(
-        //   'Posted Clock out',
-        //   response.message ??
-        //       'Your CLock out time has been successfully posted',
-        //   snackPosition: SnackPosition.TOP,
-        //   duration: const Duration(seconds: 3),
-        //   colorText: Colors.white,
-        //   backgroundColor: Colors.green,
-        // );
       } else {
         log("Error: ${response.message}");
         SSnackbarUtil.showSnackbar(
             "Error",
             response.message ?? "Already clocked out for today",
             SnackbarType.error);
-        // Get.snackbar(
-        //   'INFO',
-        //   'Already clocked out for today',
-        //   snackPosition: SnackPosition.TOP,
-        //   duration: const Duration(seconds: 3),
-        //   colorText: Colors.white,
-        //   backgroundColor: Colors.blue,
-        // );
       }
     } catch (e) {
       if (kDebugMode) {
@@ -167,14 +134,6 @@ class ClockInOutController extends GetxController {
       }
       // SSnackbarUtil.showSnackbar(
       //     "Error", "Already clocked out for today", SnackbarType.error);
-      // Get.snackbar(
-      //   'Error',
-      //   'An unexpected error occurred: $e',
-      //   snackPosition: SnackPosition.BOTTOM,
-      //   duration: const Duration(seconds: 3),
-      //   colorText: Colors.white,
-      //   backgroundColor: Colors.red,
-      // );
     }
   }
 
@@ -196,39 +155,15 @@ class ClockInOutController extends GetxController {
             "Posted On Break",
             "Your Break time has been successfully posted",
             SnackbarType.success);
-        // Get.snackbar(
-        //   'Posted On Break',
-        //   response.message ?? 'Your Break time has been successfully posted',
-        //   snackPosition: SnackPosition.TOP,
-        //   duration: const Duration(seconds: 3),
-        //   colorText: Colors.white,
-        //   backgroundColor: Colors.green,
-        // );
       } else {
         log("Error: ${response.message}");
         SSnackbarUtil.showSnackbar(
-            "INFO", "Already clocked out for today", SnackbarType.error);
-        // Get.snackbar(
-        //   'INFO',
-        //   response.message ?? 'Already clocked out for today',
-        //   snackPosition: SnackPosition.TOP,
-        //   duration: const Duration(seconds: 3),
-        //   colorText: Colors.white,
-        //   backgroundColor: Colors.blue,
-        // );
+            "INFO", "Already clocked out for today", SnackbarType.info);
       }
     } catch (e) {
       if (kDebugMode) {
         print("Error fetching sub Break time data: $e");
       }
-      // Get.snackbar(
-      //   'Error',
-      //   'An unexpected error occurred: $e',
-      //   snackPosition: SnackPosition.BOTTOM,
-      //   duration: const Duration(seconds: 3),
-      //   colorText: Colors.white,
-      //   backgroundColor: Colors.red,
-      // );
     }
   }
 
@@ -253,36 +188,22 @@ class ClockInOutController extends GetxController {
             "Posted Resume",
             response.message ?? 'Your Resume time has been successfully posted',
             SnackbarType.success);
-        // Get.snackbar(
-        //   'Posted Resume',
-        //   response.message ?? 'Your Resume time has been successfully posted',
-        //   snackPosition: SnackPosition.TOP,
-        //   duration: const Duration(seconds: 3),
-        //   colorText: Colors.white,
-        //   backgroundColor: Colors.green,
-        // );
       } else {
         log("Error: ${response.message}");
-        Get.snackbar(
+        SSnackbarUtil.showSnackbar(
           'INFO',
           response.message ?? 'No break time available',
-          snackPosition: SnackPosition.TOP,
-          duration: const Duration(seconds: 3),
-          colorText: Colors.white,
-          backgroundColor: Colors.blue,
+          SnackbarType.info,
         );
       }
     } catch (e) {
       if (kDebugMode) {
         print("Error fetching sub Break time data: $e");
       }
-      Get.snackbar(
+      SSnackbarUtil.showSnackbar(
         'Error',
         'An unexpected error occurred: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 3),
-        colorText: Colors.white,
-        backgroundColor: Colors.red,
+        SnackbarType.error,
       );
     }
   }
