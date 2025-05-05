@@ -51,8 +51,8 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
           color: Colors.grey[200],
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.4),
-              blurRadius: 5,
+              color: Colors.grey.withOpacity(0.2),
+              blurRadius: 2,
               spreadRadius: 1,
               offset: const Offset(0, 1),
             ),

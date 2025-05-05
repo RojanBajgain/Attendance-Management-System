@@ -4,11 +4,8 @@ import 'package:ams/feature/presentation/pages/login/controller/login_controller
 import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/model/profile_model.dart';
 import 'package:ams/feature/presentation/pages/profile/pages/edit_profiles/edit_user_info.dart';
-import 'package:ams/feature/utils/skeleton_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:image_cropper/image_cropper.dart';
 
 class ProfilePic extends StatefulWidget {
   final Datum? profiledata;
@@ -23,10 +20,10 @@ class ProfilePic extends StatefulWidget {
 
 class _ProfilePicState extends State<ProfilePic> {
   final authcontroller = Get.find<AuthController>();
-  // final ProfileController profilecontroller =
-  //     Get.put(ProfileController(profileRepo: Get.find()));
+  final ProfileController profilecontroller =
+      Get.put(ProfileController(profileRepo: Get.find()));
 
-  final ProfileController profilecontroller = Get.find();
+  // final ProfileController profilecontroller = Get.find();
 
   File? _profileImage;
   bool isLoading = true;
@@ -54,70 +51,6 @@ class _ProfilePicState extends State<ProfilePic> {
       });
     }
   }
-
-  // Future<void> _changeImage() async {
-  //   final ImagePicker picker = ImagePicker();
-  //   final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-
-  //   if (image != null) {
-  //     final croppedFile = await ImageCropper().cropImage(
-  //       sourcePath: image.path,
-  //       uiSettings: [
-  //         AndroidUiSettings(
-  //           toolbarTitle: 'Crop Image',
-  //           toolbarColor: Colors.deepOrange,
-  //           toolbarWidgetColor: Colors.white,
-  //           initAspectRatio: CropAspectRatioPreset.original,
-  //           lockAspectRatio: false,
-  //         ),
-  //         IOSUiSettings(
-  //           title: 'Crop Image',
-  //         ),
-  //       ],
-  //     );
-
-  //     if (croppedFile != null) {
-  //       setState(() {
-  //         _profileImage = File(croppedFile.path);
-  //       });
-  //       _showSaveDialog();
-  //     }
-  //   }
-  // }
-
-  // void _showSaveDialog() {
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: const Text('Save Image'),
-  //         content: const Text(
-  //             'Do you want to save this image as your profile picture?'),
-  //         actions: [
-  //           TextButton(
-  //             onPressed: () {
-  //               Navigator.of(context).pop();
-  //             },
-  //             child: const Text('Cancel'),
-  //           ),
-  //           TextButton(
-  //             onPressed: () {
-  //               _saveImage();
-  //               Navigator.of(context).pop();
-  //             },
-  //             child: const Text('Save'),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
-
-  // void _saveImage() {
-  //   if (_profileImage != null) {
-  //     setState(() {});
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -168,7 +101,7 @@ class _ProfilePicState extends State<ProfilePic> {
                                   : (profiledata.profileImage.isNotEmpty)
                                       ? NetworkImage(profiledata.profileImage)
                                       : const AssetImage(
-                                              "assets/images/user_avatar.png")
+                                              "assets/images/profile.png")
                                           as ImageProvider,
                             ),
                             Container(
@@ -240,43 +173,4 @@ class _ProfilePicState extends State<ProfilePic> {
       ),
     );
   }
-
-  // Widget _buildSkeletonUI(bool isDarkMode) {
-  //   return const Column(
-  //     mainAxisAlignment: MainAxisAlignment.center,
-  //     children: [
-  //       // Circular Avatar Skeleton
-  //       SkeletonBox(
-  //         height: 150,
-  //         width: 150,
-  //         borderRadius: 75,
-  //       ),
-  //       SizedBox(height: 10),
-  //       // Username Skeleton
-  //       SkeletonBox(
-  //         height: 20,
-  //         width: 120,
-  //         borderRadius: 4,
-  //       ),
-  //       SizedBox(height: 5),
-  //       // Status Row Skeleton
-  //       Row(
-  //         mainAxisAlignment: MainAxisAlignment.center,
-  //         children: [
-  //           SkeletonBox(
-  //             height: 16,
-  //             width: 50,
-  //             borderRadius: 4,
-  //           ),
-  //           SizedBox(width: 5),
-  //           SkeletonBox(
-  //             height: 20,
-  //             width: 40,
-  //             borderRadius: 20,
-  //           ),
-  //         ],
-  //       ),
-  //     ],
-  //   );
-  // }
 }

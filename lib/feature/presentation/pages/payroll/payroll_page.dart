@@ -241,36 +241,6 @@ class _PayrollPageState extends State<PayrollPage> {
                                     : Colors.grey.shade700,
                               ),
                             ),
-                            const SizedBox(height: 20),
-                            // ElevatedButton(
-                            //   onPressed: () {
-                            //     setState(() {
-                            //       _isPayrollVisible = true;
-                            //     });
-                            //   },
-                            //   style: ElevatedButton.styleFrom(
-                            //     backgroundColor: isDarkMode
-                            //         ? Colors.grey.shade700
-                            //         : Colors.black,
-                            //     foregroundColor: Colors.white,
-                            //     padding: const EdgeInsets.symmetric(
-                            //       horizontal: 30,
-                            //       vertical: 15,
-                            //     ),
-                            //     shape: RoundedRectangleBorder(
-                            //       borderRadius: BorderRadius.circular(30),
-                            //     ),
-                            //     elevation: 5,
-                            //   ),
-                            //   child: Text(
-                            //     "Reveal Payroll",
-                            //     style: smallStyle.copyWith(
-                            //       fontSize: 16,
-                            //       color: Colors.white,
-                            //       fontWeight: FontWeight.bold,
-                            //     ),
-                            //   ),
-                            // ),
                           ],
                         ),
                       ),

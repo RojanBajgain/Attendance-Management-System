@@ -1,4 +1,3 @@
-import 'package:ams/config/resources/shimmer.dart';
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/dashboard/widget/skeleton_box.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
@@ -150,11 +149,23 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
                     return SizedBox(
                       height: 600,
                       child: Center(
-                        child: Text(
-                          "No available Timesheet data",
-                          style: smallStyle.copyWith(
-                            color: isDarkMode ? Colors.white : Colors.black,
-                          ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/images/pay.png',
+                              height: 150,
+                              width: 250,
+                              fit: BoxFit.cover,
+                            ),
+                            const SizedBox(height: 20),
+                            Text(
+                              "No Data Available",
+                              style: smallStyle.copyWith(
+                                color: isDarkMode ? Colors.white : Colors.black,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     );

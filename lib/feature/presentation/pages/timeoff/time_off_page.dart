@@ -148,11 +148,23 @@ class _TimeOffPageState extends State<TimeOffPage> {
                 return SizedBox(
                   height: 600,
                   child: Center(
-                    child: Text(
-                      "No available Timeoff data",
-                      style: smallStyle.copyWith(
-                        color: isDarkMode ? Colors.white : Colors.black,
-                      ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/images/no_data.png',
+                          height: 200,
+                          width: 250,
+                          fit: BoxFit.cover,
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          "No Data Available",
+                          style: smallStyle.copyWith(
+                            color: isDarkMode ? Colors.white : Colors.black,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 );
