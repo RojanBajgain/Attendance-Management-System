@@ -42,21 +42,31 @@ class _ClockTimeState extends State<ClockTime> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
+    // WidgetsBinding.instance.addPostFrameCallback(
+    //   (_) async {
+    //     // setState(() {
+    //     //   isLoading = true;
+    //     // });
+    //     // await profileController.getProfile();
+    //     // await hasClockedinController.getClockData();
+    //     _loadClockInState();
+    //     _loadBreakState();
+    //     _fetchOfficeLocation();
+    //     if (mounted) {
+    //       setState(() {
+    //         isLoading = false;
+    //       });
+    //     }
+    //   },
+    // );
+    _loadClockInState();
+    _loadBreakState();
+    _fetchOfficeLocation();
+    if (mounted) {
       setState(() {
-        isLoading = true;
+        isLoading = false;
       });
-      await profileController.getProfile();
-      await hasClockedinController.getClockData();
-      await _loadClockInState();
-      await _loadBreakState();
-      await _fetchOfficeLocation();
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
-    });
+    }
   }
 
   Future<void> _fetchOfficeLocation() async {

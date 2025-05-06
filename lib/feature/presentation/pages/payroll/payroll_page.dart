@@ -1,4 +1,3 @@
-import 'package:ams/config/resources/shimmer.dart';
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/dashboard/widget/skeleton_box.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
@@ -48,7 +47,7 @@ class _PayrollPageState extends State<PayrollPage> {
               children: [
                 Text(
                   "Pay Roll",
-                  style: normalStyle.copyWith(
+                  style: smallNStyle.copyWith(
                     fontWeight: FontWeight.bold,
                     color: isDarkMode ? Colors.white : Colors.black,
                   ),
@@ -80,19 +79,45 @@ class _PayrollPageState extends State<PayrollPage> {
                 const SizedBox(width: 10),
                 GestureDetector(
                   onTap: () async {
-                    final ThemeData datePickerTheme =
-                        Theme.of(context).copyWith(
-                      textTheme: TextTheme(
-                        bodyLarge: TextStyle(
-                          fontSize: 14.0,
-                          color: isDarkMode ? Colors.white : Colors.black,
-                        ),
-                        bodyMedium: TextStyle(
-                          fontSize: 12.0,
-                          color: isDarkMode ? Colors.white : Colors.black,
-                        ),
-                      ),
-                    );
+                    final ThemeData datePickerTheme = isDarkMode
+                        ? ThemeData.dark().copyWith(
+                            textTheme: TextTheme(
+                              bodyLarge: TextStyle(
+                                fontSize: 11.0,
+                                color: isDarkMode ? Colors.white : Colors.black,
+                              ),
+                              bodyMedium: TextStyle(
+                                fontSize: 11.0,
+                                color: isDarkMode ? Colors.white : Colors.black,
+                              ),
+                            ),
+                            dialogBackgroundColor: Colors.grey[900],
+                            colorScheme: const ColorScheme.dark(
+                              primary: Colors.blueAccent,
+                              onPrimary: Colors.white,
+                              onSurface: Colors.white,
+                              background: Colors.black,
+                            ),
+                          )
+                        : ThemeData.light().copyWith(
+                            textTheme: TextTheme(
+                              bodyLarge: TextStyle(
+                                fontSize: 11.0,
+                                color: isDarkMode ? Colors.white : Colors.black,
+                              ),
+                              bodyMedium: TextStyle(
+                                fontSize: 11.0,
+                                color: isDarkMode ? Colors.white : Colors.black,
+                              ),
+                            ),
+                            dialogBackgroundColor: Colors.white,
+                            colorScheme: const ColorScheme.light(
+                              primary: Colors.black,
+                              onPrimary: Colors.white,
+                              onSurface: Colors.black,
+                              background: Colors.white,
+                            ),
+                          );
                     DateTime? selectedDate = await showDatePicker(
                       context: context,
                       initialDate: DateTime.now(),

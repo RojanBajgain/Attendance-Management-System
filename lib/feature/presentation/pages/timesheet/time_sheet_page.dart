@@ -24,8 +24,8 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
   @override
   void initState() {
     super.initState();
-    timesheetcontroller.getTimesheet();
-    timesheetcontroller.clearSelectedDate();
+    // timesheetcontroller.getTimesheet();
+    // timesheetcontroller.clearSelectedDate();
   }
 
   @override
@@ -54,19 +54,46 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
                 const Spacer(),
                 GestureDetector(
                   onTap: () async {
-                    final ThemeData datePickerTheme =
-                        Theme.of(context).copyWith(
-                      textTheme: TextTheme(
-                        bodyLarge: TextStyle(
-                          fontSize: 12.0,
-                          color: isDarkMode ? Colors.white : Colors.black,
-                        ),
-                        bodyMedium: TextStyle(
-                          fontSize: 12.0,
-                          color: isDarkMode ? Colors.white : Colors.black,
-                        ),
-                      ),
-                    );
+                    final ThemeData datePickerTheme = isDarkMode
+                        ? ThemeData.dark().copyWith(
+                            textTheme: TextTheme(
+                              bodyLarge: TextStyle(
+                                fontSize: 11.0,
+                                color: isDarkMode ? Colors.white : Colors.black,
+                              ),
+                              bodyMedium: TextStyle(
+                                fontSize: 11.0,
+                                color: isDarkMode ? Colors.white : Colors.black,
+                              ),
+                            ),
+                            dialogBackgroundColor: Colors.grey[900],
+                            colorScheme: const ColorScheme.dark(
+                              primary: Colors.blueAccent,
+                              onPrimary: Colors.white,
+                              onSurface: Colors.white,
+                              background: Colors.black,
+                            ),
+                          )
+                        : ThemeData.light().copyWith(
+                            textTheme: TextTheme(
+                              bodyLarge: TextStyle(
+                                fontSize: 11.0,
+                                color: isDarkMode ? Colors.white : Colors.black,
+                              ),
+                              bodyMedium: TextStyle(
+                                fontSize: 11.0,
+                                color: isDarkMode ? Colors.white : Colors.black,
+                              ),
+                            ),
+                            dialogBackgroundColor: Colors.white,
+                            colorScheme: const ColorScheme.light(
+                              primary: Colors.black,
+                              onPrimary: Colors.white,
+                              onSurface: Colors.black,
+                              background: Colors.white,
+                            ),
+                          );
+
                     DateTime? selectedDate = await showDatePicker(
                       context: context,
                       initialDate: DateTime.now(),

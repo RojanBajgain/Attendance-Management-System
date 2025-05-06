@@ -38,16 +38,16 @@ class PayRollSlip extends StatelessWidget {
         );
       },
       child: Container(
-        height: 150.0,
+        height: 140.0,
         width: double.infinity,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12.0),
+          borderRadius: BorderRadius.circular(10.0),
           color: Colors.white,
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.4),
               blurRadius: 5,
-              spreadRadius: 2,
+              spreadRadius: 1,
               offset: const Offset(0, 1),
             ),
           ],
@@ -85,7 +85,7 @@ class PayRollSlip extends StatelessWidget {
                       color: isDarkMode ? Colors.white : Colors.black,
                     ),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   Text(
                     'Mode of Payment',
                     style: smallStyle.copyWith(
@@ -101,18 +101,20 @@ class PayRollSlip extends StatelessWidget {
                     dop,
                     style: smallStyle.copyWith(
                       color: isDarkMode ? Colors.white : Colors.black,
+                      fontSize: 11.0,
                     ),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   Text(
                     mop,
                     style: smallStyle.copyWith(
                       color: isDarkMode ? Colors.white : Colors.black,
+                      fontSize: 11.0,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 10.0),
+              const SizedBox(height: 7.0),
               const Divider(
                 thickness: 1,
                 color: Colors.grey,
@@ -136,6 +138,7 @@ class PayRollSlip extends StatelessWidget {
                           bank,
                           style: smallStyle.copyWith(
                             color: isDarkMode ? Colors.white : Colors.black,
+                            fontSize: 11.0,
                           ),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
@@ -144,7 +147,7 @@ class PayRollSlip extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(width: 30.0),
+                  const SizedBox(width: 30.0),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -160,6 +163,7 @@ class PayRollSlip extends StatelessWidget {
                           cheque,
                           style: smallStyle.copyWith(
                             color: isDarkMode ? Colors.white : Colors.black,
+                            fontSize: 11.0,
                           ),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
@@ -168,7 +172,7 @@ class PayRollSlip extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(width: 30.0),
+                  const SizedBox(width: 30.0),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,6 +188,7 @@ class PayRollSlip extends StatelessWidget {
                           salary,
                           style: smallStyle.copyWith(
                             color: isDarkMode ? Colors.white : Colors.black,
+                            fontSize: 11.0,
                           ),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,

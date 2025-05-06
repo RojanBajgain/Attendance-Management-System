@@ -13,6 +13,12 @@ class HasClockedinController extends GetxController {
 
   HasClockedinController({required this.hasClockedIn});
 
+  @override
+  void onInit() {
+    super.onInit();
+    getClockData();
+  }
+
   Future<void> getClockData() async {
     try {
       isLoading(true);

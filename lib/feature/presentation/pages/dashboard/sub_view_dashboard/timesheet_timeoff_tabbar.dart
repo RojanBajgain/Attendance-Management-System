@@ -71,7 +71,7 @@ class _TimesheetTimeoffTabViewState extends State<TimesheetTimeoffTabView> {
             ),
             Container(
               width: 2,
-              height: 40,
+              height: 35,
               color: isDarkMode ? Colors.white30 : Colors.black26,
             ),
             Expanded(
@@ -228,19 +228,19 @@ class _TimesheetTimeoffTabViewState extends State<TimesheetTimeoffTabView> {
             );
           },
         ),
-        if (showViewAll)
-          TextButton(
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const TimeOffPage()));
-            },
-            child: const Text("View All",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: Colors.blue,
-                )),
-          ),
+        // if (showViewAll)
+        //   TextButton(
+        //     onPressed: () {
+        //       Navigator.push(context,
+        //           MaterialPageRoute(builder: (_) => const TimeOffPage()));
+        //     },
+        //     child: const Text("View All",
+        //         style: TextStyle(
+        //           fontWeight: FontWeight.bold,
+        //           fontSize: 16,
+        //           color: Colors.blue,
+        //         )),
+        //   ),
       ],
     );
   }

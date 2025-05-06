@@ -15,16 +15,25 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveSizer(builder: (context, orientation, screenType) {
-      return GetMaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: "Attendance Management System",
-        // themeMode: ThemeMode.system,
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: themeController.currentThemeMode.value,
-        home: isLoggedIn ? const BottomNavPage() : const LandingPage(),
-      );
-    });
+    return ResponsiveSizer(
+      builder: (context, orientation, screenType) {
+        return GetMaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: "Attendance Management System",
+          // themeMode: ThemeMode.system,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: themeController.currentThemeMode.value,
+          home: isLoggedIn ? const BottomNavPage() : const LandingPage(),
+          builder: (context, child) {
+            final mediaQuery = MediaQuery.of(context);
+            return MediaQuery(
+              data: mediaQuery.copyWith(textScaler: TextScaler.linear(1.0)),
+              child: child ?? const SizedBox(),
+            );
+          },
+        );
+      },
+    );
   }
 }

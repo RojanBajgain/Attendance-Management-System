@@ -48,13 +48,13 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
-    dashboardtimesheetcontroller.getDashboardTimesheet();
+    // dashboardtimesheetcontroller.getDashboardTimesheet();
 
     // Defer less-important data
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      timeoffcontroller.getTimeoff();
-      timesheetcontroller.getTimesheet();
-      calenderNotificationController.getEventCalenders();
+      // timeoffcontroller.getTimeoff();
+      // timesheetcontroller.getTimesheet();
+      // calenderNotificationController.getEventCalenders();
     });
   }
 
@@ -177,6 +177,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                       color: isDarkMode
                                           ? Colors.white
                                           : Colors.black,
+                                      fontSize: 12.0,
                                     ),
                                   ),
                                   const SizedBox(height: 15.0),
@@ -261,6 +262,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                       color: isDarkMode
                                           ? Colors.white
                                           : Colors.black,
+                                      fontSize: 12.0,
                                     ),
                                   ),
                                   const SizedBox(height: 15.0),
@@ -405,7 +407,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20.0),
+                    const SizedBox(height: 30.0),
                     TimesheetTimeoffTabView(
                       timeoffcontroller: timeoffcontroller,
                       timesheetcontroller: timesheetcontroller,

@@ -25,6 +25,7 @@ class TimesheetController extends GetxController {
   void onInit() {
     super.onInit();
     getTimesheet();
+    clearSelectedDate();
   }
 
   Future<void> getTimesheet() async {
