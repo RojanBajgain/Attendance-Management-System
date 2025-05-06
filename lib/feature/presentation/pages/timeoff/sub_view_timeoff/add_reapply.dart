@@ -5,6 +5,7 @@ import 'package:ams/feature/presentation/pages/profile/controller/profile_contro
 import 'package:ams/feature/presentation/pages/timeoff/controller/timeoff_controller.dart';
 import 'package:ams/feature/presentation/widget/components/app_bar.dart';
 import 'package:ams/feature/presentation/pages/timeoff/time_off_page.dart';
+import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
@@ -61,13 +62,12 @@ class _AddReapplyPageState extends State<AddReapplyPage> {
 
   Future<void> _submitReapply() async {
     if (_reasonController.text.isEmpty) {
-      Get.snackbar(
+      SSnackbarUtil.showSnackbar(
         'Required',
         'Please fill in the reason field',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+        SnackbarType.error,
       );
+
       return;
     }
 

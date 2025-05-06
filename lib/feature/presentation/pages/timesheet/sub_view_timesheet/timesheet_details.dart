@@ -53,7 +53,7 @@ class _TimeSheetDetailState extends State<TimeSheetDetail> {
                       const SizedBox(width: 15.0),
                       Text(
                         "Timesheets",
-                        style: normalStyle.copyWith(
+                        style: smallNStyle.copyWith(
                           fontWeight: FontWeight.bold,
                           color: isDarkMode ? Colors.white : Colors.black,
                         ),
@@ -94,27 +94,28 @@ class _TimeSheetDetailState extends State<TimeSheetDetail> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildRow(
-                              "Date",
-                              timesheet.date != null
-                                  ? DateFormat.yMMMd('en_US')
-                                      .format(timesheet.date!)
-                                  : "N/A"),
+                            "Date",
+                            timesheet.date != null
+                                ? DateFormat.yMMMd('en_US')
+                                    .format(timesheet.date!)
+                                : "N/A",
+                          ),
                           _buildRow(
                             "Entry Time:",
                             timesheet.entryTime != null
-                                ? DateFormat('hh:mm a')
+                                ? DateFormat('hh:mm:ss a')
                                     .format(timesheet.entryTime!.toLocal())
                                 : "",
                           ),
+                          _buildRow("Entry Remarks:",
+                              timesheet.entryRemarks.toString()),
                           _buildRow(
                             "Exit Time:",
                             timesheet.exitTime != null
-                                ? DateFormat('hh:mm a')
+                                ? DateFormat('hh:mm:ss a')
                                     .format(timesheet.exitTime!.toLocal())
                                 : "N/A",
                           ),
-                          _buildRow("Entry Remarks:",
-                              timesheet.entryRemarks.toString()),
                           _buildRow(
                               "Exit Remarks:",
                               (timesheet.exitRemarks == null ||
@@ -122,10 +123,25 @@ class _TimeSheetDetailState extends State<TimeSheetDetail> {
                                   ? "---"
                                   : timesheet.exitRemarks.toString()),
                           _buildRow(
-                              "Break Time:", timesheet.breakTime.toString()),
+                              "Break Time",
+                              timesheet.breakTime != null
+                                  ? _formatDuration(Duration(
+                                      seconds: timesheet.breakTime!.toInt()))
+                                  : "N/A"),
                           _buildRow(
-                              "Total Hour:", "${timesheet.totalHour} Hrs"),
-                          _buildRow("Overtime:", "${timesheet.overTime} Hrs"),
+                            "Overtime",
+                            timesheet.overTime != null
+                                ? _formatHoursOnly(
+                                    double.tryParse(timesheet.overTime!) ?? 0)
+                                : "N/A",
+                          ),
+                          _buildRow(
+                            "Total Hours",
+                            timesheet.totalHour != null
+                                ? _formatHourMinute(
+                                    double.tryParse(timesheet.totalHour!) ?? 0)
+                                : "N/A",
+                          ),
                           _buildRow(
                               "Designation:", timesheet.designation ?? "N/A"),
                         ],
@@ -163,5 +179,22 @@ class _TimeSheetDetailState extends State<TimeSheetDetail> {
         ),
       );
     });
+  }
+
+  String _formatHourMinute(double hours) {
+    final int wholeHours = hours.floor();
+    final int minutes = ((hours - wholeHours) * 60).round();
+    return "${wholeHours}hrs ${minutes}min";
+  }
+
+  String _formatHoursOnly(double hours) {
+    final int wholeHours = hours.floor();
+    return "${wholeHours}hrs";
+  }
+
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    return "${twoDigits(duration.inHours)}:$twoDigitMinutes";
   }
 }

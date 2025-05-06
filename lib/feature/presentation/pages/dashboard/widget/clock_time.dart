@@ -76,6 +76,30 @@ class _ClockTimeState extends State<ClockTime> {
     DateTime now = DateTime.now();
     String todayDate = DateFormat('yyyy-MM-dd').format(now);
 
+    // Check if the last active date is different from today
+    String? lastActiveDate = prefs.getString('lastActiveDate');
+    if (lastActiveDate != null && lastActiveDate != todayDate) {
+      // Day has changed, reset clock data
+      isClockedInToday.value = false;
+      isClockedOut.value = false;
+      isOnBreak.value = false;
+      setState(() {
+        clockInTime = null;
+        clockOutTime = null; // Reset clockOutTime
+      });
+      timerController.stopTimer();
+      timerController.resetTimer();
+      await prefs.remove('clockInTime');
+      await prefs.remove('clockOutTime'); // Clear clockOutTime from storage
+      await prefs.setBool('isTimerRunning', false);
+      await prefs.setBool('isOnBreak', false);
+      await prefs.remove('breakStartTime');
+      await prefs.remove('stopwatchElapsedSeconds');
+    }
+
+    // Update the last active date
+    await prefs.setString('lastActiveDate', todayDate);
+
     DateTime? apiClockInTime = hasClockedinController.clockedInTime.value;
     log("Loaded Clock-In Time from API: $apiClockInTime");
 
@@ -92,7 +116,9 @@ class _ClockTimeState extends State<ClockTime> {
       isClockedInToday.value = true;
       isClockedOut.value = false;
       isOnBreak.value = prefs.getBool('isOnBreak') ?? false;
-      clockInTime = apiClockInTime;
+      setState(() {
+        clockInTime = apiClockInTime;
+      });
 
       timerController.clockInTime = clockInMinute.toIso8601String();
 
@@ -109,19 +135,32 @@ class _ClockTimeState extends State<ClockTime> {
       isClockedInToday.value = false;
       isClockedOut.value = false;
       isOnBreak.value = false;
-      clockInTime = null;
-      clockOutTime = null;
+      setState(() {
+        clockInTime = null;
+        clockOutTime = null; // Ensure clockOutTime is reset
+      });
       timerController.stopTimer();
       timerController.resetTimer();
       await prefs.remove('clockInTime');
+      await prefs.remove('clockOutTime'); // Clear clockOutTime from storage
       await prefs.setBool('isTimerRunning', false);
     }
 
+    // Handle clock out time
     String? storedClockOutTime = prefs.getString('clockOutTime');
     if (storedClockOutTime != null) {
-      setState(() {
-        clockOutTime = DateTime.parse(storedClockOutTime);
-      });
+      DateTime parsedClockOutTime = DateTime.parse(storedClockOutTime);
+      if (DateFormat('yyyy-MM-dd').format(parsedClockOutTime) == todayDate) {
+        setState(() {
+          clockOutTime = parsedClockOutTime;
+        });
+      } else {
+        // If clock out time is from a different day, clear it
+        await prefs.remove('clockOutTime');
+        setState(() {
+          clockOutTime = null;
+        });
+      }
     }
   }
 
@@ -151,6 +190,30 @@ class _ClockTimeState extends State<ClockTime> {
     }
 
     final prefs = await SharedPreferences.getInstance();
+
+    // Check if the day has changed since last activity
+    DateTime now = DateTime.now();
+    String todayDate = DateFormat('yyyy-MM-dd').format(now);
+    String? lastActiveDate = prefs.getString('lastActiveDate');
+
+    if (lastActiveDate != null && lastActiveDate != todayDate) {
+      // Day has changed, reset all clock state
+      isClockedInToday.value = false;
+      isClockedOut.value = false;
+      isOnBreak.value = false;
+      setState(() {
+        clockInTime = null;
+        clockOutTime = null; // Reset clockOutTime
+      });
+      timerController.stopTimer();
+      timerController.resetTimer();
+      await prefs.remove('clockInTime');
+      await prefs.remove('clockOutTime'); // Clear clockOutTime from storage
+      await prefs.setBool('isTimerRunning', false);
+      await prefs.setBool('isOnBreak', false);
+      await prefs.setString('lastActiveDate', todayDate);
+    }
+
     if (!isClockedInToday.value) {
       await clockInOutController.postClockin(
         deviceId: deviceId,
@@ -167,10 +230,13 @@ class _ClockTimeState extends State<ClockTime> {
       );
       setState(() {
         clockInTime = now;
+        clockOutTime = null; // Ensure clockOutTime is reset on new clock-in
       });
       isClockedInToday.value = true;
       isClockedOut.value = false;
       await prefs.setString('clockInTime', clockInMinute.toIso8601String());
+      await prefs.remove('clockOutTime'); // Clear any previous clockOutTime
+      await prefs.setString('lastActiveDate', todayDate);
       timerController.clockInTime = clockInMinute.toIso8601String();
       timerController.resetTimer();
       timerController.startTimer(initialSeconds: 0);
@@ -229,11 +295,30 @@ class _ClockTimeState extends State<ClockTime> {
       return;
     }
 
+    // Check if the day has changed since last activity
+    DateTime now = DateTime.now();
+    String todayDate = DateFormat('yyyy-MM-dd').format(now);
+    String? lastActiveDate = prefs.getString('lastActiveDate');
+
+    if (lastActiveDate != null && lastActiveDate != todayDate) {
+      // Day has changed, reset break state
+      isOnBreak.value = false;
+      await prefs.setBool('isOnBreak', false);
+      await prefs.remove('breakStartTime');
+      await prefs.remove('stopwatchElapsedSeconds');
+      await prefs.setString('lastActiveDate', todayDate);
+
+      // Also make sure to reset clock in state since it's a new day
+      await _loadClockInState();
+      return;
+    }
+
     if (!isOnBreak.value) {
       await clockInOutController.postOnBreak(employeeId: employeeId);
       await prefs.setString('breakStartTime', DateTime.now().toIso8601String());
       await prefs.setInt('stopwatchElapsedSeconds', 0);
       await prefs.setBool('isOnBreak', true);
+      await prefs.setString('lastActiveDate', todayDate);
       timerController.pauseTimer();
       timerController.startStopwatch();
       isOnBreak.value = true;
@@ -301,6 +386,7 @@ class _ClockTimeState extends State<ClockTime> {
                         _formatTime(clockInTime),
                         style: smallStyle.copyWith(
                           color: isDarkMode ? Colors.white70 : Colors.black87,
+                          // fontSize: 12.0,
                         ),
                       ),
                     ],
@@ -323,6 +409,7 @@ class _ClockTimeState extends State<ClockTime> {
                         _formatTime(clockOutTime),
                         style: smallStyle.copyWith(
                           color: isDarkMode ? Colors.white70 : Colors.black87,
+                          // fontSize: 10.0,
                         ),
                       ),
                     ],

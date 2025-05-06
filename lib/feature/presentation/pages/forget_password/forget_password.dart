@@ -4,6 +4,7 @@ import 'package:ams/feature/presentation/pages/forget_password/controller/reset_
 import 'package:ams/feature/presentation/pages/login/login_page.dart';
 import 'package:ams/feature/presentation/widget/button_large.dart';
 import 'package:ams/feature/presentation/widget/custom_textfield.dart';
+import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:ams/feature/utils/validator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -23,12 +24,10 @@ class _ForgetPasswordState extends State<ForgetPassword> {
 
   Future<void> _submitresetpassword() async {
     if (email.text.isEmpty) {
-      Get.snackbar(
+      SSnackbarUtil.showSnackbar(
         'Error',
         'Please fill the required field.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+        SnackbarType.error,
       );
     }
     await resetpassword.resetpassword(email: email.text);

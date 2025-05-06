@@ -58,7 +58,7 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
                         Theme.of(context).copyWith(
                       textTheme: TextTheme(
                         bodyLarge: TextStyle(
-                          fontSize: 14.0,
+                          fontSize: 12.0,
                           color: isDarkMode ? Colors.white : Colors.black,
                         ),
                         bodyMedium: TextStyle(
@@ -87,7 +87,7 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
                   },
                   child: Obx(() {
                     return Container(
-                      height: 45.0,
+                      height: 35.0,
                       width: timesheetcontroller.selectedDate.value != null
                           ? 165.0
                           : 48.0,

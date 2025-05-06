@@ -8,11 +8,10 @@ import 'package:ams/feature/presentation/pages/login/controller/login_controller
 import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/pages/edit_profiles/edit_user_address.dart';
 import 'package:ams/feature/presentation/pages/profile/widget/file_uploader.dart';
+import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -79,13 +78,10 @@ class _EditUserInfoState extends State<EditUserInfo> {
         phoneController.text.isEmpty ||
         genderController.text.isEmpty ||
         skillsController.text.isEmpty) {
-      Get.snackbar(
+      SSnackbarUtil.showSnackbar(
         'Validation Error',
         'Failed to update profile,\nPlease fill the required fields',
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 3),
-        colorText: Colors.white,
-        backgroundColor: Colors.red,
+        SnackbarType.error,
       );
       return;
     }
@@ -184,11 +180,12 @@ class _EditUserInfoState extends State<EditUserInfo> {
         readOnly: true, // Make the field read-only
         decoration: InputDecoration(
           labelText: title,
-          border: OutlineInputBorder(),
-          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+          border: const OutlineInputBorder(),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
           labelStyle: smallStyle.copyWith(
               color: isDarkMode ? Colors.white70 : Colors.black54),
-          suffixIcon: Icon(Icons.calendar_today), // Add calendar icon
+          suffixIcon: const Icon(Icons.calendar_today), // Add calendar icon
         ),
         style: smallStyle.copyWith(
             color: isDarkMode ? Colors.white : Colors.black),
@@ -211,11 +208,10 @@ class _EditUserInfoState extends State<EditUserInfo> {
         // This adds theming to the date picker
         return Theme(
           data: Theme.of(context).copyWith(
-            textTheme: TextTheme(
-              headlineMedium: TextStyle(fontSize: 18), // Header (month & year)
-              bodyLarge: TextStyle(fontSize: 16), // Days of the month
-              bodyMedium:
-                  TextStyle(fontSize: 14), // Smaller text (e.g., weekdays)
+            textTheme: const TextTheme(
+              headlineMedium: TextStyle(fontSize: 18),
+              bodyLarge: TextStyle(fontSize: 16),
+              bodyMedium: TextStyle(fontSize: 14),
             ),
             colorScheme: Theme.of(context).brightness == Brightness.dark
                 ? ColorScheme.dark(
@@ -224,7 +220,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
                     surface: Colors.grey[800]!,
                     onSurface: Colors.white,
                   )
-                : ColorScheme.light(
+                : const ColorScheme.light(
                     primary: Colors.black,
                     onPrimary: Colors.white,
                     surface: Colors.white,
@@ -263,8 +259,9 @@ class _EditUserInfoState extends State<EditUserInfo> {
         keyboardType: keyboardType,
         decoration: InputDecoration(
           labelText: title,
-          border: OutlineInputBorder(),
-          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+          border: const OutlineInputBorder(),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
           labelStyle: smallStyle.copyWith(
               color: isDarkMode ? Colors.white70 : Colors.black54),
           filled: !enabled,
@@ -415,12 +412,10 @@ class _EditUserInfoState extends State<EditUserInfo> {
       }
     } catch (e) {
       print("Error opening resume: $e");
-      Get.snackbar(
+      SSnackbarUtil.showSnackbar(
         'Error',
         'Could not open the document',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+        SnackbarType.error,
       );
     }
   }
@@ -498,7 +493,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
                         "Contact Number",
                         phoneController,
                         isDarkMode,
-                        keyboardType: TextInputType.numberWithOptions(),
+                        keyboardType: const TextInputType.numberWithOptions(),
                       ),
                       _buildTextField(
                           "Designation", designationController, isDarkMode,

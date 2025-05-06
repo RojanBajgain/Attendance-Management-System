@@ -1,5 +1,6 @@
 import 'package:ams/feature/presentation/pages/bottom_nav/bottom_nav_page.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
+import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ams/config/resources/styles.dart';
@@ -111,13 +112,10 @@ class _EditUserBankState extends State<EditUserBank> {
 
   Future<void> _deleteBankDetail(int bankId) async {
     if (activeBankDetailsCount <= 1) {
-      Get.snackbar(
+      SSnackbarUtil.showSnackbar(
         'Cannot Delete',
         'You must keep at least one bank detail',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.amber,
-        colorText: Colors.black,
-        duration: const Duration(seconds: 3),
+        SnackbarType.warning,
       );
       return;
     }
@@ -132,13 +130,10 @@ class _EditUserBankState extends State<EditUserBank> {
     }
 
     if (isPayrollBank) {
-      Get.snackbar(
+      SSnackbarUtil.showSnackbar(
         'Cannot Delete',
         'You cannot delete a bank detail marked as payroll',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.amber,
-        colorText: Colors.black,
-        duration: const Duration(seconds: 3),
+        SnackbarType.warning,
       );
       return;
     }
@@ -207,12 +202,10 @@ class _EditUserBankState extends State<EditUserBank> {
 
                   await profilecontroller.getProfile();
                 } catch (e) {
-                  Get.snackbar(
+                  SSnackbarUtil.showSnackbar(
                     'Error',
                     'Failed to delete bank detail: $e',
-                    snackPosition: SnackPosition.TOP,
-                    backgroundColor: Colors.red,
-                    colorText: Colors.white,
+                    SnackbarType.error,
                   );
                 }
               },
@@ -365,12 +358,10 @@ class _EditUserBankState extends State<EditUserBank> {
   }
 
   void _showErrorSnackbar(String message) {
-    Get.snackbar(
+    SSnackbarUtil.showSnackbar(
       "Error",
       message,
-      snackPosition: SnackPosition.TOP,
-      colorText: Colors.white,
-      backgroundColor: Colors.red,
+      SnackbarType.error,
     );
   }
 

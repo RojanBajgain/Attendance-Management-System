@@ -101,8 +101,8 @@ class _ProfilePicState extends State<ProfilePic> {
                                   : (profiledata.profileImage.isNotEmpty)
                                       ? NetworkImage(profiledata.profileImage)
                                       : const AssetImage(
-                                              "assets/images/profile.png")
-                                          as ImageProvider,
+                                          "assets/images/profile.png",
+                                        ) as ImageProvider,
                             ),
                             Container(
                               padding: const EdgeInsets.all(4),

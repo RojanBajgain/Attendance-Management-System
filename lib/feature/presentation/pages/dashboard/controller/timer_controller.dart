@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 
 class TimerController extends GetxController {
   var elapsedSeconds = 0.obs;
   var isRunning = false.obs;
   String? clockInTime;
   Timer? _timer;
+  String? _lastRunDate; // Track the last date the timer was running
 
   var stopwatchSeconds = 0.obs;
   var isStopwatchRunning = false.obs;
@@ -21,31 +23,50 @@ class TimerController extends GetxController {
   Future<void> _loadSavedState() async {
     final prefs = await SharedPreferences.getInstance();
     String? storedClockInTime = prefs.getString('clockInTime');
+    _lastRunDate = prefs.getString('lastRunDate');
+    String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+    // Check if the day has changed since last run
+    bool dayChanged = _lastRunDate != null && _lastRunDate != today;
+
+    if (dayChanged) {
+      // Reset the timer if day has changed
+      await stopTimer();
+      await prefs.setString('lastRunDate', today);
+      return;
+    }
 
     if (storedClockInTime != null) {
       clockInTime = storedClockInTime;
       DateTime clockInDateTime = DateTime.parse(storedClockInTime);
 
-      // Truncate to minute for consistency
-      clockInDateTime = DateTime(
-        clockInDateTime.year,
-        clockInDateTime.month,
-        clockInDateTime.day,
-        clockInDateTime.hour,
-        clockInDateTime.minute,
-      );
+      // Only count elapsed time if it's from the same day
+      String clockInDate = DateFormat('yyyy-MM-dd').format(clockInDateTime);
+      if (clockInDate == today) {
+        // Truncate to minute for consistency
+        clockInDateTime = DateTime(
+          clockInDateTime.year,
+          clockInDateTime.month,
+          clockInDateTime.day,
+          clockInDateTime.hour,
+          clockInDateTime.minute,
+        );
 
-      int elapsed = DateTime.now().difference(clockInDateTime).inSeconds;
-      if (elapsed >= 0) {
-        elapsedSeconds.value = elapsed;
+        int elapsed = DateTime.now().difference(clockInDateTime).inSeconds;
+        if (elapsed >= 0) {
+          elapsedSeconds.value = elapsed;
 
-        // Check if timer should be running
-        bool shouldBeRunning = prefs.getBool('isTimerRunning') ?? false;
-        bool isOnBreak = prefs.getBool('isOnBreak') ?? false;
+          // Check if timer should be running
+          bool shouldBeRunning = prefs.getBool('isTimerRunning') ?? false;
+          bool isOnBreak = prefs.getBool('isOnBreak') ?? false;
 
-        if (shouldBeRunning && !isOnBreak) {
-          _startTimerWithoutSaving(initialSeconds: elapsed);
+          if (shouldBeRunning && !isOnBreak) {
+            _startTimerWithoutSaving(initialSeconds: elapsed);
+          }
         }
+      } else {
+        // If clock in is from a different day, reset it
+        await stopTimer();
       }
     }
 
@@ -54,13 +75,25 @@ class TimerController extends GetxController {
       String? breakStartTime = prefs.getString('breakStartTime');
       if (breakStartTime != null) {
         DateTime breakStart = DateTime.parse(breakStartTime);
-        int breakElapsed = DateTime.now().difference(breakStart).inSeconds;
-        if (breakElapsed >= 0) {
-          stopwatchSeconds.value = breakElapsed;
-          _startStopwatchWithoutSaving(initialSeconds: breakElapsed);
+
+        // Only count break time if it's from the same day
+        String breakDate = DateFormat('yyyy-MM-dd').format(breakStart);
+        if (breakDate == today) {
+          int breakElapsed = DateTime.now().difference(breakStart).inSeconds;
+          if (breakElapsed >= 0) {
+            stopwatchSeconds.value = breakElapsed;
+            _startStopwatchWithoutSaving(initialSeconds: breakElapsed);
+          }
+        } else {
+          // If break started on a different day, reset it
+          await stopStopwatch();
+          await prefs.setBool('isOnBreak', false);
         }
       }
     }
+
+    // Update the last run date
+    await prefs.setString('lastRunDate', today);
   }
 
   void _startTimerWithoutSaving({int initialSeconds = 0}) {
@@ -70,6 +103,7 @@ class TimerController extends GetxController {
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       elapsedSeconds.value++;
+      _checkForDayChange();
     });
   }
 
@@ -80,7 +114,23 @@ class TimerController extends GetxController {
     _stopwatchTimer?.cancel();
     _stopwatchTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       stopwatchSeconds.value++;
+      _checkForDayChange();
     });
+  }
+
+  // Check if day has changed and reset timers if needed
+  Future<void> _checkForDayChange() async {
+    String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final prefs = await SharedPreferences.getInstance();
+    String? savedDate = prefs.getString('lastRunDate');
+
+    if (savedDate != null && savedDate != today) {
+      // Day has changed, reset everything
+      await stopTimer();
+      await stopStopwatch();
+      await prefs.setBool('isOnBreak', false);
+      await prefs.setString('lastRunDate', today);
+    }
   }
 
   Future<void> startTimer({int initialSeconds = 0}) async {
@@ -90,11 +140,15 @@ class TimerController extends GetxController {
     isRunning.value = true;
     elapsedSeconds.value = initialSeconds;
 
+    // Store current date
+    String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    await prefs.setString('lastRunDate', today);
     await prefs.setBool('isTimerRunning', true);
 
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       elapsedSeconds.value++;
+      _checkForDayChange();
       if (elapsedSeconds.value % 10 == 0) {
         await prefs.setInt('elapsedSeconds', elapsedSeconds.value);
       }
@@ -118,9 +172,20 @@ class TimerController extends GetxController {
 
     final prefs = await SharedPreferences.getInstance();
     final storedClockInTime = prefs.getString('clockInTime');
+    String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
     if (storedClockInTime != null) {
       clockInTime = storedClockInTime;
       final clockInDateTime = DateTime.parse(storedClockInTime);
+
+      // Check if clock in is from today
+      String clockInDate = DateFormat('yyyy-MM-dd').format(clockInDateTime);
+      if (clockInDate != today) {
+        // If not today, reset the timer instead of resuming
+        await stopTimer();
+        return;
+      }
+
       // Truncate to minute
       final truncatedClockIn = DateTime(
         clockInDateTime.year,
@@ -145,9 +210,14 @@ class TimerController extends GetxController {
     isStopwatchRunning.value = true;
     stopwatchSeconds.value = initialSeconds;
 
+    // Store current date
+    String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    await prefs.setString('lastRunDate', today);
+
     _stopwatchTimer?.cancel();
     _stopwatchTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       stopwatchSeconds.value++;
+      _checkForDayChange();
       if (stopwatchSeconds.value % 10 == 0) {
         await prefs.setInt('stopwatchElapsedSeconds', stopwatchSeconds.value);
       }

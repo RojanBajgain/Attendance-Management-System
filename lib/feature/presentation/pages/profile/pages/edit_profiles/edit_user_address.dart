@@ -1,7 +1,7 @@
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/pages/edit_profiles/edit_user_document.dart';
-import 'package:ams/feature/presentation/pages/profile/pages/edit_profiles/edit_user_info.dart';
 import 'package:ams/feature/presentation/pages/profile/widget/country_dropdown.dart';
+import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ams/config/resources/styles.dart';
@@ -239,13 +239,10 @@ class _EditUserAddressState extends State<EditUserAddress> {
       }
 
       print("Error submitting address: $e");
-      Get.snackbar(
+      SSnackbarUtil.showSnackbar(
         'Error',
         'An unexpected error occurred: $e',
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 3),
-        colorText: Colors.white,
-        backgroundColor: Colors.red,
+        SnackbarType.error,
       );
     }
   }
@@ -257,13 +254,10 @@ class _EditUserAddressState extends State<EditUserAddress> {
         cityController.text.isEmpty ||
         addressLineOneController.text.isEmpty ||
         zipController.text.isEmpty) {
-      Get.snackbar(
+      SSnackbarUtil.showSnackbar(
         'Error',
         'Please fill out all required permanent address fields',
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 3),
-        colorText: Colors.white,
-        backgroundColor: Colors.red,
+        SnackbarType.error,
       );
       return false;
     }
@@ -274,13 +268,10 @@ class _EditUserAddressState extends State<EditUserAddress> {
           currentCityController.text.isEmpty ||
           currentAddressLineOneController.text.isEmpty ||
           currentZipController.text.isEmpty) {
-        Get.snackbar(
+        SSnackbarUtil.showSnackbar(
           'Error',
           'Please fill out all required current address fields',
-          snackPosition: SnackPosition.TOP,
-          duration: const Duration(seconds: 3),
-          colorText: Colors.white,
-          backgroundColor: Colors.red,
+          SnackbarType.error,
         );
         return false;
       }

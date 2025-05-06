@@ -1,5 +1,4 @@
 import 'package:ams/config/resources/styles.dart';
-import 'package:ams/feature/presentation/pages/timesheet/controller/timesheet_controller.dart';
 import 'package:ams/feature/presentation/pages/timesheet/model/timesheet_model.dart';
 import 'package:ams/feature/presentation/pages/timesheet/sub_view_timesheet/timesheet_details.dart';
 import 'package:flutter/material.dart';
@@ -99,36 +98,45 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
                     Icons.history,
                     color: isDarkMode ? Colors.white : Colors.black,
                   ),
-                  SizedBox(width: 5.0),
+                  const SizedBox(width: 5.0),
                   Text(
                     widget.timesheetdata.entryTime != null
                         ? DateFormat('hh:mm a')
                             .format(widget.timesheetdata.entryTime!.toLocal())
                         : "",
-                    style: smallNStyle.copyWith(color: Colors.green),
+                    style: smallNStyle.copyWith(
+                      color: Colors.green,
+                      fontSize: 12.0,
+                    ),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   Icon(
                     Icons.update,
                     color: isDarkMode ? Colors.white : Colors.black,
                   ),
-                  SizedBox(width: 5.0),
+                  const SizedBox(width: 5.0),
                   Text(
                     widget.timesheetdata.exitTime != null
                         ? DateFormat('hh:mm a')
                             .format(widget.timesheetdata.exitTime!.toLocal())
-                        : "---",
-                    style: smallNStyle.copyWith(color: Colors.red),
+                        : "-----",
+                    style: smallNStyle.copyWith(
+                      color: Colors.red,
+                      fontSize: 12.0,
+                    ),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   Icon(
                     Icons.schedule,
                     color: isDarkMode ? Colors.white : Colors.black,
                   ),
-                  SizedBox(width: 5.0),
+                  const SizedBox(width: 5.0),
                   Text(
                     "${widget.timesheetdata.totalHour.toString()} hrs",
-                    style: smallNStyle.copyWith(color: Colors.grey),
+                    style: smallNStyle.copyWith(
+                      color: Colors.grey,
+                      fontSize: 12.0,
+                    ),
                   ),
                 ],
               ),

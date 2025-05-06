@@ -304,31 +304,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  String _extractFileName(String fileUrl) {
-    return Uri.parse(fileUrl).pathSegments.last; // Gets the last segment of URL
-  }
-
-  void _showFileDialog(String? fileUrl) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: fileUrl != null
-              ? Image.network(fileUrl)
-              : const Text('No file available'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Close'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   Widget _buildBankDetails(bool isDarkMode, int index) {
     return ProfileMenu(
       text: "Banking Details",
@@ -429,7 +404,6 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           _buildRow("Finger Print ID:", device?.fingerprintId ?? "N/A"),
           _buildRow("Employee No:", device?.deviceUserId.toString() ?? "N/A"),
-          // _buildRow("App Pin:", device?.appPin ?? "N/A"),
         ],
       ),
     );
@@ -495,11 +469,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   }
                   // User confirmed, disable biometrics
                   await authcontroller.toggleBiometrics(false);
-                  // SSnackbarUtil.showSnackbar(
-                  //   'Success',
-                  //   'Biometrics disabled successfully.',
-                  //   SnackbarType.success,
-                  // );
+
                   return;
                 }
 
@@ -533,10 +503,15 @@ class _ProfilePageState extends State<ProfilePage> {
                 }
 
                 // for password
-                bool isPasswordCorrect = await _showPasswordPrompt(
+                bool? isPasswordCorrect = await _showPasswordPrompt(
                   context: Get.context!,
                   storedPassword: storedPassword,
                 );
+
+                if (isPasswordCorrect == null) {
+                  // User canceled, do nothing
+                  return;
+                }
 
                 if (!isPasswordCorrect) {
                   SSnackbarUtil.showSnackbar(
@@ -549,14 +524,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                 // Password is correct, enable biometrics
                 await authcontroller.toggleBiometrics(true);
-
-                // SSnackbarUtil.showSnackbar(
-                //   'Success',
-                //   'Biometrics enabled successfully.',
-                //   SnackbarType.success,
-                // );
               } catch (e) {
-                // print("Error toggling biometrics: $e");
                 SSnackbarUtil.showSnackbar(
                   'Error',
                   'Failed to toggle biometric settings.',
@@ -568,7 +536,7 @@ class _ProfilePageState extends State<ProfilePage> {
         ));
   }
 
-  Future<bool> _showPasswordPrompt({
+  Future<bool?> _showPasswordPrompt({
     required BuildContext context,
     required String storedPassword,
   }) async {
@@ -660,8 +628,8 @@ class _ProfilePageState extends State<ProfilePage> {
           actions: [
             TextButton(
               onPressed: () {
+                isPasswordCorrect = null; // Set to null for cancellation
                 Navigator.of(context).pop();
-                isPasswordCorrect = false;
               },
               child: Text(
                 'Cancel',
@@ -672,13 +640,8 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             TextButton(
               onPressed: () {
-                if (passwordController.text == storedPassword) {
-                  isPasswordCorrect = true;
-                  Navigator.of(context).pop();
-                } else {
-                  isPasswordCorrect = false;
-                  Navigator.of(context).pop();
-                }
+                isPasswordCorrect = passwordController.text == storedPassword;
+                Navigator.of(context).pop();
               },
               child: Text(
                 'Confirm',
@@ -696,7 +659,7 @@ class _ProfilePageState extends State<ProfilePage> {
       },
     );
 
-    return isPasswordCorrect ?? false;
+    return isPasswordCorrect;
   }
 
   Future<bool> _showDisableConfirmation({
@@ -741,7 +704,7 @@ class _ProfilePageState extends State<ProfilePage> {
               },
               child: Text(
                 'No',
-                style: smallNStyle.copyWith(
+                style: smallStyle.copyWith(
                   color: isDarkMode ? Colors.grey.shade300 : Colors.black87,
                 ),
               ),
@@ -753,7 +716,7 @@ class _ProfilePageState extends State<ProfilePage> {
               },
               child: Text(
                 'Yes',
-                style: smallNStyle.copyWith(
+                style: smallStyle.copyWith(
                   color: Colors.red,
                 ),
               ),
@@ -800,10 +763,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 final accessToken = prefs.getString('access_token') ?? '';
 
                 if (refreshToken.isEmpty || accessToken.isEmpty) {
-                  Get.snackbar(
+                  SSnackbarUtil.showSnackbar(
                     'Logout Failed',
                     'Tokens are missing. Please try again.',
-                    snackPosition: SnackPosition.BOTTOM,
+                    SnackbarType.info,
                   );
                   return;
                 }

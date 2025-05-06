@@ -5,6 +5,7 @@ import 'package:ams/feature/presentation/pages/profile/model/profile_model.dart'
 import 'package:ams/feature/presentation/pages/profile/pages/edit_profiles/edit_user_bank.dart';
 import 'package:ams/feature/presentation/pages/profile/pages/edit_profiles/edit_user_info.dart';
 import 'package:ams/feature/presentation/pages/profile/widget/image_uploader.dart';
+import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
@@ -122,13 +123,10 @@ class _EditUserDocumentState extends State<EditUserDocument> {
 
   Future<void> _deleteDocument(int documentId) async {
     if (activeDocumentCount <= 1) {
-      Get.snackbar(
+      SSnackbarUtil.showSnackbar(
         'Cannot Delete',
         'You must keep at least one document',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.amber,
-        colorText: Colors.black,
-        duration: const Duration(seconds: 3),
+        SnackbarType.warning,
       );
       return;
     }
@@ -176,26 +174,14 @@ class _EditUserDocumentState extends State<EditUserDocument> {
                     _selectedFiles.remove(documentId);
                   });
 
-                  // Get.back();
-
-                  // Get.snackbar(
-                  //   'Success',
-                  //   'Document deleted successfully',
-                  //   snackPosition: SnackPosition.TOP,
-                  //   backgroundColor: Colors.green,
-                  //   colorText: Colors.white,
-                  // );
-
                   await profileController.getProfile();
                 } catch (e) {
                   Get.back();
 
-                  Get.snackbar(
+                  SSnackbarUtil.showSnackbar(
                     'Error',
                     'Failed to delete document: $e',
-                    snackPosition: SnackPosition.TOP,
-                    backgroundColor: Colors.red,
-                    colorText: Colors.white,
+                    SnackbarType.error,
                   );
                 }
               },
@@ -277,13 +263,12 @@ class _EditUserDocumentState extends State<EditUserDocument> {
       Get.back();
 
       if (hasError) {
-        Get.snackbar(
+        SSnackbarUtil.showSnackbar(
           'Error',
           errorMessage,
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
+          SnackbarType.error,
         );
+
         return Future.error(errorMessage);
       } else {
         // Get.snackbar(
@@ -296,12 +281,10 @@ class _EditUserDocumentState extends State<EditUserDocument> {
         Get.to(() => const EditUserBank());
       }
     } catch (e) {
-      Get.snackbar(
+      SSnackbarUtil.showSnackbar(
         'Error',
         'Failed to update documents: $e',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+        SnackbarType.error,
       );
       return Future.error(e);
     }
@@ -321,49 +304,42 @@ class _EditUserDocumentState extends State<EditUserDocument> {
       // Check document type
       if (!selectedDocumentTypes.containsKey(documentId) ||
           selectedDocumentTypes[documentId]!.isEmpty) {
-        Get.snackbar(
+        SSnackbarUtil.showSnackbar(
           'Error',
           'Please select a document type for all documents',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
+          SnackbarType.error,
         );
         return false;
       }
 
       // Check title
       if (controllers['title']?.text.isEmpty ?? true) {
-        Get.snackbar(
+        SSnackbarUtil.showSnackbar(
           'Error',
           'Please fill all required document title fields',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
+          SnackbarType.error,
         );
         return false;
       }
 
       // Check issued date
       if (controllers['issuedDate']?.text.isEmpty ?? true) {
-        Get.snackbar(
+        SSnackbarUtil.showSnackbar(
           'Error',
           'Please select an issued date for all documents',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
+          SnackbarType.error,
         );
         return false;
       }
 
       // Check identifier
       if (controllers['identifier']?.text.isEmpty ?? true) {
-        Get.snackbar(
+        SSnackbarUtil.showSnackbar(
           'Error',
           'Please fill all required document identifier fields',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
+          SnackbarType.error,
         );
+
         return false;
       }
     }
@@ -372,60 +348,50 @@ class _EditUserDocumentState extends State<EditUserDocument> {
     if (profileController.isAddNewDocumentChecked.value) {
       // Check new document type
       if (newDocumentType.isEmpty) {
-        Get.snackbar(
+        SSnackbarUtil.showSnackbar(
           'Error',
           'Please select a type for the new document',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
+          SnackbarType.error,
         );
         return false;
       }
 
       // Check new document title
       if (newDocumentTitleController.text.isEmpty) {
-        Get.snackbar(
+        SSnackbarUtil.showSnackbar(
           'Error',
           'Please enter a title for the new document',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
+          SnackbarType.error,
         );
         return false;
       }
 
       // Check new document issued date
       if (newDocumentIssuedDateController.text.isEmpty) {
-        Get.snackbar(
+        SSnackbarUtil.showSnackbar(
           'Error',
           'Please select an issued date for the new document',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
+          SnackbarType.error,
         );
         return false;
       }
 
       // Check new document identifier
       if (newDocumentIdentifierController.text.isEmpty) {
-        Get.snackbar(
+        SSnackbarUtil.showSnackbar(
           'Error',
           'Please enter an identifier for the new document',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
+          SnackbarType.error,
         );
         return false;
       }
 
       // Check if file is uploaded for new document
       if (!_selectedFiles.containsKey(-1) || _selectedFiles[-1] == null) {
-        Get.snackbar(
+        SSnackbarUtil.showSnackbar(
           'Error',
           'Please upload a file for the new document',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
+          SnackbarType.error,
         );
         return false;
       }
@@ -690,12 +656,10 @@ class _EditUserDocumentState extends State<EditUserDocument> {
                         if (await canLaunchUrl(url)) {
                           await launchUrl(url);
                         } else {
-                          Get.snackbar(
+                          SSnackbarUtil.showSnackbar(
                             'Error',
                             'Could not open the document',
-                            snackPosition: SnackPosition.TOP,
-                            backgroundColor: Colors.red,
-                            colorText: Colors.white,
+                            SnackbarType.error,
                           );
                         }
                       },

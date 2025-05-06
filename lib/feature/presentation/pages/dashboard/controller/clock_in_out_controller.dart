@@ -88,13 +88,10 @@ class ClockInOutController extends GetxController {
       if (kDebugMode) {
         print("Error fetching sub clock in data: $e");
       }
-      Get.snackbar(
+      SSnackbarUtil.showSnackbar(
         'Error',
         'An unexpected error occurred: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 3),
-        colorText: Colors.white,
-        backgroundColor: Colors.red,
+        SnackbarType.error,
       );
     }
   }

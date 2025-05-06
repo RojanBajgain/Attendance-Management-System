@@ -179,7 +179,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                           : Colors.black,
                                     ),
                                   ),
-                                  const SizedBox(height: 8.0),
+                                  const SizedBox(height: 15.0),
                                   Row(
                                     children: [
                                       Expanded(
@@ -219,12 +219,12 @@ class _DashboardPageState extends State<DashboardPage> {
                                         ),
                                       ),
                                       const SizedBox(width: 8),
-                                      Text(
-                                        "${((dashboardtimesheetcontroller.dashboardtimesheet.value.thisWeek?.percentage ?? 0.0)).toStringAsFixed(0)} / 100",
-                                        style: const TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold),
-                                      ),
+                                      // Text(
+                                      //   "${((dashboardtimesheetcontroller.dashboardtimesheet.value.thisWeek?.percentage ?? 0.0)).toStringAsFixed(0)} / 100",
+                                      //   style: const TextStyle(
+                                      //       fontSize: 12,
+                                      //       fontWeight: FontWeight.bold),
+                                      // ),
                                     ],
                                   ),
                                 ],
@@ -263,7 +263,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                           : Colors.black,
                                     ),
                                   ),
-                                  const SizedBox(height: 8.0),
+                                  const SizedBox(height: 15.0),
                                   Row(
                                     children: [
                                       Expanded(
@@ -302,19 +302,106 @@ class _DashboardPageState extends State<DashboardPage> {
                                           ],
                                         ),
                                       ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        "${((dashboardtimesheetcontroller.dashboardtimesheet.value.month?.percentage ?? 0.0)).toStringAsFixed(0)} / 100",
-                                        style: const TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold),
-                                      ),
+                                      // const SizedBox(width: 8),
+                                      // Text(
+                                      //   "${((dashboardtimesheetcontroller.dashboardtimesheet.value.month?.percentage ?? 0.0)).toStringAsFixed(0)} / 100",
+                                      //   style: const TextStyle(
+                                      //       fontSize: 12,
+                                      //       fontWeight: FontWeight.bold),
+                                      // ),
                                     ],
                                   ),
                                 ],
                               ),
                             ),
                           ),
+                          // OverTime
+                          /* const SizedBox(width: 15),
+                          Container(
+                            height: 110.0,
+                            width: context.width * 0.5,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10.0),
+                              color: isDarkMode
+                                  ? Colors.grey.shade800
+                                  : Colors.grey[200],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "OverTime",
+                                    style: smallStyle.copyWith(
+                                        color: isDarkMode
+                                            ? Colors.white
+                                            : Colors.black,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  const SizedBox(height: 8.0),
+                                  Text(
+                                    "${dashboardtimesheetcontroller.dashboardtimesheet.value.day?.overTime ?? "---"} / 0 hrs",
+                                    style: smallStyle.copyWith(
+                                      color: isDarkMode
+                                          ? Colors.white
+                                          : Colors.black,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 15.0),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Stack(
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(5),
+                                                color: Colors.grey[300],
+                                              ),
+                                              height: 8,
+                                            ),
+                                            AnimatedFractionallySizedBox(
+                                              duration: const Duration(
+                                                  milliseconds: 200),
+                                              widthFactor:
+                                                  (dashboardtimesheetcontroller
+                                                              .dashboardtimesheet
+                                                              .value
+                                                              .day
+                                                              ?.overTime
+                                                          // .percentage
+                                                          /
+                                                          100 ??
+                                                      0.0),
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
+                                                  borderRadius:
+                                                      BorderRadius.circular(5),
+                                                ),
+                                                height: 8,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      // const SizedBox(width: 8),
+                                      // Text(
+                                      //   "${((dashboardtimesheetcontroller.dashboardtimesheet.value.month?.percentage ?? 0.0)).toStringAsFixed(0)} / 100",
+                                      //   style: const TextStyle(
+                                      //       fontSize: 12,
+                                      //       fontWeight: FontWeight.bold),
+                                      // ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ), */
                         ],
                       ),
                     ),

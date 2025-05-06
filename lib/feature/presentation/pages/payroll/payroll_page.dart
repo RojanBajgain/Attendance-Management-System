@@ -61,8 +61,8 @@ class _PayrollPageState extends State<PayrollPage> {
                     });
                   },
                   child: Container(
-                    height: 40.0,
-                    width: 55.0,
+                    height: 35.0,
+                    width: 50.0,
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.black),
@@ -113,10 +113,10 @@ class _PayrollPageState extends State<PayrollPage> {
                   },
                   child: Obx(() {
                     return Container(
-                      height: 40.0,
+                      height: 35.0,
                       width: payrollcontroller.selectedDate.value != null
                           ? 165.0
-                          : 55.0,
+                          : 50.0,
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.black),

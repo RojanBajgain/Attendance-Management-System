@@ -9,7 +9,6 @@ import 'package:ams/feature/presentation/pages/profile/model/profile_detail_mode
 import 'package:ams/feature/presentation/pages/profile/model/profile_model.dart';
 import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ProfileController extends GetxController {
@@ -115,7 +114,12 @@ class ProfileController extends GetxController {
         if (kDebugMode) {
           print('its error is ${response.status}');
         }
-        Get.snackbar('Error', 'Failed to fetch Profile details.');
+        SSnackbarUtil.showSnackbar(
+          'Error',
+          'Failed to fetch Profile details.',
+          SnackbarType.info,
+        );
+        // Get.snackbar('Error', 'Failed to fetch Profile details.');
       }
     } catch (e) {
       if (kDebugMode) {
