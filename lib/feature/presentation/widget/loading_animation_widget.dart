@@ -24,8 +24,8 @@ class _CombinedAnimatedDialogState extends State<CombinedAnimatedDialog>
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
     _colorAnimation = ColorTween(
-      begin: Colors.blue,
-      end: Colors.purple,
+      begin: Colors.red,
+      end: Colors.green,
     ).animate(_controller);
   }
 
