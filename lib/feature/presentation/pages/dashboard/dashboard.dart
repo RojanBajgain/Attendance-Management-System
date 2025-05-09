@@ -26,9 +26,9 @@ class _DashboardPageState extends State<DashboardPage> {
   final authController = Get.find<AuthController>();
   final TimeoffController timeoffController = Get.find<TimeoffController>();
   final TimesheetController timesheetController =
-      Get.find<TimesheetController>();
+      Get.put(TimesheetController());
   final DashboardTimesheetController dashboardTimesheetController =
-      Get.find<DashboardTimesheetController>();
+      Get.put(DashboardTimesheetController());
   final CalenderNotificationController calenderNotificationController =
       Get.find<CalenderNotificationController>();
 

@@ -12,7 +12,7 @@ class LogSheetConstant extends StatelessWidget {
   LogSheetConstant({super.key, required this.timesheetdata});
 
   final TimesheetController timesheetcontroller =
-      Get.put(TimesheetController(timesheetRepo: Get.find()));
+      Get.put(TimesheetController());
 
   @override
   Widget build(BuildContext context) {

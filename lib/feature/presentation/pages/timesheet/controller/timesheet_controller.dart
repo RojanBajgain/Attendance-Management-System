@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:ams/feature/data/datasource/remote/api_client.dart';
 import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/repository/timesheet_repo.dart';
 import 'package:ams/feature/presentation/pages/timesheet/model/timesheet_detail_model.dart';
@@ -16,9 +17,10 @@ class TimesheetController extends GetxController {
   var timesheetDetail = TimesheetDetailModel().obs;
   var selectedDate = Rxn<DateTime>();
 
-  final TimesheetRepo timesheetRepo;
+  final TimesheetRepo timesheetRepo =
+      TimesheetRepo(apiClient: Get.find<ApiClient>());
 
-  TimesheetController({required this.timesheetRepo});
+  TimesheetController();
 
   @override
   void onInit() {

@@ -19,7 +19,7 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
   final authcontroller = Get.find<AuthController>();
 
   final TimesheetController timesheetcontroller =
-      Get.put(TimesheetController(timesheetRepo: Get.find()));
+      Get.put(TimesheetController());
 
   @override
   void initState() {

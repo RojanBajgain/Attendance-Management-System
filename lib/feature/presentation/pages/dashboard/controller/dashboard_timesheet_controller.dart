@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:ams/feature/data/datasource/remote/api_client.dart';
 import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/repository/dashboard_timesheet_repo.dart';
 import 'package:ams/feature/presentation/pages/dashboard/model/dashboard_timesheet_model.dart';
@@ -9,9 +10,10 @@ class DashboardTimesheetController extends GetxController {
   var dashboardtimesheet = DashboardTimesheet().obs;
   var isLoading = false.obs;
 
-  final DashboardTimesheetRepo dashboardtimesheetrepo;
+  final DashboardTimesheetRepo dashboardtimesheetrepo =
+      DashboardTimesheetRepo(apiClient: Get.find<ApiClient>());
 
-  DashboardTimesheetController({required this.dashboardtimesheetrepo});
+  DashboardTimesheetController();
 
   @override
   void onInit() {

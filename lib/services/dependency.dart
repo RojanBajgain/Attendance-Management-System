@@ -56,9 +56,9 @@ Future<void> init() async {
       TimeoffController(timeoffRepo: Get.find<TimeoffRepo>()));
 
   // TimeSheet
-  Get.put<TimesheetRepo>(TimesheetRepo(apiClient: Get.find<ApiClient>()));
-  Get.put<TimesheetController>(
-      TimesheetController(timesheetRepo: Get.find<TimesheetRepo>()));
+  // Get.put<TimesheetRepo>(TimesheetRepo(apiClient: Get.find<ApiClient>()));
+  // Get.put<TimesheetController>(
+  //     TimesheetController(timesheetRepo: Get.find<TimesheetRepo>()));
 
   // Payroll
   Get.put<PayrollRepo>(PayrollRepo(apiClient: Get.find<ApiClient>()));
@@ -76,10 +76,10 @@ Future<void> init() async {
       NotificationController(notificationrepo: Get.find<NotificationRepo>()));
 
   // Dashboard timesheet
-  Get.put<DashboardTimesheetRepo>(
-      DashboardTimesheetRepo(apiClient: Get.find<ApiClient>()));
-  Get.put<DashboardTimesheetController>(DashboardTimesheetController(
-      dashboardtimesheetrepo: Get.find<DashboardTimesheetRepo>()));
+  // Get.put<DashboardTimesheetRepo>(
+  //     DashboardTimesheetRepo(apiClient: Get.find<ApiClient>()));
+  // Get.put<DashboardTimesheetController>(DashboardTimesheetController(
+  //     dashboardtimesheetrepo: Get.find<DashboardTimesheetRepo>()));
 
   // Dashboard Clock In / Clock Out
   Get.put<ClockInOutRepo>(ClockInOutRepo(apiClient: Get.find<ApiClient>()));

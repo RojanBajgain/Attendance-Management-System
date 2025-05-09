@@ -21,7 +21,7 @@ class TimeSheetDetail extends StatefulWidget {
 
 class _TimeSheetDetailState extends State<TimeSheetDetail> {
   final TimesheetController timesheetcontroller =
-      Get.put(TimesheetController(timesheetRepo: Get.find()));
+      Get.put(TimesheetController());
 
   @override
   void initState() {
