@@ -19,8 +19,7 @@ class TimeOffPage extends StatefulWidget {
 class _TimeOffPageState extends State<TimeOffPage> {
   final authcontroller = Get.find<AuthController>();
 
-  final TimeoffController timeoffcontroller =
-      Get.put(TimeoffController(timeoffRepo: Get.find()));
+  final TimeoffController timeoffcontroller = Get.put(TimeoffController());
 
   @override
   void initState() {

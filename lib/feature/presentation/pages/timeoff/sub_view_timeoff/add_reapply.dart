@@ -25,8 +25,7 @@ class AddReapplyPage extends StatefulWidget {
 
 class _AddReapplyPageState extends State<AddReapplyPage> {
   final authcontroller = Get.find<AuthController>();
-  final TimeoffController timeoffcontroller =
-      Get.put(TimeoffController(timeoffRepo: Get.find()));
+  final TimeoffController timeoffcontroller = Get.put(TimeoffController());
 
   final _formKey = GlobalKey<FormBuilderState>();
 

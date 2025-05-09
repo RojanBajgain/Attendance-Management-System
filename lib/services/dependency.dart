@@ -51,9 +51,9 @@ Future<void> init() async {
       ProfileController(profileRepo: Get.find<ProfileRepo>()));
 
   // Time off
-  Get.put<TimeoffRepo>(TimeoffRepo(apiClient: Get.find<ApiClient>()));
-  Get.put<TimeoffController>(
-      TimeoffController(timeoffRepo: Get.find<TimeoffRepo>()));
+  // Get.put<TimeoffRepo>(TimeoffRepo(apiClient: Get.find<ApiClient>()));
+  // Get.put<TimeoffController>(
+  //     TimeoffController(timeoffRepo: Get.find<TimeoffRepo>()));
 
   // TimeSheet
   // Get.put<TimesheetRepo>(TimesheetRepo(apiClient: Get.find<ApiClient>()));

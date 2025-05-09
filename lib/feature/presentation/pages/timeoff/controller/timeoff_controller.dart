@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:ams/feature/data/datasource/remote/api_client.dart';
 import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/repository/timeoff_repo.dart';
 import 'package:ams/feature/presentation/pages/timeoff/model/timeoff_model.dart';
@@ -16,9 +17,9 @@ class TimeoffController extends GetxController {
 
   bool _hasLoadedOnce = false;
 
-  final TimeoffRepo timeoffRepo;
+  final TimeoffRepo timeoffRepo = TimeoffRepo(apiClient: Get.find<ApiClient>());
 
-  TimeoffController({required this.timeoffRepo});
+  TimeoffController();
 
   @override
   void onInit() {

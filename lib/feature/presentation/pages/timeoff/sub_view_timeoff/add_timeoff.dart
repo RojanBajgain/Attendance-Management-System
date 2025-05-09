@@ -24,8 +24,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
   final authcontroller = Get.find<AuthController>();
   final PolicyController policycontroller =
       Get.put(PolicyController(policyrepo: Get.find()));
-  final TimeoffController timeoffcontroller =
-      Get.put(TimeoffController(timeoffRepo: Get.find()));
+  final TimeoffController timeoffcontroller = Get.put(TimeoffController());
   final ProfileController profilecontroller =
       Get.put(ProfileController(profileRepo: Get.find()));
   GetStorage box = GetStorage();

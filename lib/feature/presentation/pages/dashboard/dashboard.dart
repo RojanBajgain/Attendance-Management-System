@@ -24,7 +24,7 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   final authController = Get.find<AuthController>();
-  final TimeoffController timeoffController = Get.find<TimeoffController>();
+  final TimeoffController timeoffController = Get.put(TimeoffController());
   final TimesheetController timesheetController =
       Get.put(TimesheetController());
   final DashboardTimesheetController dashboardTimesheetController =

@@ -5,6 +5,7 @@ import 'package:ams/feature/data/repository/auth_repository_impl.dart';
 import 'package:ams/feature/presentation/pages/bottom_nav/bottom_nav_page.dart';
 import 'package:ams/feature/presentation/pages/login/login_page.dart';
 import 'package:ams/feature/presentation/pages/login/model/login_model.dart';
+import 'package:ams/feature/presentation/widget/loading_animation_widget.dart';
 import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -255,6 +256,12 @@ class AuthController extends GetxController {
   Future<void> loginMethod(
       String email, String password, bool keepMeLoggedIn) async {
     authIsLoading.value = true;
+
+    Get.dialog(
+      const CombinedAnimatedDialog(),
+      barrierDismissible: false,
+    );
+
     try {
       ApiResponse<LoginModel> response = await authRepo.login(email, password);
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
@@ -281,6 +288,8 @@ class AuthController extends GetxController {
           await prefs.setString('accessToken', tokens!.access);
           await prefs.setString('refreshToken', tokens.refresh);
         }
+
+        await Future.delayed(const Duration(milliseconds: 500));
 
         Get.offAll(() => const BottomNavPage());
       } else {
