@@ -322,7 +322,7 @@ class ProfileRepo {
     int userID,
     String type,
     String title,
-    int? identifier,
+    String? identifier,
     DateTime? issuedDate,
     int profileId,
     List<int> filesToKeep,
@@ -345,7 +345,8 @@ class ProfileRepo {
     request.fields['user'] = userID.toString();
     request.fields['type'] = type;
     request.fields['title'] = title;
-    request.fields['identifier'] = identifier?.toString() ?? '';
+    request.fields['identifier'] =
+        identifier != null ? identifier.toString() : '';
     request.fields['issued_date'] =
         issuedDate != null ? DateFormat('yyyy-MM-dd').format(issuedDate) : '';
     request.fields['profile'] = profileId.toString();

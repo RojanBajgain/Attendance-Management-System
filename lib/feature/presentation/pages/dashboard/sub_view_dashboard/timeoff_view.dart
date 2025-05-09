@@ -14,7 +14,7 @@ class TimeoffView extends StatelessWidget {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      height: 165.0,
+      height: 170.0,
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12.0),
@@ -31,6 +31,7 @@ class TimeoffView extends StatelessWidget {
               style: smallStyle.copyWith(
                 fontWeight: FontWeight.bold,
                 color: isDarkMode ? Colors.white : Colors.black,
+                // fontSize: 12.0
               ),
             ),
             // SizedBox(height: 5.0),

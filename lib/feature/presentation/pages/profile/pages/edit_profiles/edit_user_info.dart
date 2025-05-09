@@ -209,9 +209,9 @@ class _EditUserInfoState extends State<EditUserInfo> {
         return Theme(
           data: Theme.of(context).copyWith(
             textTheme: const TextTheme(
-              headlineMedium: TextStyle(fontSize: 18),
-              bodyLarge: TextStyle(fontSize: 16),
-              bodyMedium: TextStyle(fontSize: 14),
+              headlineMedium: TextStyle(fontSize: 14),
+              bodyLarge: TextStyle(fontSize: 12),
+              bodyMedium: TextStyle(fontSize: 10),
             ),
             colorScheme: Theme.of(context).brightness == Brightness.dark
                 ? ColorScheme.dark(
@@ -263,7 +263,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
           labelStyle: smallStyle.copyWith(
-              color: isDarkMode ? Colors.white70 : Colors.black54),
+              color: isDarkMode ? Colors.white : Colors.black),
           filled: !enabled,
           fillColor: !enabled
               ? (isDarkMode ? Colors.grey[700] : Colors.grey[200])

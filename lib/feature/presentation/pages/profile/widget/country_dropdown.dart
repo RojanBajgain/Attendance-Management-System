@@ -1,5 +1,6 @@
 import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/model/country_list_model.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ams/config/resources/styles.dart';
@@ -79,26 +80,63 @@ class _CountryDropdownState extends State<CountryDropdown> {
         CountryData? selected = _findSelectedCountry(countries);
 
         // Debug: Print selected country info
-        print("Selected country: ${selected?.id}, ${selected?.name}");
-        print("Value ID: ${widget.valueId}, Value Name: ${widget.valueName}");
+        // print("Selected country: ${selected?.id}, ${selected?.name}");
+        // print("Value ID: ${widget.valueId}, Value Name: ${widget.valueName}");
 
-        return DropdownButtonFormField<CountryData>(
+        return DropdownButtonFormField2<CountryData>(
+          isExpanded: true,
           value: selected,
-          decoration: InputDecoration(
-            labelText: "Country",
-            border: OutlineInputBorder(),
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-            labelStyle: smallStyle.copyWith(
-                color: widget.isDarkMode ? Colors.white70 : Colors.black54),
+          // decoration: InputDecoration(
+          //   contentPadding:
+          //       const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          //   // hintText: 'Select Country',
+          //   // hintStyle: smallStyle.copyWith(
+          //   //   color: widget.isDarkMode ? Colors.white70 : Colors.grey,
+          //   // ),
+          //   labelText: 'Country',
+          //   // labelStyle: smallStyle.copyWith(
+          //   //   color: widget.isDarkMode ? Colors.white70 : Colors.black54,
+          //   // ),
+          //   // border: OutlineInputBorder(
+          //   //   borderRadius: BorderRadius.circular(13),
+          //   //   borderSide: BorderSide(color: Colors.black),
+          //   // ),
+          //   filled: true,
+          //   fillColor: widget.isDarkMode ? Colors.grey[800] : Colors.grey[50],
+          // ),
+          dropdownStyleData: DropdownStyleData(
+            maxHeight: 300,
+            decoration: BoxDecoration(
+              color: widget.isDarkMode ? Colors.grey[800] : Colors.white,
+              borderRadius: BorderRadius.circular(13),
+            ),
           ),
-          style: smallStyle.copyWith(
-              color: widget.isDarkMode ? Colors.white : Colors.black),
-          dropdownColor: widget.isDarkMode ? Colors.grey[800] : Colors.white,
-          items: countries
-              .map<DropdownMenuItem<CountryData>>((CountryData country) {
+          buttonStyleData: ButtonStyleData(
+            height: 50,
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(13),
+              border: Border.all(color: Colors.black),
+              color: widget.isDarkMode ? Colors.grey[800] : Colors.grey[50],
+            ),
+          ),
+          iconStyleData: IconStyleData(
+            icon: Icon(
+              Icons.keyboard_arrow_down,
+              color: widget.isDarkMode ? Colors.white : Colors.black,
+            ),
+            iconSize: 24,
+          ),
+          items: countries.map((country) {
             return DropdownMenuItem<CountryData>(
               value: country,
-              child: Text(country.name),
+              child: Text(
+                country.name,
+                style: smallStyle.copyWith(
+                  color: widget.isDarkMode ? Colors.white : Colors.black,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             );
           }).toList(),
           onChanged: (CountryData? newValue) {
@@ -106,11 +144,6 @@ class _CountryDropdownState extends State<CountryDropdown> {
               widget.onChanged!(newValue);
             }
           },
-          hint: Text(
-            "Select Country",
-            style: smallStyle.copyWith(
-                color: widget.isDarkMode ? Colors.white70 : Colors.grey),
-          ),
         );
       }),
     );

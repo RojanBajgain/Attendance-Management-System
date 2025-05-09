@@ -626,7 +626,7 @@ class _EditUserBankState extends State<EditUserBank> {
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
           labelStyle: smallStyle.copyWith(
-              color: isDarkMode ? Colors.white70 : Colors.black54),
+              color: isDarkMode ? Colors.white : Colors.black),
           filled: !enabled,
           fillColor: !enabled
               ? (isDarkMode ? Colors.grey[700] : Colors.grey[200])

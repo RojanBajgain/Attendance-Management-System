@@ -409,7 +409,7 @@ class ProfileController extends GetxController {
     required int userID,
     required String type,
     required String title,
-    required int? identifier,
+    required String? identifier,
     required DateTime? issuedDate,
     required int profileId,
     required List<int> filesToKeep,
@@ -505,11 +505,11 @@ class ProfileController extends GetxController {
         Get.back();
       } else {
         log("Error: ${response.message}");
-        SSnackbarUtil.showSnackbar(
-          'Server Error',
-          'Something went wrong. Please try again later',
-          SnackbarType.error,
-        );
+        // SSnackbarUtil.showSnackbar(
+        //   'Server Error',
+        //   'Something went wrong. Please try again later',
+        //   SnackbarType.error,
+        // );
       }
     } catch (e) {
       log("Error fetching delete document: $e");

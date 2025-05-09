@@ -47,7 +47,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    profilecontroller.getProfile();
+    // profilecontroller.getProfile();
     profilecontroller.getProfileDetailData(widget.profileId.toString());
   }
 
@@ -739,7 +739,7 @@ class _ProfilePageState extends State<ProfilePage> {
       icon: Icons.logout,
       press: () {
         Dialogs.bottomMaterialDialog(
-          color: isDarkMode ? Colors.grey.shade800 : Colors.white,
+          color: isDarkMode ? Colors.grey.shade800 : Colors.grey.shade200,
           msg: 'Are You Sure? You want to Logout.',
           title: 'LOGOUT',
           context: context,
@@ -753,8 +753,8 @@ class _ProfilePageState extends State<ProfilePage> {
               text: 'Cancel',
               iconData: Icons.cancel_outlined,
               color: Colors.grey[300],
-              textStyle: const TextStyle(color: Colors.grey),
-              iconColor: Colors.grey,
+              textStyle: TextStyle(color: Colors.grey.shade800),
+              iconColor: Colors.grey.shade800,
             ),
             IconsButton(
               onPressed: () async {
@@ -793,10 +793,10 @@ class _ProfilePageState extends State<ProfilePage> {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(13.0),
-        color: isDarkMode ? Colors.black : Colors.grey.shade50,
+        color: isDarkMode ? Colors.grey.shade800 : Colors.grey.shade200,
       ),
       child: Padding(
-        padding: const EdgeInsets.all(6.0),
+        padding: const EdgeInsets.all(10.0),
         child: child,
       ),
     );

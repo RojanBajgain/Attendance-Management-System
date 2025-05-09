@@ -1,6 +1,8 @@
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/controller/calender_notification_controller.dart';
+import 'package:ams/feature/presentation/pages/dashboard/controller/clock_in_out_controller.dart';
 import 'package:ams/feature/presentation/pages/dashboard/controller/dashboard_timesheet_controller.dart';
+import 'package:ams/feature/presentation/pages/dashboard/controller/has_clockedIn_controller.dart';
 import 'package:ams/feature/presentation/pages/dashboard/sub_view_dashboard/timesheet_timeoff_tabbar.dart';
 import 'package:ams/feature/presentation/pages/dashboard/widget/clock_time.dart';
 import 'package:ams/feature/presentation/pages/dashboard/widget/skeleton_box.dart';
@@ -11,6 +13,7 @@ import 'package:ams/feature/presentation/widget/components/app_bar.dart';
 import 'package:ams/feature/presentation/pages/dashboard/sub_view_dashboard/holiday_event_notification_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../profile/controller/profile_controller.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -20,42 +23,24 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  final authcontroller = Get.find<AuthController>();
-
-  final TimeoffController timeoffcontroller =
-      Get.put(TimeoffController(timeoffRepo: Get.find()));
-
-  final TimesheetController timesheetcontroller =
-      Get.put(TimesheetController(timesheetRepo: Get.find()));
-
-  final DashboardTimesheetController dashboardtimesheetcontroller =
-      Get.put(DashboardTimesheetController(dashboardtimesheetrepo: Get.find()));
-
+  final authController = Get.find<AuthController>();
+  final TimeoffController timeoffController = Get.find<TimeoffController>();
+  final TimesheetController timesheetController =
+      Get.find<TimesheetController>();
+  final DashboardTimesheetController dashboardTimesheetController =
+      Get.find<DashboardTimesheetController>();
   final CalenderNotificationController calenderNotificationController =
-      Get.put(CalenderNotificationController(eventCalenderrepo: Get.find()));
+      Get.find<CalenderNotificationController>();
 
   String _getGreeting() {
     final hour = DateTime.now().hour;
     if (hour < 12) {
-      return 'Good Morning,'.tr;
+      return 'Good Morning,';
     } else if (hour < 17) {
-      return 'Good Afternoon,'.tr;
+      return 'Good Afternoon,';
     } else {
-      return 'Good Evening,'.tr;
+      return 'Good Evening,';
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    // dashboardtimesheetcontroller.getDashboardTimesheet();
-
-    // Defer less-important data
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // timeoffcontroller.getTimeoff();
-      // timesheetcontroller.getTimesheet();
-      // calenderNotificationController.getEventCalenders();
-    });
   }
 
   @override
@@ -66,17 +51,22 @@ class _DashboardPageState extends State<DashboardPage> {
       appBar: const ConstantAppBar(),
       body: RefreshIndicator(
         onRefresh: () async {
-          await dashboardtimesheetcontroller.getDashboardTimesheet();
-          await timeoffcontroller.getTimeoff();
-          await timesheetcontroller.getTimesheet();
-          await calenderNotificationController.getEventCalenders();
+          await Future.wait([
+            dashboardTimesheetController.getDashboardTimesheet(),
+            timesheetController.getTimesheet(),
+            timeoffController.getTimeoff(),
+            calenderNotificationController.getEventCalenders(),
+            Get.find<ProfileController>().getProfile(),
+            Get.find<HasClockedinController>().getClockData(),
+            Get.find<ClockInOutController>().getOfficeLocation(),
+          ]);
         },
         child: SingleChildScrollView(
           child: SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(10),
               child: Obx(() {
-                if (dashboardtimesheetcontroller.isLoading.value) {
+                if (dashboardTimesheetController.isLoading.value) {
                   return const DashboardSkeletonLoading();
                 }
 
@@ -115,7 +105,7 @@ class _DashboardPageState extends State<DashboardPage> {
                               ),
                               children: [
                                 TextSpan(
-                                  text: authcontroller
+                                  text: authController
                                           .alluserData.value.user?.fullName ??
                                       'Guest',
                                   style: smallStyle.copyWith(
@@ -172,7 +162,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                   ),
                                   const SizedBox(height: 8.0),
                                   Text(
-                                    "${dashboardtimesheetcontroller.dashboardtimesheet.value.thisWeek?.totalHour ?? "---"} / 48 hrs",
+                                    "${dashboardTimesheetController.dashboardtimesheet.value.thisWeek?.totalHour ?? "---"} / 48 hrs",
                                     style: smallStyle.copyWith(
                                       color: isDarkMode
                                           ? Colors.white
@@ -198,17 +188,23 @@ class _DashboardPageState extends State<DashboardPage> {
                                               duration: const Duration(
                                                   milliseconds: 200),
                                               widthFactor:
-                                                  (dashboardtimesheetcontroller
+                                                  dashboardTimesheetController
                                                               .dashboardtimesheet
                                                               .value
                                                               .thisWeek
-                                                              ?.percentage /
-                                                          100 ??
-                                                      0.0),
+                                                              ?.percentage !=
+                                                          null
+                                                      ? (dashboardTimesheetController
+                                                              .dashboardtimesheet
+                                                              .value
+                                                              .thisWeek!
+                                                              .percentage /
+                                                          100)
+                                                      : 0.0,
                                               child: Container(
                                                 decoration: BoxDecoration(
                                                   color: isDarkMode
-                                                      ? Colors.white
+                                                      ? Colors.grey.shade700
                                                       : Colors.black,
                                                   borderRadius:
                                                       BorderRadius.circular(5),
@@ -219,13 +215,6 @@ class _DashboardPageState extends State<DashboardPage> {
                                           ],
                                         ),
                                       ),
-                                      const SizedBox(width: 8),
-                                      // Text(
-                                      //   "${((dashboardtimesheetcontroller.dashboardtimesheet.value.thisWeek?.percentage ?? 0.0)).toStringAsFixed(0)} / 100",
-                                      //   style: const TextStyle(
-                                      //       fontSize: 12,
-                                      //       fontWeight: FontWeight.bold),
-                                      // ),
                                     ],
                                   ),
                                 ],
@@ -250,14 +239,15 @@ class _DashboardPageState extends State<DashboardPage> {
                                   Text(
                                     "Month time",
                                     style: smallStyle.copyWith(
-                                        color: isDarkMode
-                                            ? Colors.white
-                                            : Colors.black,
-                                        fontWeight: FontWeight.bold),
+                                      color: isDarkMode
+                                          ? Colors.white
+                                          : Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                   const SizedBox(height: 8.0),
                                   Text(
-                                    "${dashboardtimesheetcontroller.dashboardtimesheet.value.month?.totalHour ?? "---"} / 200 hrs",
+                                    "${dashboardTimesheetController.dashboardtimesheet.value.month?.totalHour ?? "---"} / 200 hrs",
                                     style: smallStyle.copyWith(
                                       color: isDarkMode
                                           ? Colors.white
@@ -283,17 +273,23 @@ class _DashboardPageState extends State<DashboardPage> {
                                               duration: const Duration(
                                                   milliseconds: 200),
                                               widthFactor:
-                                                  (dashboardtimesheetcontroller
+                                                  dashboardTimesheetController
                                                               .dashboardtimesheet
                                                               .value
                                                               .month
-                                                              ?.percentage /
-                                                          100 ??
-                                                      0.0),
+                                                              ?.percentage !=
+                                                          null
+                                                      ? (dashboardTimesheetController
+                                                              .dashboardtimesheet
+                                                              .value
+                                                              .month!
+                                                              .percentage /
+                                                          100)
+                                                      : 0.0,
                                               child: Container(
                                                 decoration: BoxDecoration(
                                                   color: isDarkMode
-                                                      ? Colors.white
+                                                      ? Colors.grey.shade700
                                                       : Colors.black,
                                                   borderRadius:
                                                       BorderRadius.circular(5),
@@ -304,113 +300,19 @@ class _DashboardPageState extends State<DashboardPage> {
                                           ],
                                         ),
                                       ),
-                                      // const SizedBox(width: 8),
-                                      // Text(
-                                      //   "${((dashboardtimesheetcontroller.dashboardtimesheet.value.month?.percentage ?? 0.0)).toStringAsFixed(0)} / 100",
-                                      //   style: const TextStyle(
-                                      //       fontSize: 12,
-                                      //       fontWeight: FontWeight.bold),
-                                      // ),
                                     ],
                                   ),
                                 ],
                               ),
                             ),
                           ),
-                          // OverTime
-                          /* const SizedBox(width: 15),
-                          Container(
-                            height: 110.0,
-                            width: context.width * 0.5,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10.0),
-                              color: isDarkMode
-                                  ? Colors.grey.shade800
-                                  : Colors.grey[200],
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "OverTime",
-                                    style: smallStyle.copyWith(
-                                        color: isDarkMode
-                                            ? Colors.white
-                                            : Colors.black,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  const SizedBox(height: 8.0),
-                                  Text(
-                                    "${dashboardtimesheetcontroller.dashboardtimesheet.value.day?.overTime ?? "---"} / 0 hrs",
-                                    style: smallStyle.copyWith(
-                                      color: isDarkMode
-                                          ? Colors.white
-                                          : Colors.black,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 15.0),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Stack(
-                                          children: [
-                                            Container(
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(5),
-                                                color: Colors.grey[300],
-                                              ),
-                                              height: 8,
-                                            ),
-                                            AnimatedFractionallySizedBox(
-                                              duration: const Duration(
-                                                  milliseconds: 200),
-                                              widthFactor:
-                                                  (dashboardtimesheetcontroller
-                                                              .dashboardtimesheet
-                                                              .value
-                                                              .day
-                                                              ?.overTime
-                                                          // .percentage
-                                                          /
-                                                          100 ??
-                                                      0.0),
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  color: isDarkMode
-                                                      ? Colors.white
-                                                      : Colors.black,
-                                                  borderRadius:
-                                                      BorderRadius.circular(5),
-                                                ),
-                                                height: 8,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      // const SizedBox(width: 8),
-                                      // Text(
-                                      //   "${((dashboardtimesheetcontroller.dashboardtimesheet.value.month?.percentage ?? 0.0)).toStringAsFixed(0)} / 100",
-                                      //   style: const TextStyle(
-                                      //       fontSize: 12,
-                                      //       fontWeight: FontWeight.bold),
-                                      // ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ), */
                         ],
                       ),
                     ),
                     const SizedBox(height: 30.0),
                     TimesheetTimeoffTabView(
-                      timeoffcontroller: timeoffcontroller,
-                      timesheetcontroller: timesheetcontroller,
+                      timeoffcontroller: timeoffController,
+                      timesheetcontroller: timesheetController,
                     ),
                     const SizedBox(height: 30.0),
                     Column(
@@ -435,6 +337,45 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class DashboardSkeletonLoading extends StatelessWidget {
+  const DashboardSkeletonLoading({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 10.0),
+          child: SkeletonBox(height: 20, width: 100, borderRadius: 4),
+        ),
+        const SizedBox(height: 15.0),
+        SkeletonBox(height: 90, width: double.infinity, borderRadius: 10),
+        const SizedBox(height: 10.0),
+        SkeletonBox(height: 225, width: double.infinity, borderRadius: 12),
+        const SizedBox(height: 20.0),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              SkeletonBox(
+                  height: 110, width: context.width * 0.5, borderRadius: 10),
+              const SizedBox(width: 15),
+              SkeletonBox(
+                  height: 110, width: context.width * 0.5, borderRadius: 10),
+            ],
+          ),
+        ),
+        const SizedBox(height: 30.0),
+        SkeletonBox(height: 200, width: double.infinity, borderRadius: 10),
+        const SizedBox(height: 30.0),
+        SkeletonBox(height: 100, width: double.infinity, borderRadius: 10),
+      ],
     );
   }
 }

@@ -53,6 +53,14 @@ class _PaymentSlipState extends State<PaymentSlip> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    InkWell(
+                      onTap: () => Get.back(),
+                      child: Icon(
+                        Icons.arrow_back_sharp,
+                        color: isDarkMode ? Colors.white : Colors.black,
+                      ),
+                    ),
+                    const Spacer(),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

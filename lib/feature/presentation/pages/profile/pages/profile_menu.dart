@@ -83,7 +83,7 @@ class ProfileMenu extends StatelessWidget {
           if (isExpanded && expandedContent != null)
             Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+                  const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
               child: expandedContent,
             ),
         ],

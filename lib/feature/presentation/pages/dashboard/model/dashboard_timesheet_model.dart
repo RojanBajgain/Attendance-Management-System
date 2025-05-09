@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class DashboardTimesheet {
   Day? day;
   Day? thisWeek;
@@ -13,33 +11,28 @@ class DashboardTimesheet {
 
   factory DashboardTimesheet.fromJson(Map<String, dynamic> json) =>
       DashboardTimesheet(
-        day: Day.fromJson(json["day"]),
-        thisWeek: Day.fromJson(json["this_week"]),
-        month: Day.fromJson(json["month"]),
+        day: json["day"] != null ? Day.fromJson(json["day"]) : null,
+        thisWeek:
+            json["this_week"] != null ? Day.fromJson(json["this_week"]) : null,
+        month: json["month"] != null ? Day.fromJson(json["month"]) : null,
       );
-
-  // Map<String, dynamic> toJson() => {
-  //       "day": day.toJson(),
-  //       "this_week": thisWeek.toJson(),
-  //       "month": month.toJson(),
-  //     };
 }
 
 class Day {
-  dynamic totalHour;
-  dynamic overTime;
-  dynamic percentage;
+  double totalHour;
+  double overTime;
+  double percentage;
 
   Day({
-    this.totalHour = 0,
-    this.overTime = 0,
-    this.percentage = 0,
+    this.totalHour = 0.0,
+    this.overTime = 0.0,
+    this.percentage = 0.0,
   });
 
   factory Day.fromJson(Map<String, dynamic> json) => Day(
-        totalHour: json["total_hour"] ?? 0.0,
-        overTime: json["over_time"] ?? 0.0,
-        percentage: json["percentage"] ?? 0.0,
+        totalHour: (json["total_hour"] as num?)?.toDouble() ?? 0.0,
+        overTime: (json["over_time"] as num?)?.toDouble() ?? 0.0,
+        percentage: (json["percentage"] as num?)?.toDouble() ?? 0.0,
       );
 
   Map<String, dynamic> toJson() => {

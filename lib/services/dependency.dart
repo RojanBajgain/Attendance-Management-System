@@ -12,11 +12,14 @@ import 'package:ams/feature/data/repository/profile_repo.dart';
 import 'package:ams/feature/data/repository/reset_password_repo.dart';
 import 'package:ams/feature/data/repository/timeoff_repo.dart';
 import 'package:ams/feature/data/repository/timesheet_repo.dart';
+import 'package:ams/feature/presentation/pages/bottom_nav/controller/bottom_nav_controller.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/controller/calender_notification_controller.dart';
 import 'package:ams/feature/presentation/pages/chat/controller/chat_controller.dart';
 import 'package:ams/feature/presentation/pages/dashboard/controller/clock_in_out_controller.dart';
 import 'package:ams/feature/presentation/pages/dashboard/controller/dashboard_timesheet_controller.dart';
 import 'package:ams/feature/presentation/pages/dashboard/controller/has_clockedIn_controller.dart';
+import 'package:ams/feature/presentation/pages/dashboard/controller/timer_controller.dart';
+import 'package:ams/feature/presentation/pages/dashboard/controller/clock_time_controller.dart';
 import 'package:ams/feature/presentation/pages/forget_password/controller/reset_password_controller.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/notification/controller/notification_controller.dart';
@@ -99,7 +102,14 @@ Future<void> init() async {
   Get.put<CalenderNotificationController>(CalenderNotificationController(
       eventCalenderrepo: Get.find<EventCalenderRepo>()));
 
-  // Chat
+  /*  // Bottom Navigation
+  Get.put<BottomNavController>(BottomNavController());
+
+  // Clock Time
+  Get.put<TimerController>(TimerController());
+  Get.put<ClockTimeController>(ClockTimeController()); */
+
+  // Chat (commented out, kept as is)
   // Get.put<ChatRepo>(ChatRepo(apiClient: Get.find<ApiClient>()));
   // Get.put<ChatController>(ChatController(chatRepo: Get.find<ChatRepo>()));
 }

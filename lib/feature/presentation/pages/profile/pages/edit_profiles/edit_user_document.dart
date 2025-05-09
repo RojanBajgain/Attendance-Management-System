@@ -6,6 +6,7 @@ import 'package:ams/feature/presentation/pages/profile/pages/edit_profiles/edit_
 import 'package:ams/feature/presentation/pages/profile/pages/edit_profiles/edit_user_info.dart';
 import 'package:ams/feature/presentation/pages/profile/widget/image_uploader.dart';
 import 'package:ams/feature/utils/ssnackbar_utils.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
@@ -223,7 +224,8 @@ class _EditUserDocumentState extends State<EditUserDocument> {
             userID: userId,
             type: selectedDocumentTypes[documentId] ?? "N/A",
             title: controllers['title']?.text ?? "",
-            identifier: int.tryParse(controllers['identifier']?.text ?? ""),
+            // identifier: int.tryParse(controllers['identifier']?.text ?? ""),
+            identifier: controllers['identifier']?.text ?? "",
             issuedDate: controllers['issuedDate']?.text.isNotEmpty == true
                 ? DateFormat('yyyy-MM-dd')
                     .parse(controllers['issuedDate']!.text)
@@ -436,9 +438,9 @@ class _EditUserDocumentState extends State<EditUserDocument> {
         return Theme(
           data: Theme.of(context).copyWith(
             textTheme: const TextTheme(
-              headlineMedium: TextStyle(fontSize: 18),
-              bodyLarge: TextStyle(fontSize: 16),
-              bodyMedium: TextStyle(fontSize: 14),
+              headlineMedium: TextStyle(fontSize: 14),
+              bodyLarge: TextStyle(fontSize: 12),
+              bodyMedium: TextStyle(fontSize: 10),
             ),
             colorScheme: Theme.of(context).brightness == Brightness.dark
                 ? ColorScheme.dark(
@@ -490,7 +492,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
           labelStyle: smallStyle.copyWith(
-              color: isDarkMode ? Colors.white70 : Colors.black54),
+              color: isDarkMode ? Colors.white : Colors.black),
           filled: !enabled,
           fillColor: !enabled
               ? (isDarkMode ? Colors.grey[700] : Colors.grey[200])
@@ -801,42 +803,53 @@ class _EditUserDocumentState extends State<EditUserDocument> {
       children: [
         _buildSectionTitle(title, isDarkMode),
         const SizedBox(height: 8),
-        Container(
-          height: 50.0,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(13.0),
-            color: isDarkMode ? Colors.grey.shade800 : Colors.grey.shade50,
-            border: Border.all(color: Colors.black, width: 1.0),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.only(left: 10.0),
-            child: FormBuilderDropdown<String>(
-              name: 'document_type',
-              onChanged: onChanged,
-              hint: Text(
-                "Select",
-                style: TextStyle(
+        DropdownButtonFormField2<String>(
+          isExpanded: true,
+          value: initialValue,
+          onChanged: onChanged,
+          items: items.map((type) {
+            return DropdownMenuItem<String>(
+              value: type,
+              child: Text(
+                type,
+                style: smallStyle.copyWith(
                   color: isDarkMode ? Colors.white : Colors.black,
                 ),
               ),
-              icon: Icon(
-                Icons.keyboard_arrow_down,
-                color: isDarkMode ? Colors.white : Colors.black,
-              ),
-              decoration: const InputDecoration(border: InputBorder.none),
-              items: items.map<DropdownMenuItem<String>>((type) {
-                return DropdownMenuItem<String>(
-                  value: type,
-                  child: Text(
-                    type,
-                    style: smallStyle.copyWith(
-                      color: isDarkMode ? Colors.white : Colors.black,
-                    ),
-                  ),
-                );
-              }).toList(),
-              initialValue: initialValue,
+            );
+          }).toList(),
+          // decoration: InputDecoration(
+          //   contentPadding:
+          //       const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          //   labelText: 'Select',
+          //   labelStyle: smallStyle.copyWith(
+          //     color: isDarkMode ? Colors.white70 : Colors.black54,
+          //   ),
+          //   filled: true,
+          //   fillColor: isDarkMode ? Colors.grey.shade800 : Colors.grey.shade50,
+          //   border: OutlineInputBorder(
+          //     borderRadius: BorderRadius.circular(13.0),
+          //     borderSide: const BorderSide(color: Colors.black, width: 1),
+          //   ),
+          // ),
+          // icon: Icon(
+          //   Icons.keyboard_arrow_down,
+          //   color: isDarkMode ? Colors.white : Colors.black,
+          // ),
+          dropdownStyleData: DropdownStyleData(
+            maxHeight: 300,
+            decoration: BoxDecoration(
+              color: isDarkMode ? Colors.grey.shade800 : Colors.white,
+              borderRadius: BorderRadius.circular(13),
+            ),
+          ),
+          buttonStyleData: ButtonStyleData(
+            height: 50,
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(13),
+              color: isDarkMode ? Colors.grey.shade800 : Colors.grey.shade50,
+              border: Border.all(color: Colors.black),
             ),
           ),
         ),

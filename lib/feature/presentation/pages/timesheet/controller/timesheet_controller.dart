@@ -4,7 +4,6 @@ import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/repository/timesheet_repo.dart';
 import 'package:ams/feature/presentation/pages/timesheet/model/timesheet_detail_model.dart';
 import 'package:ams/feature/presentation/pages/timesheet/model/timesheet_model.dart';
-import 'package:ams/feature/presentation/pages/timesheet/sub_view_timesheet/timesheet_details.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
