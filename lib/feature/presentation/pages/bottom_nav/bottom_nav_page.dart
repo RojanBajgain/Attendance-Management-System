@@ -7,10 +7,6 @@ import 'package:ams/feature/presentation/pages/timeoff/time_off_page.dart';
 import 'package:ams/feature/presentation/pages/timesheet/time_sheet_page.dart';
 import 'package:flutter/material.dart';
 
-// // ignore: library_private_types_in_public_api
-// final GlobalKey<_BottomNavPageState> bottomNavKey = GlobalKey();
-// final GlobalKey<_BottomNavPageState> bottomKey = GlobalKey();
-
 class BottomNavPage extends StatefulWidget {
   const BottomNavPage({super.key});
 
@@ -22,11 +18,11 @@ class _BottomNavPageState extends State<BottomNavPage> {
   int _selectedTab = 0;
 
   List<Widget> get _pages => [
-        const DashboardPage(),
-        const TimeOffPage(),
-        const TimeSheetPage(),
-        const PayrollPage(),
-        const ProfilePage(),
+        DashboardPage(),
+        TimeOffPage(),
+        TimeSheetPage(),
+        PayrollPage(),
+        ProfilePage(),
       ];
 
   void _changeTab(int index) {
@@ -60,13 +56,13 @@ class _BottomNavPageState extends State<BottomNavPage> {
             : Colors.grey,
         selectedLabelStyle: miniStyle.copyWith(
           color: Theme.of(context).brightness == Brightness.dark
-              ? AppColors.primary // Dark mode selected label text color
-              : Colors.black, // Light mode selected label text color
+              ? AppColors.primary
+              : Colors.black,
         ),
         unselectedLabelStyle: miniStyle.copyWith(
           color: Theme.of(context).brightness == Brightness.dark
-              ? Colors.grey[400] // Dark mode unselected label text color
-              : Colors.grey, // Light mode unselected label text color
+              ? Colors.grey[400]
+              : Colors.grey,
         ),
         items: const [
           BottomNavigationBarItem(

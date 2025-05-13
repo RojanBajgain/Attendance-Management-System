@@ -185,7 +185,7 @@ class _TimesheetTimeoffTabViewState extends State<TimesheetTimeoffTabView> {
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (context, index) {
             return Padding(
-              padding: const EdgeInsets.all(6.0),
+              padding: const EdgeInsets.all(4.0),
               child: TimeSheetWidget(timesheetdata: displayList[index]),
             );
           },

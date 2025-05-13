@@ -29,7 +29,7 @@ class NotificationController extends GetxController {
       ApiResponse response = await notificationrepo.getNotification();
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
-        log("Fetched Notification data: ${response.response}");
+        // log("Fetched Notification data: ${response.response}");
 
         NotificationModel notificationdata = response.response;
         notification.value = notificationdata.data;

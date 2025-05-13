@@ -39,8 +39,8 @@ class _CombinedAnimatedDialogState extends State<CombinedAnimatedDialog>
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: Theme.of(context).brightness == Brightness.dark
-          ? Colors.black45
-          : Colors.white70,
+          ? Colors.black
+          : Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -71,8 +71,8 @@ class _CombinedAnimatedDialogState extends State<CombinedAnimatedDialog>
                   scale: _scaleAnimation,
                   child: Image.asset(
                     'assets/images/Ayata_logo.png',
-                    height: 50,
-                    width: 50,
+                    height: 55,
+                    width: 55,
                   ),
                 ),
               ],

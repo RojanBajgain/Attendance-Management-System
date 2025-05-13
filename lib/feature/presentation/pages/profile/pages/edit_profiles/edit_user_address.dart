@@ -18,10 +18,9 @@ class EditUserAddress extends StatefulWidget {
 
 class _EditUserAddressState extends State<EditUserAddress> {
   final authcontroller = Get.find<AuthController>();
+  final ProfileController profileController = Get.put(ProfileController());
 
-  final ProfileController profileController =
-      Get.put(ProfileController(profileRepo: Get.find()));
-
+  // Text controllers
   final TextEditingController countryNameController = TextEditingController();
   final TextEditingController countryIdController = TextEditingController();
   final TextEditingController provinceController = TextEditingController();
@@ -45,6 +44,9 @@ class _EditUserAddressState extends State<EditUserAddress> {
       TextEditingController();
   final TextEditingController currentZipController = TextEditingController();
 
+  // Error state for each field
+  final Map<String, String> _fieldErrors = {};
+
   String? _originalCurrentCountryName;
   String? _originalCurrentCountryId;
   String? _originalCurrentProvince;
@@ -52,13 +54,6 @@ class _EditUserAddressState extends State<EditUserAddress> {
   String? _originalCurrentAddressLineOne;
   String? _originalCurrentAddressLineTwo;
   String? _originalCurrentZip;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _initializeAddress();
-  //   profileController.getcountryList();
-  // }
 
   int? permanentAddressId;
   int? currentAddressId;
@@ -129,7 +124,6 @@ class _EditUserAddressState extends State<EditUserAddress> {
 
   void _copyPermanentToCurrent(bool isChecked) {
     if (isChecked) {
-      // Save original values
       _originalCurrentCountryName = currentCountryNameController.text;
       _originalCurrentCountryId = currentCountryIdController.text;
       _originalCurrentProvince = currentProvinceController.text;
@@ -138,7 +132,6 @@ class _EditUserAddressState extends State<EditUserAddress> {
       _originalCurrentAddressLineTwo = currentAddressLineTwoController.text;
       _originalCurrentZip = currentZipController.text;
 
-      // Copy permanent address values to current address fields
       currentCountryNameController.text = countryNameController.text;
       currentCountryIdController.text = countryIdController.text;
       currentProvinceController.text = provinceController.text;
@@ -147,10 +140,10 @@ class _EditUserAddressState extends State<EditUserAddress> {
       currentAddressLineTwoController.text = addressLineTwoController.text;
       currentZipController.text = zipController.text;
 
-      // Force rebuild
-      setState(() {});
+      setState(() {
+        _fieldErrors.clear(); // Clear errors when copying
+      });
     } else {
-      // Restore original values
       currentCountryNameController.text = _originalCurrentCountryName ?? "";
       currentCountryIdController.text = _originalCurrentCountryId ?? "";
       currentProvinceController.text = _originalCurrentProvince ?? "";
@@ -161,25 +154,94 @@ class _EditUserAddressState extends State<EditUserAddress> {
           _originalCurrentAddressLineTwo ?? "";
       currentZipController.text = _originalCurrentZip ?? "";
 
-      // Force rebuild
-      setState(() {});
+      setState(() {
+        _fieldErrors.clear(); // Clear errors when restoring
+      });
     }
+  }
+
+  bool _validateInputs() {
+    setState(() {
+      _fieldErrors.clear();
+    });
+
+    bool isValid = true;
+
+    // Validate permanent address fields
+    if (countryIdController.text.isEmpty) {
+      _fieldErrors['permanentCountry'] = 'Country is required';
+      isValid = false;
+    }
+    if (provinceController.text.isEmpty) {
+      _fieldErrors['permanentProvince'] = 'Province is required';
+      isValid = false;
+    }
+    if (cityController.text.isEmpty) {
+      _fieldErrors['permanentCity'] = 'City is required';
+      isValid = false;
+    }
+    if (addressLineOneController.text.isEmpty) {
+      _fieldErrors['permanentAddressLineOne'] = 'Address Line 1 is required';
+      isValid = false;
+    }
+    if (zipController.text.isEmpty) {
+      _fieldErrors['permanentZip'] = 'Zip Code is required';
+      isValid = false;
+    } else if (!_isValidZipCode(zipController.text)) {
+      _fieldErrors['permanentZip'] = 'Enter a valid zip code';
+      isValid = false;
+    }
+
+    // Validate current address fields if not same as permanent
+    if (!profileController.isSameAsPermanent.value) {
+      if (currentCountryIdController.text.isEmpty) {
+        _fieldErrors['currentCountry'] = 'Country is required';
+        isValid = false;
+      }
+      if (currentProvinceController.text.isEmpty) {
+        _fieldErrors['currentProvince'] = 'Province is required';
+        isValid = false;
+      }
+      if (currentCityController.text.isEmpty) {
+        _fieldErrors['currentCity'] = 'City is required';
+        isValid = false;
+      }
+      if (currentAddressLineOneController.text.isEmpty) {
+        _fieldErrors['currentAddressLineOne'] = 'Address Line 1 is required';
+        isValid = false;
+      }
+      if (currentZipController.text.isEmpty) {
+        _fieldErrors['currentZip'] = 'Zip Code is required ';
+        isValid = false;
+      } else if (!_isValidZipCode(currentZipController.text)) {
+        _fieldErrors['currentZip'] = 'Enter a valid zip code';
+        isValid = false;
+      }
+    }
+
+    if (!isValid) {
+      // SSnackbarUtil.showSnackbar(
+      //   'Error',
+      //   'Please fill out all required fields correctly',
+      //   SnackbarType.error,
+      // );
+    }
+
+    return isValid;
+  }
+
+  bool _isValidZipCode(String zip) {
+    // Basic zip code validation (e.g., at least 4 digits)
+    return zip.length >= 4 && RegExp(r'^\d+$').hasMatch(zip);
   }
 
   Future<void> _submitUserAddress() async {
     try {
       final userId = profileController.profile.first.id;
 
-      // Parse country IDs consistently
       int permanentCountryId = int.tryParse(countryIdController.text) ?? 1;
       int currentCountryId = int.tryParse(currentCountryIdController.text) ?? 1;
 
-      /*  // Add debug logging
-      print(
-          "Submitting permanent address with country ID: $permanentCountryId");
-      print("Submitting current address with country ID: $currentCountryId"); */
-
-      // Submit permanent address
       if (permanentAddressId != null) {
         await profileController.postuserAddress(
           id: userId,
@@ -205,7 +267,6 @@ class _EditUserAddressState extends State<EditUserAddress> {
         );
       }
 
-      // Submit current address
       if (currentAddressId != null) {
         await profileController.postuserAddress(
           id: userId,
@@ -247,39 +308,6 @@ class _EditUserAddressState extends State<EditUserAddress> {
     }
   }
 
-  bool _validateInputs() {
-    // Validate permanent address fields
-    if (countryIdController.text.isEmpty ||
-        provinceController.text.isEmpty ||
-        cityController.text.isEmpty ||
-        addressLineOneController.text.isEmpty ||
-        zipController.text.isEmpty) {
-      SSnackbarUtil.showSnackbar(
-        'Error',
-        'Please fill out all required permanent address fields',
-        SnackbarType.error,
-      );
-      return false;
-    }
-
-    if (!profileController.isSameAsPermanent.value) {
-      if (currentCountryIdController.text.isEmpty ||
-          currentProvinceController.text.isEmpty ||
-          currentCityController.text.isEmpty ||
-          currentAddressLineOneController.text.isEmpty ||
-          currentZipController.text.isEmpty) {
-        SSnackbarUtil.showSnackbar(
-          'Error',
-          'Please fill out all required current address fields',
-          SnackbarType.error,
-        );
-        return false;
-      }
-    }
-
-    return true;
-  }
-
   void _onNextPressed() async {
     if (!_validateInputs()) return;
 
@@ -291,9 +319,6 @@ class _EditUserAddressState extends State<EditUserAddress> {
     );
 
     await _submitUserAddress();
-
-    // Get.back();
-    // Get.to(() => const EditUserDocument());
   }
 
   void _onPreviousPressed() {
@@ -303,36 +328,91 @@ class _EditUserAddressState extends State<EditUserAddress> {
   Widget _buildSectionTitle(String title, bool isDarkMode) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Text(title,
-          style: normalStyle.copyWith(
-            fontWeight: FontWeight.bold,
-            color: isDarkMode ? Colors.white : Colors.black,
-          )),
+      child: Text(
+        title,
+        style: normalStyle.copyWith(
+          fontWeight: FontWeight.bold,
+          color: isDarkMode ? Colors.white : Colors.black,
+        ),
+      ),
     );
   }
 
   Widget _buildTextField(
-      String title, TextEditingController controller, bool isDarkMode,
-      {bool enabled = true, TextInputType? keyboardType}) {
+    String title,
+    TextEditingController controller,
+    bool isDarkMode, {
+    bool enabled = true,
+    TextInputType? keyboardType,
+    required String fieldKey,
+  }) {
+    final hasError = _fieldErrors.containsKey(fieldKey);
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      child: TextField(
-        controller: controller,
-        enabled: enabled,
-        keyboardType: keyboardType,
-        decoration: InputDecoration(
-          labelText: title,
-          border: OutlineInputBorder(),
-          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-          labelStyle: smallStyle.copyWith(
-              color: isDarkMode ? Colors.white : Colors.black),
-          filled: !enabled,
-          fillColor: !enabled
-              ? (isDarkMode ? Colors.grey[700] : Colors.grey[200])
-              : null,
-        ),
-        style: smallStyle.copyWith(
-            color: isDarkMode ? Colors.white : Colors.black),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            controller: controller,
+            enabled: enabled,
+            keyboardType: keyboardType,
+            decoration: InputDecoration(
+              labelText: title,
+              border: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: hasError
+                      ? Colors.red
+                      : (isDarkMode ? Colors.white70 : Colors.black54),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: hasError
+                      ? Colors.red
+                      : (isDarkMode ? Colors.white70 : Colors.black54),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: hasError
+                      ? Colors.red
+                      : (isDarkMode ? Colors.blueAccent : Colors.black),
+                  width: 2.0,
+                ),
+              ),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+              labelStyle: smallStyle.copyWith(
+                color: hasError
+                    ? Colors.red
+                    : (isDarkMode ? Colors.white70 : Colors.black54),
+              ),
+              filled: !enabled,
+              fillColor: !enabled
+                  ? (isDarkMode ? Colors.grey[700] : Colors.grey[200])
+                  : null,
+            ),
+            style: smallStyle.copyWith(
+              color: isDarkMode ? Colors.white : Colors.black,
+            ),
+            onChanged: (value) {
+              if (hasError) {
+                setState(() {
+                  _fieldErrors.remove(fieldKey);
+                });
+              }
+            },
+          ),
+          if (hasError)
+            Padding(
+              padding: const EdgeInsets.only(top: 4, left: 12),
+              child: Text(
+                _fieldErrors[fieldKey]!,
+                style: const TextStyle(color: Colors.red, fontSize: 12),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -443,26 +523,31 @@ class _EditUserAddressState extends State<EditUserAddress> {
             setState(() {
               countryIdController.text = data.id.toString();
               countryNameController.text = data.name;
-
-              // If same as permanent is checked, update current address too
+              _fieldErrors.remove('permanentCountry');
               if (profileController.isSameAsPermanent.value) {
                 currentCountryIdController.text = data.id.toString();
                 currentCountryNameController.text = data.name;
+                _fieldErrors.remove('currentCountry');
               }
             });
           }
         },
         isDarkMode: isDarkMode,
       ),
-      _buildTextField("Province", provinceController, isDarkMode),
-      _buildTextField("City", cityController, isDarkMode),
-      _buildTextField("Address Line 1", addressLineOneController, isDarkMode),
-      _buildTextField("Address Line 2", addressLineTwoController, isDarkMode),
+      _buildTextField("Province", provinceController, isDarkMode,
+          fieldKey: 'permanentProvince'),
+      _buildTextField("City", cityController, isDarkMode,
+          fieldKey: 'permanentCity'),
+      _buildTextField("Address Line 1", addressLineOneController, isDarkMode,
+          fieldKey: 'permanentAddressLineOne'),
+      _buildTextField("Address Line 2", addressLineTwoController, isDarkMode,
+          fieldKey: 'permanentAddressLineTwo'),
       _buildTextField(
         "Zip Code",
         zipController,
         isDarkMode,
         keyboardType: const TextInputType.numberWithOptions(),
+        fieldKey: 'permanentZip',
       ),
     ];
   }
@@ -480,18 +565,29 @@ class _EditUserAddressState extends State<EditUserAddress> {
             setState(() {
               currentCountryIdController.text = data.id.toString();
               currentCountryNameController.text = data.name;
+              _fieldErrors.remove('currentCountry');
             });
           }
         },
         isDarkMode: isDarkMode,
       ),
-      _buildTextField("Province", currentProvinceController, isDarkMode),
-      _buildTextField("City", currentCityController, isDarkMode),
+      _buildTextField("Province", currentProvinceController, isDarkMode,
+          fieldKey: 'currentProvince'),
+      _buildTextField("City", currentCityController, isDarkMode,
+          fieldKey: 'currentCity'),
       _buildTextField(
-          "Address Line 1", currentAddressLineOneController, isDarkMode),
+          "Address Line 1", currentAddressLineOneController, isDarkMode,
+          fieldKey: 'currentAddressLineOne'),
       _buildTextField(
-          "Address Line 2", currentAddressLineTwoController, isDarkMode),
-      _buildTextField("Zip Code", currentZipController, isDarkMode),
+          "Address Line 2", currentAddressLineTwoController, isDarkMode,
+          fieldKey: 'currentAddressLineTwo'),
+      _buildTextField(
+        "Zip Code",
+        currentZipController,
+        isDarkMode,
+        keyboardType: const TextInputType.numberWithOptions(),
+        fieldKey: 'currentZip',
+      ),
     ];
   }
 

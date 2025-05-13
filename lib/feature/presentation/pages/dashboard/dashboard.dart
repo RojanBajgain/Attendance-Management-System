@@ -16,7 +16,9 @@ import 'package:get/get.dart';
 import '../profile/controller/profile_controller.dart';
 
 class DashboardPage extends StatefulWidget {
-  const DashboardPage({super.key});
+  int? profileid;
+
+  DashboardPage({super.key, this.profileid});
 
   @override
   State<DashboardPage> createState() => _DashboardPageState();
@@ -41,6 +43,13 @@ class _DashboardPageState extends State<DashboardPage> {
     } else {
       return 'Good Evening,';
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // dashboardTimesheetController.getDashboardTimesheet();
+    timesheetController.getTimesheet();
   }
 
   @override
@@ -73,14 +82,11 @@ class _DashboardPageState extends State<DashboardPage> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10.0),
-                      child: Text(
-                        "Dashboard",
-                        style: normalStyle.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: isDarkMode ? Colors.white : Colors.black,
-                        ),
+                    Text(
+                      "Dashboard",
+                      style: normalStyle.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: isDarkMode ? Colors.white : Colors.black,
                       ),
                     ),
                     const SizedBox(height: 15.0),
@@ -107,7 +113,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 TextSpan(
                                   text: authController
                                           .alluserData.value.user?.fullName ??
-                                      'Guest',
+                                      'User',
                                   style: smallStyle.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: isDarkMode
@@ -346,18 +352,20 @@ class DashboardSkeletonLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    // final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 10.0),
+        const Padding(
+          padding: EdgeInsets.only(left: 10.0),
           child: SkeletonBox(height: 20, width: 100, borderRadius: 4),
         ),
         const SizedBox(height: 15.0),
-        SkeletonBox(height: 90, width: double.infinity, borderRadius: 10),
+        const SkeletonBox(height: 90, width: double.infinity, borderRadius: 10),
         const SizedBox(height: 10.0),
-        SkeletonBox(height: 225, width: double.infinity, borderRadius: 12),
+        const SkeletonBox(
+            height: 225, width: double.infinity, borderRadius: 12),
         const SizedBox(height: 20.0),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -372,9 +380,11 @@ class DashboardSkeletonLoading extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 30.0),
-        SkeletonBox(height: 200, width: double.infinity, borderRadius: 10),
+        const SkeletonBox(
+            height: 200, width: double.infinity, borderRadius: 10),
         const SizedBox(height: 30.0),
-        SkeletonBox(height: 100, width: double.infinity, borderRadius: 10),
+        const SkeletonBox(
+            height: 100, width: double.infinity, borderRadius: 10),
       ],
     );
   }

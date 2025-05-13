@@ -10,7 +10,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class TimeOffPage extends StatefulWidget {
-  const TimeOffPage({super.key});
+  // int? profileId;
+
+  TimeOffPage({
+    super.key,
+    // this.profileId,
+  });
 
   @override
   State<TimeOffPage> createState() => _TimeOffPageState();
@@ -41,86 +46,94 @@ class _TimeOffPageState extends State<TimeOffPage> {
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.all(16.0),
           children: [
-            Row(
-              children: [
-                Text(
-                  "Time offs",
-                  style: smallNStyle.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: isDarkMode ? Colors.white : Colors.black,
-                  ),
-                ),
-                const Spacer(),
-                const SizedBox(width: 10.0),
-                GestureDetector(
-                  onTap: () {
-                    Get.to(() => const AddTimeoff(),
-                        transition: Transition.rightToLeft);
-                  },
-                  child: Container(
-                    height: 35.0,
-                    width: 35.0,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black),
-                      borderRadius: BorderRadius.circular(70.0),
-                      color: isDarkMode ? Colors.grey.shade400 : Colors.black,
-                    ),
-                    child: Icon(
-                      Icons.add,
-                      color: isDarkMode ? Colors.black : Colors.white,
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 10.0,
+              ),
+              child: Row(
+                children: [
+                  Text(
+                    "Time offs",
+                    style: smallNStyle.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: isDarkMode ? Colors.white : Colors.black,
                     ),
                   ),
-                ),
-                const SizedBox(width: 10.0),
-                // FILTER BUTTON
-                Obx(() => Container(
-                      height: 40.0,
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                  const Spacer(),
+                  const SizedBox(width: 10.0),
+                  GestureDetector(
+                    onTap: () {
+                      Get.to(() => const AddTimeoff(),
+                          transition: Transition.rightToLeft);
+                    },
+                    child: Container(
+                      height: 35.0,
+                      width: 35.0,
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.black),
-                        borderRadius: BorderRadius.circular(10.0),
+                        borderRadius: BorderRadius.circular(70.0),
                         color: isDarkMode ? Colors.grey.shade400 : Colors.black,
                       ),
-                      child: DropdownButton<String>(
-                        value: timeoffcontroller.selectedFilter.value,
-                        onChanged: (String? newValue) {
-                          if (newValue != null) {
-                            timeoffcontroller.filterTimeoff(newValue);
-                          }
-                        },
-                        icon: Icon(
-                          Icons.arrow_drop_down,
-                          color: isDarkMode ? Colors.black : Colors.white,
-                        ),
-                        dropdownColor:
-                            isDarkMode ? Colors.grey.shade400 : Colors.black,
-                        underline: const SizedBox(),
-                        style: TextStyle(
-                          color: isDarkMode ? Colors.black : Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        items: [
-                          'All',
-                          'Pending',
-                          'Approved',
-                          'Rejected',
-                          're-apply'
-                        ]
-                            .map((filter) => DropdownMenuItem(
-                                  value: filter,
-                                  child: Text(
-                                    filter == 're-apply' ? 'Reapplied' : filter,
-                                    style: smallStyle.copyWith(
-                                      color: isDarkMode
-                                          ? Colors.black
-                                          : Colors.white,
-                                    ),
-                                  ),
-                                ))
-                            .toList(),
+                      child: Icon(
+                        Icons.add,
+                        color: isDarkMode ? Colors.black : Colors.white,
                       ),
-                    )),
-              ],
+                    ),
+                  ),
+                  const SizedBox(width: 10.0),
+                  // FILTER BUTTON
+                  Obx(() => Container(
+                        height: 40.0,
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black),
+                          borderRadius: BorderRadius.circular(10.0),
+                          color:
+                              isDarkMode ? Colors.grey.shade400 : Colors.black,
+                        ),
+                        child: DropdownButton<String>(
+                          value: timeoffcontroller.selectedFilter.value,
+                          onChanged: (String? newValue) {
+                            if (newValue != null) {
+                              timeoffcontroller.filterTimeoff(newValue);
+                            }
+                          },
+                          icon: Icon(
+                            Icons.arrow_drop_down,
+                            color: isDarkMode ? Colors.black : Colors.white,
+                          ),
+                          dropdownColor:
+                              isDarkMode ? Colors.grey.shade400 : Colors.black,
+                          underline: const SizedBox(),
+                          style: TextStyle(
+                            color: isDarkMode ? Colors.black : Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          items: [
+                            'All',
+                            'Pending',
+                            'Approved',
+                            'Rejected',
+                            're-apply'
+                          ]
+                              .map((filter) => DropdownMenuItem(
+                                    value: filter,
+                                    child: Text(
+                                      filter == 're-apply'
+                                          ? 'Reapplied'
+                                          : filter,
+                                      style: smallStyle.copyWith(
+                                        color: isDarkMode
+                                            ? Colors.black
+                                            : Colors.white,
+                                      ),
+                                    ),
+                                  ))
+                              .toList(),
+                        ),
+                      )),
+                ],
+              ),
             ),
             const SizedBox(height: 20.0),
             Obx(() {

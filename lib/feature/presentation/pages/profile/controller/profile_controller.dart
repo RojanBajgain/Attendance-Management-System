@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:ams/feature/data/datasource/remote/api_client.dart';
 import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/repository/profile_repo.dart';
 import 'package:ams/feature/presentation/pages/profile/model/country_list_model.dart';
@@ -28,9 +29,9 @@ class ProfileController extends GetxController {
 
   final Rx<DateTime?> selectedDate = Rx<DateTime?>(null);
 
-  final ProfileRepo profileRepo;
+  final ProfileRepo profileRepo = ProfileRepo(apiClient: Get.find<ApiClient>());
 
-  ProfileController({required this.profileRepo});
+  ProfileController();
 
   @override
   void onInit() {

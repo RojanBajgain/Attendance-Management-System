@@ -12,6 +12,8 @@ import 'package:ams/feature/presentation/pages/dashboard/controller/timer_contro
 import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
 import 'dart:developer';
 
+import 'package:tap_debouncer/tap_debouncer.dart';
+
 class ClockTime extends StatefulWidget {
   const ClockTime({super.key});
 
@@ -20,8 +22,7 @@ class ClockTime extends StatefulWidget {
 }
 
 class _ClockTimeState extends State<ClockTime> {
-  final ProfileController profileController =
-      Get.put(ProfileController(profileRepo: Get.find()));
+  final ProfileController profileController = Get.put(ProfileController());
 
   final ClockInOutController clockInOutController =
       Get.put(ClockInOutController(clockinoutrepo: Get.find()));
@@ -42,26 +43,23 @@ class _ClockTimeState extends State<ClockTime> {
   @override
   void initState() {
     super.initState();
-    // WidgetsBinding.instance.addPostFrameCallback(
-    //   (_) async {
-    //     // setState(() {
-    //     //   isLoading = true;
-    //     // });
-    //     // await profileController.getProfile();
-    //     // await hasClockedinController.getClockData();
-    //     _loadClockInState();
-    //     _loadBreakState();
-    //     _fetchOfficeLocation();
-    //     if (mounted) {
-    //       setState(() {
-    //         isLoading = false;
-    //       });
-    //     }
-    //   },
-    // );
-    _loadClockInState();
-    _loadBreakState();
-    _fetchOfficeLocation();
+    _initializeData();
+  }
+
+  Future<void> _initializeData() async {
+    await _fetchOfficeLocation();
+
+    // Check if user has changed
+    if (profileController.profile.isNotEmpty &&
+        profileController.profile.first.device?.deviceUserId != null) {
+      // Make sure the HasClockedinController knows about any user changes
+      await hasClockedinController.handleUserChanged();
+    }
+
+    await hasClockedinController.getClockData();
+    await _loadClockInState();
+    await _loadBreakState();
+
     if (mounted) {
       setState(() {
         isLoading = false;
@@ -79,7 +77,6 @@ class _ClockTimeState extends State<ClockTime> {
   }
 
   Future<void> _loadClockInState() async {
-    await hasClockedinController.getClockData();
     if (!mounted) return;
 
     final prefs = await SharedPreferences.getInstance();
@@ -90,31 +87,37 @@ class _ClockTimeState extends State<ClockTime> {
     String? lastActiveDate = prefs.getString('lastActiveDate');
     if (lastActiveDate != null && lastActiveDate != todayDate) {
       // Day has changed, reset clock data
-      isClockedInToday.value = false;
-      isClockedOut.value = false;
-      isOnBreak.value = false;
-      setState(() {
-        clockInTime = null;
-        clockOutTime = null; // Reset clockOutTime
-      });
-      timerController.stopTimer();
-      timerController.resetTimer();
-      await prefs.remove('clockInTime');
-      await prefs.remove('clockOutTime'); // Clear clockOutTime from storage
-      await prefs.setBool('isTimerRunning', false);
-      await prefs.setBool('isOnBreak', false);
-      await prefs.remove('breakStartTime');
-      await prefs.remove('stopwatchElapsedSeconds');
+      _resetClockData(prefs);
     }
 
     // Update the last active date
     await prefs.setString('lastActiveDate', todayDate);
 
+    // Check for current user ID
+    int? currentUserId;
+    if (profileController.profile.isNotEmpty &&
+        profileController.profile.first.device?.deviceUserId != null) {
+      currentUserId = profileController.profile.first.device!.deviceUserId;
+    }
+
+    // Try to get user-specific clock in time first
+    String? userClockInTimeStr;
+    if (currentUserId != null) {
+      userClockInTimeStr = prefs.getString('clockInTime_$currentUserId');
+    }
+
+    // If not found, fall back to general clock in time
+    if (userClockInTimeStr == null) {
+      userClockInTimeStr = prefs.getString('clockInTime');
+    }
+
+    // Get clock-in time from the API controller as final source of truth
     DateTime? apiClockInTime = hasClockedinController.clockedInTime.value;
     log("Loaded Clock-In Time from API: $apiClockInTime");
 
     if (apiClockInTime != null &&
         DateFormat('yyyy-MM-dd').format(apiClockInTime) == todayDate) {
+      // Create a DateTime with just hours and minutes for consistent calculations
       DateTime clockInMinute = DateTime(
         apiClockInTime.year,
         apiClockInTime.month,
@@ -126,34 +129,34 @@ class _ClockTimeState extends State<ClockTime> {
       isClockedInToday.value = true;
       isClockedOut.value = false;
       isOnBreak.value = prefs.getBool('isOnBreak') ?? false;
+
       setState(() {
         clockInTime = apiClockInTime;
       });
 
+      // Store the clock in time in SharedPreferences to ensure consistency
+      await prefs.setString('clockInTime', clockInMinute.toIso8601String());
+
+      // Also store user-specific clock in time
+      if (currentUserId != null) {
+        await prefs.setString(
+            'clockInTime_$currentUserId', clockInMinute.toIso8601String());
+      }
+
+      // Explicitly set the clockInTime in timerController
       timerController.clockInTime = clockInMinute.toIso8601String();
 
+      // Only start timer if it's not already running and not on break
       if (!timerController.isRunning.value && !isOnBreak.value) {
         int elapsed = now.difference(clockInMinute).inSeconds;
         if (elapsed < 0) elapsed = 0;
 
-        await prefs.setString('clockInTime', clockInMinute.toIso8601String());
-        await prefs.setBool('isTimerRunning', true);
         timerController.resetTimer();
         timerController.startTimer(initialSeconds: elapsed);
       }
     } else {
-      isClockedInToday.value = false;
-      isClockedOut.value = false;
-      isOnBreak.value = false;
-      setState(() {
-        clockInTime = null;
-        clockOutTime = null; // Ensure clockOutTime is reset
-      });
-      timerController.stopTimer();
-      timerController.resetTimer();
-      await prefs.remove('clockInTime');
-      await prefs.remove('clockOutTime'); // Clear clockOutTime from storage
-      await prefs.setBool('isTimerRunning', false);
+      // No valid clock-in from API, reset everything
+      _resetClockData(prefs);
     }
 
     // Handle clock out time
@@ -172,6 +175,27 @@ class _ClockTimeState extends State<ClockTime> {
         });
       }
     }
+  }
+
+  void _resetClockData(SharedPreferences prefs) async {
+    isClockedInToday.value = false;
+    isClockedOut.value = false;
+    isOnBreak.value = false;
+
+    setState(() {
+      clockInTime = null;
+      clockOutTime = null;
+    });
+
+    timerController.stopTimer();
+    timerController.resetTimer();
+
+    await prefs.remove('clockInTime');
+    await prefs.remove('clockOutTime');
+    await prefs.setBool('isTimerRunning', false);
+    await prefs.setBool('isOnBreak', false);
+    await prefs.remove('breakStartTime');
+    await prefs.remove('stopwatchElapsedSeconds');
   }
 
   Future<bool> _checkLocationPermission() async {
@@ -208,28 +232,18 @@ class _ClockTimeState extends State<ClockTime> {
 
     if (lastActiveDate != null && lastActiveDate != todayDate) {
       // Day has changed, reset all clock state
-      isClockedInToday.value = false;
-      isClockedOut.value = false;
-      isOnBreak.value = false;
-      setState(() {
-        clockInTime = null;
-        clockOutTime = null; // Reset clockOutTime
-      });
-      timerController.stopTimer();
-      timerController.resetTimer();
-      await prefs.remove('clockInTime');
-      await prefs.remove('clockOutTime'); // Clear clockOutTime from storage
-      await prefs.setBool('isTimerRunning', false);
-      await prefs.setBool('isOnBreak', false);
+      _resetClockData(prefs);
       await prefs.setString('lastActiveDate', todayDate);
     }
 
     if (!isClockedInToday.value) {
+      // Clocking in
       await clockInOutController.postClockin(
         deviceId: deviceId,
         latitude: position.latitude.toString(),
         longitude: position.longitude.toString(),
       );
+
       DateTime now = DateTime.now();
       DateTime clockInMinute = DateTime(
         now.year,
@@ -238,35 +252,45 @@ class _ClockTimeState extends State<ClockTime> {
         now.hour,
         now.minute,
       );
+
       setState(() {
         clockInTime = now;
-        clockOutTime = null; // Ensure clockOutTime is reset on new clock-in
+        clockOutTime = null;
       });
+
       isClockedInToday.value = true;
       isClockedOut.value = false;
+
       await prefs.setString('clockInTime', clockInMinute.toIso8601String());
-      await prefs.remove('clockOutTime'); // Clear any previous clockOutTime
+      await prefs.remove('clockOutTime');
       await prefs.setString('lastActiveDate', todayDate);
+
       timerController.clockInTime = clockInMinute.toIso8601String();
       timerController.resetTimer();
       timerController.startTimer(initialSeconds: 0);
     } else {
+      // Clocking out
       await clockInOutController.postClockout(
         deviceId: deviceId,
         latitude: position.latitude.toString(),
         longitude: position.longitude.toString(),
       );
+
       setState(() {
         clockOutTime = DateTime.now();
       });
+
       isClockedInToday.value = false;
       isClockedOut.value = true;
+
       await prefs.setString('clockOutTime', clockOutTime!.toIso8601String());
       await prefs.remove('clockInTime');
+
       timerController.stopTimer();
       timerController.resetTimer();
     }
 
+    // Refresh data from API
     await hasClockedinController.getClockData();
     await _loadClockInState();
   }
@@ -320,10 +344,16 @@ class _ClockTimeState extends State<ClockTime> {
 
       // Also make sure to reset clock in state since it's a new day
       await _loadClockInState();
+      if (mounted) {
+        setState(() {}); // Force UI update
+      }
       return;
     }
 
+    log("Before break action: isOnBreak = ${isOnBreak.value}");
+
     if (!isOnBreak.value) {
+      // Starting break
       await clockInOutController.postOnBreak(employeeId: employeeId);
       await prefs.setString('breakStartTime', DateTime.now().toIso8601String());
       await prefs.setInt('stopwatchElapsedSeconds', 0);
@@ -333,6 +363,7 @@ class _ClockTimeState extends State<ClockTime> {
       timerController.startStopwatch();
       isOnBreak.value = true;
     } else {
+      // Ending break
       await clockInOutController.postResume(
         employeeId: employeeId,
         latitude: position.latitude.toString(),
@@ -348,21 +379,16 @@ class _ClockTimeState extends State<ClockTime> {
       isOnBreak.value = false;
     }
 
-    await hasClockedinController.getClockData();
-  }
+    log("After break action: isOnBreak = ${isOnBreak.value}");
 
-  getCurrentLocation() async {
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied ||
-        permission == LocationPermission.deniedForever) {
-      log("Location denied");
-      await Geolocator.requestPermission();
-    } else {
-      Position currentPosition = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.best);
-      log("Latitude: ${currentPosition.latitude}");
-      log("Longitude: ${currentPosition.longitude}");
+    // Force UI update
+    if (mounted) {
+      setState(() {});
     }
+
+    // Refresh data from API
+    await hasClockedinController.getClockData();
+    await _loadClockInState();
   }
 
   @override
@@ -396,7 +422,6 @@ class _ClockTimeState extends State<ClockTime> {
                         _formatTime(clockInTime),
                         style: smallStyle.copyWith(
                           color: isDarkMode ? Colors.white70 : Colors.black87,
-                          // fontSize: 12.0,
                         ),
                       ),
                     ],
@@ -419,7 +444,6 @@ class _ClockTimeState extends State<ClockTime> {
                         _formatTime(clockOutTime),
                         style: smallStyle.copyWith(
                           color: isDarkMode ? Colors.white70 : Colors.black87,
-                          // fontSize: 10.0,
                         ),
                       ),
                     ],
@@ -509,6 +533,7 @@ class _ClockTimeState extends State<ClockTime> {
   Widget _buildClockInTimeDisplay(bool isDarkMode) {
     return Obx(() {
       bool isClockingOut = isClockedInToday.value && !isClockedOut.value;
+      // Standard 8-hour workday (28800 seconds)
       double progress = isClockingOut
           ? (timerController.elapsedSeconds.value % 28800) / 28800
           : 0.0;
@@ -521,9 +546,9 @@ class _ClockTimeState extends State<ClockTime> {
             width: 130,
             child: CircularProgressIndicator(
               value: progress,
-              strokeWidth: 8.0,
+              strokeWidth: 10.0,
               valueColor: AlwaysStoppedAnimation(
-                  isClockingOut ? Colors.red[700] : Colors.green[600]),
+                  isClockingOut ? Colors.blue : Colors.green[600]),
               backgroundColor: Colors.grey[300],
             ),
           ),
@@ -545,7 +570,7 @@ class _ClockTimeState extends State<ClockTime> {
                     : _formatStopwatchTime(
                         timerController.elapsedSeconds.value),
                 style: smallNStyle.copyWith(
-                  color: isDarkMode ? Colors.white : Colors.black,
+                  color: isDarkMode ? Colors.blue : Colors.blue,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -559,49 +584,76 @@ class _ClockTimeState extends State<ClockTime> {
   Widget _buildClockInOutButton(bool isDarkMode) {
     return Obx(() {
       bool isClockingOut = isClockedInToday.value && !isClockedOut.value;
+      log("Building ClockInOutButton: isOnBreak = ${isOnBreak.value}, "
+          "isClockedInToday = ${isClockedInToday.value}, "
+          "isClockedOut = ${isClockedOut.value}");
 
-      return ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(6)),
-          ),
-          backgroundColor: isClockingOut ? Colors.red[700] : Colors.green[600],
-        ),
-        onPressed: () {
+      return TapDebouncer(
+        cooldown: const Duration(milliseconds: 500),
+        onTap: () async {
+          log("ClockInOutButton tapped: isOnBreak = ${isOnBreak.value}");
           if (isOnBreak.value) {
-            _handleBreak();
+            await _handleBreak();
           } else {
-            _handleClockInOut();
+            await _handleClockInOut();
+          }
+          // Force a UI refresh after the operation completes
+          if (mounted) {
+            setState(() {});
           }
         },
-        child: Text(
-          isClockedOut.value
-              ? 'Clocked Out'
-              : (isOnBreak.value
+        builder: (BuildContext context, TapDebouncerFunc? onTap) {
+          return ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(16)),
+              ),
+              backgroundColor: isOnBreak.value
+                  ? Colors.orange[700]
+                  : (isClockingOut ? Colors.red[700] : Colors.green[600]),
+            ),
+            onPressed: onTap,
+            child: Text(
+              isOnBreak.value
                   ? 'Resume'
-                  : (isClockedInToday.value ? 'Clock Out' : 'Clock In')),
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+                  : (isClockedOut.value
+                      ? 'Clocked Out'
+                      : (isClockedInToday.value ? 'Clock Out' : 'Clock In')),
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          );
+        },
       );
     });
   }
 
   Widget _buildBreakButton(bool isDarkMode) {
-    return ElevatedButton(
-      style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all(Colors.orange[700]),
-      ),
-      onPressed: _handleBreak,
-      child: const Text(
-        'Break',
-        style: TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
+    return TapDebouncer(
+      cooldown: const Duration(milliseconds: 500),
+      onTap: () async {
+        _handleBreak();
+      },
+      builder: (BuildContext context, TapDebouncerFunc? onTap) {
+        return ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+            ),
+            backgroundColor: Colors.orange[700],
+          ),
+          onPressed: onTap,
+          child: const Text(
+            'Break',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        );
+      },
     );
   }
 

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:ams/feature/data/datasource/remote/api_response.dart';
@@ -210,7 +211,8 @@ class AuthController extends GetxController {
 
       // Perform login with retrieved credentials
       // Remove keepMeLoggedIn parameter - always set to false
-      await loginMethod(email, password, false);
+      await loginMethod(
+          email, password, true); // Changed to true to maintain login state
     } catch (e) {
       log("Biometric login error: $e");
       SSnackbarUtil.showSnackbar(
@@ -252,7 +254,7 @@ class AuthController extends GetxController {
     }
   }
 
-// Function to update the login method to save credentials for biometric login
+  // Function to update the login method to save credentials for biometric login
   Future<void> loginMethod(
       String email, String password, bool keepMeLoggedIn) async {
     authIsLoading.value = true;
@@ -266,6 +268,11 @@ class AuthController extends GetxController {
       ApiResponse<LoginModel> response = await authRepo.login(email, password);
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
         log("Successfully logged in. User Data: ${response.response}");
+
+        // Clear previous user data first
+        alluserData.value = LoginModel(access: "", refresh: "");
+
+        // Set new user data
         alluserData.value = response.response!;
 
         // Save tokens
@@ -281,7 +288,14 @@ class AuthController extends GetxController {
 
         SharedPreferences prefs = await SharedPreferences.getInstance();
         GetStorage box = GetStorage();
-        box.write('profileId', alluserData.value.user?.profileId);
+
+        // Store user info in shared preferences for persistence
+        if (alluserData.value.user != null) {
+          await prefs.setString(
+              'userData', json.encode(alluserData.value.toJson()));
+          box.write('profileId', alluserData.value.user?.profileId);
+        }
+
         await prefs.setBool('isLoggedIn', keepMeLoggedIn);
 
         if (keepMeLoggedIn) {
@@ -293,6 +307,7 @@ class AuthController extends GetxController {
 
         Get.offAll(() => const BottomNavPage());
       } else {
+        Get.back();
         log("Error: ${response.message ?? 'Login failed'}");
         SSnackbarUtil.showSnackbar(
           'Login Failed',
@@ -317,6 +332,24 @@ class AuthController extends GetxController {
     bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 
     if (isLoggedIn) {
+      // Restore user data from preferences if available
+      String? userDataJson = prefs.getString('userData');
+      if (userDataJson != null && userDataJson.isNotEmpty) {
+        try {
+          Map<String, dynamic> userDataMap = json.decode(userDataJson);
+          alluserData.value = LoginModel.fromJson(userDataMap);
+
+          // Restore tokens to API client
+          final accessToken = prefs.getString('accessToken');
+          final refreshToken = prefs.getString('refreshToken');
+          if (accessToken != null && refreshToken != null) {
+            apiClient.saveTokens(accessToken, refreshToken);
+          }
+        } catch (e) {
+          log("Error restoring user data: $e");
+        }
+      }
+
       await Future.delayed(const Duration(milliseconds: 300));
       Get.offAll(() => const BottomNavPage());
     }
@@ -329,8 +362,6 @@ class AuthController extends GetxController {
       log("Successfully logout. Data: ${response.response}");
       apiClient.clearTokens();
 
-      // Don't clear email/password credentials on logout and biometrics
-
       final prefs = await SharedPreferences.getInstance();
       // Save the biometrics setting before clearing
       bool biometricsEnabled = prefs.getBool('biometrics_enabled') ?? false;
@@ -339,10 +370,15 @@ class AuthController extends GetxController {
       await prefs.remove('isLoggedIn');
       await prefs.remove('accessToken');
       await prefs.remove('refreshToken');
+      await prefs.remove('userData'); // Clear the stored user data
+
       // DO NOT use prefs.clear() as it would erase all settings
 
       // Restore biometrics setting
       await prefs.setBool('biometrics_enabled', biometricsEnabled);
+
+      // Clear user data from memory
+      alluserData.value = LoginModel(access: "", refresh: "");
 
       await Future.delayed(const Duration(seconds: 2));
       Get.offAll(() => const LoginPage());

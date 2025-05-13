@@ -20,8 +20,7 @@ class ProfilePic extends StatefulWidget {
 
 class _ProfilePicState extends State<ProfilePic> {
   final authcontroller = Get.find<AuthController>();
-  final ProfileController profilecontroller =
-      Get.put(ProfileController(profileRepo: Get.find()));
+  final ProfileController profilecontroller = Get.put(ProfileController());
 
   // final ProfileController profilecontroller = Get.find();
 
@@ -66,8 +65,7 @@ class _ProfilePicState extends State<ProfilePic> {
               borderRadius: BorderRadius.circular(20.0),
               boxShadow: [
                 BoxShadow(
-                  color:
-                      isDarkMode ? Colors.grey.shade700 : Colors.grey.shade200,
+                  color: isDarkMode ? Colors.grey.shade700 : Colors.white,
                 ),
               ],
             ),
@@ -105,7 +103,7 @@ class _ProfilePicState extends State<ProfilePic> {
                                         ) as ImageProvider,
                             ),
                             Container(
-                              padding: const EdgeInsets.all(4),
+                              padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 shape: BoxShape.circle,
@@ -116,7 +114,7 @@ class _ProfilePicState extends State<ProfilePic> {
                               ),
                               child: const Icon(
                                 Icons.edit,
-                                size: 30,
+                                size: 24,
                                 color: Colors.black,
                               ),
                             ),

@@ -3,26 +3,6 @@ class ApiUrls {
   // static const String baseUrl = "http://192.168.254.49:8000/";
   // static const String baseUrl = "http://192.168.254.4:8000/";
 
-  // static const String baseUrl = "http://192.168.10.109:8000/";
-
-  // static const String baseUrl = "http://192.168.10.65:8000/";
-
-//   static const String baseUrl = "http://192.168.254.55:8000/";
-
-  // static const String baseUrl = "http://192.168.254.44:8000/";
-
-  // static const String baseUrl = "http://192.168.10.71:8000/";
-
-  // static const String baseUrl = "http://192.168.10.65:8000/";
-
-  // static const String baseUrl = "http://192.168.254.107:8000/";
-
-//   static const String baseUrl = "http://192.168.0.102:8000/";
-
-//   static const String baseUrl = "http://192.168.10.68:8000/";
-
-//   static const String baseUrl = "http://192.168.254.48:8080/";
-
   static const String baseUrl = "https://backend.ams.ayata.com.np/";
 
   static const String login = "api/login/";

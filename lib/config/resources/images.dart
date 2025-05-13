@@ -13,6 +13,7 @@ class AppImages {
   static const home = "assets/images/home.png";
   static const backImg = "assets/images/background.jpg";
   static const profileImage = "assets/images/profile_image.png";
+  static const EditprofileImage = "assets/images/profile.png";
 }
 
 // class AppIcons {

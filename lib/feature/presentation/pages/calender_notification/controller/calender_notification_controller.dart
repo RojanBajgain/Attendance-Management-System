@@ -26,8 +26,7 @@ class CalenderNotificationController extends GetxController {
       ApiResponse response = await eventCalenderrepo.getEventCalenders();
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
-        log("Fetched Event Calender data: ${response.response}");
-
+        // log("Fetched Event Calender data: ${response.response}");
         // Parse list of events
         List<dynamic> eventsJson = response.response;
         eventCalenders.assignAll(eventsJson

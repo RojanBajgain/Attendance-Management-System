@@ -66,7 +66,7 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
             ],
             stops: const [
               0.0,
-              0.04,
+              0.02,
               0.0,
             ],
           ),

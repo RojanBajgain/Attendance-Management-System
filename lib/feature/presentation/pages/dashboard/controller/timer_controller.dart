@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:developer';
+import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
@@ -8,7 +10,7 @@ class TimerController extends GetxController {
   var isRunning = false.obs;
   String? clockInTime;
   Timer? _timer;
-  String? _lastRunDate; // Track the last date the timer was running
+  String? _lastRunDate;
 
   var stopwatchSeconds = 0.obs;
   var isStopwatchRunning = false.obs;
@@ -145,6 +147,9 @@ class TimerController extends GetxController {
     await prefs.setString('lastRunDate', today);
     await prefs.setBool('isTimerRunning', true);
 
+    // Store the exact elapsed seconds for consistency
+    await prefs.setInt('elapsedSeconds', initialSeconds);
+
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       elapsedSeconds.value++;
@@ -266,5 +271,58 @@ class TimerController extends GetxController {
     _timer?.cancel();
     _stopwatchTimer?.cancel();
     super.onClose();
+  }
+
+  Future<void> setClockInTime(String time) async {
+    // log("Setting clock in time to: $time");
+    clockInTime = time;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('clockInTime', time);
+
+    // Get current user ID if available
+    final profileController = Get.find<ProfileController>();
+    if (profileController.profile.isNotEmpty &&
+        profileController.profile.first.device?.deviceUserId != null) {
+      int userId = profileController.profile.first.device!.deviceUserId!;
+      await prefs.setString('clockInTime_$userId', time);
+    }
+
+    // Update elapsed seconds based on the new clock in time
+    final clockInDateTime = DateTime.parse(time);
+    String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+    // Check if the clock in time is from today
+    String clockInDate = DateFormat('yyyy-MM-dd').format(clockInDateTime);
+    if (clockInDate == today) {
+      DateTime truncatedTime = DateTime(
+        clockInDateTime.year,
+        clockInDateTime.month,
+        clockInDateTime.day,
+        clockInDateTime.hour,
+        clockInDateTime.minute,
+      );
+
+      int elapsed = DateTime.now().difference(truncatedTime).inSeconds;
+      if (elapsed >= 0) {
+        elapsedSeconds.value = elapsed;
+        if (!isRunning.value) {
+          await startTimer(initialSeconds: elapsed);
+        }
+      }
+    }
+  }
+
+// Force reset the timer (e.g., on user change)
+  Future<void> forceReset() async {
+    log("Force resetting timer");
+    _timer?.cancel();
+    _stopwatchTimer?.cancel();
+    isRunning.value = false;
+    isStopwatchRunning.value = false;
+    elapsedSeconds.value = 0;
+    stopwatchSeconds.value = 0;
+    clockInTime = null;
+
+    await _loadSavedState();
   }
 }

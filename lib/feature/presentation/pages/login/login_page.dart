@@ -1,3 +1,4 @@
+import 'package:ams/config/resources/colors.dart';
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/forget_password/forget_password.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
@@ -173,29 +174,29 @@ class _LoginPageState extends State<LoginPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Row(
+                          Row(
                             children: [
-                              // SizedBox(
-                              //   height: 24.0,
-                              //   width: 24.0,
-                              //   child: Checkbox(
-                              //     value: keepMeLoggedIn,
-                              //     onChanged: (bool? value) {
-                              //       setState(() {
-                              //         keepMeLoggedIn = value ?? false;
-                              //       });
-                              //     },
-                              //   ),
-                              // ),
-                              // const SizedBox(width: 5.0),
-                              // Text(
-                              //   "Keep me logged in",
-                              //   style: smallStyle.copyWith(
-                              //     color: isDarkMode
-                              //         ? Colors.blue
-                              //         : AppColors.primary,
-                              //   ),
-                              // ),
+                              SizedBox(
+                                height: 24.0,
+                                width: 24.0,
+                                child: Checkbox(
+                                  value: keepMeLoggedIn,
+                                  onChanged: (bool? value) {
+                                    setState(() {
+                                      keepMeLoggedIn = value ?? false;
+                                    });
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 5.0),
+                              Text(
+                                "Keep me logged in",
+                                style: smallStyle.copyWith(
+                                  color: isDarkMode
+                                      ? Colors.blue
+                                      : AppColors.primary,
+                                ),
+                              ),
                             ],
                           ),
                           GestureDetector(

@@ -27,8 +27,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final authcontroller = Get.find<AuthController>();
-  final ProfileController profilecontroller =
-      Get.put(ProfileController(profileRepo: Get.find()));
+  final ProfileController profilecontroller = Get.put(ProfileController());
 
   int? _currentlyExpandedIndex;
 
@@ -47,7 +46,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    // profilecontroller.getProfile();
+    profilecontroller.getProfile();
     profilecontroller.getProfileDetailData(widget.profileId.toString());
   }
 
@@ -66,6 +65,7 @@ class _ProfilePageState extends State<ProfilePage> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
+      backgroundColor: isDarkMode ? Colors.black : Colors.grey.shade300,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -793,7 +793,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(13.0),
-        color: isDarkMode ? Colors.grey.shade800 : Colors.grey.shade200,
+        color: isDarkMode ? Colors.grey.shade800 : Colors.white,
       ),
       child: Padding(
         padding: const EdgeInsets.all(10.0),

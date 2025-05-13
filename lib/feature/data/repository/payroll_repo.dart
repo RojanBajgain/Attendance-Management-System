@@ -13,9 +13,9 @@ class PayrollRepo {
   Future<ApiResponse> getPayroll() async {
     final token = apiClient.token;
 
-    if (token.isEmpty) {
-      throw Exception('JWT Token is missing or invalid');
-    }
+    // if (token.isEmpty) {
+    //   throw Exception('JWT Token is missing or invalid');
+    // }
 
     final response = await ApiClient.getApi(
       ApiUrls.payroll,

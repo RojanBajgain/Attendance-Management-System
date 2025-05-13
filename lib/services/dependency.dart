@@ -1,33 +1,20 @@
 import 'package:ams/feature/data/datasource/remote/api_client.dart';
 import 'package:ams/feature/data/repository/auth_repository_impl.dart';
 import 'package:ams/feature/data/repository/calender_notification.dart';
-import 'package:ams/feature/data/repository/chat_repo.dart';
 import 'package:ams/feature/data/repository/clock_in_out_repo.dart';
-import 'package:ams/feature/data/repository/dashboard_timesheet_repo.dart';
 import 'package:ams/feature/data/repository/has_clockedIn_repo.dart';
 import 'package:ams/feature/data/repository/notification_repo.dart';
 import 'package:ams/feature/data/repository/payroll_repo.dart';
 import 'package:ams/feature/data/repository/policy_repo.dart';
-import 'package:ams/feature/data/repository/profile_repo.dart';
 import 'package:ams/feature/data/repository/reset_password_repo.dart';
-import 'package:ams/feature/data/repository/timeoff_repo.dart';
-import 'package:ams/feature/data/repository/timesheet_repo.dart';
-import 'package:ams/feature/presentation/pages/bottom_nav/controller/bottom_nav_controller.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/controller/calender_notification_controller.dart';
-import 'package:ams/feature/presentation/pages/chat/controller/chat_controller.dart';
 import 'package:ams/feature/presentation/pages/dashboard/controller/clock_in_out_controller.dart';
-import 'package:ams/feature/presentation/pages/dashboard/controller/dashboard_timesheet_controller.dart';
 import 'package:ams/feature/presentation/pages/dashboard/controller/has_clockedIn_controller.dart';
-import 'package:ams/feature/presentation/pages/dashboard/controller/timer_controller.dart';
-import 'package:ams/feature/presentation/pages/dashboard/controller/clock_time_controller.dart';
 import 'package:ams/feature/presentation/pages/forget_password/controller/reset_password_controller.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/notification/controller/notification_controller.dart';
 import 'package:ams/feature/presentation/pages/payroll/controller/payroll_controller.dart';
 import 'package:ams/feature/presentation/pages/policy/controller/policy_controller.dart';
-import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
-import 'package:ams/feature/presentation/pages/timeoff/controller/timeoff_controller.dart';
-import 'package:ams/feature/presentation/pages/timesheet/controller/timesheet_controller.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -45,10 +32,10 @@ Future<void> init() async {
     AuthController(authRepo: Get.find<AuthRepositoryImpl>()),
   );
 
-  // Profile
-  Get.put<ProfileRepo>(ProfileRepo(apiClient: Get.find<ApiClient>()));
-  Get.put<ProfileController>(
-      ProfileController(profileRepo: Get.find<ProfileRepo>()));
+  // // Profile
+  // Get.put<ProfileRepo>(ProfileRepo(apiClient: Get.find<ApiClient>()));
+  // Get.put<ProfileController>(
+  //     ProfileController(profileRepo: Get.find<ProfileRepo>()));
 
   // Time off
   // Get.put<TimeoffRepo>(TimeoffRepo(apiClient: Get.find<ApiClient>()));

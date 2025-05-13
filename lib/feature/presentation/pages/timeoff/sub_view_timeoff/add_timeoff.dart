@@ -25,8 +25,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
   final PolicyController policycontroller =
       Get.put(PolicyController(policyrepo: Get.find()));
   final TimeoffController timeoffcontroller = Get.put(TimeoffController());
-  final ProfileController profilecontroller =
-      Get.put(ProfileController(profileRepo: Get.find()));
+  final ProfileController profilecontroller = Get.put(ProfileController());
   GetStorage box = GetStorage();
 
   // Form key for FormBuilder

@@ -34,16 +34,13 @@ class _PayrollPageState extends State<PayrollPage> {
 
     return Scaffold(
       appBar: const ConstantAppBar(),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          await payrollcontroller.getPayroll();
-          // payrollcontroller.clearSelectedDate();
-        },
-        child: ListView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(16.0),
-          children: [
-            Row(
+      body: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(16.0),
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 10.0),
+            child: Row(
               children: [
                 Text(
                   "Pay Roll",
@@ -181,98 +178,98 @@ class _PayrollPageState extends State<PayrollPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 10.0),
-            SizedBox(
-              child: _isPayrollVisible
-                  ? Obx(() {
-                      if (payrollcontroller.isLoading.value) {
-                        return ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          scrollDirection: Axis.vertical,
-                          itemCount: 5,
-                          itemBuilder: (context, index) {
-                            return const PayrollSkeleton();
-                          },
-                        );
-                      } else if (payrollcontroller.payroll.isEmpty) {
-                        return SizedBox(
-                          height: 600,
-                          child: Center(
-                            child: Text(
-                              "No available payroll data",
-                              style: smallStyle.copyWith(
-                                color: isDarkMode ? Colors.white : Colors.black,
-                              ),
+          ),
+          const SizedBox(height: 10.0),
+          SizedBox(
+            child: _isPayrollVisible
+                ? Obx(() {
+                    if (payrollcontroller.isLoading.value) {
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        scrollDirection: Axis.vertical,
+                        itemCount: 5,
+                        itemBuilder: (context, index) {
+                          return const PayrollSkeleton();
+                        },
+                      );
+                    } else if (payrollcontroller.payroll.isEmpty) {
+                      return SizedBox(
+                        height: 600,
+                        child: Center(
+                          child: Text(
+                            "No available payroll data",
+                            style: smallStyle.copyWith(
+                              color: isDarkMode ? Colors.white : Colors.black,
                             ),
                           ),
-                        );
-                      } else {
-                        return ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          scrollDirection: Axis.vertical,
-                          itemCount: payrollcontroller.filteredPayroll.length,
-                          itemBuilder: (context, index) {
-                            final payroll =
-                                payrollcontroller.filteredPayroll[index];
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: PayRollSlip(
-                                payrolldata: payroll,
-                                dop: payroll.dateOfPayment != null
-                                    ? DateFormat.yMMMd('en_US')
-                                        .format(payroll.dateOfPayment!)
-                                    : "",
-                                mop: payroll.modeOfPayment.toString(),
-                                bank: payroll.bank ?? "---",
-                                cheque: payroll.chequeNo ?? "---",
-                                salary: payroll.totalSalary.toString(),
-                              ),
-                            );
-                          },
-                        );
-                      }
-                    })
-                  : SizedBox(
-                      height: 600,
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            // Image
-                            Image.asset(
-                              'assets/images/pay.png',
-                              height: 150,
-                              width: 250,
-                              fit: BoxFit.cover,
-                            ),
-                            const SizedBox(height: 20),
-                            // Title
-                            Text(
-                              "Payroll Hidden",
-                              style: smallNStyle.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: isDarkMode ? Colors.white : Colors.black,
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              "Your payroll details are currently hidden.",
-                              textAlign: TextAlign.center,
-                              style: smallStyle.copyWith(
-                                color: isDarkMode
-                                    ? Colors.grey.shade300
-                                    : Colors.grey.shade700,
-                              ),
-                            ),
-                          ],
                         ),
+                      );
+                    } else {
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        scrollDirection: Axis.vertical,
+                        itemCount: payrollcontroller.filteredPayroll.length,
+                        itemBuilder: (context, index) {
+                          final payroll =
+                              payrollcontroller.filteredPayroll[index];
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: PayRollSlip(
+                              payrolldata: payroll,
+                              dop: payroll.dateOfPayment != null
+                                  ? DateFormat.yMMMd('en_US')
+                                      .format(payroll.dateOfPayment!)
+                                  : "",
+                              mop: payroll.modeOfPayment.toString(),
+                              bank: payroll.bank ?? "---",
+                              cheque: payroll.chequeNo ?? "---",
+                              salary: payroll.totalSalary.toString(),
+                            ),
+                          );
+                        },
+                      );
+                    }
+                  })
+                : SizedBox(
+                    height: 600,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Image
+                          Image.asset(
+                            'assets/images/pay.png',
+                            height: 150,
+                            width: 250,
+                            fit: BoxFit.cover,
+                          ),
+                          const SizedBox(height: 20),
+                          // Title
+                          Text(
+                            "Payroll Hidden",
+                            style: smallNStyle.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: isDarkMode ? Colors.white : Colors.black,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            "Your payroll details are currently hidden.",
+                            textAlign: TextAlign.center,
+                            style: smallStyle.copyWith(
+                              color: isDarkMode
+                                  ? Colors.grey.shade300
+                                  : Colors.grey.shade700,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-            ),
-          ],
-        ),
+                  ),
+          ),
+        ],
       ),
     );
   }

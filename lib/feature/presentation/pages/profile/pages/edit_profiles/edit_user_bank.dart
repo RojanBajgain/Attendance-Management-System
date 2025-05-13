@@ -17,8 +17,7 @@ class EditUserBank extends StatefulWidget {
 
 class _EditUserBankState extends State<EditUserBank> {
   final authcontroller = Get.find<AuthController>();
-  final ProfileController profilecontroller =
-      Get.put(ProfileController(profileRepo: Get.find()));
+  final ProfileController profilecontroller = Get.put(ProfileController());
 
   final RxList<Map<String, dynamic>> _bankDetailsList =
       <Map<String, dynamic>>[].obs;
@@ -57,18 +56,19 @@ class _EditUserBankState extends State<EditUserBank> {
   ];
 
   final RxList<String?> _selectedBanks = <String?>[].obs;
-
   String? _newSelectedBank;
 
   final TextEditingController newBankbranchname = TextEditingController();
   final TextEditingController newBankaccountname = TextEditingController();
   final TextEditingController newBankaccountnumber = TextEditingController();
 
+  // Error state for each field
+  final Map<String, String> _fieldErrors = {};
+
   @override
   void initState() {
     super.initState();
     _initializeBankDetails();
-    // profilecontroller.getProfile();
   }
 
   void _initializeBankDetails() {
@@ -120,7 +120,6 @@ class _EditUserBankState extends State<EditUserBank> {
       return;
     }
 
-    // Check if this bank is marked as payroll
     bool isPayrollBank = false;
     for (var bank in _bankDetailsList) {
       if (bank['id'] == bankId && bank['isPayroll'] == true) {
@@ -175,7 +174,6 @@ class _EditUserBankState extends State<EditUserBank> {
 
                   setState(() {
                     _deletedBankIds.add(bankId);
-
                     if (_selectedPayrollBankId == bankId) {
                       _selectedPayrollBankId = null;
                     }
@@ -190,15 +188,10 @@ class _EditUserBankState extends State<EditUserBank> {
 
                       _bankDetailsList.removeAt(bankIndex);
                       _selectedBanks.removeAt(bankIndex);
+                      _fieldErrors.removeWhere(
+                          (key, value) => key.startsWith('bank_$bankId'));
                     }
                   });
-                  // Get.snackbar(
-                  //   'Success',
-                  //   'Bank detail deleted successfully',
-                  //   snackPosition: SnackPosition.TOP,
-                  //   backgroundColor: Colors.green,
-                  //   colorText: Colors.white,
-                  // );
 
                   await profilecontroller.getProfile();
                 } catch (e) {
@@ -229,6 +222,7 @@ class _EditUserBankState extends State<EditUserBank> {
           bank['isPayroll'] = false;
         }
         _selectedPayrollBankId = bankId;
+        _isNewBankPayRoll = false;
       } else {
         _selectedPayrollBankId = null;
       }
@@ -238,6 +232,7 @@ class _EditUserBankState extends State<EditUserBank> {
           bank['isPayroll'] = value ?? false;
         }
       }
+      _fieldErrors.remove('payroll');
     });
   }
 
@@ -279,90 +274,124 @@ class _EditUserBankState extends State<EditUserBank> {
 
       Get.offAll(() => const BottomNavPage());
     } catch (e) {
-      _showErrorSnackbar("Failed to update bank details: $e");
+      SSnackbarUtil.showSnackbar(
+        'Error',
+        'Failed to update bank details: $e',
+        SnackbarType.error,
+      );
     }
   }
 
-  // void _onPreviousPressed() {
-  //   Get.back();
-  // }
-
   bool _validateInputs() {
-    // Check if there's at least one payroll bank selected
-    bool hasPayrollBank = false;
+    setState(() {
+      _fieldErrors.clear();
+    });
 
-    // Check existing bank details
+    bool isValid = true;
+
+    // Check for at least one payroll bank
+    bool hasPayrollBank = false;
     for (var bank in _bankDetailsList) {
       if (!_deletedBankIds.contains(bank['id']) && bank['isPayroll'] == true) {
         hasPayrollBank = true;
         break;
       }
     }
-
-    // Check new bank detail if being added
-    if (!hasPayrollBank && _isAddNewBankDetail && _isNewBankPayRoll) {
+    if (_isAddNewBankDetail && _isNewBankPayRoll) {
       hasPayrollBank = true;
     }
-
     if (!hasPayrollBank) {
-      _showErrorSnackbar("There should be at least one bank as payroll");
-      return false;
+      _fieldErrors['payroll'] = 'At least one bank must be marked as payroll';
+      isValid = false;
     }
 
-    // Original validation code
+    // Validate existing bank details
     for (int i = 0; i < _bankDetailsList.length; i++) {
       final bank = _bankDetailsList[i];
+      final bankId = bank['id'];
 
-      if (_deletedBankIds.contains(bank['id'])) {
+      if (_deletedBankIds.contains(bankId)) {
         continue;
       }
 
       final controllers =
           bank['controllers'] as Map<String, TextEditingController>;
 
+      // Validate bank name
+      if (_selectedBanks[i] == null || _selectedBanks[i]!.isEmpty) {
+        _fieldErrors['bank_${bankId}_name'] = 'Bank name is required';
+        isValid = false;
+      }
+
+      // Validate branch name
+      if (controllers['bankBranch']!.text.isEmpty) {
+        _fieldErrors['bank_${bankId}_branch'] = 'Branch name is required';
+        isValid = false;
+      }
+
+      // Validate account name
+      if (controllers['bankAccountName']!.text.isEmpty) {
+        _fieldErrors['bank_${bankId}_accountName'] = 'Account name is required';
+        isValid = false;
+      }
+
+      // Validate account number
       String accountNumber = controllers['bankAccount']!.text.trim();
-
-      if (_selectedBanks[i] == null ||
-          _selectedBanks[i]!.isEmpty ||
-          controllers['bankBranch']!.text.isEmpty ||
-          controllers['bankAccountName']!.text.isEmpty ||
-          accountNumber.isEmpty) {
-        _showErrorSnackbar("Please fill all fields in existing bank details");
-        return false;
+      if (accountNumber.isEmpty) {
+        _fieldErrors['bank_${bankId}_account'] = 'Account number is required';
+        isValid = false;
       }
-
-      if (accountNumber.length > 20) {
-        _showErrorSnackbar("Bank account number cannot exceed 20 digits");
-        return false;
+      // else if (!RegExp(r'^\d+$').hasMatch(accountNumber)) {
+      //   _fieldErrors['bank_${bankId}_account'] =
+      //       'Account number must be numeric';
+      //   isValid = false;
+      // }
+      else if (accountNumber.length > 20) {
+        _fieldErrors['bank_${bankId}_account'] =
+            'Account number cannot exceed 20 digits';
+        isValid = false;
       }
     }
 
+    // Validate new bank details if being added
     if (_isAddNewBankDetail) {
-      String newAccountNumber = newBankaccountnumber.text.trim();
-
-      if (_newSelectedBank == null ||
-          newBankbranchname.text.isEmpty ||
-          newBankaccountname.text.isEmpty ||
-          newAccountNumber.isEmpty) {
-        _showErrorSnackbar("Please fill all fields in new bank details");
-        return false;
+      if (_newSelectedBank == null || _newSelectedBank!.isEmpty) {
+        _fieldErrors['new_bank_name'] = 'Bank name is required';
+        isValid = false;
       }
-
-      if (newAccountNumber.length > 20) {
-        _showErrorSnackbar("Bank account number cannot exceed 20 digits");
-        return false;
+      if (newBankbranchname.text.isEmpty) {
+        _fieldErrors['new_bank_branch'] = 'Branch name is required';
+        isValid = false;
+      }
+      if (newBankaccountname.text.isEmpty) {
+        _fieldErrors['new_bank_accountName'] = 'Account name is required';
+        isValid = false;
+      }
+      String newAccountNumber = newBankaccountnumber.text.trim();
+      if (newAccountNumber.isEmpty) {
+        _fieldErrors['new_bank_account'] = 'Account number is required';
+        isValid = false;
+      }
+      // else if (!RegExp(r'^\d+$').hasMatch(newAccountNumber)) {
+      //   _fieldErrors['new_bank_account'] = 'Account number must be numeric';
+      //   isValid = false;
+      // }
+      else if (newAccountNumber.length > 20) {
+        _fieldErrors['new_bank_account'] =
+            'Account number cannot exceed 20 digits';
+        isValid = false;
       }
     }
 
-    return true;
-  }
+    // if (!isValid) {
+    //   SSnackbarUtil.showSnackbar(
+    //     'Error',
+    //     'Please fill out all required fields correctly',
+    //     SnackbarType.error,
+    //   );
+    // }
 
-  void _showErrorSnackbar(String message) {
-    SSnackbarUtil.showSnackbar(
-      "Error",
-      message,
-      SnackbarType.error,
-    );
+    return isValid;
   }
 
   @override
@@ -371,11 +400,13 @@ class _EditUserBankState extends State<EditUserBank> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Edit User Bank Detail",
-            style: smallStyle.copyWith(
-              fontWeight: FontWeight.w700,
-              color: isDarkMode ? Colors.white : Colors.black,
-            )),
+        title: Text(
+          "Edit User Bank Detail",
+          style: smallStyle.copyWith(
+            fontWeight: FontWeight.w700,
+            color: isDarkMode ? Colors.white : Colors.black,
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -409,6 +440,7 @@ class _EditUserBankState extends State<EditUserBank> {
       Map<String, dynamic> bank, int index, bool isDarkMode) {
     final controllers =
         bank['controllers'] as Map<String, TextEditingController>;
+    final bankId = bank['id'];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -419,10 +451,14 @@ class _EditUserBankState extends State<EditUserBank> {
           children: [
             _buildSectionTitle("Bank Details", isDarkMode),
             IconButton(
-              icon: Icon(Icons.delete,
-                  color: activeBankDetailsCount > 1 ? Colors.red : Colors.grey),
+              icon: Icon(
+                Icons.delete,
+                color: activeBankDetailsCount > 1 && !bank['isPayroll']
+                    ? Colors.red
+                    : Colors.grey,
+              ),
               onPressed: (activeBankDetailsCount > 1 && !bank['isPayroll'])
-                  ? () => _deleteBankDetail(bank['id'])
+                  ? () => _deleteBankDetail(bankId)
                   : null,
               tooltip: bank['isPayroll']
                   ? 'Cannot delete payroll bank'
@@ -432,116 +468,189 @@ class _EditUserBankState extends State<EditUserBank> {
             ),
           ],
         ),
-        _buildBankDropdown(index, isDarkMode),
-        _buildTextField("Branch Name", controllers['bankBranch']!, isDarkMode),
+        _buildBankDropdown(
+          index,
+          isDarkMode,
+          fieldKey: 'bank_${bankId}_name',
+        ),
         _buildTextField(
-            "Account Name", controllers['bankAccountName']!, isDarkMode),
+          "Branch Name",
+          controllers['bankBranch']!,
+          isDarkMode,
+          fieldKey: 'bank_${bankId}_branch',
+        ),
+        _buildTextField(
+          "Account Name",
+          controllers['bankAccountName']!,
+          isDarkMode,
+          fieldKey: 'bank_${bankId}_accountName',
+        ),
         _buildTextField(
           "Account Number",
           controllers['bankAccount']!,
           isDarkMode,
-          // keyboardType: const TextInputType.numberWithOptions(),
+          // keyboardType: TextInputType.number,
+          fieldKey: 'bank_${bankId}_account',
         ),
         Row(
           children: [
             Checkbox(
               value: bank['isPayroll'],
-              onChanged: (value) => _handlePayrollCheckbox(bank['id'], value),
+              onChanged: (value) => _handlePayrollCheckbox(bankId, value),
               activeColor: isDarkMode ? Colors.blueAccent : Colors.black,
             ),
-            Text("Is Payroll",
-                style: smallStyle.copyWith(
-                  color: isDarkMode ? Colors.white : Colors.black,
-                )),
+            Text(
+              "Is Payroll",
+              style: smallStyle.copyWith(
+                color: isDarkMode ? Colors.white : Colors.black,
+              ),
+            ),
           ],
         ),
+        if (_fieldErrors.containsKey('payroll') && bank['isPayroll'] == false)
+          Padding(
+            padding: const EdgeInsets.only(top: 4, left: 12),
+            child: Text(
+              _fieldErrors['payroll']!,
+              style: const TextStyle(color: Colors.red, fontSize: 12),
+            ),
+          ),
         const Divider(),
       ],
     );
   }
 
-  Widget _buildBankDropdown(int index, bool isDarkMode) {
+  Widget _buildBankDropdown(
+    int index,
+    bool isDarkMode, {
+    required String fieldKey,
+  }) {
+    final hasError = _fieldErrors.containsKey(fieldKey);
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: isDarkMode ? Colors.white54 : Colors.black54,
-            width: 1.0,
-          ),
-          borderRadius: BorderRadius.circular(4.0),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              isExpanded: true,
-              value: _selectedBanks[index],
-              hint: Text('Select Bank',
-                  style: smallStyle.copyWith(
-                    color: isDarkMode ? Colors.white70 : Colors.black54,
-                  )),
-              dropdownColor: isDarkMode ? Colors.grey[800] : Colors.white,
-              style: smallStyle.copyWith(
-                color: isDarkMode ? Colors.white : Colors.black,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: hasError
+                    ? Colors.red
+                    : (isDarkMode ? Colors.white54 : Colors.black54),
+                width: 1.0,
               ),
-              items: _availableBanks.map((String bank) {
-                return DropdownMenuItem<String>(
-                  value: bank,
-                  child: Text(bank),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedBanks[index] = newValue;
-                });
-              },
+              borderRadius: BorderRadius.circular(4.0),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  isExpanded: true,
+                  value: _selectedBanks[index],
+                  hint: Text(
+                    hasError ? _fieldErrors[fieldKey]! : 'Select Bank',
+                    style: smallStyle.copyWith(
+                      color: hasError
+                          ? Colors.red
+                          : (isDarkMode ? Colors.white70 : Colors.black54),
+                    ),
+                  ),
+                  dropdownColor: isDarkMode ? Colors.grey[800] : Colors.white,
+                  style: smallStyle.copyWith(
+                    color: isDarkMode ? Colors.white : Colors.black,
+                  ),
+                  items: _availableBanks.map((String bank) {
+                    return DropdownMenuItem<String>(
+                      value: bank,
+                      child: Text(bank),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedBanks[index] = newValue;
+                      _fieldErrors.remove(fieldKey);
+                    });
+                  },
+                ),
+              ),
             ),
           ),
-        ),
+          if (hasError)
+            Padding(
+              padding: const EdgeInsets.only(top: 4, left: 12),
+              child: Text(
+                _fieldErrors[fieldKey]!,
+                style: const TextStyle(color: Colors.red, fontSize: 12),
+              ),
+            ),
+        ],
       ),
     );
   }
 
   Widget _buildNewBankDropdown(bool isDarkMode) {
+    const fieldKey = 'new_bank_name';
+    final hasError = _fieldErrors.containsKey(fieldKey);
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: isDarkMode ? Colors.white54 : Colors.black54,
-            width: 1.0,
-          ),
-          borderRadius: BorderRadius.circular(4.0),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              isExpanded: true,
-              value: _newSelectedBank,
-              hint: Text('Select Bank',
-                  style: smallStyle.copyWith(
-                    color: isDarkMode ? Colors.white70 : Colors.black54,
-                  )),
-              dropdownColor: isDarkMode ? Colors.grey[800] : Colors.white,
-              style: smallStyle.copyWith(
-                color: isDarkMode ? Colors.white : Colors.black,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: hasError
+                    ? Colors.red
+                    : (isDarkMode ? Colors.white54 : Colors.black54),
+                width: 1.0,
               ),
-              items: _availableBanks.map((String bank) {
-                return DropdownMenuItem<String>(
-                  value: bank,
-                  child: Text(bank),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  _newSelectedBank = newValue;
-                });
-              },
+              borderRadius: BorderRadius.circular(4.0),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  isExpanded: true,
+                  value: _newSelectedBank,
+                  hint: Text(
+                    hasError ? _fieldErrors[fieldKey]! : 'Select Bank',
+                    style: smallStyle.copyWith(
+                      color: hasError
+                          ? Colors.red
+                          : (isDarkMode ? Colors.white70 : Colors.black54),
+                    ),
+                  ),
+                  dropdownColor: isDarkMode ? Colors.grey[800] : Colors.white,
+                  style: smallStyle.copyWith(
+                    color: isDarkMode ? Colors.white : Colors.black,
+                  ),
+                  items: _availableBanks.map((String bank) {
+                    return DropdownMenuItem<String>(
+                      value: bank,
+                      child: Text(bank),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _newSelectedBank = newValue;
+                      _fieldErrors.remove(fieldKey);
+                    });
+                  },
+                ),
+              ),
             ),
           ),
-        ),
+          if (hasError)
+            Padding(
+              padding: const EdgeInsets.only(top: 4, left: 12),
+              child: Text(
+                _fieldErrors[fieldKey]!,
+                style: const TextStyle(color: Colors.red, fontSize: 12),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -553,26 +662,51 @@ class _EditUserBankState extends State<EditUserBank> {
           children: [
             Checkbox(
               value: _isAddNewBankDetail,
-              onChanged: (value) =>
-                  setState(() => _isAddNewBankDetail = value ?? false),
+              onChanged: (value) {
+                setState(() {
+                  _isAddNewBankDetail = value ?? false;
+                  _fieldErrors
+                      .removeWhere((key, value) => key.startsWith('new_bank_'));
+                  if (!_isAddNewBankDetail) {
+                    _isNewBankPayRoll = false;
+                    _newSelectedBank = null;
+                    newBankbranchname.clear();
+                    newBankaccountname.clear();
+                    newBankaccountnumber.clear();
+                  }
+                });
+              },
               activeColor: isDarkMode ? Colors.blueAccent : Colors.black,
             ),
-            Text("Add New Bank",
-                style: smallStyle.copyWith(
-                  color: isDarkMode ? Colors.white : Colors.black,
-                )),
+            Text(
+              "Add New Bank",
+              style: smallStyle.copyWith(
+                color: isDarkMode ? Colors.white : Colors.black,
+              ),
+            ),
           ],
         ),
         if (_isAddNewBankDetail) ...[
           _buildSectionTitle("New Bank Details", isDarkMode),
           _buildNewBankDropdown(isDarkMode),
-          _buildTextField("Branch Name", newBankbranchname, isDarkMode),
-          _buildTextField("Account Name", newBankaccountname, isDarkMode),
+          _buildTextField(
+            "Branch Name",
+            newBankbranchname,
+            isDarkMode,
+            fieldKey: 'new_bank_branch',
+          ),
+          _buildTextField(
+            "Account Name",
+            newBankaccountname,
+            isDarkMode,
+            fieldKey: 'new_bank_accountName',
+          ),
           _buildTextField(
             "Account Number",
             newBankaccountnumber,
             isDarkMode,
-            // keyboardType: const TextInputType.numberWithOptions(),
+            // keyboardType: TextInputType.number,
+            fieldKey: 'new_bank_account',
           ),
           Row(
             children: [
@@ -586,15 +720,26 @@ class _EditUserBankState extends State<EditUserBank> {
                     }
                     _selectedPayrollBankId = null;
                   }
+                  _fieldErrors.remove('payroll');
                 }),
                 activeColor: isDarkMode ? Colors.blueAccent : Colors.black,
               ),
-              Text("Is Payroll",
-                  style: smallStyle.copyWith(
-                    color: isDarkMode ? Colors.white : Colors.black,
-                  )),
+              Text(
+                "Is Payroll",
+                style: smallStyle.copyWith(
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
+              ),
             ],
           ),
+          if (_fieldErrors.containsKey('payroll') && !_isNewBankPayRoll)
+            Padding(
+              padding: const EdgeInsets.only(top: 4, left: 12),
+              child: Text(
+                _fieldErrors['payroll']!,
+                style: const TextStyle(color: Colors.red, fontSize: 12),
+              ),
+            ),
         ],
       ],
     );
@@ -603,37 +748,91 @@ class _EditUserBankState extends State<EditUserBank> {
   Widget _buildSectionTitle(String title, bool isDarkMode) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Text(title,
-          style: normalStyle.copyWith(
-            fontWeight: FontWeight.bold,
-            color: isDarkMode ? Colors.white : Colors.black,
-          )),
+      child: Text(
+        title,
+        style: normalStyle.copyWith(
+          fontWeight: FontWeight.bold,
+          color: isDarkMode ? Colors.white : Colors.black,
+        ),
+      ),
     );
   }
 
   Widget _buildTextField(
-      String title, TextEditingController controller, bool isDarkMode,
-      {bool enabled = true, TextInputType? keyboardType}) {
+    String title,
+    TextEditingController controller,
+    bool isDarkMode, {
+    bool enabled = true,
+    TextInputType? keyboardType,
+    required String fieldKey,
+  }) {
+    final hasError = _fieldErrors.containsKey(fieldKey);
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      child: TextField(
-        controller: controller,
-        enabled: enabled,
-        keyboardType: keyboardType,
-        decoration: InputDecoration(
-          labelText: title,
-          border: const OutlineInputBorder(),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-          labelStyle: smallStyle.copyWith(
-              color: isDarkMode ? Colors.white : Colors.black),
-          filled: !enabled,
-          fillColor: !enabled
-              ? (isDarkMode ? Colors.grey[700] : Colors.grey[200])
-              : null,
-        ),
-        style: smallStyle.copyWith(
-            color: isDarkMode ? Colors.white : Colors.black),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            controller: controller,
+            enabled: enabled,
+            keyboardType: keyboardType,
+            decoration: InputDecoration(
+              labelText: title,
+              border: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: hasError
+                      ? Colors.red
+                      : (isDarkMode ? Colors.white54 : Colors.black54),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: hasError
+                      ? Colors.red
+                      : (isDarkMode ? Colors.white54 : Colors.black54),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: hasError
+                      ? Colors.red
+                      : (isDarkMode ? Colors.blueAccent : Colors.black),
+                  width: 2.0,
+                ),
+              ),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+              labelStyle: smallStyle.copyWith(
+                color: hasError
+                    ? Colors.red
+                    : (isDarkMode ? Colors.white70 : Colors.black54),
+              ),
+              filled: !enabled,
+              fillColor: !enabled
+                  ? (isDarkMode ? Colors.grey[700] : Colors.grey[200])
+                  : null,
+            ),
+            style: smallStyle.copyWith(
+              color: isDarkMode ? Colors.white : Colors.black,
+            ),
+            onChanged: (value) {
+              if (hasError) {
+                setState(() {
+                  _fieldErrors.remove(fieldKey);
+                });
+              }
+            },
+          ),
+          if (hasError)
+            Padding(
+              padding: const EdgeInsets.only(top: 4, left: 12),
+              child: Text(
+                _fieldErrors[fieldKey]!,
+                style: const TextStyle(color: Colors.red, fontSize: 12),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -646,7 +845,6 @@ class _EditUserBankState extends State<EditUserBank> {
         children: [
           ElevatedButton(
             onPressed: () {
-              // Dismiss any open dialogs before navigating back
               if (Get.isDialogOpen == true) {
                 Get.back();
               }
@@ -684,12 +882,17 @@ class _EditUserBankState extends State<EditUserBank> {
             style: ElevatedButton.styleFrom(
               backgroundColor: isDarkMode ? Colors.blueAccent : Colors.black,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
-            child: Text("Save Changes",
-                style: smallStyle.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                )),
+            child: Text(
+              "Save Changes",
+              style: smallStyle.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),

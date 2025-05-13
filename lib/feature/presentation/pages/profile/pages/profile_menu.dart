@@ -38,8 +38,7 @@ class ProfileMenu extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15),
               ),
-              backgroundColor:
-                  isDarkMode ? Colors.grey.shade700 : Colors.grey.shade200,
+              backgroundColor: isDarkMode ? Colors.grey.shade700 : Colors.white,
             ),
             onPressed: () {
               if (onExpandToggle != null && showIcon) {
@@ -53,10 +52,10 @@ class ProfileMenu extends StatelessWidget {
               children: [
                 Icon(
                   icon,
-                  size: 30,
+                  size: 27,
                   color: isDarkMode ? Colors.grey.shade200 : Colors.black,
                 ),
-                const SizedBox(width: 20),
+                const SizedBox(width: 15),
                 Expanded(
                   child: Text(
                     text,
@@ -72,7 +71,7 @@ class ProfileMenu extends StatelessWidget {
                     onTap: onExpandToggle,
                     child: Icon(
                       isExpanded ? Icons.expand_less : Icons.expand_more,
-                      size: 30.0,
+                      size: 27.0,
                       color: isDarkMode ? Colors.white : Colors.black,
                     ),
                   ),

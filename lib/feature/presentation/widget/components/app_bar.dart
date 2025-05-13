@@ -31,7 +31,7 @@ class _ConstantAppBarState extends State<ConstantAppBar> {
       automaticallyImplyLeading: false,
       title: GestureDetector(
         onTap: () {
-          Get.off(() => const BottomNavPage());
+          // Get.off(() => const BottomNavPage());
         },
         child: Padding(
           padding: const EdgeInsets.all(2.0),
@@ -50,8 +50,8 @@ class _ConstantAppBarState extends State<ConstantAppBar> {
           },
           icon: Icon(
             Icons.notifications_none_outlined,
-            color: Colors.grey.shade500,
-            size: 28.0,
+            color: isDarkMode ? Colors.white : Colors.black,
+            size: 25.0,
           ),
         ),
 
@@ -113,10 +113,10 @@ class _ConstantAppBarState extends State<ConstantAppBar> {
             );
             overlayState.insert(overlayEntry);
           },
-          icon: const Icon(
+          icon: Icon(
             Icons.calendar_month_outlined,
-            size: 28.0,
-            color: Colors.grey,
+            size: 25.0,
+            color: isDarkMode ? Colors.white : Colors.black,
           ),
         ),
         // Chat Icon

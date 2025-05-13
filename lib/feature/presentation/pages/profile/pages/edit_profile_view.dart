@@ -29,8 +29,7 @@ class EditProfileView extends StatefulWidget {
 
 class _EditProfileViewState extends State<EditProfileView> {
   final authcontroller = Get.find<AuthController>();
-  final ProfileController profilecontroller =
-      Get.put(ProfileController(profileRepo: Get.find()));
+  final ProfileController profilecontroller = Get.put(ProfileController());
 
   bool _isAddNewDocumentChecked = false;
 
@@ -107,6 +106,7 @@ class _EditProfileViewState extends State<EditProfileView> {
           skills: List.from(profilecontroller.profile.first.skills ?? []),
           username: profilecontroller.profile.first.username ?? "",
           id: profilecontroller.profile.first.id,
+          // profileID: authcontroller.alluserData.value.user!.profileId,
           profileID: authcontroller.alluserData.value.user!.profileId,
         );
 
