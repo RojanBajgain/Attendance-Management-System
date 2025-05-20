@@ -3,13 +3,22 @@ class ApiUrls {
   // static const String baseUrl = "http://192.168.254.49:8000/";
   // static const String baseUrl = "http://192.168.254.4:8000/";
 
-  static const String baseUrl = "https://backend.ams.ayata.com.np/";
+  static const String baseUrl = "http://192.168.254.45:8000/";
+
+  // static const String baseUrl = "http://192.168.0.103:8000/";
+
+  // static const String baseUrl = "http://192.168.10.92:8000/";
+
+  // static const String baseUrl = "https://backend.ams.ayata.com.np/";
 
   static const String login = "api/login/";
 
   static const String logout = "api/logout/";
 
   // static const String register = "auth/register/";
+
+  static const String organization = "api/getorganizations/";
+  static const String organizationProfile = "api/get-organization-profile/";
 
   static const String profile = "api/profiles/";
   static const String profiledetail = "api/profiles/";
@@ -18,7 +27,7 @@ class ApiUrls {
 
   static const String postuseraddress = "api/address/";
   static const String updateaddress = "api/address/";
-  static const String getcountry = "api/get_countries";
+  static const String getcountry = "api/get_countries/";
 
   static const String updatedocuments = "api/documents/";
   static const String postnewedocuments = "api/documents/";
@@ -51,10 +60,16 @@ class ApiUrls {
 
   static const String hasClockedIn =
       "api/timesheets/attendencelogs/hasClockedIn/";
+
   static const String postclockin =
       "api/timesheets/attendencelogs/postClockIn/";
+
   static const String postclockout =
       "api/timesheets/attendencelogs/postClockOut/";
+
+  static const String ipaddress = "https://api.ipify.org/?format=json";
+
+  static const String accesspoint = "api/geolocation/check-access-point/";
 
   static const String onbreak = "api/timesheets/breaktime/start/";
   static const String onresume = "api/timesheets/breaktime/resume/";

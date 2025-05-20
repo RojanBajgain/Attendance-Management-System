@@ -93,25 +93,7 @@ class _ClockTimeState extends State<ClockTime> {
     // Update the last active date
     await prefs.setString('lastActiveDate', todayDate);
 
-    // Check for current user ID
-    int? currentUserId;
-    if (profileController.profile.isNotEmpty &&
-        profileController.profile.first.device?.deviceUserId != null) {
-      currentUserId = profileController.profile.first.device!.deviceUserId;
-    }
-
-    // Try to get user-specific clock in time first
-    String? userClockInTimeStr;
-    if (currentUserId != null) {
-      userClockInTimeStr = prefs.getString('clockInTime_$currentUserId');
-    }
-
-    // If not found, fall back to general clock in time
-    if (userClockInTimeStr == null) {
-      userClockInTimeStr = prefs.getString('clockInTime');
-    }
-
-    // Get clock-in time from the API controller as final source of truth
+    // Get clock-in time from the API controller
     DateTime? apiClockInTime = hasClockedinController.clockedInTime.value;
     log("Loaded Clock-In Time from API: $apiClockInTime");
 
@@ -134,14 +116,8 @@ class _ClockTimeState extends State<ClockTime> {
         clockInTime = apiClockInTime;
       });
 
-      // Store the clock in time in SharedPreferences to ensure consistency
+      // Store the clock-in time in SharedPreferences to ensure consistency
       await prefs.setString('clockInTime', clockInMinute.toIso8601String());
-
-      // Also store user-specific clock in time
-      if (currentUserId != null) {
-        await prefs.setString(
-            'clockInTime_$currentUserId', clockInMinute.toIso8601String());
-      }
 
       // Explicitly set the clockInTime in timerController
       timerController.clockInTime = clockInMinute.toIso8601String();

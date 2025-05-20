@@ -4,6 +4,7 @@ import 'package:ams/feature/presentation/pages/forget_password/forget_password.d
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/widget/button_large.dart';
 import 'package:ams/feature/presentation/widget/custom_textfield.dart';
+import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:ams/feature/utils/validator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -22,6 +23,7 @@ class _LoginPageState extends State<LoginPage> {
 
   final email = TextEditingController();
   final pw = TextEditingController();
+  final String _defaultRole = 'Staff'; // Default role for login
 
   final authController = Get.find<AuthController>();
 
@@ -47,10 +49,8 @@ class _LoginPageState extends State<LoginPage> {
     await prefs.setString('user_email', email);
   }
 
-  // Update the _checkBiometricAvailability method in LoginPage
   Future<void> _checkBiometricAvailability() async {
     try {
-      // First, check if device has biometric hardware
       bool deviceSupported = await authController.canUseBiometrics();
       if (!deviceSupported) {
         setState(() {
@@ -59,29 +59,20 @@ class _LoginPageState extends State<LoginPage> {
         return;
       }
 
-      // Then check if biometrics is enabled in both storage locations
       final prefs = await SharedPreferences.getInstance();
       final isBiometricsEnabled = prefs.getBool('biometrics_enabled') ?? false;
       final secureBiometrics =
           await authController.secureStorage.read(key: 'biometrics_enabled');
       final isSecureBiometricsEnabled = secureBiometrics == 'true';
 
-      // Check if credentials exist
       final hasCredentials = await authController.hasSavedCredentials();
 
-      // Show option if biometrics are enabled and credentials exist
       setState(() {
         _showBiometricOption =
             (isBiometricsEnabled || isSecureBiometricsEnabled) &&
                 hasCredentials;
       });
-
-      // Log this to help with debugging
-      // print("Biometric login available: $_showBiometricOption");
-      // print(
-      //     "Prefs enabled: $isBiometricsEnabled, Secure storage enabled: $isSecureBiometricsEnabled, Has credentials: $hasCredentials");
     } catch (e) {
-      // print("Error checking biometric availability: $e");
       setState(() {
         _showBiometricOption = false;
       });
@@ -213,32 +204,69 @@ class _LoginPageState extends State<LoginPage> {
                         ],
                       ),
                       const SizedBox(height: 24.0),
-
-                      // Login button row with biometric option
                       Row(
                         children: [
-                          // Login button
                           Expanded(
-                            child: Material(
-                              borderRadius: BorderRadius.circular(12.0),
-                              color: isDarkMode
-                                  ? Colors.grey.shade700
-                                  : Colors.black,
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(8.0),
-                                onTap: () {
-                                  if (email.text.isNotEmpty) {
-                                    _saveEmail(email.text);
-                                  }
-                                  authController.loginMethod(
-                                      email.text, pw.text, keepMeLoggedIn);
-                                },
-                                child: const LargeButton(title: "Log in"),
+                            child: Obx(
+                              () => Material(
+                                borderRadius: BorderRadius.circular(12.0),
+                                color: authController.authIsLoading.value
+                                    ? (isDarkMode
+                                        ? Colors.grey.shade600
+                                        : Colors.grey.shade400)
+                                    : (isDarkMode
+                                        ? Colors.grey.shade700
+                                        : Colors.black),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  onTap: authController.authIsLoading.value
+                                      ? null
+                                      : () {
+                                          final emailError =
+                                              Validator.validateEmail(
+                                                  string: email.text);
+                                          final passwordError =
+                                              Validator.validateIsEmpty(
+                                                  string: pw.text);
+                                          if (emailError != null ||
+                                              passwordError != null) {
+                                            SSnackbarUtil.showSnackbar(
+                                              'Invalid Input',
+                                              emailError ?? passwordError!,
+                                              SnackbarType.error,
+                                            );
+                                            return;
+                                          }
+
+                                          if (email.text.isNotEmpty) {
+                                            _saveEmail(email.text);
+                                          }
+
+                                          authController.loginMethod(
+                                            email.text,
+                                            pw.text,
+                                            _defaultRole, // Pass default role
+                                            keepMeLoggedIn,
+                                          );
+                                        },
+                                  child: authController.authIsLoading.value
+                                      ? const Center(
+                                          child: SizedBox(
+                                            width: 24,
+                                            height: 24,
+                                            child: CircularProgressIndicator(
+                                              valueColor:
+                                                  AlwaysStoppedAnimation<Color>(
+                                                      Colors.white),
+                                              strokeWidth: 2.0,
+                                            ),
+                                          ),
+                                        )
+                                      : const LargeButton(title: "Log in"),
+                                ),
                               ),
                             ),
                           ),
-
-                          // Biometric login button
                           if (_showBiometricOption) ...[
                             const SizedBox(width: 16.0),
                             Container(
@@ -279,7 +307,6 @@ class _LoginPageState extends State<LoginPage> {
                           ],
                         ],
                       ),
-
                       const SizedBox(height: 200),
                       Image.asset("assets/images/logo.png"),
                     ],

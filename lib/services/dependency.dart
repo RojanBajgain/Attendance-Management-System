@@ -4,9 +4,12 @@ import 'package:ams/feature/data/repository/calender_notification.dart';
 import 'package:ams/feature/data/repository/clock_in_out_repo.dart';
 import 'package:ams/feature/data/repository/has_clockedIn_repo.dart';
 import 'package:ams/feature/data/repository/notification_repo.dart';
+import 'package:ams/feature/data/repository/organization_repo.dart';
 import 'package:ams/feature/data/repository/payroll_repo.dart';
 import 'package:ams/feature/data/repository/policy_repo.dart';
+import 'package:ams/feature/data/repository/profile_repo.dart';
 import 'package:ams/feature/data/repository/reset_password_repo.dart';
+import 'package:ams/feature/presentation/pages/organization/controller/organization_controller.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/controller/calender_notification_controller.dart';
 import 'package:ams/feature/presentation/pages/dashboard/controller/clock_in_out_controller.dart';
 import 'package:ams/feature/presentation/pages/dashboard/controller/has_clockedIn_controller.dart';
@@ -15,6 +18,7 @@ import 'package:ams/feature/presentation/pages/login/controller/login_controller
 import 'package:ams/feature/presentation/pages/notification/controller/notification_controller.dart';
 import 'package:ams/feature/presentation/pages/payroll/controller/payroll_controller.dart';
 import 'package:ams/feature/presentation/pages/policy/controller/policy_controller.dart';
+import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -33,9 +37,8 @@ Future<void> init() async {
   );
 
   // // Profile
-  // Get.put<ProfileRepo>(ProfileRepo(apiClient: Get.find<ApiClient>()));
-  // Get.put<ProfileController>(
-  //     ProfileController(profileRepo: Get.find<ProfileRepo>()));
+  Get.put<ProfileRepo>(ProfileRepo(apiClient: Get.find<ApiClient>()));
+  Get.put<ProfileController>(ProfileController());
 
   // Time off
   // Get.put<TimeoffRepo>(TimeoffRepo(apiClient: Get.find<ApiClient>()));
@@ -88,6 +91,11 @@ Future<void> init() async {
       EventCalenderRepo(apiClient: Get.find<ApiClient>()));
   Get.put<CalenderNotificationController>(CalenderNotificationController(
       eventCalenderrepo: Get.find<EventCalenderRepo>()));
+
+  // Organization
+  // Get.put<OrganizationRepo>(OrganizationRepo(apiClient: Get.find<ApiClient>()));
+  // Get.put<OrganizationController>(
+  //     OrganizationController(organizationRepo: Get.find<OrganizationRepo>()));
 
   /*  // Bottom Navigation
   Get.put<BottomNavController>(BottomNavController());

@@ -36,20 +36,21 @@ class TimeoffController extends GetxController {
       ApiResponse response = await timeoffRepo.getTimeoff();
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
-        // log("Fetch Timeoff data: ${response.response}");
-
         TimeoffModel timeoffdata = response.response;
 
-        timeoff.assignAll(timeoffdata.data);
-        filterTimeoff(selectedFilter.value);
-
-        _hasLoadedOnce = true;
+        // Ensure we're processing the data correctly
+        if (timeoffdata.data != null) {
+          timeoff.assignAll(timeoffdata.data!);
+          filterTimeoff(selectedFilter.value);
+          _hasLoadedOnce = true;
+        } else {
+          log("Timeoff data is null in response");
+        }
       } else {
-        log("Error: ${response.message}");
+        log("Error fetching timeoff: ${response.message}");
       }
     } catch (e) {
-      log("Error fetching timeoff: $e");
-      errorMessage.value = "An error occurred: $e";
+      log("Error in getTimeoff: $e");
     } finally {
       isLoading(false);
     }
@@ -57,46 +58,52 @@ class TimeoffController extends GetxController {
 
   // Post Timeoffs
   Future<void> createtimeoff({
-    required int userID,
-    required int typeID,
+    required int profile,
+    required int type,
     required String startdate,
     required String enddate,
     required String reason,
   }) async {
     try {
-      ApiResponse response = await timeoffRepo.createtimeoff(
-          userID, typeID, startdate, enddate, reason);
+      isLoading(true);
 
-      if (response.status == ApiStatus.SUCCESS && response.response != null) {
-        log("Fetched created timeoff data: ${response.response}");
+      // Debug log the parameters
+      log('Creating timeoff with:');
+      log('userID: $profile');
+      log('typeID: $type');
+      log('startdate: $startdate');
+      log('enddate: $enddate');
+      log('reason: $reason');
+
+      ApiResponse response = await timeoffRepo.createtimeoff(
+          profile, type, startdate, enddate, reason);
+
+      if (response.status == ApiStatus.SUCCESS) {
+        // Force refresh the timeoff list
+        await getTimeoff(forceRefresh: true);
 
         Get.back();
-
         SSnackbarUtil.showSnackbar(
-          'Posted Timeoff',
-          response.message ?? 'Your Timeoff have been successfully posted',
+          'Success',
+          'Timeoff request submitted successfully',
           SnackbarType.success,
         );
-
-        await getTimeoff();
       } else {
-        log("Error: ${response.message}");
         SSnackbarUtil.showSnackbar(
-          'Server Error',
-          'Failed to post timeoff. Please try again later',
+          'Error',
+          response.message ?? 'Failed to submit timeoff request',
           SnackbarType.error,
         );
       }
     } catch (e) {
-      if (kDebugMode) {
-        print("Error fetching sub timeoff data: $e");
-      }
-
+      log("Error creating timeoff: $e");
       SSnackbarUtil.showSnackbar(
         'Error',
-        'An unexpected error occurred: $e',
+        'An error occurred: ${e.toString()}',
         SnackbarType.error,
       );
+    } finally {
+      isLoading(false);
     }
   }
 

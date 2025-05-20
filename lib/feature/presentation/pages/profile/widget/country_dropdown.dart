@@ -28,11 +28,11 @@ class _CountryDropdownState extends State<CountryDropdown> {
 
   // Create CountryData objects from CountryListModel objects
   List<CountryData> _getCountries() {
-    if (profileController.countryList.isEmpty) {
+    if (profileController.countrylist.isEmpty) {
       // Fallback to default if no countries are loaded yet
       return [CountryData(id: 1, name: "Nepal")];
     }
-    return profileController.countryList
+    return profileController.countrylist
         .map((country) =>
             CountryData(id: country.id ?? 0, name: country.name ?? ""))
         .toList();

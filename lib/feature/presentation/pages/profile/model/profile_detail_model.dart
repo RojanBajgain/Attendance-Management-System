@@ -14,13 +14,16 @@ class ProfileDetailModel {
   Device? device;
   DateTime? joinedDate;
   bool isActive;
-  bool role;
+  String role;
   String resume;
   List<String>? skills;
   String employeeType;
   List<Address>? addresses;
+  Organization? organization;
+  String status;
   String username;
   String email;
+  User? user;
 
   ProfileDetailModel({
     this.id = 0,
@@ -36,13 +39,16 @@ class ProfileDetailModel {
     this.device,
     this.joinedDate,
     this.isActive = false,
-    this.role = false,
+    this.role = '',
     this.resume = '',
     this.skills,
     this.employeeType = '',
     this.addresses,
+    this.organization,
+    this.status = '',
     this.username = '',
     this.email = '',
+    this.user,
   });
 
   factory ProfileDetailModel.fromJson(Map<String, dynamic> json) =>
@@ -71,7 +77,7 @@ class ProfileDetailModel {
             ? DateTime.tryParse(json["joined_date"])
             : null,
         isActive: json["is_active"] ?? false,
-        role: json["role"] ?? false,
+        role: json["role"] ?? '',
         resume: json["resume"] ?? '',
         skills: json["skills"] != null
             ? List<String>.from(json["skills"].map((x) => x))
@@ -81,8 +87,13 @@ class ProfileDetailModel {
             ? List<Address>.from(
                 json["addresses"].map((x) => Address.fromJson(x)))
             : null,
+        organization: json["organization"] != null
+            ? Organization.fromJson(json["organization"])
+            : null,
+        status: json["status"] ?? '',
         username: json["username"] ?? '',
         email: json["email"] ?? '',
+        user: json["user"] != null ? User.fromJson(json["user"]) : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -94,25 +105,21 @@ class ProfileDetailModel {
         "rank": rank?.toJson(),
         "gender": gender,
         "profile_image": profileImage,
-        "documents": documents != null
-            ? List<dynamic>.from(documents!.map((x) => x.toJson()))
-            : null,
-        "bank_details": bankDetails != null
-            ? List<dynamic>.from(bankDetails!.map((x) => x.toJson()))
-            : null,
-        "device": device,
+        "documents": documents?.map((x) => x.toJson()).toList(),
+        "bank_details": bankDetails?.map((x) => x.toJson()).toList(),
+        "device": device?.toJson(),
         "joined_date": joinedDate?.toIso8601String(),
         "is_active": isActive,
         "role": role,
         "resume": resume,
-        "skills":
-            skills != null ? List<dynamic>.from(skills!.map((x) => x)) : null,
+        "skills": skills,
         "employee_type": employeeType,
-        "addresses": addresses != null
-            ? List<dynamic>.from(addresses!.map((x) => x.toJson()))
-            : null,
+        "addresses": addresses?.map((x) => x.toJson()).toList(),
+        "organization": organization?.toJson(),
+        "status": status,
         "username": username,
         "email": email,
+        "user": user?.toJson(),
       };
 }
 
@@ -124,7 +131,7 @@ class Address {
   String? addressLineOne;
   String? addressLineTwo;
   String? postalCode;
-  Designation? country;
+  Country? country;
 
   Address({
     this.id,
@@ -137,10 +144,6 @@ class Address {
     this.country,
   });
 
-  factory Address.fromRawJson(String str) => Address.fromJson(json.decode(str));
-
-  String toRawJson() => json.encode(toJson());
-
   factory Address.fromJson(Map<String, dynamic> json) => Address(
         id: json["id"],
         addressType: json["address_type"],
@@ -149,9 +152,8 @@ class Address {
         addressLineOne: json["address_line_one"],
         addressLineTwo: json["address_line_two"],
         postalCode: json["postal_code"],
-        country: json["country"] != null
-            ? Designation.fromJson(json["country"])
-            : null,
+        country:
+            json["country"] != null ? Country.fromJson(json["country"]) : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -163,31 +165,6 @@ class Address {
         "address_line_two": addressLineTwo,
         "postal_code": postalCode,
         "country": country?.toJson(),
-      };
-}
-
-class Designation {
-  int? id;
-  String? name;
-
-  Designation({
-    this.id,
-    this.name,
-  });
-
-  factory Designation.fromRawJson(String str) =>
-      Designation.fromJson(json.decode(str));
-
-  String toRawJson() => json.encode(toJson());
-
-  factory Designation.fromJson(Map<String, dynamic> json) => Designation(
-        id: json["id"],
-        name: json["name"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
       };
 }
 
@@ -210,11 +187,6 @@ class BankDetail {
     this.isPayroll,
   });
 
-  factory BankDetail.fromRawJson(String str) =>
-      BankDetail.fromJson(json.decode(str));
-
-  String toRawJson() => json.encode(toJson());
-
   factory BankDetail.fromJson(Map<String, dynamic> json) => BankDetail(
         id: json["id"],
         user: json["user"],
@@ -236,6 +208,23 @@ class BankDetail {
       };
 }
 
+class Designation {
+  int? id;
+  String? name;
+
+  Designation({this.id, this.name});
+
+  factory Designation.fromJson(Map<String, dynamic> json) => Designation(
+        id: json["id"],
+        name: json["name"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+      };
+}
+
 class Device {
   int? id;
   int? user;
@@ -252,10 +241,6 @@ class Device {
     this.portalPin,
     this.appPin,
   });
-
-  factory Device.fromRawJson(String str) => Device.fromJson(json.decode(str));
-
-  String toRawJson() => json.encode(toJson());
 
   factory Device.fromJson(Map<String, dynamic> json) => Device(
         id: json["id"],
@@ -295,11 +280,6 @@ class Document {
     this.files,
   });
 
-  factory Document.fromRawJson(String str) =>
-      Document.fromJson(json.decode(str));
-
-  String toRawJson() => json.encode(toJson());
-
   factory Document.fromJson(Map<String, dynamic> json) => Document(
         id: json["id"],
         profile: json["profile"],
@@ -322,9 +302,7 @@ class Document {
         "title": title,
         "issued_date": issuedDate?.toIso8601String(),
         "identifier": identifier,
-        "files": files != null
-            ? List<dynamic>.from(files!.map((x) => x.toJson()))
-            : null,
+        "files": files?.map((x) => x.toJson()).toList(),
       };
 }
 
@@ -339,11 +317,6 @@ class FileElement {
     this.file,
   });
 
-  factory FileElement.fromRawJson(String str) =>
-      FileElement.fromJson(json.decode(str));
-
-  String toRawJson() => json.encode(toJson());
-
   factory FileElement.fromJson(Map<String, dynamic> json) => FileElement(
         id: json["id"],
         document: json["document"],
@@ -354,5 +327,69 @@ class FileElement {
         "id": id,
         "document": document,
         "file": file,
+      };
+}
+
+class Country {
+  int? id;
+  String? name;
+  String? code;
+
+  Country({
+    this.id,
+    this.name,
+    this.code,
+  });
+
+  factory Country.fromJson(Map<String, dynamic> json) => Country(
+        id: json["id"],
+        name: json["name"],
+        code: json["code"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "code": code,
+      };
+}
+
+class Organization {
+  int? id;
+  String? title;
+  String? description;
+
+  Organization({this.id, this.title, this.description});
+
+  factory Organization.fromJson(Map<String, dynamic> json) => Organization(
+        id: json["id"],
+        title: json["title"],
+        description: json["description"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "title": title,
+        "description": description,
+      };
+}
+
+class User {
+  int? id;
+  String? fullName;
+  String? email;
+
+  User({this.id, this.fullName, this.email});
+
+  factory User.fromJson(Map<String, dynamic> json) => User(
+        id: json["id"],
+        fullName: json["full_name"],
+        email: json["email"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "full_name": fullName,
+        "email": email,
       };
 }

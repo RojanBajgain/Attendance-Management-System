@@ -14,10 +14,10 @@ import 'package:get/get.dart';
 
 class ProfileController extends GetxController {
   var profile = <Datum>[].obs;
+  var countrylist = <Datumm>[].obs;
   var isLoading = false.obs;
   var errorMessage = ''.obs;
   var profiledetail = ProfileDetailModel().obs;
-  final RxList<CountryListModel> countryList = <CountryListModel>[].obs;
 
   var isSameAsPermanent = false.obs;
 
@@ -64,38 +64,34 @@ class ProfileController extends GetxController {
   }
 
   Future<void> getcountryList() async {
+    isLoading(true);
     try {
       ApiResponse response = await profileRepo.getCountryList();
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
         log("Fetch country data: ${response.response}");
 
-        // If the response is a list of countries
-        if (response.response is List) {
-          List<dynamic> countryData = response.response;
-          countryList.value = countryData
-              .map((item) => CountryListModel.fromJson(item))
-              .toList();
-        }
-        // If the response is encoded as a JSON string
-        else if (response.response is String) {
-          List<dynamic> countryData = jsonDecode(response.response);
-          countryList.value = countryData
-              .map((item) => CountryListModel.fromJson(item))
-              .toList();
-        }
-        // If the response is already a CountryListModel
-        else if (response.response is CountryListModel) {
-          countryList.value = [response.response];
+        // Directly cast or parse the response into CountryListModel
+        CountryListModel countryListModel;
+
+        if (response.response is Map<String, dynamic>) {
+          countryListModel = CountryListModel.fromJson(response.response);
+        } else if (response.response is String) {
+          countryListModel = CountryListModel.fromRawJson(response.response);
+        } else {
+          throw Exception("Unexpected country list response format");
         }
 
-        log("Country list loaded: ${countryList.length} countries");
+        countrylist.value = countryListModel.data;
+        log("Country list loaded: ${countrylist.length} countries");
       } else {
-        log("Error: ${response.message}");
+        log("Country list error: ${response.message}");
       }
     } catch (e) {
       log('Error fetching country list: $e');
       errorMessage.value = 'An error occurred: $e';
+    } finally {
+      isLoading(false);
     }
   }
 
@@ -158,10 +154,7 @@ class ProfileController extends GetxController {
       );
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
-        // print("Profile updated successfully: ${response.response}");
       } else {
-        // print("Error: ${response.message}");
-
         SSnackbarUtil.showSnackbar(
           'Server Error',
           'Failed to update profile. Please try again later',
@@ -169,17 +162,16 @@ class ProfileController extends GetxController {
         );
       }
     } catch (e) {
-      // print("Error updating profile: $e");
       SSnackbarUtil.showSnackbar(
         'Error',
-        'An unexpected error occurred: $e',
+        'An unexpected error occurred, please try again',
         SnackbarType.error,
       );
     }
   }
 
   Future<void> postnewuserAddress({
-    required int userID,
+    required int profileID,
     required int issuedCountry,
     required String province,
     required String city,
@@ -203,7 +195,7 @@ class ProfileController extends GetxController {
       }
 
       ApiResponse response = await profileRepo.postnewuserAddress(
-        userID,
+        profileID,
         issuedCountry,
         province,
         city,
@@ -308,7 +300,7 @@ class ProfileController extends GetxController {
 
   Future<void> postuserBankDetails({
     required int bankdetailID,
-    required int userID,
+    required int profileID,
     required String bankname,
     required String bankaccount,
     required String bankaccountname,
@@ -318,7 +310,7 @@ class ProfileController extends GetxController {
     try {
       ApiResponse response = await profileRepo.postuserBankDetails(
         bankdetailID,
-        userID,
+        profileID,
         bankname,
         bankaccount,
         bankaccountname,
@@ -357,7 +349,7 @@ class ProfileController extends GetxController {
   }
 
   Future<void> postnewBankDetails({
-    required int userID,
+    required int profileID,
     required String bankName,
     required String bankAccount,
     required String bankaccountName,
@@ -365,8 +357,18 @@ class ProfileController extends GetxController {
     required String isPayroll,
   }) async {
     try {
+      // First verify we have a valid profile
+      if (profile.isEmpty) {
+        SSnackbarUtil.showSnackbar(
+          'Error',
+          'Please complete your profile before adding bank details',
+          SnackbarType.error,
+        );
+        return;
+      }
+
       ApiResponse response = await profileRepo.postnewBankDetails(
-        userID,
+        profile.first.id,
         bankName,
         bankAccount,
         bankaccountName,
@@ -375,31 +377,24 @@ class ProfileController extends GetxController {
       );
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
-        // log("Fetched created new bank detail data: ${response.response}");
-
         Get.back();
         SSnackbarUtil.showSnackbar(
-          'User Details has been updated',
-          response.message ?? 'Your details has been successfully updated',
+          'Success',
+          'Bank details added successfully',
           SnackbarType.success,
         );
-
-        // await getTimeoff();
+        // await getProfile();
       } else {
-        // log("Error: ${response.message}");
         SSnackbarUtil.showSnackbar(
-          'Server Error',
-          'Failed to post timeoff. Please try again later',
+          'Error',
+          response.message ?? 'Failed to add bank details',
           SnackbarType.error,
         );
       }
     } catch (e) {
-      if (kDebugMode) {
-        print("Error fetching sub timeoff data: $e");
-      }
       SSnackbarUtil.showSnackbar(
         'Error',
-        'An unexpected error occurred: $e',
+        'An error occurred: ${e.toString()}',
         SnackbarType.error,
       );
     }

@@ -16,36 +16,29 @@ class ApiClient {
 
   String get token => sharedPreferences.getString('access_token') ?? '';
   String get refreshToken => sharedPreferences.getString('refresh_token') ?? '';
+  String get organization =>
+      sharedPreferences.getString('x-organization') ?? '';
 
-  void saveTokens(String accessToken, String refreshToken) {
+  void saveTokens(String accessToken, String refreshToken, String apiKey) {
     sharedPreferences.setString('access_token', accessToken);
     sharedPreferences.setString('refresh_token', refreshToken);
-    // log("Saved Access Token: $accessToken");
-    // log("Saved Refresh Token: $refreshToken");
+    sharedPreferences.setString('x-organization', apiKey);
   }
 
   void clearTokens() {
     sharedPreferences.remove('access_token');
     sharedPreferences.remove('refresh_token');
+    sharedPreferences.remove('x-organization');
   }
 
 //GETHEADER
-  static Map<String, String> getHeader(String token) {
+  static Map<String, String> getHeader(String token, {String? apiKey}) {
     final headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       if (token.isNotEmpty) 'Authorization': 'Bearer $token',
+      if (apiKey != null) 'x-organization': apiKey,
     };
-    return headers;
-  }
-
-  static Map<String, String> getHeaders(String token) {
-    final headers = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      // 'Authorization': 'Bearer $token',
-    };
-
     return headers;
   }
 
@@ -54,13 +47,16 @@ class ApiClient {
     String endPoint, {
     required String token,
     required T Function(dynamic json)? fromJson,
+    String? apiKey,
   }) async {
     try {
+      final headers = getHeader(token, apiKey: apiKey);
+      log('Headers used for request: $headers');
       final response = await MyHttpClient.client.get(
         Uri.parse(ApiUrls.baseUrl + endPoint),
-        headers: getHeader(token),
+        headers: getHeader(token, apiKey: apiKey),
       );
-      log('Token being used for request: $token');
+      // log('Token being used for request: $token');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseBody = utf8.decode(response.bodyBytes);
@@ -83,13 +79,14 @@ class ApiClient {
     String endPoint, {
     required dynamic requestBody,
     required String token,
+    String? apiKey,
     required T Function(dynamic json)? fromJson,
   }) async {
     try {
       final response = await MyHttpClient.client.post(
         Uri.parse(ApiUrls.baseUrl + endPoint),
         body: jsonEncode(requestBody),
-        headers: getHeader(token),
+        headers: getHeader(token, apiKey: apiKey),
       );
 
       // Handle response
@@ -119,13 +116,14 @@ class ApiClient {
     String endPoint, {
     required dynamic requestBody,
     required String token,
+    String? apiKey,
     required T Function(dynamic json)? fromJson,
   }) async {
     try {
       final response = await MyHttpClient.client.patch(
         Uri.parse(ApiUrls.baseUrl + endPoint),
         body: jsonEncode(requestBody),
-        headers: getHeader(token),
+        headers: getHeader(token, apiKey: apiKey),
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -147,12 +145,13 @@ class ApiClient {
   static Future<ApiResponse<T>> deleteApi<T>(
     String endPoint, {
     required String token,
+    String? apiKey,
     required T Function(dynamic json)? fromJson,
   }) async {
     try {
       final response = await MyHttpClient.client.delete(
         Uri.parse(ApiUrls.baseUrl + endPoint),
-        headers: getHeader(token),
+        headers: getHeader(token, apiKey: apiKey),
       );
 
       if (response.statusCode == 200 || response.statusCode == 204) {

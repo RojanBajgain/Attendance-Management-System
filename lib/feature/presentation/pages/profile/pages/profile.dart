@@ -1,6 +1,7 @@
 import 'package:ams/config/resources/shimmer.dart';
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
+import 'package:ams/feature/presentation/pages/organization/model/organization_profile_model.dart';
 import 'package:ams/feature/presentation/pages/password/change_password.dart';
 import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/model/profile_model.dart';
@@ -17,9 +18,10 @@ import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
-  final String? profileId;
+  final Profile? profileData;
+  final String? apiKey;
 
-  const ProfilePage({super.key, this.profileId});
+  const ProfilePage({super.key, this.profileData, this.apiKey});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -34,10 +36,8 @@ class _ProfilePageState extends State<ProfilePage> {
   void _handleTileExpansion(int index) {
     setState(() {
       if (_currentlyExpandedIndex == index) {
-        // If the same tile is clicked again, collapse it
         _currentlyExpandedIndex = null;
       } else {
-        // Expand the clicked tile and collapse others
         _currentlyExpandedIndex = index;
       }
     });
@@ -47,10 +47,9 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     profilecontroller.getProfile();
-    profilecontroller.getProfileDetailData(widget.profileId.toString());
   }
 
-  // List of allowed types
+  // List of allowed document types
   List<String> allowedTypes = [
     'citizenship',
     'education',
@@ -141,25 +140,12 @@ class _ProfilePageState extends State<ProfilePage> {
             return const ShrimmerEffect.rectangular(height: 230);
           }
 
-          final profileData = profilecontroller.profile;
+          final profileData = profilecontroller.profile; // Access data list
 
           if (profileData.isEmpty) {
             return const Center(child: Text("No Profile available."));
           }
 
-          // return SizedBox(
-          //   height: 250,
-          //   child: ListView.builder(
-          //     physics: const NeverScrollableScrollPhysics(),
-          //     padding: EdgeInsets.zero,
-          //     shrinkWrap: true,
-          //     itemCount: profileData.length,
-          //     itemBuilder: (BuildContext context, int index) {
-          //       final profiledata = profileData[index];
-          //       return _buildProfileDetails(profiledata, isDarkMode);
-          //     },
-          //   ),
-          // );
           return Column(
             children: profileData
                 .map((profileData) =>
@@ -168,7 +154,6 @@ class _ProfilePageState extends State<ProfilePage> {
           );
         }),
       ),
-      // press: () {},
     );
   }
 
@@ -176,14 +161,23 @@ class _ProfilePageState extends State<ProfilePage> {
     String currentAddress = 'N/A';
     String permanentAddress = 'N/A';
 
-    if (profiledata.addresses != null && profiledata.addresses!.isNotEmpty) {
-      for (var address in profiledata.addresses!) {
-        if (address.addressType == 'current') {
-          currentAddress =
-              '${address.city ?? ""}, ${address.country?.name ?? ""}';
-        } else if (address.addressType == 'permanent') {
-          permanentAddress =
-              '${address.city ?? ""}, ${address.country?.name ?? ""}';
+    if (profiledata.addresses.isNotEmpty) {
+      for (var address in profiledata.addresses) {
+        final addressType = address.addressType.toLowerCase();
+        final city = address.city.isNotEmpty ? address.city : '';
+        final country =
+            address.country.name.isNotEmpty ? address.country.name : '';
+
+        if (addressType == 'current') {
+          currentAddress = '$city, $country'.trim();
+          if (currentAddress.isEmpty || currentAddress == ',') {
+            currentAddress = 'N/A';
+          }
+        } else if (addressType == 'permanent') {
+          permanentAddress = '$city, $country'.trim();
+          if (permanentAddress.isEmpty || permanentAddress == ',') {
+            permanentAddress = 'N/A';
+          }
         }
       }
     }
@@ -194,19 +188,27 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildRow('Full Name:', profiledata.username),
-          _buildRow('Designation:', profiledata.designation?.name ?? 'N/A'),
+          _buildRow(
+              'Full Name:',
+              profiledata.user.fullName.isNotEmpty
+                  ? profiledata.user.fullName
+                  : 'N/A'),
+          _buildRow(
+              'Designation:',
+              profiledata.designation.name.isNotEmpty
+                  ? profiledata.designation.name
+                  : 'N/A'),
           _buildRow(
             'Date of Birth:',
             profiledata.dob != null
-                ? DateFormat('yyyy-MM-dd').format(profiledata.dob!)
-                : "N/A",
+                ? DateFormat('yyyy-MM-dd').format(profiledata.dob)
+                : 'N/A',
           ),
           _buildRow(
             'Joined Date:',
             profiledata.joinedDate != null
-                ? DateFormat('yyyy-MM-dd').format(profiledata.joinedDate!)
-                : "N/A",
+                ? DateFormat('yyyy-MM-dd').format(profiledata.joinedDate)
+                : 'N/A',
           ),
           _buildRow(
               'Contact:',
@@ -217,6 +219,20 @@ class _ProfilePageState extends State<ProfilePage> {
           _buildRow('Permanent Address:', permanentAddress),
           _buildRow('Email:',
               profiledata.email.isNotEmpty ? profiledata.email : 'N/A'),
+          _buildRow('Gender:',
+              profiledata.gender.isNotEmpty ? profiledata.gender : 'N/A'),
+          _buildRow(
+              'Role:', profiledata.role.isNotEmpty ? profiledata.role : 'N/A'),
+          _buildRow(
+              'Employee Type:',
+              profiledata.employeeType.isNotEmpty
+                  ? profiledata.employeeType
+                  : 'N/A'),
+          _buildRow(
+              'Organization:',
+              profiledata.organization.title.isNotEmpty
+                  ? profiledata.organization.title
+                  : 'N/A'),
         ],
       ),
     );
@@ -241,64 +257,48 @@ class _ProfilePageState extends State<ProfilePage> {
             return const Center(child: Text("No documents available."));
           }
 
-          return Column(
-            children: profileData
-                .map((profiledata) =>
-                    _buildDocumentDetails(profiledata, isDarkMode))
-                .toList(),
+          return ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            padding: EdgeInsets.zero,
+            itemCount: profileData.length,
+            itemBuilder: (BuildContext context, int index) {
+              final profiledata = profileData[index];
+              return _buildDocumentDetails(profiledata, isDarkMode);
+            },
           );
         }),
       ),
-      // press: () {},
     );
   }
 
   Widget _buildDocumentDetails(Datum profiledata, bool isDarkMode) {
     return Container(
-      width: MediaQuery.of(context).size.width,
+      width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 1.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (profiledata.documents != null)
-            for (final doc in profiledata.documents!)
-              if (allowedTypes.contains(doc.type?.toLowerCase()))
+          if (profiledata.documents.isNotEmpty)
+            for (final doc in profiledata.documents)
+              if (allowedTypes.contains(doc.type.toLowerCase()))
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildRow("Title:", doc.title ?? 'N/A'),
-                    if (doc.files != null && doc.files!.isNotEmpty)
-                      // for (final file in doc.files!)
-                      // GestureDetector(
-                      //   onTap: () {
-                      //     _showFileDialog(file.file);
-                      //   },
-                      //   child: _buildRow(
-                      //       "File:", _extractFileName(file.file ?? "---")),
-                      // ),
-                      if (doc.type?.toLowerCase() == 'citizenship' &&
-                          doc.identifier != null)
-                        _buildRow("Citizenship No:", doc.identifier!),
-                    if (doc.type?.toLowerCase() == 'education' &&
-                        doc.identifier != null)
-                      _buildRow("Identifier (${doc.type}):", doc.identifier!),
-                    if (doc.type?.toLowerCase() == 'pan' &&
-                        doc.identifier != null)
-                      _buildRow("Identifier (${doc.type}):", doc.identifier!),
-                    if (doc.type?.toLowerCase() == 'recommendation' &&
-                        doc.identifier != null)
-                      _buildRow("Identifier (${doc.type}):", doc.identifier!),
-                    if (doc.type?.toLowerCase() == 'other' &&
-                        doc.identifier != null)
-                      _buildRow("Other (${doc.title}):", doc.identifier!),
+                    _buildRow(
+                        'Title:', doc.title.isNotEmpty ? doc.title : 'N/A'),
+                    if (doc.identifier.isNotEmpty)
+                      _buildRow('Identifier (${doc.type}):', doc.identifier),
                     if (doc.issuedDate != null)
-                      if (doc.issuedDate != null)
-                        _buildRow(
-                          "Issued Date (${doc.type}):",
-                          DateFormat('yyyy-MM-dd').format(doc.issuedDate!),
-                        ),
+                      _buildRow(
+                        'Issued Date (${doc.type}):',
+                        DateFormat('yyyy-MM-dd').format(doc.issuedDate),
+                      ),
                   ],
-                )
+                ),
+          if (profiledata.documents.isEmpty && profiledata.resume == null)
+            const Text('No documents available.'),
+          if (profiledata.resume != null) _buildRow('Resume:', 'Available'),
         ],
       ),
     );
@@ -331,13 +331,12 @@ class _ProfilePageState extends State<ProfilePage> {
           );
         }),
       ),
-      // press: () {},
     );
   }
 
-  Widget _buildBankDetailList(List<BankDetail>? bankDetails, bool isDarkMode) {
-    if (bankDetails == null || bankDetails.isEmpty) {
-      return const SizedBox();
+  Widget _buildBankDetailList(List<BankDetail> bankDetails, bool isDarkMode) {
+    if (bankDetails.isEmpty) {
+      return const Text('No bank details available.');
     }
 
     return Column(
@@ -349,10 +348,24 @@ class _ProfilePageState extends State<ProfilePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildRow("Bank Name:", bankDetail.bankName ?? ''),
-              _buildRow("Bank Branch:", bankDetail.bankBranch ?? ''),
-              _buildRow("Account Name:", bankDetail.bankAccountName ?? ''),
-              _buildRow("Account Number:", bankDetail.bankAccount ?? ''),
+              _buildRow('Bank Name:',
+                  bankDetail.bankName.isNotEmpty ? bankDetail.bankName : 'N/A'),
+              _buildRow(
+                  'Bank Branch:',
+                  bankDetail.bankBranch.isNotEmpty
+                      ? bankDetail.bankBranch
+                      : 'N/A'),
+              _buildRow(
+                  'Account Name:',
+                  bankDetail.bankAccountName.isNotEmpty
+                      ? bankDetail.bankAccountName
+                      : 'N/A'),
+              _buildRow(
+                  'Account Number:',
+                  bankDetail.bankAccount.isNotEmpty
+                      ? bankDetail.bankAccount
+                      : 'N/A'),
+              _buildRow('Payroll:', bankDetail.isPayroll ? 'Yes' : 'No'),
             ],
           ),
         );
@@ -391,7 +404,6 @@ class _ProfilePageState extends State<ProfilePage> {
           );
         }),
       ),
-      // press: () {},
     );
   }
 
@@ -402,8 +414,13 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildRow("Finger Print ID:", device?.fingerprintId ?? "N/A"),
-          _buildRow("Employee No:", device?.deviceUserId.toString() ?? "N/A"),
+          _buildRow(
+              'Finger Print ID:',
+              device != null && device.fingerprintId.isNotEmpty
+                  ? device.fingerprintId
+                  : 'N/A'),
+          _buildRow('Device ID:',
+              device != null ? device.deviceUserId.toString() : 'N/A'),
         ],
       ),
     );
@@ -459,21 +476,16 @@ class _ProfilePageState extends State<ProfilePage> {
             onToggle: (value) async {
               try {
                 if (!value) {
-                  // Disabling biometrics, dialog box
                   bool confirmed = await _showDisableConfirmation(
                     context: Get.context!,
                   );
                   if (!confirmed) {
-                    // User canceled, keep biometrics enabled
                     return;
                   }
-                  // User confirmed, disable biometrics
                   await authcontroller.toggleBiometrics(false);
-
                   return;
                 }
 
-                // Enabling biometrics, check if device supports it
                 bool canUseBiometrics = await authcontroller.canUseBiometrics();
                 if (!canUseBiometrics) {
                   SSnackbarUtil.showSnackbar(
@@ -484,7 +496,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   return;
                 }
 
-                // Check if credentials are already stored
                 String? storedEmail =
                     await authcontroller.secureStorage.read(key: 'user_email');
                 String? storedPassword = await authcontroller.secureStorage
@@ -502,14 +513,12 @@ class _ProfilePageState extends State<ProfilePage> {
                   return;
                 }
 
-                // for password
                 bool? isPasswordCorrect = await _showPasswordPrompt(
                   context: Get.context!,
                   storedPassword: storedPassword,
                 );
 
                 if (isPasswordCorrect == null) {
-                  // User canceled, do nothing
                   return;
                 }
 
@@ -522,7 +531,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   return;
                 }
 
-                // Password is correct, enable biometrics
                 await authcontroller.toggleBiometrics(true);
               } catch (e) {
                 SSnackbarUtil.showSnackbar(
@@ -628,7 +636,7 @@ class _ProfilePageState extends State<ProfilePage> {
           actions: [
             TextButton(
               onPressed: () {
-                isPasswordCorrect = null; // Set to null for cancellation
+                isPasswordCorrect = null;
                 Navigator.of(context).pop();
               },
               child: Text(
@@ -711,6 +719,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             TextButton(
               onPressed: () {
+//  SAY NO TO PIRACY
                 Navigator.of(context).pop();
                 confirmed = true;
               },

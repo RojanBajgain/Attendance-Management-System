@@ -19,6 +19,7 @@ class HasClockRepo {
     final response = await ApiClient.getApi(
       ApiUrls.hasClockedIn,
       token: token,
+      apiKey: apiClient.organization,
       fromJson: (json) => GetClockModel.fromJson(json),
     );
     return response;

@@ -19,6 +19,7 @@ class PolicyRepo {
     final response = await ApiClient.getApi(
       ApiUrls.policydetail,
       token: token,
+      apiKey: apiClient.organization,
       fromJson: (json) => PolicyModel.fromJson(json),
     );
     return response;

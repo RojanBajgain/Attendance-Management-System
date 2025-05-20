@@ -107,7 +107,8 @@ class _EditProfileViewState extends State<EditProfileView> {
           username: profilecontroller.profile.first.username ?? "",
           id: profilecontroller.profile.first.id,
           // profileID: authcontroller.alluserData.value.user!.profileId,
-          profileID: authcontroller.alluserData.value.user!.profileId,
+          profileID: authcontroller.alluserData.value.user ??
+              profilecontroller.profile.first.id,
         );
 
         // Hide loading indicator

@@ -13,13 +13,10 @@ class PayrollRepo {
   Future<ApiResponse> getPayroll() async {
     final token = apiClient.token;
 
-    // if (token.isEmpty) {
-    //   throw Exception('JWT Token is missing or invalid');
-    // }
-
     final response = await ApiClient.getApi(
       ApiUrls.payroll,
       token: token,
+      apiKey: apiClient.organization,
       fromJson: (json) => PayRollModel.fromJson(json),
     );
     return response;
@@ -29,13 +26,10 @@ class PayrollRepo {
   Future<ApiResponse> getPayrollDetail(String id) async {
     final token = apiClient.token;
 
-    if (token.isEmpty) {
-      throw Exception('JWT Token is missing or invalid');
-    }
-
     final response = await ApiClient.getApi(
       '${ApiUrls.payrolldetail}$id/',
       token: token,
+      apiKey: apiClient.organization,
       fromJson: (json) => PayrollDetailModel.fromJson(json),
     );
     return response;

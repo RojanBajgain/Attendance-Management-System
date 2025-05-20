@@ -20,6 +20,7 @@ class TimesheetRepo {
     final response = await ApiClient.getApi(
       ApiUrls.timesheet,
       token: token,
+      apiKey: apiClient.organization,
       fromJson: (json) => TimesheetModel.fromJson(json),
     );
     return response;
@@ -35,6 +36,7 @@ class TimesheetRepo {
     final response = await ApiClient.getApi(
       '${ApiUrls.timesheetdetail}$serialNo/',
       token: token,
+      apiKey: apiClient.organization,
       fromJson: (json) => TimesheetDetailModel.fromJson(json),
     );
     return response;

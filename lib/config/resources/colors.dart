@@ -40,6 +40,7 @@ mixin AppColors {
   static const orange = Colors.deepOrange;
   static const redAccent = Colors.redAccent;
   static const red = Color.fromRGBO(195, 3, 2, 1);
+  static const cardRed = Color(0xFFFEE7E7);
   static const green = Colors.green;
   static const black = Colors.black;
   static const grey = Colors.grey;

@@ -7,7 +7,8 @@ class AuthUseCase {
 
   AuthUseCase(this._authRepository);
 
-  Future<ApiResponse<LoginModel>> login(String email, String pw) async {
-    return _authRepository.login(email, pw);
+  Future<ApiResponse<LoginModel>> login(
+      String email, String pw, String role) async {
+    return _authRepository.login(email, pw, role);
   }
 }

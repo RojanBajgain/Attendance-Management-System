@@ -20,13 +20,10 @@ class ProfileRepo {
   Future<ApiResponse> getProfile() async {
     final token = apiClient.token;
 
-    // if (token.isEmpty) {
-    //   throw Exception('JWT Token is missing or invalid');
-    // }
-
     final response = await ApiClient.getApi(
       ApiUrls.profile,
       token: token,
+      apiKey: apiClient.organization,
       fromJson: (json) => ProfileModel.fromJson(json),
     );
     return response;
@@ -39,6 +36,7 @@ class ProfileRepo {
     final response = await ApiClient.getApi(
       ApiUrls.getcountry,
       token: token,
+      apiKey: apiClient.organization,
       fromJson: (json) => json,
     );
     return response;
@@ -55,6 +53,7 @@ class ProfileRepo {
     final response = await ApiClient.getApi(
       ApiUrls.profiledetail,
       token: token,
+      apiKey: apiClient.organization,
       fromJson: (json) => ProfileDetailModel.fromJson(json),
     );
     return response;
@@ -90,6 +89,7 @@ class ProfileRepo {
       // Add headers
       request.headers['Authorization'] = 'Bearer $token';
       request.headers['Accept'] = 'application/json';
+      request.headers['x-organization'] = apiClient.organization;
 
       // Add fields
       request.fields['id'] = id.toString();
@@ -190,7 +190,8 @@ class ProfileRepo {
     final response = await ApiClient.postApi(
       url,
       requestBody: {
-        "user": userID,
+        // "user": userID,
+        "profile": userID,
         "issued_country": issuedCountry,
         "province": province,
         "postal_code": zipcode,
@@ -200,6 +201,7 @@ class ProfileRepo {
         "address_line_two": addressLineTwo,
       },
       token: token,
+      apiKey: apiClient.organization,
       fromJson: null,
     );
     return response;
@@ -230,7 +232,7 @@ class ProfileRepo {
     final response = await ApiClient.patchApi(
       url,
       requestBody: {
-        "user": id,
+        "profile": id,
         "country": countryId,
         "province": province,
         "postal_code": zipcode,
@@ -240,6 +242,7 @@ class ProfileRepo {
         "address_line_two": addressLineTwo,
       },
       token: token,
+      apiKey: apiClient.organization,
       fromJson: null,
     );
     return response;
@@ -248,7 +251,7 @@ class ProfileRepo {
   // Updating user bank details
   Future<ApiResponse> postuserBankDetails(
     int bankdetailID,
-    int userID,
+    int profileID,
     String bankname,
     String bankaccount,
     String bankaccountname,
@@ -261,28 +264,46 @@ class ProfileRepo {
       throw Exception('JWT token is missing or invalid');
     }
 
+    // Debug print to verify values
+    print('Updating bank detail with ID: $bankdetailID');
+    print('Payload: {'
+        'profile: $profileID, '
+        'bank_name: $bankname, '
+        'bank_account: $bankaccount, '
+        'bank_account_name: $bankaccountname, '
+        'bank_branch: $bankbranch, '
+        'is_payroll: $ispayroll'
+        '}');
+
     final url = '${ApiUrls.updatebankdetail}$bankdetailID/';
 
-    final response = await ApiClient.patchApi(
-      url,
-      requestBody: {
-        "id": bankdetailID,
-        "user": userID,
-        "bank_name": bankname,
-        "bank_account": bankaccount,
-        "bank_account_name": bankaccountname,
-        "bank_branch": bankbranch,
-        "is_payroll": ispayroll,
-      },
-      token: token,
-      fromJson: null,
-    );
-    return response;
+    try {
+      final response = await ApiClient.patchApi(
+        url,
+        requestBody: {
+          "profile": profileID,
+          "bank_name": bankname,
+          "bank_account": bankaccount,
+          "bank_account_name": bankaccountname,
+          "bank_branch": bankbranch,
+          "is_payroll": ispayroll.toLowerCase() == 'true',
+        },
+        token: token,
+        apiKey: apiClient.organization,
+        fromJson: null,
+      );
+
+      print('PATCH response: ${response.status} - ${response.message}');
+      return response;
+    } catch (e) {
+      print('PATCH error: $e');
+      rethrow;
+    }
   }
 
   // add new user bankk account
   Future<ApiResponse> postnewBankDetails(
-    int userID,
+    int profileID,
     String bankName,
     String bankAccount,
     String bankaccountName,
@@ -296,14 +317,14 @@ class ProfileRepo {
     }
 
     const url = ApiUrls.postnewbankdetail;
-    if (kDebugMode) {
-      print(url);
-    }
+
+    // Debug print to verify the profile ID
+    print('Attempting to create bank detail for profile ID: $profileID');
 
     final response = await ApiClient.postApi(
       url,
       requestBody: {
-        'user': userID,
+        'profile': profileID.toString(),
         "bank_name": bankName,
         "bank_account": bankAccount,
         "bank_account_name": bankaccountName,
@@ -311,6 +332,7 @@ class ProfileRepo {
         "is_payroll": isPayroll,
       },
       token: token,
+      apiKey: apiClient.organization,
       fromJson: null,
     );
     return response;
@@ -340,6 +362,7 @@ class ProfileRepo {
     var request = http.MultipartRequest('PATCH', Uri.parse(url));
 
     request.headers['Authorization'] = 'Bearer $token';
+    request.headers['x-organization'] = apiClient.organization;
 
     request.fields['id'] = documentID.toString();
     request.fields['user'] = userID.toString();
@@ -421,6 +444,7 @@ class ProfileRepo {
     var request = http.MultipartRequest('POST', Uri.parse(url));
 
     request.headers['Authorization'] = 'Bearer $token';
+    request.headers['x-organization'] = apiClient.organization;
 
     // Add fields according to the expected payload
     request.fields['documents[1][type]'] = type;
@@ -478,6 +502,7 @@ class ProfileRepo {
     final response = await ApiClient.deleteApi(
       '${ApiUrls.deletedocument}$id/',
       token: token,
+      apiKey: apiClient.organization,
       fromJson: null,
     );
     return response;
@@ -490,6 +515,7 @@ class ProfileRepo {
     final response = await ApiClient.deleteApi(
       '${ApiUrls.deletebankdetails}$id/',
       token: token,
+      apiKey: apiClient.organization,
       fromJson: null,
     );
     return response;

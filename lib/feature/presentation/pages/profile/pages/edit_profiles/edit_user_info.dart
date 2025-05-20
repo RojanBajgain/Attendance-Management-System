@@ -6,6 +6,7 @@ import 'package:ams/config/resources/images.dart';
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
+import 'package:ams/feature/presentation/pages/profile/model/profile_model.dart';
 import 'package:ams/feature/presentation/pages/profile/pages/edit_profiles/edit_user_address.dart';
 import 'package:ams/feature/presentation/pages/profile/widget/file_uploader.dart';
 import 'package:ams/feature/utils/ssnackbar_utils.dart';
@@ -15,6 +16,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:convert';
 
 class EditUserInfo extends StatefulWidget {
   final String? profileId;
@@ -56,21 +58,61 @@ class _EditUserInfoState extends State<EditUserInfo> {
   }
 
   void _initializeControllers() {
-    final profile = profilecontroller.profile.first;
+    final profile = profilecontroller.profile.isNotEmpty
+        ? profilecontroller.profile.first
+        : null;
 
-    // Initialize controllers with profile data
-    fullNameController.text = profile.username;
-    emailController.text = profile.email;
-    genderController.text = _mapGender(profile.gender);
-    phoneController.text = profile.phoneNumber;
-    designationController.text = profile.designation?.name ?? "";
-    skillsController.text = profile.skills?.join(", ") ?? "";
-    dobController.text = profile.dob != null
-        ? DateFormat('yyyy-MM-dd').format(profile.dob!)
-        : "";
-    joinedDateController.text = profile.joinedDate != null
-        ? DateFormat('yyyy-MM-dd').format(profile.joinedDate!)
-        : "";
+    if (profile != null) {
+      log('Raw profile gender from backend: ${profile.gender}');
+      fullNameController.text = profile.user.fullName;
+      emailController.text = profile.email;
+      genderController.text = _mapGender(profile.gender);
+      phoneController.text = profile.phoneNumber;
+      designationController.text =
+          profile.designation.name.isNotEmpty ? profile.designation.name : "";
+      skillsController.text = profile.skills.join(", ");
+      dobController.text = profile.dob != null
+          ? DateFormat('yyyy-MM-dd').format(profile.dob)
+          : "";
+      joinedDateController.text = profile.joinedDate != null
+          ? DateFormat('yyyy-MM-dd').format(profile.joinedDate)
+          : "";
+    }
+  }
+
+  String _mapGender(String? gender) {
+    if (gender == null || gender.isEmpty) {
+      log('Gender is null or empty, defaulting to empty');
+      return "";
+    }
+    switch (gender.toUpperCase()) {
+      case "M":
+      case "MALE":
+        return "Male";
+      case "F":
+      case "FEMALE":
+        return "Female";
+      case "O":
+      case "OTHER":
+        return "Other";
+      default:
+        log('Unknown gender value: $gender, defaulting to empty');
+        return "";
+    }
+  }
+
+  String _mapGenderToBackend(String gender) {
+    switch (gender) {
+      case "Male":
+        return "M";
+      case "Female":
+        return "F";
+      case "Other":
+        return "O";
+      default:
+        log('Invalid gender for backend: $gender, defaulting to empty');
+        return "";
+    }
   }
 
   bool _validateFields() {
@@ -80,7 +122,6 @@ class _EditUserInfoState extends State<EditUserInfo> {
 
     bool isValid = true;
 
-    // Validate all required fields
     if (fullNameController.text.isEmpty) {
       _fieldErrors['fullName'] = 'Full name is required';
       isValid = false;
@@ -95,15 +136,14 @@ class _EditUserInfoState extends State<EditUserInfo> {
       _fieldErrors['phone'] = 'Phone number is required';
       isValid = false;
     } else if (!_isValidPhoneNumber(phoneController.text)) {
-      _fieldErrors['phone'] = 'Enter a valid phone number';
+      _fieldErrors['phone'] = 'Phone number must be exactly 10 digits';
       isValid = false;
     }
 
     if (genderController.text.isEmpty) {
       _fieldErrors['gender'] = 'Gender is required';
       isValid = false;
-    } else if (!['male', 'female', 'other']
-        .contains(genderController.text.toLowerCase())) {
+    } else if (!['Male', 'Female', 'Other'].contains(genderController.text)) {
       _fieldErrors['gender'] = 'Gender must be Male, Female, or Other';
       isValid = false;
     }
@@ -117,11 +157,10 @@ class _EditUserInfoState extends State<EditUserInfo> {
   }
 
   bool _isValidPhoneNumber(String phone) {
-    return phone.length >= 10 && int.tryParse(phone) != null;
+    return phone.length == 10 && int.tryParse(phone) != null;
   }
 
   Future<void> _submitUserInfo() async {
-    // Run validation
     if (!_validateFields()) {
       return;
     }
@@ -131,18 +170,17 @@ class _EditUserInfoState extends State<EditUserInfo> {
     });
 
     try {
-      final genderCode = _mapGenderToCode(genderController.text);
-      await Future.delayed(const Duration(seconds: 1));
-
-      await profilecontroller.postProfileUpdate(
-        id: profilecontroller.profile.first.id,
-        profileID: authcontroller.alluserData.value.user?.profileId ??
-            profilecontroller.profile.first.id,
+      final profile = profilecontroller.profile.first;
+      final genderToSend = _mapGenderToBackend(genderController.text);
+      log('Sending gender to backend: $genderToSend');
+      final response = await profilecontroller.postProfileUpdate(
+        id: profile.id,
+        profileID: authcontroller.alluserData.value.user ?? profile.id,
         profileImage: _profileImage,
         username: fullNameController.text,
         dob: dobController.text,
         phonenumber: phoneController.text,
-        gender: genderCode,
+        gender: genderToSend,
         joinedDate: joinedDateController.text,
         skills: skillsController.text
             .split(",")
@@ -154,7 +192,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
 
       Get.to(() => const EditUserAddress());
     } catch (e) {
-      // print("Error in _submitUserInfo: $e");
+      log('Error submitting user info: $e');
       SSnackbarUtil.showSnackbar(
         'Error',
         'Failed to update profile: $e',
@@ -164,32 +202,6 @@ class _EditUserInfoState extends State<EditUserInfo> {
       setState(() {
         _isLoading = false;
       });
-    }
-  }
-
-  String _mapGender(String? genderCode) {
-    switch (genderCode?.toUpperCase()) {
-      case 'M':
-        return 'Male';
-      case 'F':
-        return 'Female';
-      case 'O':
-        return 'Other';
-      default:
-        return 'Unknown';
-    }
-  }
-
-  String _mapGenderToCode(String? gender) {
-    switch (gender?.toLowerCase()) {
-      case 'male':
-        return 'M';
-      case 'female':
-        return 'F';
-      case 'other':
-        return 'O';
-      default:
-        return 'M';
     }
   }
 
@@ -211,12 +223,18 @@ class _EditUserInfoState extends State<EditUserInfo> {
       setState(() {
         _resume = File(result.files.single.path!);
       });
+      log("Picked file: ${result.files.single.name}");
+    } else {
+      log("No file picked");
     }
   }
 
   Widget _buildDateField(
-      String title, TextEditingController controller, bool isDarkMode,
-      {String fieldKey = ''}) {
+    String title,
+    TextEditingController controller,
+    bool isDarkMode, {
+    String fieldKey = '',
+  }) {
     final hasError = _fieldErrors.containsKey(fieldKey);
 
     return Padding(
@@ -226,7 +244,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
         children: [
           TextField(
             controller: controller,
-            readOnly: true, // Make the field read-only
+            readOnly: true,
             decoration: InputDecoration(
               labelText: title,
               border: OutlineInputBorder(
@@ -254,14 +272,16 @@ class _EditUserInfoState extends State<EditUserInfo> {
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
               labelStyle: smallStyle.copyWith(
-                  color: hasError
-                      ? Colors.red
-                      : (isDarkMode ? Colors.white70 : Colors.black54)),
+                color: hasError
+                    ? Colors.red
+                    : (isDarkMode ? Colors.white70 : Colors.black54),
+              ),
               suffixIcon: Icon(Icons.calendar_today,
-                  color: hasError ? Colors.red : null), // Add calendar icon
+                  color: hasError ? Colors.red : null),
             ),
             style: smallStyle.copyWith(
-                color: isDarkMode ? Colors.white : Colors.black),
+              color: isDarkMode ? Colors.white : Colors.black,
+            ),
             onTap: () => _selectDate(context, controller),
           ),
           if (hasError)
@@ -326,19 +346,24 @@ class _EditUserInfoState extends State<EditUserInfo> {
   Widget _buildSectionTitle(String title, bool isDarkMode) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Text(title,
-          style: normalStyle.copyWith(
-            fontWeight: FontWeight.bold,
-            color: isDarkMode ? Colors.white : Colors.black,
-          )),
+      child: Text(
+        title,
+        style: normalStyle.copyWith(
+          fontWeight: FontWeight.bold,
+          color: isDarkMode ? Colors.white : Colors.black,
+        ),
+      ),
     );
   }
 
   Widget _buildTextField(
-      String title, TextEditingController controller, bool isDarkMode,
-      {bool enabled = true,
-      TextInputType? keyboardType,
-      String fieldKey = ''}) {
+    String title,
+    TextEditingController controller,
+    bool isDarkMode, {
+    bool enabled = true,
+    TextInputType? keyboardType,
+    String fieldKey = '',
+  }) {
     final hasError = _fieldErrors.containsKey(fieldKey);
 
     return Padding(
@@ -377,18 +402,19 @@ class _EditUserInfoState extends State<EditUserInfo> {
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
               labelStyle: smallStyle.copyWith(
-                  color: hasError
-                      ? Colors.red
-                      : (isDarkMode ? Colors.white70 : Colors.black54)),
+                color: hasError
+                    ? Colors.red
+                    : (isDarkMode ? Colors.white70 : Colors.black54),
+              ),
               filled: !enabled,
               fillColor: !enabled
                   ? (isDarkMode ? Colors.grey[700] : Colors.grey[200])
                   : null,
             ),
             style: smallStyle.copyWith(
-                color: isDarkMode ? Colors.white : Colors.black),
+              color: isDarkMode ? Colors.white : Colors.black,
+            ),
             onChanged: (value) {
-              // Clear the error when the user starts typing
               if (hasError) {
                 setState(() {
                   _fieldErrors.remove(fieldKey);
@@ -409,8 +435,99 @@ class _EditUserInfoState extends State<EditUserInfo> {
     );
   }
 
+  Widget _buildGenderField(
+    String title,
+    TextEditingController controller,
+    bool isDarkMode, {
+    String fieldKey = '',
+  }) {
+    final hasError = _fieldErrors.containsKey(fieldKey);
+    const genderOptions = ['Male', 'Female', 'Other'];
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          DropdownButtonFormField<String>(
+            value: genderOptions.contains(controller.text)
+                ? controller.text
+                : null,
+            decoration: InputDecoration(
+              labelText: title,
+              border: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: hasError
+                      ? Colors.red
+                      : (isDarkMode ? Colors.white70 : Colors.black54),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: hasError
+                      ? Colors.red
+                      : (isDarkMode ? Colors.white70 : Colors.black54),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: hasError
+                      ? Colors.red
+                      : (isDarkMode ? Colors.blueAccent : Colors.black),
+                  width: 2.0,
+                ),
+              ),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+              labelStyle: smallStyle.copyWith(
+                color: hasError
+                    ? Colors.red
+                    : (isDarkMode ? Colors.white70 : Colors.black54),
+              ),
+            ),
+            items: genderOptions
+                .map((gender) => DropdownMenuItem(
+                      value: gender,
+                      child: Text(gender),
+                    ))
+                .toList(),
+            onChanged: (value) {
+              if (value != null) {
+                controller.text = value;
+                if (hasError) {
+                  setState(() {
+                    _fieldErrors.remove(fieldKey);
+                  });
+                }
+              }
+            },
+            style: smallStyle.copyWith(
+              color: isDarkMode ? Colors.white : Colors.black,
+            ),
+            hint: Text(
+              'Select Gender',
+              style: smallStyle.copyWith(
+                color: isDarkMode ? Colors.white70 : Colors.black54,
+              ),
+            ),
+          ),
+          if (hasError)
+            Padding(
+              padding: const EdgeInsets.only(top: 4, left: 12),
+              child: Text(
+                _fieldErrors[fieldKey]!,
+                style: const TextStyle(color: Colors.red, fontSize: 12),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildProfileHeader(bool isDarkMode) {
-    final profile = profilecontroller.profile.first;
+    final profile = profilecontroller.profile.isNotEmpty
+        ? profilecontroller.profile.first
+        : null;
 
     return Row(
       children: [
@@ -420,12 +537,13 @@ class _EditUserInfoState extends State<EditUserInfo> {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             border: Border.all(
-                color: isDarkMode ? AppColors.white : AppColors.black,
-                width: 2),
+              color: isDarkMode ? AppColors.white : AppColors.black,
+              width: 2,
+            ),
             image: DecorationImage(
               image: _profileImage != null
                   ? FileImage(_profileImage!)
-                  : (profile.profileImage.isNotEmpty
+                  : (profile != null && profile.profileImage.isNotEmpty
                       ? NetworkImage(profile.profileImage) as ImageProvider
                       : const AssetImage(AppImages.EditprofileImage)),
               fit: BoxFit.cover,
@@ -467,29 +585,34 @@ class _EditUserInfoState extends State<EditUserInfo> {
   }
 
   Widget _buildResumeSection(bool isDarkMode) {
-    final profile = profilecontroller.profile.first;
+    final profile = profilecontroller.profile.isNotEmpty
+        ? profilecontroller.profile.first
+        : null;
 
-    if (profile.resume != null && profile.resume.isNotEmpty) {
+    if (profile != null &&
+        profile.resume != null &&
+        profile.resume!.isNotEmpty) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildSectionTitle("Uploaded Resume", isDarkMode),
           const SizedBox(height: 6),
           InkWell(
-            onTap: () => _openResumeFile(profile.resume),
+            onTap: () => _openResumeFile(profile.resume!),
             child: Row(
               children: [
                 IconButton(
                   icon: const Icon(Icons.file_present),
                   color: isDarkMode ? Colors.white : Colors.blue.shade800,
-                  onPressed: () => _openResumeFile(profile.resume),
+                  onPressed: () => _openResumeFile(profile.resume!),
                 ),
                 Expanded(
                   child: Text(
-                    profile.resume,
+                    profile.resume!.split('/').last.isNotEmpty
+                        ? profile.resume!.split('/').last
+                        : 'Resume',
                     style: smallStyle.copyWith(
                       color: isDarkMode ? Colors.white : Colors.blue.shade800,
-                      // decoration: TextDecoration.underline,
                     ),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 2,
@@ -524,18 +647,14 @@ class _EditUserInfoState extends State<EditUserInfo> {
     }
   }
 
-  // Add this method to your class to handle file opening
   void _openResumeFile(String urlString) async {
     try {
-      // Ensure URL has proper formatting
       if (!urlString.startsWith('http://') &&
           !urlString.startsWith('https://')) {
         urlString = 'https://$urlString';
       }
 
       final Uri url = Uri.parse(urlString);
-
-      // Attempt to open URL
       final bool launched = await launchUrl(
         url,
         mode: LaunchMode.externalApplication,
@@ -545,7 +664,6 @@ class _EditUserInfoState extends State<EditUserInfo> {
         throw Exception('Could not launch $urlString');
       }
     } catch (e) {
-      print("Error opening resume: $e");
       SSnackbarUtil.showSnackbar(
         'Error',
         'Could not open the document',
@@ -614,17 +732,31 @@ class _EditUserInfoState extends State<EditUserInfo> {
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Obx(() {
+                  if (profilecontroller.profile.isEmpty) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
                   return Column(
                     children: [
                       _buildProfileHeader(isDarkMode),
                       const SizedBox(height: 24),
                       _buildTextField(
-                          "Full Name", fullNameController, isDarkMode,
-                          fieldKey: 'fullName'),
-                      _buildTextField("Email", emailController, isDarkMode,
-                          enabled: false),
-                      _buildTextField("Gender", genderController, isDarkMode,
-                          fieldKey: 'gender'),
+                        "Full Name",
+                        fullNameController,
+                        isDarkMode,
+                        fieldKey: 'fullName',
+                      ),
+                      _buildTextField(
+                        "Email",
+                        emailController,
+                        isDarkMode,
+                        enabled: false,
+                      ),
+                      _buildGenderField(
+                        "Gender",
+                        genderController,
+                        isDarkMode,
+                        fieldKey: 'gender',
+                      ),
                       _buildTextField(
                         "Contact Number",
                         phoneController,
@@ -633,16 +765,29 @@ class _EditUserInfoState extends State<EditUserInfo> {
                         fieldKey: 'phone',
                       ),
                       _buildTextField(
-                          "Designation", designationController, isDarkMode,
-                          enabled: false),
-                      _buildTextField("Skills", skillsController, isDarkMode,
-                          fieldKey: 'skills'),
-                      _buildDateField(
-                          "Date of Birth", dobController, isDarkMode,
-                          fieldKey: 'dob'),
+                        "Designation",
+                        designationController,
+                        isDarkMode,
+                        enabled: false,
+                      ),
                       _buildTextField(
-                          "Joined Date", joinedDateController, isDarkMode,
-                          enabled: false),
+                        "Skills",
+                        skillsController,
+                        isDarkMode,
+                        fieldKey: 'skills',
+                      ),
+                      _buildDateField(
+                        "Date of Birth",
+                        dobController,
+                        isDarkMode,
+                        fieldKey: 'dob',
+                      ),
+                      _buildTextField(
+                        "Joined Date",
+                        joinedDateController,
+                        isDarkMode,
+                        enabled: false,
+                      ),
                       const SizedBox(height: 15),
                       _buildResumeSection(isDarkMode),
                       const SizedBox(height: 16),

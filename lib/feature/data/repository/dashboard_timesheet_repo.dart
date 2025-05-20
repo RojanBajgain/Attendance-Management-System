@@ -18,6 +18,7 @@ class DashboardTimesheetRepo {
     final response = await ApiClient.getApi(
       ApiUrls.dashboardtimesheet,
       token: token,
+      apiKey: apiClient.organization,
       fromJson: (json) => DashboardTimesheet.fromJson(json),
     );
     return response;

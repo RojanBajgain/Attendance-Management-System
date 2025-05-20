@@ -67,63 +67,66 @@ class _EditUserAddressState extends State<EditUserAddress> {
     _initializeAddress();
     profileController.getcountryList();
 
-    currentAddr = profileController.profile.first.addresses
-        ?.firstWhereOrNull((a) => a.addressType == "current");
-    permanentAddr = profileController.profile.first.addresses
-        ?.firstWhereOrNull((a) => a.addressType == "permanent");
+    final profileData = profileController.profile;
+    if (profileData.isNotEmpty && profileData.first.addresses != null) {
+      final currentAddr = profileData.first.addresses!
+          .firstWhereOrNull((a) => a.addressType == "current");
+      final permanentAddr = profileData.first.addresses!
+          .firstWhereOrNull((a) => a.addressType == "permanent");
 
-    if (currentAddr != null && permanentAddr != null) {
-      bool sameAddress = currentAddr.country?.id == permanentAddr.country?.id &&
-          currentAddr.province == permanentAddr.province &&
-          currentAddr.city == permanentAddr.city &&
-          currentAddr.addressLineOne == permanentAddr.addressLineOne &&
-          currentAddr.addressLineTwo == permanentAddr.addressLineTwo &&
-          currentAddr.postalCode == permanentAddr.postalCode;
+      if (currentAddr != null && permanentAddr != null) {
+        bool sameAddress = currentAddr.country.id == permanentAddr.country.id &&
+            currentAddr.province == permanentAddr.province &&
+            currentAddr.city == permanentAddr.city &&
+            currentAddr.addressLineOne == permanentAddr.addressLineOne &&
+            currentAddr.addressLineTwo == permanentAddr.addressLineTwo &&
+            currentAddr.postalCode == permanentAddr.postalCode;
 
-      profileController.isSameAsPermanent.value = sameAddress;
-    } else {
-      profileController.isSameAsPermanent.value = false;
+        profileController.isSameAsPermanent.value = sameAddress;
+      } else {
+        profileController.isSameAsPermanent.value = false;
+      }
     }
   }
 
   void _initializeAddress() {
     final profileData = profileController.profile;
-    if (profileData.isNotEmpty) {
-      final permanentAddress = profileData.first.addresses
-          ?.firstWhereOrNull((a) => a.addressType == "permanent");
-      final currentAddress = profileData.first.addresses
-          ?.firstWhereOrNull((a) => a.addressType == "current");
+    if (profileData.isNotEmpty && profileData.first.addresses != null) {
+      // Handle permanent address
+      final permanentAddress = profileData.first.addresses!
+          .firstWhereOrNull((a) => a.addressType == "permanent");
 
       if (permanentAddress != null) {
         permanentAddressId = permanentAddress.id;
-        countryNameController.text = permanentAddress.country?.name ?? "";
-        countryIdController.text =
-            permanentAddress.country?.id?.toString() ?? "";
-        provinceController.text = permanentAddress.province ?? "";
-        cityController.text = permanentAddress.city ?? "";
-        addressLineOneController.text = permanentAddress.addressLineOne ?? "";
-        addressLineTwoController.text = permanentAddress.addressLineTwo ?? "";
-        zipController.text = permanentAddress.postalCode ?? "";
+        countryNameController.text = permanentAddress.country.name;
+        countryIdController.text = permanentAddress.country.id.toString();
+        provinceController.text = permanentAddress.province;
+        cityController.text = permanentAddress.city;
+        addressLineOneController.text = permanentAddress.addressLineOne;
+        addressLineTwoController.text = permanentAddress.addressLineTwo;
+        zipController.text = permanentAddress.postalCode;
       }
+
+      // Handle current address
+      final currentAddress = profileData.first.addresses!
+          .firstWhereOrNull((a) => a.addressType == "current");
 
       if (currentAddress != null) {
         currentAddressId = currentAddress.id;
-        currentCountryNameController.text = currentAddress.country?.name ?? "";
-        currentCountryIdController.text =
-            currentAddress.country?.id?.toString() ?? "";
-        currentProvinceController.text = currentAddress.province ?? "";
-        currentCityController.text = currentAddress.city ?? "";
-        currentAddressLineOneController.text =
-            currentAddress.addressLineOne ?? "";
-        currentAddressLineTwoController.text =
-            currentAddress.addressLineTwo ?? "";
-        currentZipController.text = currentAddress.postalCode ?? "";
+        currentCountryNameController.text = currentAddress.country.name;
+        currentCountryIdController.text = currentAddress.country.id.toString();
+        currentProvinceController.text = currentAddress.province;
+        currentCityController.text = currentAddress.city;
+        currentAddressLineOneController.text = currentAddress.addressLineOne;
+        currentAddressLineTwoController.text = currentAddress.addressLineTwo;
+        currentZipController.text = currentAddress.postalCode;
       }
     }
   }
 
   void _copyPermanentToCurrent(bool isChecked) {
     if (isChecked) {
+      // Save original values
       _originalCurrentCountryName = currentCountryNameController.text;
       _originalCurrentCountryId = currentCountryIdController.text;
       _originalCurrentProvince = currentProvinceController.text;
@@ -132,6 +135,7 @@ class _EditUserAddressState extends State<EditUserAddress> {
       _originalCurrentAddressLineTwo = currentAddressLineTwoController.text;
       _originalCurrentZip = currentZipController.text;
 
+      // Copy permanent values to current
       currentCountryNameController.text = countryNameController.text;
       currentCountryIdController.text = countryIdController.text;
       currentProvinceController.text = provinceController.text;
@@ -139,11 +143,8 @@ class _EditUserAddressState extends State<EditUserAddress> {
       currentAddressLineOneController.text = addressLineOneController.text;
       currentAddressLineTwoController.text = addressLineTwoController.text;
       currentZipController.text = zipController.text;
-
-      setState(() {
-        _fieldErrors.clear(); // Clear errors when copying
-      });
     } else {
+      // Restore original values
       currentCountryNameController.text = _originalCurrentCountryName ?? "";
       currentCountryIdController.text = _originalCurrentCountryId ?? "";
       currentProvinceController.text = _originalCurrentProvince ?? "";
@@ -153,11 +154,11 @@ class _EditUserAddressState extends State<EditUserAddress> {
       currentAddressLineTwoController.text =
           _originalCurrentAddressLineTwo ?? "";
       currentZipController.text = _originalCurrentZip ?? "";
-
-      setState(() {
-        _fieldErrors.clear(); // Clear errors when restoring
-      });
     }
+
+    setState(() {
+      _fieldErrors.clear(); // Clear errors when changing
+    });
   }
 
   bool _validateInputs() {
@@ -238,10 +239,9 @@ class _EditUserAddressState extends State<EditUserAddress> {
   Future<void> _submitUserAddress() async {
     try {
       final userId = profileController.profile.first.id;
-
       int permanentCountryId = int.tryParse(countryIdController.text) ?? 1;
-      int currentCountryId = int.tryParse(currentCountryIdController.text) ?? 1;
 
+      // Update or create permanent address
       if (permanentAddressId != null) {
         await profileController.postuserAddress(
           id: userId,
@@ -256,7 +256,7 @@ class _EditUserAddressState extends State<EditUserAddress> {
         );
       } else {
         await profileController.postnewuserAddress(
-          userID: userId,
+          profileID: userId,
           issuedCountry: permanentCountryId,
           province: provinceController.text,
           city: cityController.text,
@@ -267,29 +267,67 @@ class _EditUserAddressState extends State<EditUserAddress> {
         );
       }
 
-      if (currentAddressId != null) {
-        await profileController.postuserAddress(
-          id: userId,
-          addressID: currentAddressId!,
-          country: currentCountryId.toString(),
-          province: currentProvinceController.text,
-          city: currentCityController.text,
-          addressLineOne: currentAddressLineOneController.text,
-          addressLineTwo: currentAddressLineTwoController.text,
-          zipcode: currentZipController.text,
-          addressType: "current",
-        );
+      // Handle current address based on checkbox state
+      if (profileController.isSameAsPermanent.value) {
+        // If "Same as Permanent" is checked, use permanent address values for current address
+        if (currentAddressId != null) {
+          await profileController.postuserAddress(
+            id: userId,
+            addressID: currentAddressId!,
+            country:
+                permanentCountryId.toString(), // Use permanent address country
+            province: provinceController.text, // Use permanent address province
+            city: cityController.text, // Use permanent address city
+            addressLineOne:
+                addressLineOneController.text, // Use permanent address line 1
+            addressLineTwo:
+                addressLineTwoController.text, // Use permanent address line 2
+            zipcode: zipController.text, // Use permanent address zip
+            addressType: "current",
+          );
+        } else {
+          await profileController.postnewuserAddress(
+            profileID: userId,
+            issuedCountry: permanentCountryId, // Use permanent address country
+            province: provinceController.text, // Use permanent address province
+            city: cityController.text, // Use permanent address city
+            addressLineOne:
+                addressLineOneController.text, // Use permanent address line 1
+            addressLineTwo:
+                addressLineTwoController.text, // Use permanent address line 2
+            zipcode: zipController.text, // Use permanent address zip
+            addressType: "current",
+          );
+        }
       } else {
-        await profileController.postnewuserAddress(
-          userID: userId,
-          issuedCountry: currentCountryId,
-          province: currentProvinceController.text,
-          city: currentCityController.text,
-          addressLineOne: currentAddressLineOneController.text,
-          addressLineTwo: currentAddressLineTwoController.text,
-          zipcode: currentZipController.text,
-          addressType: "current",
-        );
+        // If not checked, use the current address values
+        int currentCountryId =
+            int.tryParse(currentCountryIdController.text) ?? 1;
+
+        if (currentAddressId != null) {
+          await profileController.postuserAddress(
+            id: userId,
+            addressID: currentAddressId!,
+            country: currentCountryId.toString(),
+            province: currentProvinceController.text,
+            city: currentCityController.text,
+            addressLineOne: currentAddressLineOneController.text,
+            addressLineTwo: currentAddressLineTwoController.text,
+            zipcode: currentZipController.text,
+            addressType: "current",
+          );
+        } else {
+          await profileController.postnewuserAddress(
+            profileID: userId,
+            issuedCountry: currentCountryId,
+            province: currentProvinceController.text,
+            city: currentCityController.text,
+            addressLineOne: currentAddressLineOneController.text,
+            addressLineTwo: currentAddressLineTwoController.text,
+            zipcode: currentZipController.text,
+            addressType: "current",
+          );
+        }
       }
 
       Get.back();
@@ -597,6 +635,8 @@ class _EditUserAddressState extends State<EditUserAddress> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        titleSpacing: 20.0,
         title: Text(
           "Edit User Address Detail",
           style: smallStyle.copyWith(

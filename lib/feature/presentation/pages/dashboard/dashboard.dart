@@ -7,6 +7,7 @@ import 'package:ams/feature/presentation/pages/dashboard/sub_view_dashboard/time
 import 'package:ams/feature/presentation/pages/dashboard/widget/clock_time.dart';
 import 'package:ams/feature/presentation/pages/dashboard/widget/skeleton_box.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
+import 'package:ams/feature/presentation/pages/organization/model/organization_profile_model.dart';
 import 'package:ams/feature/presentation/pages/timeoff/controller/timeoff_controller.dart';
 import 'package:ams/feature/presentation/pages/timesheet/controller/timesheet_controller.dart';
 import 'package:ams/feature/presentation/widget/components/app_bar.dart';
@@ -16,9 +17,10 @@ import 'package:get/get.dart';
 import '../profile/controller/profile_controller.dart';
 
 class DashboardPage extends StatefulWidget {
-  int? profileid;
+  final Profile? profileData;
+  final String? apiKey;
 
-  DashboardPage({super.key, this.profileid});
+  const DashboardPage({super.key, this.profileData, this.apiKey});
 
   @override
   State<DashboardPage> createState() => _DashboardPageState();
@@ -33,6 +35,7 @@ class _DashboardPageState extends State<DashboardPage> {
       Get.put(DashboardTimesheetController());
   final CalenderNotificationController calenderNotificationController =
       Get.find<CalenderNotificationController>();
+  final ProfileController profileController = Get.find<ProfileController>();
 
   String _getGreeting() {
     final hour = DateTime.now().hour;
@@ -111,9 +114,9 @@ class _DashboardPageState extends State<DashboardPage> {
                               ),
                               children: [
                                 TextSpan(
-                                  text: authController
-                                          .alluserData.value.user?.fullName ??
-                                      'User',
+                                  text: profileController.profile.isNotEmpty
+                                      ? profileController.profile.first.username
+                                      : "Hello",
                                   style: smallStyle.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: isDarkMode

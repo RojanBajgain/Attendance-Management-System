@@ -1,14 +1,23 @@
 import 'package:ams/config/resources/colors.dart';
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/dashboard/dashboard.dart';
+import 'package:ams/feature/presentation/pages/organization/model/organization_profile_model.dart';
 import 'package:ams/feature/presentation/pages/payroll/payroll_page.dart';
 import 'package:ams/feature/presentation/pages/profile/pages/profile.dart';
 import 'package:ams/feature/presentation/pages/timeoff/time_off_page.dart';
 import 'package:ams/feature/presentation/pages/timesheet/time_sheet_page.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 
 class BottomNavPage extends StatefulWidget {
-  const BottomNavPage({super.key});
+  final Profile? profileData;
+  final String? apiKey;
+
+  const BottomNavPage({
+    super.key,
+    this.profileData,
+    this.apiKey,
+  });
 
   @override
   State<BottomNavPage> createState() => _BottomNavPageState();
@@ -16,13 +25,59 @@ class BottomNavPage extends StatefulWidget {
 
 class _BottomNavPageState extends State<BottomNavPage> {
   int _selectedTab = 0;
+  late Profile? _profileData;
+  late String? _apiKey;
+
+  @override
+  void initState() {
+    super.initState();
+    _profileData = widget.profileData;
+    _apiKey = widget.apiKey;
+
+    // If data wasn't passed directly, try to get from storage
+    if (_profileData == null) {
+      final box = GetStorage();
+      final storedProfile = box.read('user_profile');
+      if (storedProfile != null) {
+        _profileData = Profile(
+          profileId: box.read('profile_id') ?? 0,
+          fullName: storedProfile['full_name'] ?? '',
+          email: storedProfile['email'] ?? '',
+          role: storedProfile['role'] ?? '',
+          profileImage: storedProfile['profile_image'],
+          designation: storedProfile['designation'] ?? '',
+          employeeType: storedProfile['employee_type'] ?? '',
+          organization: box.read('organization_name') ?? '',
+        );
+      }
+    }
+
+    if (_apiKey == null) {
+      _apiKey = GetStorage().read('selectedOrganization')?['api_key'];
+    }
+  }
 
   List<Widget> get _pages => [
-        DashboardPage(),
-        TimeOffPage(),
-        TimeSheetPage(),
-        PayrollPage(),
-        ProfilePage(),
+        DashboardPage(
+          profileData: _profileData,
+          apiKey: _apiKey,
+        ),
+        TimeOffPage(
+          profileId: _profileData?.profileId,
+          apiKey: _apiKey,
+        ),
+        TimeSheetPage(
+          profileId: _profileData?.profileId,
+          apiKey: _apiKey,
+        ),
+        PayrollPage(
+          profileId: _profileData?.profileId,
+          apiKey: _apiKey,
+        ),
+        ProfilePage(
+          profileData: _profileData,
+          apiKey: _apiKey,
+        ),
       ];
 
   void _changeTab(int index) {

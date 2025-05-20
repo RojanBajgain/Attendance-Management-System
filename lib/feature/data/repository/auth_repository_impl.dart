@@ -11,10 +11,15 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   // Login
-  Future<ApiResponse<LoginModel>> login(String email, String pw) async {
+  Future<ApiResponse<LoginModel>> login(
+      String email, String pw, String role) async {
     final response = await ApiClient.postApi<LoginModel>(
       ApiUrls.login,
-      requestBody: {"email": email, "password": pw},
+      requestBody: {
+        "email": email,
+        "password": pw,
+        "role": role,
+      },
       token: '',
       fromJson: (json) => LoginModel.fromJson(json),
     );
@@ -22,11 +27,16 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   // Logout
-  Future<ApiResponse> logOut(String refreshToken, String accessToken) async {
+  Future<ApiResponse> logOut(String refreshToken, String accessToken,
+      String organizationApiKey) async {
     final response = await ApiClient.postApi(
       ApiUrls.logout,
-      requestBody: {'refresh_token': refreshToken},
+      requestBody: {
+        'refresh_token': refreshToken,
+        'organization': organizationApiKey,
+      },
       token: accessToken,
+      apiKey: organizationApiKey,
       fromJson: null,
     );
     return response;
@@ -43,6 +53,7 @@ class AuthRepositoryImpl implements AuthRepository {
         'new_password2': confirmPassword,
       },
       token: apiClient.token,
+      apiKey: apiClient.organization,
       fromJson: null,
     );
     return response;

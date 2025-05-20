@@ -10,12 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class TimeOffPage extends StatefulWidget {
-  // int? profileId;
+  final int? profileId;
+  final String? apiKey;
 
-  TimeOffPage({
-    super.key,
-    // this.profileId,
-  });
+  TimeOffPage({super.key, this.profileId, this.apiKey});
 
   @override
   State<TimeOffPage> createState() => _TimeOffPageState();

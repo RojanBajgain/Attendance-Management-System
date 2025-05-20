@@ -3,11 +3,13 @@ import 'dart:developer';
 
 import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/repository/auth_repository_impl.dart';
+import 'package:ams/feature/presentation/pages/organization/pages/organization_page.dart';
 import 'package:ams/feature/presentation/pages/bottom_nav/bottom_nav_page.dart';
 import 'package:ams/feature/presentation/pages/login/login_page.dart';
 import 'package:ams/feature/presentation/pages/login/model/login_model.dart';
 import 'package:ams/feature/presentation/widget/loading_animation_widget.dart';
 import 'package:ams/feature/utils/ssnackbar_utils.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,7 +25,7 @@ class AuthController extends GetxController {
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
   final ApiClient apiClient = Get.find<ApiClient>();
   var authIsLoading = false.obs;
-  var alluserData = LoginModel(access: "", refresh: "").obs;
+  var alluserData = LoginModel(access: "", refresh: "", organization: []).obs;
   var biometricsEnabled = false.obs;
 
   AuthController({required this.authRepo});
@@ -199,20 +201,20 @@ class AuthController extends GetxController {
       // Retrieve stored credentials
       String? email = await secureStorage.read(key: 'user_email');
       String? password = await secureStorage.read(key: 'user_password');
+      String? role =
+          await secureStorage.read(key: 'user_role'); // Retrieve role
 
-      if (email == null || password == null) {
+      if (email == null || password == null || role == null) {
         SSnackbarUtil.showSnackbar(
           'No Credentials',
-          'Please log in with email and password first to enable biometric login.',
+          'Please log in with email, password, and role first to enable biometric login.',
           SnackbarType.error,
         );
         return;
       }
 
       // Perform login with retrieved credentials
-      // Remove keepMeLoggedIn parameter - always set to false
-      await loginMethod(
-          email, password, true); // Changed to true to maintain login state
+      await loginMethod(email, password, role, true);
     } catch (e) {
       log("Biometric login error: $e");
       SSnackbarUtil.showSnackbar(
@@ -227,11 +229,12 @@ class AuthController extends GetxController {
 
   // Function to save credentials for biometric login
   Future<void> saveCredentialsForBiometricLogin(
-      String email, String password) async {
+      String email, String password, String role) async {
     try {
       // Save credentials securely
       await secureStorage.write(key: 'user_email', value: email);
       await secureStorage.write(key: 'user_password', value: password);
+      await secureStorage.write(key: 'user_role', value: role); // Save role
       await secureStorage.write(key: 'biometrics_enabled', value: 'true');
 
       // Update preferences
@@ -254,22 +257,23 @@ class AuthController extends GetxController {
     }
   }
 
-  // Function to update the login method to save credentials for biometric login
   Future<void> loginMethod(
-      String email, String password, bool keepMeLoggedIn) async {
-    authIsLoading.value = true;
+      String email, String password, String role, bool keepMeLoggedIn) async {
+    if (authIsLoading.value) return;
 
+    authIsLoading.value = true;
     Get.dialog(
       const CombinedAnimatedDialog(),
       barrierDismissible: false,
     );
 
     try {
-      ApiResponse<LoginModel> response = await authRepo.login(email, password);
+      ApiResponse<LoginModel> response =
+          await authRepo.login(email, password, role);
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
         log("Successfully logged in. User Data: ${response.response}");
 
-        // Clear previous user data first
+        // Clear previous user data
         alluserData.value = LoginModel(access: "", refresh: "");
 
         // Set new user data
@@ -278,48 +282,71 @@ class AuthController extends GetxController {
         // Save tokens
         final tokens = response.response;
         if (tokens != null) {
-          apiClient.saveTokens(tokens.access, tokens.refresh);
+          // Save tokens (apiKey will be set after organization selection)
+          apiClient.saveTokens(tokens.access, tokens.refresh, '');
         }
 
-        // Always save credentials for biometric login if login is successful
-        // This ensures we have credentials available when biometrics are enabled later
+        // Save credentials for biometric login
         await secureStorage.write(key: 'user_email', value: email);
         await secureStorage.write(key: 'user_password', value: password);
 
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        GetStorage box = GetStorage();
+        // GetStorage box = GetStorage();
 
         // Store user info in shared preferences for persistence
         if (alluserData.value.user != null) {
           await prefs.setString(
               'userData', json.encode(alluserData.value.toJson()));
-          box.write('profileId', alluserData.value.user?.profileId);
         }
 
+        // Handle keepMeLoggedIn
         await prefs.setBool('isLoggedIn', keepMeLoggedIn);
-
         if (keepMeLoggedIn) {
           await prefs.setString('accessToken', tokens!.access);
           await prefs.setString('refreshToken', tokens.refresh);
         }
 
+        // Check number of organizations
+        final organizations = alluserData.value.organization ?? [];
         await Future.delayed(const Duration(milliseconds: 500));
 
-        Get.offAll(() => const BottomNavPage());
+        if (organizations.isEmpty) {
+          Get.back();
+          SSnackbarUtil.showSnackbar(
+            'No Organizations',
+            'No organizations found for this user. Please contact your Admin.',
+            SnackbarType.error,
+          );
+          return;
+        }
+
+        // Pass organizations to OrganizationPage
+        Get.offAll(
+          () => const OrganizationPage(),
+          arguments: organizations.map((org) => org.toJson()).toList(),
+        );
+
+        SSnackbarUtil.showSnackbar(
+          "Login Successful",
+          "Welcome",
+          SnackbarType.success,
+          duration: 2,
+        );
       } else {
         Get.back();
         log("Error: ${response.message ?? 'Login failed'}");
         SSnackbarUtil.showSnackbar(
           'Login Failed',
-          'Invalid Email or Password.',
+          'Invalid Email, Password.',
           SnackbarType.error,
         );
       }
     } catch (e) {
+      Get.back();
       log("Exception occurred: $e");
       SSnackbarUtil.showSnackbar(
         'Error',
-        'Fill login details',
+        'An error occurred. Please try again.',
         SnackbarType.error,
       );
     } finally {
@@ -332,7 +359,6 @@ class AuthController extends GetxController {
     bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 
     if (isLoggedIn) {
-      // Restore user data from preferences if available
       String? userDataJson = prefs.getString('userData');
       if (userDataJson != null && userDataJson.isNotEmpty) {
         try {
@@ -343,8 +369,20 @@ class AuthController extends GetxController {
           final accessToken = prefs.getString('accessToken');
           final refreshToken = prefs.getString('refreshToken');
           if (accessToken != null && refreshToken != null) {
-            apiClient.saveTokens(accessToken, refreshToken);
+            apiClient.saveTokens(
+                accessToken, refreshToken, apiClient.organization);
           }
+
+          // Restore user_id
+          GetStorage box = GetStorage();
+          if (alluserData.value.user != null) {
+            log("Restoring user_id: ${alluserData.value.user}");
+            box.write('user_id', alluserData.value.user);
+          }
+
+          // Clear stale profile_id or profileId
+          box.remove('profile_id');
+          box.remove('profileId');
         } catch (e) {
           log("Error restoring user data: $e");
         }
@@ -357,9 +395,16 @@ class AuthController extends GetxController {
 
   // Logout
   Future<void> logoutmethod(String refreshToken, String accessToken) async {
-    ApiResponse response = await authRepo.logOut(refreshToken, accessToken);
+    // Get the organization value from apiClient
+    String organization = apiClient.organization;
+
+    log("Organization API Key: $organization");
+
+    // Call the updated logOut method with the organization parameter
+    ApiResponse response =
+        await authRepo.logOut(refreshToken, accessToken, organization);
     if (response.status == ApiStatus.SUCCESS) {
-      log("Successfully logout. Data: ${response.response}");
+      log("Successfully logged out. Data: ${response.response}");
       apiClient.clearTokens();
 
       final prefs = await SharedPreferences.getInstance();
@@ -371,8 +416,6 @@ class AuthController extends GetxController {
       await prefs.remove('accessToken');
       await prefs.remove('refreshToken');
       await prefs.remove('userData'); // Clear the stored user data
-
-      // DO NOT use prefs.clear() as it would erase all settings
 
       // Restore biometrics setting
       await prefs.setBool('biometrics_enabled', biometricsEnabled);
@@ -389,9 +432,14 @@ class AuthController extends GetxController {
       );
     } else {
       log("Error: ${response.message ?? 'logout failed'}");
+      String errorMessage = response.message ?? 'An unexpected error occurred';
+      if (response.message?.toLowerCase().contains('organization') ?? false) {
+        errorMessage =
+            'Organization information is missing. Please log in again.';
+      }
       SSnackbarUtil.showSnackbar(
         'Logout Failed',
-        response.message ?? 'An unexpected error occurred',
+        errorMessage,
         SnackbarType.error,
       );
     }
@@ -399,64 +447,91 @@ class AuthController extends GetxController {
 
   // Change Password
   Future<void> changePasswordMethod(
-      String oldPassword, String newPassword, String confirmPassword) async {
+    String oldPassword,
+    String newPassword,
+    String confirmPassword,
+  ) async {
+    // Clear any previous errors
+    // Get.closeAllSnackbars();
+
+    // Validate password match
     if (newPassword != confirmPassword) {
       SSnackbarUtil.showSnackbar(
-        "Password does not match",
-        "Please check again",
+        "Password Mismatch",
+        "New password and confirmation don't match",
         SnackbarType.error,
       );
       return;
     }
 
-    String? passwordValidationMessage = _validatePassword(newPassword);
-    if (passwordValidationMessage != null) {
+    // Validate password strength
+    final passwordValidation = _validatePassword(newPassword);
+    if (passwordValidation != null) {
       SSnackbarUtil.showSnackbar(
-        "Invalid Password",
-        passwordValidationMessage,
+        "Weak Password",
+        passwordValidation,
         SnackbarType.error,
       );
-
       return;
     }
 
-    ApiResponse response = await authRepo.changePassword(
-        oldPassword, newPassword, confirmPassword);
+    // Show loading
+    Get.dialog(
+      const Center(child: CircularProgressIndicator()),
+      barrierDismissible: false,
+    );
 
-    if (response.status == ApiStatus.SUCCESS) {
-      log("Successfully changed Password. Data: ${response.response}");
-      Get.offAll(() => const LoginPage());
-      apiClient.clearTokens();
-
-      // Clear secure storage since password changed
-      await secureStorage.delete(key: 'user_password');
-      // Keep email for convenience
-      // await secureStorage.delete(key: 'user_email');
-      await secureStorage.write(key: 'biometrics_enabled', value: 'false');
-
-      SSnackbarUtil.showSnackbar(
-        'Password Changed Successful.',
-        response.message ?? 'Please Login Again...',
-        SnackbarType.success,
+    try {
+      final response = await authRepo.changePassword(
+        oldPassword,
+        newPassword,
+        confirmPassword,
       );
-    } else {
-      log("Error: ${response.message ?? 'failed to change password'}");
-      if (response.message
-              ?.toLowerCase()
-              .contains("old password is incorrect") ??
-          false) {
+
+      Get.back(); // Close loading
+
+      if (response.status == ApiStatus.SUCCESS ||
+          (response.status == ApiStatus.ERROR &&
+              response.message
+                      ?.contains('Unable to change password at this time') ==
+                  true)) {
+        // Success case
+        apiClient.clearTokens();
+        await secureStorage.delete(key: 'user_password');
+        await secureStorage.write(key: 'biometrics_enabled', value: 'false');
+
         SSnackbarUtil.showSnackbar(
-          'Incorrect Old Password',
-          'Please enter the correct old password',
-          SnackbarType.error,
+          'Success',
+          'Password changed successfully. Please login again.',
+          SnackbarType.success,
         );
+
+        Get.offAll(() => const LoginPage());
       } else {
+        // Handle different error cases
+        String errorMessage = response.message ?? 'Failed to change password';
+
+        if (errorMessage.toLowerCase().contains('old password')) {
+          errorMessage = 'Incorrect current password';
+        } else if (errorMessage.toLowerCase().contains('too common')) {
+          errorMessage = 'Password is too common';
+        } else if (errorMessage.toLowerCase().contains('too short')) {
+          errorMessage = 'Password must be at least 8 characters';
+        }
+
         SSnackbarUtil.showSnackbar(
-          'Failed to Change Password',
-          'The password is too short \nPassword is similar to the email',
+          'Error',
+          errorMessage,
           SnackbarType.error,
         );
       }
+    } catch (e) {
+      Get.back();
+      SSnackbarUtil.showSnackbar(
+        'Error',
+        'An unexpected error occurred: ${e.toString()}',
+        SnackbarType.error,
+      );
     }
   }
 

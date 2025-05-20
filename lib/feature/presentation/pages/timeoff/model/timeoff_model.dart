@@ -62,10 +62,10 @@ class Datum {
   });
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
-        id: json["id"],
+        id: json["id"] ?? 0,
         user: json["user"],
-        type: Type.fromJson(json["type"]),
-        days: json["days"],
+        type: json["type"] != null ? Type.fromJson(json["type"]) : null,
+        days: json["days"] ?? 0,
         startDate: json["start_date"] != null
             ? DateTime.tryParse(json["start_date"])
             : null,
@@ -114,11 +114,11 @@ class Type {
   });
 
   factory Type.fromJson(Map<String, dynamic> json) => Type(
-        id: json["id"],
+        id: json["id"] ?? 0,
         name: json["name"],
         compensation: json["compensation"],
         units: json["units"],
-        days: json["days"],
+        days: json["days"] ?? 0,
       );
 
   Map<String, dynamic> toJson() => {

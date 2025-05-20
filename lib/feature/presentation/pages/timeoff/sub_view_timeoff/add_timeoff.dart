@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/policy/controller/policy_controller.dart';
@@ -72,22 +74,21 @@ class _AddTimeoffState extends State<AddTimeoff> {
   }
 
   Future<void> _submitTimeOff() async {
-    // Validate form
     if (_formKey.currentState!.saveAndValidate()) {
       final formData = _formKey.currentState!.value;
-      final selectedValue = formData['leave'];
+      final selectedValue = formData['leave'] as String?;
       final startDate = formData['start_date'] as DateTime?;
       final endDate = formData['end_date'] as DateTime?;
       final reason = formData['reason'] as String?;
 
-      // Debug print to see actual values
-      print('Selected Value: $selectedValue');
-      print('Start Date: $startDate');
-      print('End Date: $endDate');
-      print('Reason: $reason');
+      // Debug logs
+      log('Selected Value: $selectedValue');
+      log('Start Date: $startDate');
+      log('End Date: $endDate');
+      log('Reason: $reason');
 
-      // Check each condition individually for better debugging
-      if (selectedValue == null) {
+      // Validate all required fields
+      if (selectedValue == null || selectedValue.isEmpty) {
         SSnackbarUtil.showSnackbar(
           'Missing Leave Type',
           'Please select a leave type',
@@ -123,25 +124,51 @@ class _AddTimeoffState extends State<AddTimeoff> {
         return;
       }
 
-      // Convert DateTime to ISO 8601 strings
-      final startDateIso = DateFormat('yyyy-MM-dd').format(startDate);
-      final endDateIso = DateFormat('yyyy-MM-dd').format(endDate);
+      // Get profile ID with null check
+      final profileId = box.read('profile_id');
+      if (profileId == null) {
+        SSnackbarUtil.showSnackbar(
+          'Error',
+          'Profile information not found. Please select an organization first.',
+          SnackbarType.error,
+        );
+        return;
+      }
 
-      // Get the selected policy ID
-      final selectedPolicy = policycontroller.policy.firstWhere(
-        (policy) => policy.name == selectedValue,
-        orElse: () => throw Exception('Policy not found'),
-      );
-      var profileId = box.read('profileId');
+      // Find selected policy with null check
+      try {
+        final selectedPolicy = policycontroller.policy.firstWhere(
+          (policy) => policy.name == selectedValue,
+        );
 
-      // Call the API via the controller
-      await timeoffcontroller.createtimeoff(
-        userID: profileId,
-        typeID: selectedPolicy.id,
-        startdate: startDateIso,
-        enddate: endDateIso,
-        reason: reason,
-      );
+        // Convert dates to ISO format
+        final startDateIso = DateFormat('yyyy-MM-dd').format(startDate);
+        final endDateIso = DateFormat('yyyy-MM-dd').format(endDate);
+
+        // Debug log the complete request data
+        log('Submitting timeoff with:');
+        log('Profile ID: $profileId');
+        log('Type ID: ${selectedPolicy.id}');
+        log('Start Date: $startDateIso');
+        log('End Date: $endDateIso');
+        log('Reason: $reason');
+
+        // Call the API via the controller
+        await timeoffcontroller.createtimeoff(
+          profile: profileId,
+          type: selectedPolicy.id,
+          startdate: startDateIso,
+          enddate: endDateIso,
+          reason: reason,
+        );
+      } catch (e) {
+        log('Error finding policy: $e');
+        SSnackbarUtil.showSnackbar(
+          'Error',
+          'Failed to find leave policy. Please try again.',
+          SnackbarType.error,
+        );
+      }
     } else {
       SSnackbarUtil.showSnackbar(
         'Validation Failed',

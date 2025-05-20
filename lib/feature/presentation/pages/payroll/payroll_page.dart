@@ -9,7 +9,9 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class PayrollPage extends StatefulWidget {
-  const PayrollPage({super.key});
+  int? profileId;
+  final String? apiKey;
+  PayrollPage({super.key, this.profileId, this.apiKey});
 
   @override
   State<PayrollPage> createState() => _PayrollPageState();

@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
+import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/model/profile_model.dart';
 import 'package:ams/feature/presentation/pages/profile/pages/edit_profiles/edit_user_bank.dart';
 import 'package:ams/feature/presentation/pages/profile/pages/edit_profiles/edit_user_info.dart';
@@ -8,10 +10,7 @@ import 'package:ams/feature/presentation/pages/profile/widget/image_uploader.dar
 import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
-import 'package:ams/config/resources/styles.dart';
-import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -69,41 +68,35 @@ class _EditUserDocumentState extends State<EditUserDocument> {
 
   void _initializeDocuments() {
     final profileData = profileController.profile;
-    if (profileData.isNotEmpty && profileData.first.documents != null) {
-      for (var document in profileData.first.documents!) {
-        if (document.id != null) {
-          documentControllers[document.id!] = {
-            'title': TextEditingController(text: document.title ?? ""),
-            'issuedDate': TextEditingController(
-              text: document.issuedDate != null
-                  ? DateFormat('yyyy-MM-dd').format(document.issuedDate!)
-                  : "",
-            ),
-            'identifier':
-                TextEditingController(text: document.identifier ?? ""),
-          };
+    if (profileData.isNotEmpty && profileData.first.documents.isNotEmpty) {
+      for (var document in profileData.first.documents) {
+        final documentId = document.id;
+        documentControllers[documentId] = {
+          'title': TextEditingController(text: document.title),
+          'issuedDate': TextEditingController(
+            text: document.issuedDate != null
+                ? DateFormat('yyyy-MM-dd').format(document.issuedDate)
+                : "",
+          ),
+          'identifier': TextEditingController(text: document.identifier),
+        };
 
-          selectedDocumentTypes[document.id!] = document.type ?? "N/A";
-
-          if (document.files != null) {
-            _filesToKeep[document.id!] =
-                document.files!.map((file) => file.id ?? 0).toList();
-          } else {
-            _filesToKeep[document.id!] = [];
-          }
-        }
+        selectedDocumentTypes[documentId] =
+            document.type.isNotEmpty ? document.type : "N/A";
+        _filesToKeep[documentId] =
+            document.files.map((file) => file.id).toList();
       }
     }
   }
 
   int get activeDocumentCount {
     final profileData = profileController.profile;
-    if (profileData.isEmpty || profileData.first.documents == null) {
+    if (profileData.isEmpty || profileData.first.documents.isEmpty) {
       return 0;
     }
 
-    return profileData.first.documents!
-        .where((doc) => doc.id != null && !_deletedDocumentIds.contains(doc.id))
+    return profileData.first.documents
+        .where((doc) => !_deletedDocumentIds.contains(doc.id))
         .length;
   }
 
@@ -123,12 +116,13 @@ class _EditUserDocumentState extends State<EditUserDocument> {
 
         return AlertDialog(
           title: Center(
-              child: Text(
-            'Confirm Deletion',
-            style: normalStyle.copyWith(
-              color: isDarkMode ? Colors.white : Colors.black,
+            child: Text(
+              'Confirm Deletion',
+              style: normalStyle.copyWith(
+                color: isDarkMode ? Colors.white : Colors.black,
+              ),
             ),
-          )),
+          ),
           content: Text(
             'Are you sure you want to delete this document?',
             style: smallStyle.copyWith(
@@ -148,10 +142,8 @@ class _EditUserDocumentState extends State<EditUserDocument> {
             TextButton(
               onPressed: () async {
                 Get.back();
-
                 try {
                   await profileController.deleteDocument(id: documentId);
-
                   setState(() {
                     _deletedDocumentIds.add(documentId);
                     documentControllers.remove(documentId);
@@ -161,11 +153,8 @@ class _EditUserDocumentState extends State<EditUserDocument> {
                     _fieldErrors.removeWhere(
                         (key, value) => key.startsWith('doc_$documentId'));
                   });
-
                   await profileController.getProfile();
                 } catch (e) {
-                  Get.back();
-
                   SSnackbarUtil.showSnackbar(
                     'Error',
                     'Failed to delete document: $e',
@@ -213,7 +202,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
                 ? DateFormat('yyyy-MM-dd')
                     .parse(controllers['issuedDate']!.text)
                 : null,
-            profileId: profileController.profile.first.id,
+            profileId: userId,
             filesToKeep: filesToKeep,
             documentImage: selectedFile,
             documentFile: null,
@@ -258,6 +247,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
         Get.to(() => const EditUserBank());
       }
     } catch (e) {
+      Get.back();
       SSnackbarUtil.showSnackbar(
         'Error',
         'Failed to update documents: $e',
@@ -309,10 +299,9 @@ class _EditUserDocumentState extends State<EditUserDocument> {
         isValid = false;
       }
 
-      // Validate file (optional, only if no existing files or all deleted)
+      // Optional: Validate file if no existing files
       /* if (_filesToKeep[documentId]?.isEmpty ?? true) {
-        if (!_selectedFiles.containsKey(documentId) ||
-            _selectedFiles[documentId] == null) {
+        if (!_selectedFiles.containsKey(documentId) || _selectedFiles[documentId] == null) {
           _fieldErrors['file_$documentId'] = 'At least one file is required';
           isValid = false;
         }
@@ -337,18 +326,10 @@ class _EditUserDocumentState extends State<EditUserDocument> {
         _fieldErrors['new_doc_identifier'] = 'Identifier is required';
         isValid = false;
       }
-      // if (!_selectedFiles.containsKey(-1) || _selectedFiles[-1] == null) {
-      //   _fieldErrors['new_doc_file'] = 'A file is required';
-      //   isValid = false;
-      // }
-    }
-
-    if (!isValid) {
-      // SSnackbarUtil.showSnackbar(
-      //   'Error',
-      //   'Please fill out all required fields correctly',
-      //   SnackbarType.error,
-      // );
+      /* if (!_selectedFiles.containsKey(-1) || _selectedFiles[-1] == null) {
+        _fieldErrors['new_doc_file'] = 'A file is required';
+        isValid = false;
+      } */
     }
 
     return isValid;
@@ -564,7 +545,8 @@ class _EditUserDocumentState extends State<EditUserDocument> {
 
     return Scaffold(
       appBar: AppBar(
-        titleSpacing: 0,
+        automaticallyImplyLeading: false,
+        titleSpacing: 20.0,
         title: Text(
           "Edit User Document",
           style: smallStyle.copyWith(
@@ -577,29 +559,32 @@ class _EditUserDocumentState extends State<EditUserDocument> {
         padding: const EdgeInsets.all(16.0),
         child: Obx(() {
           final profileData = profileController.profile;
-          final predefinedDocumentTypes = [
+          const predefinedDocumentTypes = [
             "PAN",
             "Citizenship",
             "Education",
             "Recommendation",
+            "Other",
           ];
 
           final documentTypes =
-              profileData.isNotEmpty && profileData.first.documents != null
-                  ? profileData.first.documents!
-                      .map((document) => document.type ?? "N/A")
+              profileData.isNotEmpty && profileData.first.documents.isNotEmpty
+                  ? profileData.first.documents
+                      .map((doc) => doc.type)
+                      .toSet()
                       .toList()
-                  : [];
+                  : <String>[];
 
-          final finalDocumentTypes = (documentTypes.isNotEmpty
-                  ? {...predefinedDocumentTypes, ...documentTypes}.toList()
-                  : predefinedDocumentTypes)
-              .cast<String>();
+          final finalDocumentTypes = <String>{
+            ...predefinedDocumentTypes,
+            ...documentTypes,
+          }.toList();
 
           return Column(
             children: [
-              if (profileData.isNotEmpty && profileData.first.documents != null)
-                ...profileData.first.documents!
+              if (profileData.isNotEmpty &&
+                  profileData.first.documents.isNotEmpty)
+                ...profileData.first.documents
                     .where((doc) => !_deletedDocumentIds.contains(doc.id))
                     .map((document) {
                   return _buildDocumentSection(
@@ -609,8 +594,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
                   );
                 }).toList(),
               if (profileData.isNotEmpty &&
-                  profileData.first.documents != null &&
-                  profileData.first.documents!.isNotEmpty)
+                  profileData.first.documents.isNotEmpty)
                 const SizedBox(height: 20),
               _buildAddNewDocumentCheckbox(isDarkMode, profileController),
               if (profileController.isAddNewDocumentChecked.value)
@@ -629,12 +613,12 @@ class _EditUserDocumentState extends State<EditUserDocument> {
     List<String> documentTypes,
     Document document,
   ) {
-    if (document.id == null || !documentControllers.containsKey(document.id)) {
+    final documentId = document.id;
+    if (!documentControllers.containsKey(documentId)) {
       return const SizedBox.shrink();
     }
 
-    final controllers = documentControllers[document.id]!;
-    final documentId = document.id!;
+    final controllers = documentControllers[documentId]!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -647,7 +631,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
                 const Icon(Icons.edit_calendar_outlined),
                 const SizedBox(width: 10.0),
                 Text(
-                  "Edit Document - ${document.type ?? "N/A"}",
+                  "Edit Document - ${document.type.isNotEmpty ? document.type : 'N/A'}",
                   style: smallNStyle.copyWith(
                     color: isDarkMode ? Colors.white : Colors.black,
                   ),
@@ -660,7 +644,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
                 color: activeDocumentCount > 1 ? Colors.red : Colors.grey,
               ),
               onPressed: activeDocumentCount > 1
-                  ? () => _deleteDocument(document.id!)
+                  ? () => _deleteDocument(documentId)
                   : null,
               tooltip: activeDocumentCount > 1
                   ? 'Delete Document'
@@ -673,16 +657,16 @@ class _EditUserDocumentState extends State<EditUserDocument> {
           title: "Type",
           items: documentTypes,
           isDarkMode: isDarkMode,
-          initialValue: document.type ?? "N/A",
+          initialValue: document.type.isNotEmpty ? document.type : "N/A",
           onChanged: (value) {
-            if (value != null && document.id != null) {
+            if (value != null) {
               setState(() {
-                selectedDocumentTypes[document.id!] = value;
-                _fieldErrors.remove('doc_${document.id}_type');
+                selectedDocumentTypes[documentId] = value;
+                _fieldErrors.remove('doc_${documentId}_type');
               });
             }
           },
-          fieldKey: 'doc_${document.id}_type',
+          fieldKey: 'doc_${documentId}_type',
         ),
         const SizedBox(height: 10),
         _buildTextField(
@@ -706,13 +690,13 @@ class _EditUserDocumentState extends State<EditUserDocument> {
           fieldKey: 'doc_${documentId}_identifier',
         ),
         const SizedBox(height: 10),
-        if (document.files != null && document.files!.isNotEmpty)
+        if (document.files.isNotEmpty)
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildSectionTitle("Existing Documents", isDarkMode),
               const SizedBox(height: 8),
-              ...document.files!
+              ...document.files
                   .where((file) => !_deletedFileIds.contains(file.id))
                   .map((file) {
                 return Row(
@@ -720,21 +704,25 @@ class _EditUserDocumentState extends State<EditUserDocument> {
                     IconButton(
                       icon: const Icon(Icons.file_present),
                       onPressed: () async {
-                        final Uri url = Uri.parse(file.file!);
-                        if (await canLaunchUrl(url)) {
-                          await launchUrl(url);
-                        } else {
-                          SSnackbarUtil.showSnackbar(
-                            'Error',
-                            'Could not open the document',
-                            SnackbarType.error,
-                          );
+                        if (file.file.isNotEmpty) {
+                          final Uri url = Uri.parse(file.file);
+                          if (await canLaunchUrl(url)) {
+                            await launchUrl(url);
+                          } else {
+                            SSnackbarUtil.showSnackbar(
+                              'Error',
+                              'Could not open the document',
+                              SnackbarType.error,
+                            );
+                          }
                         }
                       },
                     ),
                     Expanded(
                       child: Text(
-                        file.file!.split('/').last,
+                        file.file.split('/').last.isNotEmpty
+                            ? file.file.split('/').last
+                            : 'Unknown file',
                         style: smallStyle.copyWith(
                           color: isDarkMode ? Colors.white : Colors.black,
                         ),
@@ -742,17 +730,14 @@ class _EditUserDocumentState extends State<EditUserDocument> {
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete),
-                      onPressed: () async {
-                        if (file.id != null) {
-                          setState(() {
-                            _deletedFileIds.add(file.id!);
-                            if (_filesToKeep.containsKey(document.id!) &&
-                                _filesToKeep[document.id!] != null) {
-                              _filesToKeep[document.id!]!.remove(file.id!);
-                            }
-                            _fieldErrors.remove('file_$documentId');
-                          });
-                        }
+                      onPressed: () {
+                        setState(() {
+                          _deletedFileIds.add(file.id);
+                          if (_filesToKeep.containsKey(documentId)) {
+                            _filesToKeep[documentId]!.remove(file.id);
+                          }
+                          _fieldErrors.remove('file_$documentId');
+                        });
                       },
                     ),
                   ],
@@ -767,12 +752,12 @@ class _EditUserDocumentState extends State<EditUserDocument> {
           onFilePicked: (FilePickerResult? result) {
             if (result != null) {
               setState(() {
-                _selectedFiles[document.id!] = File(result.files.single.path!);
+                _selectedFiles[documentId] = File(result.files.single.path!);
                 _fieldErrors.remove('file_$documentId');
               });
             } else {
               setState(() {
-                _selectedFiles[document.id!] = null;
+                _selectedFiles[documentId] = null;
               });
             }
           },
@@ -900,38 +885,6 @@ class _EditUserDocumentState extends State<EditUserDocument> {
               ),
             );
           }).toList(),
-          // decoration: InputDecoration(
-          //   contentPadding:
-          //       const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          //   labelText: hasError ? _fieldErrors[fieldKey] : 'Select',
-          //   labelStyle: smallStyle.copyWith(
-          //     color: hasError
-          //         ? Colors.red
-          //         : (isDarkMode ? Colors.white70 : Colors.black54),
-          //   ),
-          //   border: OutlineInputBorder(
-          //     borderSide: BorderSide(
-          //       color: hasError
-          //           ? Colors.red
-          //           : (isDarkMode ? Colors.white70 : Colors.black54),
-          //     ),
-          //   ),
-          //   enabledBorder: OutlineInputBorder(
-          //     borderSide: BorderSide(
-          //       color: hasError
-          //           ? Colors.red
-          //           : (isDarkMode ? Colors.white70 : Colors.black54),
-          //     ),
-          //   ),
-          //   focusedBorder: OutlineInputBorder(
-          //     borderSide: BorderSide(
-          //       color: hasError
-          //           ? Colors.red
-          //           : (isDarkMode ? Colors.blueAccent : Colors.black),
-          //       width: 2.0,
-          //     ),
-          //   ),
-          // ),
           dropdownStyleData: DropdownStyleData(
             maxHeight: 300,
             decoration: BoxDecoration(

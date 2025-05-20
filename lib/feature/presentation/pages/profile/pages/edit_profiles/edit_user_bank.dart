@@ -1,5 +1,6 @@
 import 'package:ams/feature/presentation/pages/bottom_nav/bottom_nav_page.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
+import 'package:ams/feature/presentation/pages/profile/model/profile_model.dart';
 import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -19,11 +20,8 @@ class _EditUserBankState extends State<EditUserBank> {
   final authcontroller = Get.find<AuthController>();
   final ProfileController profilecontroller = Get.put(ProfileController());
 
-  final RxList<Map<String, dynamic>> _bankDetailsList =
-      <Map<String, dynamic>>[].obs;
-
+  final RxList<BankDetail> _bankDetailsList = <BankDetail>[].obs;
   List<int> _deletedBankIds = [];
-
   int? _selectedPayrollBankId;
   bool _isAddNewBankDetail = false;
   bool _isNewBankPayRoll = false;
@@ -72,41 +70,24 @@ class _EditUserBankState extends State<EditUserBank> {
   }
 
   void _initializeBankDetails() {
-    final profiledata = profilecontroller.profile;
+    final profileData = profilecontroller.profile;
 
-    if (profiledata.isNotEmpty && profiledata.first.bankDetails != null) {
-      _bankDetailsList.assignAll(
-        profiledata.first.bankDetails!.map((bankDetail) {
-          if (bankDetail.isPayroll == true) {
-            _selectedPayrollBankId = bankDetail.id;
-          }
+    if (profileData.isNotEmpty && profileData.first.bankDetails.isNotEmpty) {
+      _bankDetailsList.assignAll(profileData.first.bankDetails);
 
-          _selectedBanks.add(bankDetail.bankName);
+      for (var bankDetail in profileData.first.bankDetails) {
+        _selectedBanks.add(bankDetail.bankName);
 
-          return {
-            'id': bankDetail.id,
-            'bankName': bankDetail.bankName ?? "",
-            'bankBranch': bankDetail.bankBranch ?? "",
-            'bankAccountName': bankDetail.bankAccountName ?? "",
-            'bankAccount': bankDetail.bankAccount ?? "",
-            'isPayroll': bankDetail.isPayroll ?? false,
-            'controllers': {
-              'bankBranch':
-                  TextEditingController(text: bankDetail.bankBranch ?? ""),
-              'bankAccountName':
-                  TextEditingController(text: bankDetail.bankAccountName ?? ""),
-              'bankAccount': TextEditingController(
-                  text: bankDetail.bankAccount?.toString() ?? ""),
-            }
-          };
-        }).toList(),
-      );
+        if (bankDetail.isPayroll) {
+          _selectedPayrollBankId = bankDetail.id;
+        }
+      }
     }
   }
 
   int get activeBankDetailsCount {
     return _bankDetailsList
-        .where((bank) => !_deletedBankIds.contains(bank['id']))
+        .where((bank) => !_deletedBankIds.contains(bank.id))
         .length;
   }
 
@@ -120,13 +101,8 @@ class _EditUserBankState extends State<EditUserBank> {
       return;
     }
 
-    bool isPayrollBank = false;
-    for (var bank in _bankDetailsList) {
-      if (bank['id'] == bankId && bank['isPayroll'] == true) {
-        isPayrollBank = true;
-        break;
-      }
-    }
+    bool isPayrollBank =
+        _bankDetailsList.any((bank) => bank.id == bankId && bank.isPayroll);
 
     if (isPayrollBank) {
       SSnackbarUtil.showSnackbar(
@@ -179,13 +155,8 @@ class _EditUserBankState extends State<EditUserBank> {
                     }
 
                     int bankIndex = _bankDetailsList
-                        .indexWhere((bank) => bank['id'] == bankId);
+                        .indexWhere((bank) => bank.id == bankId);
                     if (bankIndex != -1) {
-                      final controllers = _bankDetailsList[bankIndex]
-                          ['controllers'] as Map<String, TextEditingController>;
-                      controllers.values
-                          .forEach((controller) => controller.dispose());
-
                       _bankDetailsList.removeAt(bankIndex);
                       _selectedBanks.removeAt(bankIndex);
                       _fieldErrors.removeWhere(
@@ -219,7 +190,7 @@ class _EditUserBankState extends State<EditUserBank> {
     setState(() {
       if (value == true) {
         for (var bank in _bankDetailsList) {
-          bank['isPayroll'] = false;
+          bank.isPayroll = false;
         }
         _selectedPayrollBankId = bankId;
         _isNewBankPayRoll = false;
@@ -228,8 +199,8 @@ class _EditUserBankState extends State<EditUserBank> {
       }
 
       for (var bank in _bankDetailsList) {
-        if (bank['id'] == bankId) {
-          bank['isPayroll'] = value ?? false;
+        if (bank.id == bankId) {
+          bank.isPayroll = value ?? false;
         }
       }
       _fieldErrors.remove('payroll');
@@ -243,27 +214,24 @@ class _EditUserBankState extends State<EditUserBank> {
       for (int i = 0; i < _bankDetailsList.length; i++) {
         final bank = _bankDetailsList[i];
 
-        if (_deletedBankIds.contains(bank['id'])) {
+        if (_deletedBankIds.contains(bank.id)) {
           continue;
         }
 
-        final controllers =
-            bank['controllers'] as Map<String, TextEditingController>;
-
         await profilecontroller.postuserBankDetails(
-          bankdetailID: bank['id'],
-          userID: userID,
+          bankdetailID: bank.id,
+          profileID: userID,
           bankname: _selectedBanks[i] ?? "",
-          bankbranch: controllers['bankBranch']!.text,
-          bankaccountname: controllers['bankAccountName']!.text,
-          bankaccount: controllers['bankAccount']!.text,
-          ispayroll: bank['id'] == _selectedPayrollBankId ? "true" : "false",
+          bankbranch: bank.bankBranch,
+          bankaccountname: bank.bankAccountName,
+          bankaccount: bank.bankAccount,
+          ispayroll: bank.id == _selectedPayrollBankId ? "true" : "false",
         );
       }
 
       if (_isAddNewBankDetail) {
         await profilecontroller.postnewBankDetails(
-          userID: userID,
+          profileID: userID,
           bankName: _newSelectedBank ?? "",
           bankBranch: newBankbranchname.text,
           bankaccountName: newBankaccountname.text,
@@ -290,16 +258,13 @@ class _EditUserBankState extends State<EditUserBank> {
     bool isValid = true;
 
     // Check for at least one payroll bank
-    bool hasPayrollBank = false;
-    for (var bank in _bankDetailsList) {
-      if (!_deletedBankIds.contains(bank['id']) && bank['isPayroll'] == true) {
-        hasPayrollBank = true;
-        break;
-      }
-    }
+    bool hasPayrollBank = _bankDetailsList
+        .any((bank) => !_deletedBankIds.contains(bank.id) && bank.isPayroll);
+
     if (_isAddNewBankDetail && _isNewBankPayRoll) {
       hasPayrollBank = true;
     }
+
     if (!hasPayrollBank) {
       _fieldErrors['payroll'] = 'At least one bank must be marked as payroll';
       isValid = false;
@@ -308,14 +273,11 @@ class _EditUserBankState extends State<EditUserBank> {
     // Validate existing bank details
     for (int i = 0; i < _bankDetailsList.length; i++) {
       final bank = _bankDetailsList[i];
-      final bankId = bank['id'];
+      final bankId = bank.id;
 
       if (_deletedBankIds.contains(bankId)) {
         continue;
       }
-
-      final controllers =
-          bank['controllers'] as Map<String, TextEditingController>;
 
       // Validate bank name
       if (_selectedBanks[i] == null || _selectedBanks[i]!.isEmpty) {
@@ -324,29 +286,23 @@ class _EditUserBankState extends State<EditUserBank> {
       }
 
       // Validate branch name
-      if (controllers['bankBranch']!.text.isEmpty) {
+      if (bank.bankBranch.isEmpty) {
         _fieldErrors['bank_${bankId}_branch'] = 'Branch name is required';
         isValid = false;
       }
 
       // Validate account name
-      if (controllers['bankAccountName']!.text.isEmpty) {
+      if (bank.bankAccountName.isEmpty) {
         _fieldErrors['bank_${bankId}_accountName'] = 'Account name is required';
         isValid = false;
       }
 
       // Validate account number
-      String accountNumber = controllers['bankAccount']!.text.trim();
+      String accountNumber = bank.bankAccount;
       if (accountNumber.isEmpty) {
         _fieldErrors['bank_${bankId}_account'] = 'Account number is required';
         isValid = false;
-      }
-      // else if (!RegExp(r'^\d+$').hasMatch(accountNumber)) {
-      //   _fieldErrors['bank_${bankId}_account'] =
-      //       'Account number must be numeric';
-      //   isValid = false;
-      // }
-      else if (accountNumber.length > 20) {
+      } else if (accountNumber.length > 20) {
         _fieldErrors['bank_${bankId}_account'] =
             'Account number cannot exceed 20 digits';
         isValid = false;
@@ -371,25 +327,12 @@ class _EditUserBankState extends State<EditUserBank> {
       if (newAccountNumber.isEmpty) {
         _fieldErrors['new_bank_account'] = 'Account number is required';
         isValid = false;
-      }
-      // else if (!RegExp(r'^\d+$').hasMatch(newAccountNumber)) {
-      //   _fieldErrors['new_bank_account'] = 'Account number must be numeric';
-      //   isValid = false;
-      // }
-      else if (newAccountNumber.length > 20) {
+      } else if (newAccountNumber.length > 20) {
         _fieldErrors['new_bank_account'] =
             'Account number cannot exceed 20 digits';
         isValid = false;
       }
     }
-
-    // if (!isValid) {
-    //   SSnackbarUtil.showSnackbar(
-    //     'Error',
-    //     'Please fill out all required fields correctly',
-    //     SnackbarType.error,
-    //   );
-    // }
 
     return isValid;
   }
@@ -400,6 +343,8 @@ class _EditUserBankState extends State<EditUserBank> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        titleSpacing: 20.0,
         title: Text(
           "Edit User Bank Detail",
           style: smallStyle.copyWith(
@@ -420,7 +365,7 @@ class _EditUserBankState extends State<EditUserBank> {
                   final index = entry.key;
                   final bank = entry.value;
 
-                  if (_deletedBankIds.contains(bank['id'])) {
+                  if (_deletedBankIds.contains(bank.id)) {
                     return const SizedBox.shrink();
                   }
 
@@ -436,11 +381,8 @@ class _EditUserBankState extends State<EditUserBank> {
     );
   }
 
-  Widget _buildBankDetailSection(
-      Map<String, dynamic> bank, int index, bool isDarkMode) {
-    final controllers =
-        bank['controllers'] as Map<String, TextEditingController>;
-    final bankId = bank['id'];
+  Widget _buildBankDetailSection(BankDetail bank, int index, bool isDarkMode) {
+    final bankId = bank.id;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -453,14 +395,14 @@ class _EditUserBankState extends State<EditUserBank> {
             IconButton(
               icon: Icon(
                 Icons.delete,
-                color: activeBankDetailsCount > 1 && !bank['isPayroll']
+                color: activeBankDetailsCount > 1 && !bank.isPayroll
                     ? Colors.red
                     : Colors.grey,
               ),
-              onPressed: (activeBankDetailsCount > 1 && !bank['isPayroll'])
+              onPressed: (activeBankDetailsCount > 1 && !bank.isPayroll)
                   ? () => _deleteBankDetail(bankId)
                   : null,
-              tooltip: bank['isPayroll']
+              tooltip: bank.isPayroll
                   ? 'Cannot delete payroll bank'
                   : (activeBankDetailsCount <= 1
                       ? 'Cannot delete the last bank detail'
@@ -471,31 +413,50 @@ class _EditUserBankState extends State<EditUserBank> {
         _buildBankDropdown(
           index,
           isDarkMode,
+          initialValue: bank.bankName,
+          onChanged: (String? newValue) {
+            setState(() {
+              _selectedBanks[index] = newValue;
+              bank.bankName = newValue ?? "";
+              _fieldErrors.remove('bank_${bankId}_name');
+            });
+          },
           fieldKey: 'bank_${bankId}_name',
         ),
-        _buildTextField(
+        _buildBankTextField(
           "Branch Name",
-          controllers['bankBranch']!,
+          bank.bankBranch,
           isDarkMode,
+          onChanged: (value) {
+            bank.bankBranch = value;
+            _fieldErrors.remove('bank_${bankId}_branch');
+          },
           fieldKey: 'bank_${bankId}_branch',
         ),
-        _buildTextField(
+        _buildBankTextField(
           "Account Name",
-          controllers['bankAccountName']!,
+          bank.bankAccountName,
           isDarkMode,
+          onChanged: (value) {
+            bank.bankAccountName = value;
+            _fieldErrors.remove('bank_${bankId}_accountName');
+          },
           fieldKey: 'bank_${bankId}_accountName',
         ),
-        _buildTextField(
+        _buildBankTextField(
           "Account Number",
-          controllers['bankAccount']!,
+          bank.bankAccount,
           isDarkMode,
-          // keyboardType: TextInputType.number,
+          onChanged: (value) {
+            bank.bankAccount = value;
+            _fieldErrors.remove('bank_${bankId}_account');
+          },
           fieldKey: 'bank_${bankId}_account',
         ),
         Row(
           children: [
             Checkbox(
-              value: bank['isPayroll'],
+              value: bank.isPayroll,
               onChanged: (value) => _handlePayrollCheckbox(bankId, value),
               activeColor: isDarkMode ? Colors.blueAccent : Colors.black,
             ),
@@ -507,7 +468,7 @@ class _EditUserBankState extends State<EditUserBank> {
             ),
           ],
         ),
-        if (_fieldErrors.containsKey('payroll') && bank['isPayroll'] == false)
+        if (_fieldErrors.containsKey('payroll') && !bank.isPayroll)
           Padding(
             padding: const EdgeInsets.only(top: 4, left: 12),
             child: Text(
@@ -524,6 +485,8 @@ class _EditUserBankState extends State<EditUserBank> {
     int index,
     bool isDarkMode, {
     required String fieldKey,
+    String? initialValue,
+    required Function(String?) onChanged,
   }) {
     final hasError = _fieldErrors.containsKey(fieldKey);
 
@@ -566,15 +529,86 @@ class _EditUserBankState extends State<EditUserBank> {
                       child: Text(bank),
                     );
                   }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      _selectedBanks[index] = newValue;
-                      _fieldErrors.remove(fieldKey);
-                    });
-                  },
+                  onChanged: onChanged,
                 ),
               ),
             ),
+          ),
+          if (hasError)
+            Padding(
+              padding: const EdgeInsets.only(top: 4, left: 12),
+              child: Text(
+                _fieldErrors[fieldKey]!,
+                style: const TextStyle(color: Colors.red, fontSize: 12),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBankTextField(
+    String title,
+    String value,
+    bool isDarkMode, {
+    required Function(String) onChanged,
+    required String fieldKey,
+    TextInputType? keyboardType,
+  }) {
+    final hasError = _fieldErrors.containsKey(fieldKey);
+    final controller = TextEditingController(text: value);
+    controller.addListener(() => onChanged(controller.text));
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            controller: controller,
+            keyboardType: keyboardType,
+            decoration: InputDecoration(
+              labelText: title,
+              border: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: hasError
+                      ? Colors.red
+                      : (isDarkMode ? Colors.white54 : Colors.black54),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: hasError
+                      ? Colors.red
+                      : (isDarkMode ? Colors.white54 : Colors.black54),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: hasError
+                      ? Colors.red
+                      : (isDarkMode ? Colors.blueAccent : Colors.black),
+                  width: 2.0,
+                ),
+              ),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+              labelStyle: smallStyle.copyWith(
+                color: hasError
+                    ? Colors.red
+                    : (isDarkMode ? Colors.white70 : Colors.black54),
+              ),
+            ),
+            style: smallStyle.copyWith(
+              color: isDarkMode ? Colors.white : Colors.black,
+            ),
+            onChanged: (value) {
+              if (hasError) {
+                setState(() {
+                  _fieldErrors.remove(fieldKey);
+                });
+              }
+            },
           ),
           if (hasError)
             Padding(
@@ -705,7 +739,6 @@ class _EditUserBankState extends State<EditUserBank> {
             "Account Number",
             newBankaccountnumber,
             isDarkMode,
-            // keyboardType: TextInputType.number,
             fieldKey: 'new_bank_account',
           ),
           Row(
@@ -716,7 +749,7 @@ class _EditUserBankState extends State<EditUserBank> {
                   _isNewBankPayRoll = value ?? false;
                   if (_isNewBankPayRoll) {
                     for (var bank in _bankDetailsList) {
-                      bank['isPayroll'] = false;
+                      bank.isPayroll = false;
                     }
                     _selectedPayrollBankId = null;
                   }
@@ -901,11 +934,6 @@ class _EditUserBankState extends State<EditUserBank> {
 
   @override
   void dispose() {
-    for (var bank in _bankDetailsList) {
-      final controllers =
-          bank['controllers'] as Map<String, TextEditingController>;
-      controllers.values.forEach((controller) => controller.dispose());
-    }
     newBankbranchname.dispose();
     newBankaccountname.dispose();
     newBankaccountnumber.dispose();
