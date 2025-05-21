@@ -4,7 +4,6 @@ import 'package:ams/feature/data/datasource/remote/api_client.dart';
 import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/datasource/remote/api_urls.dart';
 import 'package:ams/feature/presentation/pages/timeoff/model/timeoff_model.dart';
-import 'package:flutter/foundation.dart';
 
 class TimeoffRepo {
   final ApiClient apiClient;
@@ -71,8 +70,28 @@ class TimeoffRepo {
       url,
       requestBody: {'reason': reason, 'status': 're-apply'},
       token: token,
+      apiKey: apiClient.organization,
       fromJson: null,
     );
+    return response;
+  }
+
+  Future<ApiResponse> deleteTimeoff(int id) async {
+    final token = apiClient.token;
+
+    if (token.isEmpty) {
+      throw Exception('JWT token is missing or invalid');
+    }
+
+    final url = '${ApiUrls.timeoff}$id/';
+
+    final response = await ApiClient.deleteApi(
+      url,
+      token: token,
+      apiKey: apiClient.organization,
+      fromJson: null,
+    );
+
     return response;
   }
 }

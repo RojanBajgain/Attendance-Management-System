@@ -5,7 +5,6 @@ import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/repository/timeoff_repo.dart';
 import 'package:ams/feature/presentation/pages/timeoff/model/timeoff_model.dart';
 import 'package:ams/feature/utils/ssnackbar_utils.dart';
-import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
 class TimeoffController extends GetxController {
@@ -136,8 +135,6 @@ class TimeoffController extends GetxController {
       ApiResponse response = await timeoffRepo.postReapply(id, reason);
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
-        // log("Fetched created reapply data: ${response.response}");
-
         Get.back();
 
         SSnackbarUtil.showSnackbar(
@@ -155,6 +152,40 @@ class TimeoffController extends GetxController {
       }
     } catch (e) {
       log("Error for re-apply of timeoff: $e");
+      SSnackbarUtil.showSnackbar(
+        'Error',
+        'An unexpected error occurred: $e',
+        SnackbarType.error,
+      );
+    }
+  }
+
+  Future<void> deleteTimeoff(int id) async {
+    try {
+      ApiResponse response = await timeoffRepo.deleteTimeoff(id);
+
+      if (response.status == ApiStatus.SUCCESS || response.status == 204) {
+        log("Timeoff deleted successfully: ID $id");
+        SSnackbarUtil.showSnackbar(
+          'Deleted Timeoff',
+          'Your timeoff has been successfully deleted',
+          SnackbarType.success,
+        );
+        // Delay navigation to allow snackbar to display
+        await Future.delayed(const Duration(milliseconds: 500));
+        Get.back();
+        await getTimeoff(forceRefresh: true);
+      } else {
+        log("Error deleting timeoff: ${response.message}");
+        SSnackbarUtil.showSnackbar(
+          'Server Error',
+          response.message ??
+              'Failed to delete timeoff. Please try again later',
+          SnackbarType.error,
+        );
+      }
+    } catch (e) {
+      log("Exception in deleteTimeoff: $e");
       SSnackbarUtil.showSnackbar(
         'Error',
         'An unexpected error occurred: $e',

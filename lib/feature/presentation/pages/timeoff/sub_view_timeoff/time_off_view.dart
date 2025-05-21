@@ -1,4 +1,5 @@
 import 'package:ams/config/resources/styles.dart';
+import 'package:ams/feature/presentation/pages/timeoff/controller/timeoff_controller.dart';
 import 'package:ams/feature/presentation/pages/timeoff/model/timeoff_model.dart';
 import 'package:ams/feature/presentation/pages/timeoff/sub_view_timeoff/add_reapply.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,7 @@ class TimeOffSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final controller = Get.find<TimeoffController>();
 
     return GestureDetector(
         onTap: () {
@@ -37,8 +39,6 @@ class TimeOffSheet extends StatelessWidget {
                     ),
                     child: SingleChildScrollView(
                       child: Container(
-                        // height: 500 + messageHeight,
-                        // width: double.infinity,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(13.0),
                             color: isDarkMode
@@ -127,33 +127,6 @@ class TimeOffSheet extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              // const SizedBox(height: 10.0),
-                              // Row(
-                              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              //   children: [
-                              //     Row(
-                              //       children: [
-                              //         Text(
-                              //           'Department:',
-                              //           style: smallStyle.copyWith(
-                              //             fontWeight: FontWeight.bold,
-                              //             color: isDarkMode
-                              //                 ? Colors.white
-                              //                 : Colors.black,
-                              //           ),
-                              //         ),
-                              //       ],
-                              //     ),
-                              //     // SizedBox(width: 30.0),
-                              //     Text(
-                              //       'Design',
-                              //       overflow: TextOverflow.fade,
-                              //       style: smallStyle.copyWith(
-                              //         color: isDarkMode ? Colors.white : Colors.black,
-                              //       ),
-                              //     ),
-                              //   ],
-                              // ),
                               const SizedBox(height: 10.0),
                               Row(
                                 mainAxisAlignment:
@@ -349,7 +322,6 @@ class TimeOffSheet extends StatelessWidget {
                                                     .toString()
                                                 : "",
                                             style: smallStyle.copyWith(
-                                              // fontWeight: FontWeight.bold,
                                               color: isDarkMode
                                                   ? Colors.white
                                                   : Colors.black,
@@ -373,7 +345,6 @@ class TimeOffSheet extends StatelessWidget {
           );
         },
         child: Container(
-          // height: 200.0,
           width: double.infinity,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(13.0),
@@ -549,31 +520,137 @@ class TimeOffSheet extends StatelessWidget {
                         ),
                       ),
                     ),
-                    // Only show Re-apply button if status is rejected
-                    if (timeoffdata.status?.toLowerCase() == 'rejected')
+                    // Show Re-apply and Delete buttons for rejected or pending status
+                    if (timeoffdata.status?.toLowerCase() == 'rejected' ||
+                        timeoffdata.status?.toLowerCase() == 'pending')
                       Row(
                         children: [
+                          if (timeoffdata.status?.toLowerCase() == 'rejected')
+                            const SizedBox(width: 10.0),
+                          if (timeoffdata.status?.toLowerCase() == 'rejected')
+                            GestureDetector(
+                              onTap: () {
+                                Get.to(() => AddReapplyPage(
+                                      id: timeoffdata.id,
+                                    ));
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 16),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    'Re-apply',
+                                    style: smallStyle.copyWith(
+                                        color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                            ),
                           const SizedBox(width: 10.0),
                           GestureDetector(
                             onTap: () {
-                              Get.to(() => AddReapplyPage(
-                                    id: timeoffdata.id,
-                                  ));
+                              // Show custom confirmation dialog
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return Dialog(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(13.0),
+                                        color: isDarkMode
+                                            ? Colors.grey.shade800
+                                            : Colors.white,
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                          left: 20.0,
+                                          top: 15.0,
+                                          right: 20.0,
+                                          bottom: 20.0,
+                                        ),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Center(
+                                              child: Text(
+                                                'Confirm Delete',
+                                                style: smallNStyle.copyWith(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: isDarkMode
+                                                      ? Colors.white
+                                                      : Colors.black,
+                                                ),
+                                              ),
+                                            ),
+                                            const Divider(
+                                              color: Colors.grey,
+                                              thickness: 1,
+                                              height: 20,
+                                            ),
+                                            Text(
+                                              'Are you sure you want to delete this time-off request?',
+                                              style: smallStyle.copyWith(
+                                                color: isDarkMode
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 20.0),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                TextButton(
+                                                  onPressed: () => Get.back(),
+                                                  child: Text(
+                                                    'Cancel',
+                                                    style: smallStyle.copyWith(
+                                                      color: Colors.blue,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 10.0),
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Get.back(); // Close confirmation dialog
+                                                    controller.deleteTimeoff(
+                                                        timeoffdata.id);
+                                                  },
+                                                  child: Text(
+                                                    'Delete',
+                                                    style: smallStyle.copyWith(
+                                                      color: Colors.red,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
                             },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 16),
-                              decoration: BoxDecoration(
-                                color: Colors.blue,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  'Re-apply',
-                                  style:
-                                      smallStyle.copyWith(color: Colors.white),
-                                ),
-                              ),
+                            child: Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                              size: 24.0,
                             ),
                           ),
                         ],

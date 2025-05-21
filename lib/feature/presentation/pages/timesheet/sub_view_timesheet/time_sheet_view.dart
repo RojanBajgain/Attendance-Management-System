@@ -60,9 +60,9 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
             colors: [
-              isDarkMode ? Colors.grey.shade700 : Colors.black,
-              isDarkMode ? Colors.grey.shade700 : Colors.black,
-              isDarkMode ? Colors.grey.shade800 : Colors.white,
+              isDarkMode ? Colors.grey.shade400 : Colors.black,
+              isDarkMode ? Colors.grey.shade400 : Colors.black,
+              isDarkMode ? Colors.grey.shade800 : Colors.grey.shade200,
             ],
             stops: const [
               0.0,
@@ -82,7 +82,7 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
             children: [
               Text(
                 widget.timesheetdata.date != null
-                    ? DateFormat.yMMMd('en_US')
+                    ? DateFormat.yMMMMEEEEd('en_US')
                         .format(widget.timesheetdata.date!)
                     : "N/A",
                 style: smallStyle.copyWith(
