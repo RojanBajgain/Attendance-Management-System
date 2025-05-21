@@ -3,7 +3,7 @@ import 'package:ams/feature/presentation/pages/organization/pages/organization_p
 import 'package:ams/feature/presentation/pages/bottom_nav/bottom_nav_page.dart';
 import 'package:ams/feature/presentation/pages/landing/landing_page.dart';
 import 'package:ams/feature/presentation/pages/login/login_page.dart';
-import 'package:ams/feature/presentation/pages/theme/change_theme.dart';
+import 'package:ams/feature/presentation/pages/theme/controller/theme_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';

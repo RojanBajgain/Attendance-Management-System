@@ -1,15 +1,7 @@
 import 'package:ams/config/resources/styles.dart';
+import 'package:ams/feature/presentation/pages/theme/controller/theme_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-class ThemeController extends GetxController {
-  var currentThemeMode = ThemeMode.system.obs;
-
-  void changeThemeMode(ThemeMode mode) {
-    currentThemeMode.value = mode;
-    Get.changeThemeMode(mode);
-  }
-}
 
 class ChangeTheme extends StatefulWidget {
   const ChangeTheme({super.key});

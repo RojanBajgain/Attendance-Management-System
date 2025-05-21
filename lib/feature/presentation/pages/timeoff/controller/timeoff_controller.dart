@@ -172,7 +172,7 @@ class TimeoffController extends GetxController {
           SnackbarType.success,
         );
         // Delay navigation to allow snackbar to display
-        await Future.delayed(const Duration(milliseconds: 500));
+        await Future.delayed(const Duration(seconds: 1));
         Get.back();
         await getTimeoff(forceRefresh: true);
       } else {
