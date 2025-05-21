@@ -124,19 +124,31 @@ class _AddTimeoffState extends State<AddTimeoff> {
         return;
       }
 
-      // Get profile ID with null check
-      final profileId = box.read('profile_id');
-      if (profileId == null) {
+      // Get profile ID directly from ProfileController
+      final profileId = profilecontroller.profile.first.id != 0
+          ? profilecontroller.profile.first.id
+          : box.read('profile_id');
+      if (profileId == null || profileId == 0) {
         SSnackbarUtil.showSnackbar(
           'Error',
           'Profile information not found. Please select an organization first.',
           SnackbarType.error,
         );
+        Get.toNamed(
+            '/select-organization'); // Redirect to organization selection
         return;
       }
 
       // Find selected policy with null check
       try {
+        if (policycontroller.policy.isEmpty) {
+          SSnackbarUtil.showSnackbar(
+            'Error',
+            'No leave policies available. Please try again later.',
+            SnackbarType.error,
+          );
+          return;
+        }
         final selectedPolicy = policycontroller.policy.firstWhere(
           (policy) => policy.name == selectedValue,
         );

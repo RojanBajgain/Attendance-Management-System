@@ -63,7 +63,6 @@ class _CountryDropdownState extends State<CountryDropdown> {
       }
     }
 
-    // Return null if no match found, which will make the dropdown show the hint text
     return null;
   }
 
@@ -79,31 +78,9 @@ class _CountryDropdownState extends State<CountryDropdown> {
         // Find the selected country in the current list
         CountryData? selected = _findSelectedCountry(countries);
 
-        // Debug: Print selected country info
-        // print("Selected country: ${selected?.id}, ${selected?.name}");
-        // print("Value ID: ${widget.valueId}, Value Name: ${widget.valueName}");
-
         return DropdownButtonFormField2<CountryData>(
           isExpanded: true,
           value: selected,
-          // decoration: InputDecoration(
-          //   contentPadding:
-          //       const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          //   // hintText: 'Select Country',
-          //   // hintStyle: smallStyle.copyWith(
-          //   //   color: widget.isDarkMode ? Colors.white70 : Colors.grey,
-          //   // ),
-          //   labelText: 'Country',
-          //   // labelStyle: smallStyle.copyWith(
-          //   //   color: widget.isDarkMode ? Colors.white70 : Colors.black54,
-          //   // ),
-          //   // border: OutlineInputBorder(
-          //   //   borderRadius: BorderRadius.circular(13),
-          //   //   borderSide: BorderSide(color: Colors.black),
-          //   // ),
-          //   filled: true,
-          //   fillColor: widget.isDarkMode ? Colors.grey[800] : Colors.grey[50],
-          // ),
           dropdownStyleData: DropdownStyleData(
             maxHeight: 300,
             decoration: BoxDecoration(

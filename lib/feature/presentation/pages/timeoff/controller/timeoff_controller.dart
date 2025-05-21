@@ -69,14 +69,19 @@ class TimeoffController extends GetxController {
 
       // Debug log the parameters
       log('Creating timeoff with:');
-      log('userID: $profile');
+      log('profileID: $profile');
       log('typeID: $type');
       log('startdate: $startdate');
       log('enddate: $enddate');
       log('reason: $reason');
 
       ApiResponse response = await timeoffRepo.createtimeoff(
-          profile, type, startdate, enddate, reason);
+        profile,
+        type,
+        startdate,
+        enddate,
+        reason,
+      );
 
       if (response.status == ApiStatus.SUCCESS) {
         // Force refresh the timeoff list

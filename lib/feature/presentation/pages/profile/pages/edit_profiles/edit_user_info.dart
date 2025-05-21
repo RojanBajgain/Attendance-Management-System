@@ -4,13 +4,17 @@ import 'dart:io';
 import 'package:ams/config/resources/colors.dart';
 import 'package:ams/config/resources/images.dart';
 import 'package:ams/config/resources/styles.dart';
+import 'package:ams/feature/presentation/pages/bottom_nav/bottom_nav_page.dart';
+import 'package:ams/feature/presentation/pages/dashboard/dashboard.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/model/profile_model.dart';
 import 'package:ams/feature/presentation/pages/profile/pages/edit_profiles/edit_user_address.dart';
 import 'package:ams/feature/presentation/pages/profile/widget/file_uploader.dart';
 import 'package:ams/feature/utils/ssnackbar_utils.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -51,10 +55,48 @@ class _EditUserInfoState extends State<EditUserInfo> {
   File? _resume;
   bool _isLoading = false;
 
+  bool _hasChanges = false;
+  Map<String, dynamic> _initialValues = {};
+
   @override
   void initState() {
     super.initState();
     _initializeControllers();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _storeInitialValues();
+    });
+  }
+
+  void _storeInitialValues() {
+    setState(() {
+      _initialValues = {
+        'fullName': fullNameController.text,
+        'email': emailController.text,
+        'gender': genderController.text,
+        'phone': phoneController.text,
+        'designation': designationController.text,
+        'skills': skillsController.text,
+        'dob': dobController.text,
+        'joinedDate': joinedDateController.text,
+      };
+    });
+  }
+
+  void _checkForChanges() {
+    final currentValues = {
+      'fullName': fullNameController.text,
+      'email': emailController.text,
+      'gender': genderController.text,
+      'phone': phoneController.text,
+      'designation': designationController.text,
+      'skills': skillsController.text,
+      'dob': dobController.text,
+      'joinedDate': joinedDateController.text,
+    };
+
+    setState(() {
+      _hasChanges = !mapEquals(_initialValues, currentValues);
+    });
   }
 
   void _initializeControllers() {
@@ -160,7 +202,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
     return phone.length == 10 && int.tryParse(phone) != null;
   }
 
-  Future<void> _submitUserInfo() async {
+  Future<void> _submitUserInfo({bool navigateToAddress = false}) async {
     if (!_validateFields()) {
       return;
     }
@@ -190,7 +232,16 @@ class _EditUserInfoState extends State<EditUserInfo> {
         resume: _resume,
       );
 
-      Get.to(() => const EditUserAddress());
+      if (navigateToAddress) {
+        Get.to(() => const EditUserAddress());
+      } else {
+        Get.offAll(() => BottomNavPage());
+        SSnackbarUtil.showSnackbar(
+          'Success',
+          'Profile updated successfully',
+          SnackbarType.success,
+        );
+      }
     } catch (e) {
       log('Error submitting user info: $e');
       SSnackbarUtil.showSnackbar(
@@ -201,6 +252,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
     } finally {
       setState(() {
         _isLoading = false;
+        _hasChanges = false;
       });
     }
   }
@@ -282,7 +334,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
             style: smallStyle.copyWith(
               color: isDarkMode ? Colors.white : Colors.black,
             ),
-            onTap: () => _selectDate(context, controller),
+            onTap: () => _selectDate(context, controller, fieldKey),
           ),
           if (hasError)
             Padding(
@@ -297,8 +349,8 @@ class _EditUserInfoState extends State<EditUserInfo> {
     );
   }
 
-  Future<void> _selectDate(
-      BuildContext context, TextEditingController controller) async {
+  Future<void> _selectDate(BuildContext context,
+      TextEditingController controller, String fieldKey) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: controller.text.isNotEmpty
@@ -336,9 +388,8 @@ class _EditUserInfoState extends State<EditUserInfo> {
     if (picked != null) {
       setState(() {
         controller.text = DateFormat('yyyy-MM-dd').format(picked);
-        if (_fieldErrors.containsKey('dob')) {
-          _fieldErrors.remove('dob');
-        }
+        _fieldErrors.remove(fieldKey);
+        _checkForChanges(); // Ensure date changes trigger change tracking
       });
     }
   }
@@ -420,6 +471,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
                   _fieldErrors.remove(fieldKey);
                 });
               }
+              _checkForChanges();
             },
           ),
           if (hasError)
@@ -443,19 +495,30 @@ class _EditUserInfoState extends State<EditUserInfo> {
   }) {
     final hasError = _fieldErrors.containsKey(fieldKey);
     const genderOptions = ['Male', 'Female', 'Other'];
+    final currentValue =
+        genderOptions.contains(controller.text) ? controller.text : null;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          DropdownButtonFormField<String>(
-            value: genderOptions.contains(controller.text)
-                ? controller.text
-                : null,
+          Text(
+            title,
+            style: smallStyle.copyWith(
+              color: hasError
+                  ? Colors.red
+                  : (isDarkMode ? Colors.white70 : Colors.black54),
+            ),
+          ),
+          const SizedBox(height: 6),
+          DropdownButtonFormField2<String>(
+            isExpanded: true,
+            value: currentValue,
             decoration: InputDecoration(
-              labelText: title,
+              contentPadding: const EdgeInsets.symmetric(vertical: 2),
               border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(13),
                 borderSide: BorderSide(
                   color: hasError
                       ? Colors.red
@@ -463,6 +526,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
                 ),
               ),
               enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(13),
                 borderSide: BorderSide(
                   color: hasError
                       ? Colors.red
@@ -470,6 +534,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
                 ),
               ),
               focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(13),
                 borderSide: BorderSide(
                   color: hasError
                       ? Colors.red
@@ -477,33 +542,50 @@ class _EditUserInfoState extends State<EditUserInfo> {
                   width: 2.0,
                 ),
               ),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-              labelStyle: smallStyle.copyWith(
-                color: hasError
-                    ? Colors.red
-                    : (isDarkMode ? Colors.white70 : Colors.black54),
+              filled: true,
+              fillColor: isDarkMode ? Colors.grey[800] : Colors.grey[50],
+            ),
+            dropdownStyleData: DropdownStyleData(
+              maxHeight: 200,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(13),
+                color: isDarkMode ? Colors.grey[800] : Colors.white,
               ),
             ),
-            items: genderOptions
-                .map((gender) => DropdownMenuItem(
-                      value: gender,
-                      child: Text(gender),
-                    ))
-                .toList(),
-            onChanged: (value) {
-              if (value != null) {
-                controller.text = value;
+            iconStyleData: IconStyleData(
+              icon: Icon(
+                Icons.keyboard_arrow_down,
+                color: isDarkMode ? Colors.white : Colors.black,
+              ),
+              iconSize: 24,
+            ),
+            buttonStyleData: const ButtonStyleData(
+              padding: EdgeInsets.symmetric(horizontal: 8),
+              height: 20,
+            ),
+            items: genderOptions.map((gender) {
+              return DropdownMenuItem<String>(
+                value: gender,
+                child: Text(
+                  gender,
+                  style: smallStyle.copyWith(
+                    color: isDarkMode ? Colors.white : Colors.black,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              );
+            }).toList(),
+            onChanged: (String? newValue) {
+              if (newValue != null) {
+                controller.text = newValue;
                 if (hasError) {
                   setState(() {
                     _fieldErrors.remove(fieldKey);
                   });
                 }
+                _checkForChanges();
               }
             },
-            style: smallStyle.copyWith(
-              color: isDarkMode ? Colors.white : Colors.black,
-            ),
             hint: Text(
               'Select Gender',
               style: smallStyle.copyWith(
@@ -672,38 +754,71 @@ class _EditUserInfoState extends State<EditUserInfo> {
     }
   }
 
-  Widget _buildNextButton(bool isDarkMode) {
+  Widget _buildActionButtons(bool isDarkMode) {
     return Align(
       alignment: Alignment.bottomRight,
       child: Padding(
         padding: const EdgeInsets.only(right: 20, bottom: 20),
-        child: ElevatedButton(
-          onPressed: _isLoading ? null : _submitUserInfo,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: isDarkMode ? Colors.blueAccent : Colors.black,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                "Next",
-                style: smallStyle.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (_hasChanges)
+              Padding(
+                padding: const EdgeInsets.only(right: 95),
+                child: ElevatedButton(
+                  onPressed: _isLoading
+                      ? null
+                      : () => _submitUserInfo(navigateToAddress: false),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        isDarkMode ? Colors.blueAccent : Colors.black,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    "Save Changes",
+                    style: smallStyle.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
               ),
-              const SizedBox(width: 8),
-              const Icon(
-                Icons.arrow_forward,
-                color: Colors.white,
-                size: 20,
+            ElevatedButton(
+              onPressed: _isLoading
+                  ? null
+                  : () => _submitUserInfo(navigateToAddress: true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isDarkMode ? Colors.blueAccent : Colors.black,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
-            ],
-          ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Next",
+                    style: smallStyle.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const Icon(
+                    Icons.arrow_forward,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -791,7 +906,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
                       const SizedBox(height: 15),
                       _buildResumeSection(isDarkMode),
                       const SizedBox(height: 16),
-                      _buildNextButton(isDarkMode),
+                      _buildActionButtons(isDarkMode),
                     ],
                   );
                 }),

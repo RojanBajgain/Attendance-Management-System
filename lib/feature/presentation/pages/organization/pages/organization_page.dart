@@ -135,15 +135,16 @@ class _OrganizationPageState extends State<OrganizationPage> {
     // Update ApiClient with selected organization's apiKey
     final apiClient = Get.find<ApiClient>();
     apiClient.saveTokens(
-      apiClient.token, // Access token
-      apiClient.refreshToken, // Refresh token
+      apiClient.token,
+      apiClient.refreshToken,
       organization.apiKey ?? '',
     );
 
-    // Navigate to BottomNavPage
-    Get.offAll(() => const BottomNavPage());
+    Get.offAll(
+      () => const BottomNavPage(),
+      transition: Transition.rightToLeft,
+    );
 
-    // Show success message
     SSnackbarUtil.showSnackbar(
       'Organization Selected',
       'You have selected ${organization.title}',

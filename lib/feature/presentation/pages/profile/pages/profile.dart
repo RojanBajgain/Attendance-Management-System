@@ -117,7 +117,7 @@ class _ProfilePageState extends State<ProfilePage> {
               _buildDeviceDetails(isDarkMode, 3),
               _buildChangePassword(),
               _buildTheme(),
-              _buildBiometrics(isDarkMode),
+              // _buildBiometrics(isDarkMode),
               _buildLogout(isDarkMode),
             ],
           ),
@@ -219,15 +219,15 @@ class _ProfilePageState extends State<ProfilePage> {
           _buildRow('Permanent Address:', permanentAddress),
           _buildRow('Email:',
               profiledata.email.isNotEmpty ? profiledata.email : 'N/A'),
-          _buildRow('Gender:',
-              profiledata.gender.isNotEmpty ? profiledata.gender : 'N/A'),
-          _buildRow(
-              'Role:', profiledata.role.isNotEmpty ? profiledata.role : 'N/A'),
-          _buildRow(
-              'Employee Type:',
-              profiledata.employeeType.isNotEmpty
-                  ? profiledata.employeeType
-                  : 'N/A'),
+          // _buildRow('Gender:',
+          //     profiledata.gender.isNotEmpty ? profiledata.gender : 'N/A'),
+          // _buildRow(
+          //     'Role:', profiledata.role.isNotEmpty ? profiledata.role : 'N/A'),
+          // _buildRow(
+          //     'Employee Type:',
+          //     profiledata.employeeType.isNotEmpty
+          //         ? profiledata.employeeType
+          //         : 'N/A'),
           _buildRow(
               'Organization:',
               profiledata.organization.title.isNotEmpty
@@ -365,7 +365,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   bankDetail.bankAccount.isNotEmpty
                       ? bankDetail.bankAccount
                       : 'N/A'),
-              _buildRow('Payroll:', bankDetail.isPayroll ? 'Yes' : 'No'),
+              // _buildRow('Payroll:', bankDetail.isPayroll ? 'Yes' : 'No'),
             ],
           ),
         );
@@ -454,293 +454,293 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildBiometrics(bool isDarkMode) {
-    return Obx(() => ProfileMenu(
-          text: authcontroller.biometricsEnabled.value
-              ? "Disable Biometrics"
-              : "Enable Biometrics",
-          icon: Icons.fingerprint,
-          showIcon: false,
-          trailing: FlutterSwitch(
-            width: 55.0,
-            height: 30.0,
-            valueFontSize: 12.0,
-            toggleSize: 25.0,
-            value: authcontroller.biometricsEnabled.value,
-            borderRadius: 30.0,
-            padding: 4.0,
-            activeColor: Colors.green,
-            inactiveColor: Colors.grey.shade300,
-            toggleColor: Colors.white,
-            activeToggleColor: Colors.white,
-            onToggle: (value) async {
-              try {
-                if (!value) {
-                  bool confirmed = await _showDisableConfirmation(
-                    context: Get.context!,
-                  );
-                  if (!confirmed) {
-                    return;
-                  }
-                  await authcontroller.toggleBiometrics(false);
-                  return;
-                }
+//   Widget _buildBiometrics(bool isDarkMode) {
+//     return Obx(() => ProfileMenu(
+//           text: authcontroller.biometricsEnabled.value
+//               ? "Disable Biometrics"
+//               : "Enable Biometrics",
+//           icon: Icons.fingerprint,
+//           showIcon: false,
+//           trailing: FlutterSwitch(
+//             width: 55.0,
+//             height: 30.0,
+//             valueFontSize: 12.0,
+//             toggleSize: 25.0,
+//             value: authcontroller.biometricsEnabled.value,
+//             borderRadius: 30.0,
+//             padding: 4.0,
+//             activeColor: Colors.green,
+//             inactiveColor: Colors.grey.shade300,
+//             toggleColor: Colors.white,
+//             activeToggleColor: Colors.white,
+//             onToggle: (value) async {
+//               try {
+//                 if (!value) {
+//                   bool confirmed = await _showDisableConfirmation(
+//                     context: Get.context!,
+//                   );
+//                   if (!confirmed) {
+//                     return;
+//                   }
+//                   await authcontroller.toggleBiometrics(false);
+//                   return;
+//                 }
 
-                bool canUseBiometrics = await authcontroller.canUseBiometrics();
-                if (!canUseBiometrics) {
-                  SSnackbarUtil.showSnackbar(
-                    'Biometrics Unavailable',
-                    'Your device does not support biometrics or it is not enabled.',
-                    SnackbarType.error,
-                  );
-                  return;
-                }
+//                 bool canUseBiometrics = await authcontroller.canUseBiometrics();
+//                 if (!canUseBiometrics) {
+//                   SSnackbarUtil.showSnackbar(
+//                     'Biometrics Unavailable',
+//                     'Your device does not support biometrics or it is not enabled.',
+//                     SnackbarType.error,
+//                   );
+//                   return;
+//                 }
 
-                String? storedEmail =
-                    await authcontroller.secureStorage.read(key: 'user_email');
-                String? storedPassword = await authcontroller.secureStorage
-                    .read(key: 'user_password');
+//                 String? storedEmail =
+//                     await authcontroller.secureStorage.read(key: 'user_email');
+//                 String? storedPassword = await authcontroller.secureStorage
+//                     .read(key: 'user_password');
 
-                if (storedEmail == null ||
-                    storedEmail.isEmpty ||
-                    storedPassword == null ||
-                    storedPassword.isEmpty) {
-                  SSnackbarUtil.showSnackbar(
-                    'Login Required',
-                    'Please log in with email and password first to enable biometric login.',
-                    SnackbarType.info,
-                  );
-                  return;
-                }
+//                 if (storedEmail == null ||
+//                     storedEmail.isEmpty ||
+//                     storedPassword == null ||
+//                     storedPassword.isEmpty) {
+//                   SSnackbarUtil.showSnackbar(
+//                     'Login Required',
+//                     'Please log in with email and password first to enable biometric login.',
+//                     SnackbarType.info,
+//                   );
+//                   return;
+//                 }
 
-                bool? isPasswordCorrect = await _showPasswordPrompt(
-                  context: Get.context!,
-                  storedPassword: storedPassword,
-                );
+//                 bool? isPasswordCorrect = await _showPasswordPrompt(
+//                   context: Get.context!,
+//                   storedPassword: storedPassword,
+//                 );
 
-                if (isPasswordCorrect == null) {
-                  return;
-                }
+//                 if (isPasswordCorrect == null) {
+//                   return;
+//                 }
 
-                if (!isPasswordCorrect) {
-                  SSnackbarUtil.showSnackbar(
-                    'Incorrect Password',
-                    'The entered password is incorrect.',
-                    SnackbarType.error,
-                  );
-                  return;
-                }
+//                 if (!isPasswordCorrect) {
+//                   SSnackbarUtil.showSnackbar(
+//                     'Incorrect Password',
+//                     'The entered password is incorrect.',
+//                     SnackbarType.error,
+//                   );
+//                   return;
+//                 }
 
-                await authcontroller.toggleBiometrics(true);
-              } catch (e) {
-                SSnackbarUtil.showSnackbar(
-                  'Error',
-                  'Failed to toggle biometric settings.',
-                  SnackbarType.error,
-                );
-              }
-            },
-          ),
-        ));
-  }
+//                 await authcontroller.toggleBiometrics(true);
+//               } catch (e) {
+//                 SSnackbarUtil.showSnackbar(
+//                   'Error',
+//                   'Failed to toggle biometric settings.',
+//                   SnackbarType.error,
+//                 );
+//               }
+//             },
+//           ),
+//         ));
+//   }
 
-  Future<bool?> _showPasswordPrompt({
-    required BuildContext context,
-    required String storedPassword,
-  }) async {
-    TextEditingController passwordController = TextEditingController();
-    bool obscureText = true;
-    bool? isPasswordCorrect;
+//   Future<bool?> _showPasswordPrompt({
+//     required BuildContext context,
+//     required String storedPassword,
+//   }) async {
+//     TextEditingController passwordController = TextEditingController();
+//     bool obscureText = true;
+//     bool? isPasswordCorrect;
 
-    await showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+//     await showDialog(
+//       context: context,
+//       barrierDismissible: false,
+//       builder: (BuildContext context) {
+//         final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-        return AlertDialog(
-          title: Center(
-            child: Text(
-              'Enter Password',
-              style: smallNStyle.copyWith(
-                fontWeight: FontWeight.bold,
-                color: isDarkMode ? Colors.grey.shade300 : Colors.black87,
-              ),
-            ),
-          ),
-          content: ConstrainedBox(
-            constraints: const BoxConstraints(
-              minWidth: 280,
-              maxWidth: 320,
-            ),
-            child: StatefulBuilder(
-              builder: (context, setState) {
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      height: 50,
-                      width: double.infinity,
-                      child: TextField(
-                        controller: passwordController,
-                        obscureText: obscureText,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: isDarkMode
-                              ? Colors.grey.shade300
-                              : Colors.black87,
-                        ),
-                        decoration: InputDecoration(
-                          labelText: 'Password',
-                          labelStyle: smallStyle.copyWith(
-                            fontWeight: FontWeight.w500,
-                            color: isDarkMode
-                                ? Colors.grey.shade300
-                                : Colors.black87,
-                          ),
-                          filled: true,
-                          fillColor: isDarkMode
-                              ? Colors.grey.shade800
-                              : Colors.grey.shade100,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: isDarkMode
-                                  ? Colors.grey.shade600
-                                  : Colors.grey.shade400,
-                            ),
-                          ),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              obscureText
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                              color: isDarkMode
-                                  ? Colors.grey.shade300
-                                  : Colors.black87,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                obscureText = !obscureText;
-                              });
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                isPasswordCorrect = null;
-                Navigator.of(context).pop();
-              },
-              child: Text(
-                'Cancel',
-                style: smallStyle.copyWith(
-                  color: isDarkMode ? Colors.grey.shade300 : Colors.black87,
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                isPasswordCorrect = passwordController.text == storedPassword;
-                Navigator.of(context).pop();
-              },
-              child: Text(
-                'Confirm',
-                style: smallStyle.copyWith(
-                  color: Colors.blue,
-                ),
-              ),
-            ),
-          ],
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          backgroundColor: isDarkMode ? Colors.grey.shade900 : Colors.white,
-        );
-      },
-    );
+//         return AlertDialog(
+//           title: Center(
+//             child: Text(
+//               'Enter Password',
+//               style: smallNStyle.copyWith(
+//                 fontWeight: FontWeight.bold,
+//                 color: isDarkMode ? Colors.grey.shade300 : Colors.black87,
+//               ),
+//             ),
+//           ),
+//           content: ConstrainedBox(
+//             constraints: const BoxConstraints(
+//               minWidth: 280,
+//               maxWidth: 320,
+//             ),
+//             child: StatefulBuilder(
+//               builder: (context, setState) {
+//                 return Column(
+//                   mainAxisSize: MainAxisSize.min,
+//                   children: [
+//                     SizedBox(
+//                       height: 50,
+//                       width: double.infinity,
+//                       child: TextField(
+//                         controller: passwordController,
+//                         obscureText: obscureText,
+//                         style: TextStyle(
+//                           fontSize: 16,
+//                           color: isDarkMode
+//                               ? Colors.grey.shade300
+//                               : Colors.black87,
+//                         ),
+//                         decoration: InputDecoration(
+//                           labelText: 'Password',
+//                           labelStyle: smallStyle.copyWith(
+//                             fontWeight: FontWeight.w500,
+//                             color: isDarkMode
+//                                 ? Colors.grey.shade300
+//                                 : Colors.black87,
+//                           ),
+//                           filled: true,
+//                           fillColor: isDarkMode
+//                               ? Colors.grey.shade800
+//                               : Colors.grey.shade100,
+//                           border: OutlineInputBorder(
+//                             borderRadius: BorderRadius.circular(10),
+//                             borderSide: BorderSide(
+//                               color: isDarkMode
+//                                   ? Colors.grey.shade600
+//                                   : Colors.grey.shade400,
+//                             ),
+//                           ),
+//                           suffixIcon: IconButton(
+//                             icon: Icon(
+//                               obscureText
+//                                   ? Icons.visibility
+//                                   : Icons.visibility_off,
+//                               color: isDarkMode
+//                                   ? Colors.grey.shade300
+//                                   : Colors.black87,
+//                             ),
+//                             onPressed: () {
+//                               setState(() {
+//                                 obscureText = !obscureText;
+//                               });
+//                             },
+//                           ),
+//                         ),
+//                       ),
+//                     ),
+//                   ],
+//                 );
+//               },
+//             ),
+//           ),
+//           actions: [
+//             TextButton(
+//               onPressed: () {
+//                 isPasswordCorrect = null;
+//                 Navigator.of(context).pop();
+//               },
+//               child: Text(
+//                 'Cancel',
+//                 style: smallStyle.copyWith(
+//                   color: isDarkMode ? Colors.grey.shade300 : Colors.black87,
+//                 ),
+//               ),
+//             ),
+//             TextButton(
+//               onPressed: () {
+//                 isPasswordCorrect = passwordController.text == storedPassword;
+//                 Navigator.of(context).pop();
+//               },
+//               child: Text(
+//                 'Confirm',
+//                 style: smallStyle.copyWith(
+//                   color: Colors.blue,
+//                 ),
+//               ),
+//             ),
+//           ],
+//           shape: RoundedRectangleBorder(
+//             borderRadius: BorderRadius.circular(15),
+//           ),
+//           backgroundColor: isDarkMode ? Colors.grey.shade900 : Colors.white,
+//         );
+//       },
+//     );
 
-    return isPasswordCorrect;
-  }
+//     return isPasswordCorrect;
+//   }
 
-  Future<bool> _showDisableConfirmation({
-    required BuildContext context,
-  }) async {
-    bool? confirmed;
+//   Future<bool> _showDisableConfirmation({
+//     required BuildContext context,
+//   }) async {
+//     bool? confirmed;
 
-    await showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+//     await showDialog(
+//       context: context,
+//       barrierDismissible: false,
+//       builder: (BuildContext context) {
+//         final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-        return AlertDialog(
-          title: Center(
-            child: Text(
-              'Disable Biometrics',
-              style: smallNStyle.copyWith(
-                fontWeight: FontWeight.bold,
-                color: isDarkMode ? Colors.grey.shade300 : Colors.black87,
-              ),
-            ),
-          ),
-          content: ConstrainedBox(
-            constraints: const BoxConstraints(
-              minWidth: 280,
-              maxWidth: 320,
-            ),
-            child: Text(
-              'Are you sure you want to disable biometric authentication?',
-              style: smallStyle.copyWith(
-                fontWeight: FontWeight.w500,
-                color: isDarkMode ? Colors.grey.shade300 : Colors.black87,
-              ),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                confirmed = false;
-              },
-              child: Text(
-                'No',
-                style: smallStyle.copyWith(
-                  color: isDarkMode ? Colors.grey.shade300 : Colors.black87,
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-//  SAY NO TO PIRACY
-                Navigator.of(context).pop();
-                confirmed = true;
-              },
-              child: Text(
-                'Yes',
-                style: smallStyle.copyWith(
-                  color: Colors.red,
-                ),
-              ),
-            ),
-          ],
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          backgroundColor: isDarkMode ? Colors.grey.shade900 : Colors.white,
-        );
-      },
-    );
+//         return AlertDialog(
+//           title: Center(
+//             child: Text(
+//               'Disable Biometrics',
+//               style: smallNStyle.copyWith(
+//                 fontWeight: FontWeight.bold,
+//                 color: isDarkMode ? Colors.grey.shade300 : Colors.black87,
+//               ),
+//             ),
+//           ),
+//           content: ConstrainedBox(
+//             constraints: const BoxConstraints(
+//               minWidth: 280,
+//               maxWidth: 320,
+//             ),
+//             child: Text(
+//               'Are you sure you want to disable biometric authentication?',
+//               style: smallStyle.copyWith(
+//                 fontWeight: FontWeight.w500,
+//                 color: isDarkMode ? Colors.grey.shade300 : Colors.black87,
+//               ),
+//             ),
+//           ),
+//           actions: [
+//             TextButton(
+//               onPressed: () {
+//                 Navigator.of(context).pop();
+//                 confirmed = false;
+//               },
+//               child: Text(
+//                 'No',
+//                 style: smallStyle.copyWith(
+//                   color: isDarkMode ? Colors.grey.shade300 : Colors.black87,
+//                 ),
+//               ),
+//             ),
+//             TextButton(
+//               onPressed: () {
+// //  SAY NO TO PIRACY
+//                 Navigator.of(context).pop();
+//                 confirmed = true;
+//               },
+//               child: Text(
+//                 'Yes',
+//                 style: smallStyle.copyWith(
+//                   color: Colors.red,
+//                 ),
+//               ),
+//             ),
+//           ],
+//           shape: RoundedRectangleBorder(
+//             borderRadius: BorderRadius.circular(15),
+//           ),
+//           backgroundColor: isDarkMode ? Colors.grey.shade900 : Colors.white,
+//         );
+//       },
+//     );
 
-    return confirmed ?? false;
-  }
+//     return confirmed ?? false;
+//   }
 
   Widget _buildLogout(bool isDarkMode) {
     return ProfileMenu(

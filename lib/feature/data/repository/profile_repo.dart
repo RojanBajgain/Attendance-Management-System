@@ -190,7 +190,6 @@ class ProfileRepo {
     final response = await ApiClient.postApi(
       url,
       requestBody: {
-        // "user": userID,
         "profile": userID,
         "issued_country": issuedCountry,
         "province": province,
@@ -233,7 +232,7 @@ class ProfileRepo {
       url,
       requestBody: {
         "profile": id,
-        "country": countryId,
+        "issued_country": countryId,
         "province": province,
         "postal_code": zipcode,
         "city": city,

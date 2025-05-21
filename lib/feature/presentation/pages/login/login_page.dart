@@ -31,7 +31,7 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     _loadSavedEmail();
-    _checkBiometricAvailability();
+    // _checkBiometricAvailability();
   }
 
   Future<void> _loadSavedEmail() async {
@@ -49,35 +49,35 @@ class _LoginPageState extends State<LoginPage> {
     await prefs.setString('user_email', email);
   }
 
-  Future<void> _checkBiometricAvailability() async {
-    try {
-      bool deviceSupported = await authController.canUseBiometrics();
-      if (!deviceSupported) {
-        setState(() {
-          _showBiometricOption = false;
-        });
-        return;
-      }
+  // Future<void> _checkBiometricAvailability() async {
+  //   try {
+  //     bool deviceSupported = await authController.canUseBiometrics();
+  //     if (!deviceSupported) {
+  //       setState(() {
+  //         _showBiometricOption = false;
+  //       });
+  //       return;
+  //     }
 
-      final prefs = await SharedPreferences.getInstance();
-      final isBiometricsEnabled = prefs.getBool('biometrics_enabled') ?? false;
-      final secureBiometrics =
-          await authController.secureStorage.read(key: 'biometrics_enabled');
-      final isSecureBiometricsEnabled = secureBiometrics == 'true';
+  //     final prefs = await SharedPreferences.getInstance();
+  //     final isBiometricsEnabled = prefs.getBool('biometrics_enabled') ?? false;
+  //     final secureBiometrics =
+  //         await authController.secureStorage.read(key: 'biometrics_enabled');
+  //     final isSecureBiometricsEnabled = secureBiometrics == 'true';
 
-      final hasCredentials = await authController.hasSavedCredentials();
+  //     final hasCredentials = await authController.hasSavedCredentials();
 
-      setState(() {
-        _showBiometricOption =
-            (isBiometricsEnabled || isSecureBiometricsEnabled) &&
-                hasCredentials;
-      });
-    } catch (e) {
-      setState(() {
-        _showBiometricOption = false;
-      });
-    }
-  }
+  //     setState(() {
+  //       _showBiometricOption =
+  //           (isBiometricsEnabled || isSecureBiometricsEnabled) &&
+  //               hasCredentials;
+  //     });
+  //   } catch (e) {
+  //     setState(() {
+  //       _showBiometricOption = false;
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -210,13 +210,9 @@ class _LoginPageState extends State<LoginPage> {
                             child: Obx(
                               () => Material(
                                 borderRadius: BorderRadius.circular(12.0),
-                                color: authController.authIsLoading.value
-                                    ? (isDarkMode
-                                        ? Colors.grey.shade600
-                                        : Colors.grey.shade400)
-                                    : (isDarkMode
-                                        ? Colors.grey.shade700
-                                        : Colors.black),
+                                color: isDarkMode
+                                    ? Colors.grey.shade700
+                                    : Colors.black,
                                 child: InkWell(
                                   borderRadius: BorderRadius.circular(8.0),
                                   onTap: authController.authIsLoading.value
@@ -245,66 +241,51 @@ class _LoginPageState extends State<LoginPage> {
                                           authController.loginMethod(
                                             email.text,
                                             pw.text,
-                                            _defaultRole, // Pass default role
+                                            _defaultRole,
                                             keepMeLoggedIn,
                                           );
                                         },
-                                  child: authController.authIsLoading.value
-                                      ? const Center(
-                                          child: SizedBox(
-                                            width: 24,
-                                            height: 24,
-                                            child: CircularProgressIndicator(
-                                              valueColor:
-                                                  AlwaysStoppedAnimation<Color>(
-                                                      Colors.white),
-                                              strokeWidth: 2.0,
-                                            ),
-                                          ),
-                                        )
-                                      : const LargeButton(title: "Log in"),
+                                  child: const LargeButton(title: "Log in"),
                                 ),
                               ),
                             ),
                           ),
-                          if (_showBiometricOption) ...[
-                            const SizedBox(width: 16.0),
-                            Container(
-                              height: 55,
-                              width: 55,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12.0),
-                                color: isDarkMode
-                                    ? Colors.grey.shade700
-                                    : Colors.black,
-                              ),
-                              child: Obx(
-                                () => authController.authIsLoading.value
-                                    ? const Center(
-                                        child: SizedBox(
-                                          width: 24,
-                                          height: 24,
-                                          child: CircularProgressIndicator(
-                                            valueColor:
-                                                AlwaysStoppedAnimation<Color>(
-                                                    Colors.white),
-                                            strokeWidth: 2.0,
-                                          ),
-                                        ),
-                                      )
-                                    : IconButton(
-                                        icon: const Icon(
-                                          Icons.fingerprint,
-                                          size: 30,
-                                          color: Colors.white,
-                                        ),
-                                        onPressed: () {
-                                          authController.loginWithBiometrics();
-                                        },
-                                      ),
-                              ),
-                            ),
-                          ],
+                          // const SizedBox(width: 16.0),
+                          // Container(
+                          //   height: 55,
+                          //   width: 55,
+                          //   decoration: BoxDecoration(
+                          //     borderRadius: BorderRadius.circular(12.0),
+                          //     color: isDarkMode
+                          //         ? Colors.grey.shade700
+                          //         : Colors.black,
+                          //   ),
+                          //   child: Obx(
+                          //     () => authController.authIsLoading.value
+                          //         ? const Center(
+                          //             child: SizedBox(
+                          //               width: 24,
+                          //               height: 24,
+                          //               child: CircularProgressIndicator(
+                          //                 valueColor:
+                          //                     AlwaysStoppedAnimation<Color>(
+                          //                         Colors.white),
+                          //                 strokeWidth: 2.0,
+                          //               ),
+                          //             ),
+                          //           )
+                          //         : IconButton(
+                          //             icon: const Icon(
+                          //               Icons.fingerprint,
+                          //               size: 30,
+                          //               color: Colors.white,
+                          //             ),
+                          //             onPressed: () {
+                          //               authController.loginWithBiometrics();
+                          //             },
+                          //           ),
+                          //   ),
+                          // ),
                         ],
                       ),
                       const SizedBox(height: 200),

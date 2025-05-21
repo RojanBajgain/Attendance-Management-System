@@ -1,6 +1,6 @@
 import 'dart:io';
-
 import 'package:ams/config/resources/styles.dart';
+import 'package:ams/feature/presentation/pages/bottom_nav/bottom_nav_page.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/model/profile_model.dart';
@@ -14,6 +14,7 @@ import 'package:get/get.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/foundation.dart'; // For mapEquals
 
 class EditUserDocument extends StatefulWidget {
   final String? profileId;
@@ -47,23 +48,85 @@ class _EditUserDocumentState extends State<EditUserDocument> {
   // Error state for each field
   final Map<String, String> _fieldErrors = {};
 
-  Future<void> pickFile(int documentId) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.any,
-    );
-
-    if (result != null) {
-      setState(() {
-        _selectedFiles[documentId] = File(result.files.single.path!);
-        _fieldErrors.remove('file_$documentId');
-      });
-    }
-  }
+  // Change tracking
+  bool _hasChanges = false;
+  Map<String, dynamic> _initialValues = {};
 
   @override
   void initState() {
     super.initState();
     _initializeDocuments();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _storeInitialValues();
+    });
+  }
+
+  void _storeInitialValues() {
+    final profileData = profileController.profile;
+    Map<String, dynamic> initialDocs = {};
+    if (profileData.isNotEmpty && profileData.first.documents.isNotEmpty) {
+      for (var document in profileData.first.documents) {
+        final documentId = document.id;
+        initialDocs[documentId.toString()] = {
+          'type': document.type.isNotEmpty ? document.type : "N/A",
+          'title': document.title,
+          'issuedDate': document.issuedDate != null
+              ? DateFormat('yyyy-MM-dd').format(document.issuedDate)
+              : "",
+          'identifier': document.identifier,
+          'filesToKeep': document.files.map((file) => file.id).toList(),
+        };
+      }
+    }
+    setState(() {
+      _initialValues = {
+        'documents': initialDocs,
+        'newDocumentType': "",
+        'newDocumentTitle': "",
+        'newDocumentIssuedDate': "",
+        'newDocumentIdentifier': "",
+        'newDocumentFile': null,
+        'isAddNewDocumentChecked':
+            profileController.isAddNewDocumentChecked.value,
+        'deletedDocumentIds': [],
+        'deletedFileIds': [],
+      };
+    });
+  }
+
+  void _checkForChanges() {
+    final profileData = profileController.profile;
+    Map<String, dynamic> currentDocs = {};
+    for (var document in profileData.first.documents) {
+      final documentId = document.id;
+      if (_deletedDocumentIds.contains(documentId)) continue;
+      currentDocs[documentId.toString()] = {
+        'type': selectedDocumentTypes[documentId] ?? "N/A",
+        'title': documentControllers[documentId]?['title']?.text ?? "",
+        'issuedDate':
+            documentControllers[documentId]?['issuedDate']?.text ?? "",
+        'identifier':
+            documentControllers[documentId]?['identifier']?.text ?? "",
+        'filesToKeep': _filesToKeep[documentId] ?? [],
+      };
+    }
+
+    final currentValues = {
+      'documents': currentDocs,
+      'newDocumentType': newDocumentType,
+      'newDocumentTitle': newDocumentTitleController.text,
+      'newDocumentIssuedDate': newDocumentIssuedDateController.text,
+      'newDocumentIdentifier': newDocumentIdentifierController.text,
+      'newDocumentFile': _selectedFiles[-1]?.path,
+      'isAddNewDocumentChecked':
+          profileController.isAddNewDocumentChecked.value,
+      'deletedDocumentIds': _deletedDocumentIds,
+      'deletedFileIds': _deletedFileIds,
+    };
+
+    setState(() {
+      _hasChanges = !mapEquals(_initialValues, currentValues);
+    });
   }
 
   void _initializeDocuments() {
@@ -85,8 +148,20 @@ class _EditUserDocumentState extends State<EditUserDocument> {
             document.type.isNotEmpty ? document.type : "N/A";
         _filesToKeep[documentId] =
             document.files.map((file) => file.id).toList();
+
+        // Add listeners to text controllers
+        documentControllers[documentId]!['title']!
+            .addListener(_checkForChanges);
+        documentControllers[documentId]!['issuedDate']!
+            .addListener(_checkForChanges);
+        documentControllers[documentId]!['identifier']!
+            .addListener(_checkForChanges);
       }
     }
+    // Add listeners for new document fields
+    newDocumentTitleController.addListener(_checkForChanges);
+    newDocumentIssuedDateController.addListener(_checkForChanges);
+    newDocumentIdentifierController.addListener(_checkForChanges);
   }
 
   int get activeDocumentCount {
@@ -98,6 +173,20 @@ class _EditUserDocumentState extends State<EditUserDocument> {
     return profileData.first.documents
         .where((doc) => !_deletedDocumentIds.contains(doc.id))
         .length;
+  }
+
+  Future<void> pickFile(int documentId) async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.any,
+    );
+
+    if (result != null) {
+      setState(() {
+        _selectedFiles[documentId] = File(result.files.single.path!);
+        _fieldErrors.remove('file_$documentId');
+        _checkForChanges();
+      });
+    }
   }
 
   Future<void> _deleteDocument(int documentId) async {
@@ -152,6 +241,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
                     _selectedFiles.remove(documentId);
                     _fieldErrors.removeWhere(
                         (key, value) => key.startsWith('doc_$documentId'));
+                    _checkForChanges();
                   });
                   await profileController.getProfile();
                 } catch (e) {
@@ -175,7 +265,18 @@ class _EditUserDocumentState extends State<EditUserDocument> {
     );
   }
 
-  Future<void> _submitDocuments() async {
+  Future<void> _submitDocuments({bool navigateToNext = false}) async {
+    if (!_validateInputs()) {
+      return;
+    }
+
+    Get.dialog(
+      const Center(
+        child: CircularProgressIndicator(),
+      ),
+      barrierDismissible: false,
+    );
+
     try {
       final userId = profileController.profile.first.id;
       bool hasError = false;
@@ -244,7 +345,22 @@ class _EditUserDocumentState extends State<EditUserDocument> {
         );
         return Future.error(errorMessage);
       } else {
-        Get.to(() => const EditUserBank());
+        if (navigateToNext) {
+          Get.to(() => const EditUserBank());
+        } else {
+          Get.offAll(() => const BottomNavPage());
+
+          SSnackbarUtil.showSnackbar(
+            'Success',
+            'Documents updated successfully',
+            SnackbarType.success,
+          );
+          setState(() {
+            _hasChanges = false;
+            _storeInitialValues(); // Reset initial values after saving
+          });
+          await profileController.getProfile();
+        }
       }
     } catch (e) {
       Get.back();
@@ -264,7 +380,6 @@ class _EditUserDocumentState extends State<EditUserDocument> {
 
     bool isValid = true;
 
-    // Validate existing documents
     for (var entry in documentControllers.entries) {
       int documentId = entry.key;
       if (_deletedDocumentIds.contains(documentId)) {
@@ -273,42 +388,29 @@ class _EditUserDocumentState extends State<EditUserDocument> {
 
       Map<String, TextEditingController> controllers = entry.value;
 
-      // Validate document type
       if (!selectedDocumentTypes.containsKey(documentId) ||
           selectedDocumentTypes[documentId] == "N/A") {
         _fieldErrors['doc_${documentId}_type'] = 'Document type is required';
         isValid = false;
       }
 
-      // Validate title
       if (controllers['title']?.text.isEmpty ?? true) {
         _fieldErrors['doc_${documentId}_title'] = 'Title is required';
         isValid = false;
       }
 
-      // Validate issued date
       if (controllers['issuedDate']?.text.isEmpty ?? true) {
         _fieldErrors['doc_${documentId}_issuedDate'] =
             'Issued date is required';
         isValid = false;
       }
 
-      // Validate identifier
       if (controllers['identifier']?.text.isEmpty ?? true) {
         _fieldErrors['doc_${documentId}_identifier'] = 'Identifier is required';
         isValid = false;
       }
-
-      // Optional: Validate file if no existing files
-      /* if (_filesToKeep[documentId]?.isEmpty ?? true) {
-        if (!_selectedFiles.containsKey(documentId) || _selectedFiles[documentId] == null) {
-          _fieldErrors['file_$documentId'] = 'At least one file is required';
-          isValid = false;
-        }
-      } */
     }
 
-    // Validate new document if checkbox is checked
     if (profileController.isAddNewDocumentChecked.value) {
       if (newDocumentType.isEmpty || newDocumentType == "N/A") {
         _fieldErrors['new_doc_type'] = 'Document type is required';
@@ -326,10 +428,6 @@ class _EditUserDocumentState extends State<EditUserDocument> {
         _fieldErrors['new_doc_identifier'] = 'Identifier is required';
         isValid = false;
       }
-      /* if (!_selectedFiles.containsKey(-1) || _selectedFiles[-1] == null) {
-        _fieldErrors['new_doc_file'] = 'A file is required';
-        isValid = false;
-      } */
     }
 
     return isValid;
@@ -443,6 +541,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
       setState(() {
         controller.text = DateFormat('yyyy-MM-dd').format(picked);
         _fieldErrors.remove(fieldKey);
+        _checkForChanges(); // Ensure date changes trigger change tracking
       });
     }
   }
@@ -524,6 +623,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
                   _fieldErrors.remove(fieldKey);
                 });
               }
+              _checkForChanges();
             },
           ),
           if (hasError)
@@ -873,7 +973,10 @@ class _EditUserDocumentState extends State<EditUserDocument> {
         DropdownButtonFormField2<String>(
           isExpanded: true,
           value: initialValue,
-          onChanged: onChanged,
+          onChanged: (value) {
+            onChanged?.call(value);
+            _checkForChanges();
+          },
           items: items.map((type) {
             return DropdownMenuItem<String>(
               value: type,
@@ -933,7 +1036,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: isDarkMode ? Colors.blueAccent : Colors.black,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -953,6 +1056,35 @@ class _EditUserDocumentState extends State<EditUserDocument> {
               ],
             ),
           ),
+          if (_hasChanges)
+            ElevatedButton(
+              onPressed: () {
+                if (_validateInputs()) {
+                  Get.dialog(
+                    const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                    barrierDismissible: false,
+                  );
+                  _submitDocuments(navigateToNext: false);
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isDarkMode ? Colors.blueAccent : Colors.black,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: Text(
+                "Save Changes",
+                style: smallStyle.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
           ElevatedButton(
             onPressed: () {
               if (_validateInputs()) {
@@ -962,7 +1094,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
                   ),
                   barrierDismissible: false,
                 );
-                _submitDocuments();
+                _submitDocuments(navigateToNext: true);
               }
             },
             style: ElevatedButton.styleFrom(

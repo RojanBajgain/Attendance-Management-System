@@ -26,8 +26,8 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
   @override
   void initState() {
     super.initState();
-    timesheetcontroller.getTimesheet();
-    timesheetcontroller.clearDateRange();
+    // timesheetcontroller.getTimesheet();
+    // timesheetcontroller.clearDateRange();
   }
 
   @override

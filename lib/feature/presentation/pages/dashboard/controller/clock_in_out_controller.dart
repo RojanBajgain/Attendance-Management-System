@@ -154,7 +154,7 @@ class ClockInOutController extends GetxController {
         deviceId,
         latitude,
         longitude,
-        ipAddress, // Send the IP address
+        ipAddress,
       );
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {

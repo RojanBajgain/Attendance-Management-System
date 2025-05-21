@@ -324,6 +324,7 @@ class AuthController extends GetxController {
         Get.offAll(
           () => const OrganizationPage(),
           arguments: organizations.map((org) => org.toJson()).toList(),
+          transition: Transition.rightToLeft,
         );
 
         SSnackbarUtil.showSnackbar(

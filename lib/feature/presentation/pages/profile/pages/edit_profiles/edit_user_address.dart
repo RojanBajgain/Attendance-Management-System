@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
+import 'package:flutter/foundation.dart';
+import 'package:ams/feature/presentation/pages/bottom_nav/bottom_nav_page.dart';
 
 class EditUserAddress extends StatefulWidget {
   final String? profileId;
@@ -58,8 +60,9 @@ class _EditUserAddressState extends State<EditUserAddress> {
   int? permanentAddressId;
   int? currentAddressId;
 
-  late final dynamic currentAddr;
-  late final dynamic permanentAddr;
+  bool _isLoading = false;
+  bool _hasChanges = false;
+  Map<String, dynamic> _initialValues = {};
 
   @override
   void initState() {
@@ -68,7 +71,7 @@ class _EditUserAddressState extends State<EditUserAddress> {
     profileController.getcountryList();
 
     final profileData = profileController.profile;
-    if (profileData.isNotEmpty && profileData.first.addresses != null) {
+    if (profileData.isNotEmpty) {
       final currentAddr = profileData.first.addresses!
           .firstWhereOrNull((a) => a.addressType == "current");
       final permanentAddr = profileData.first.addresses!
@@ -87,6 +90,52 @@ class _EditUserAddressState extends State<EditUserAddress> {
         profileController.isSameAsPermanent.value = false;
       }
     }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _storeInitialValues();
+    });
+  }
+
+  void _storeInitialValues() {
+    setState(() {
+      _initialValues = {
+        'permanentCountry': countryIdController.text,
+        'permanentProvince': provinceController.text,
+        'permanentCity': cityController.text,
+        'permanentAddressLineOne': addressLineOneController.text,
+        'permanentAddressLineTwo': addressLineTwoController.text,
+        'permanentZip': zipController.text,
+        'currentCountry': currentCountryIdController.text,
+        'currentProvince': currentProvinceController.text,
+        'currentCity': currentCityController.text,
+        'currentAddressLineOne': currentAddressLineOneController.text,
+        'currentAddressLineTwo': currentAddressLineTwoController.text,
+        'currentZip': currentZipController.text,
+        'isSameAsPermanent': profileController.isSameAsPermanent.value,
+      };
+    });
+  }
+
+  void _checkForChanges() {
+    final currentValues = {
+      'permanentCountry': countryIdController.text,
+      'permanentProvince': provinceController.text,
+      'permanentCity': cityController.text,
+      'permanentAddressLineOne': addressLineOneController.text,
+      'permanentAddressLineTwo': addressLineTwoController.text,
+      'permanentZip': zipController.text,
+      'currentCountry': currentCountryIdController.text,
+      'currentProvince': currentProvinceController.text,
+      'currentCity': currentCityController.text,
+      'currentAddressLineOne': currentAddressLineOneController.text,
+      'currentAddressLineTwo': currentAddressLineTwoController.text,
+      'currentZip': currentZipController.text,
+      'isSameAsPermanent': profileController.isSameAsPermanent.value,
+    };
+
+    setState(() {
+      _hasChanges = !mapEquals(_initialValues, currentValues);
+    });
   }
 
   void _initializeAddress() {
@@ -157,8 +206,10 @@ class _EditUserAddressState extends State<EditUserAddress> {
     }
 
     setState(() {
-      _fieldErrors.clear(); // Clear errors when changing
+      _fieldErrors.clear();
     });
+
+    _checkForChanges();
   }
 
   bool _validateInputs() {
@@ -220,14 +271,6 @@ class _EditUserAddressState extends State<EditUserAddress> {
       }
     }
 
-    if (!isValid) {
-      // SSnackbarUtil.showSnackbar(
-      //   'Error',
-      //   'Please fill out all required fields correctly',
-      //   SnackbarType.error,
-      // );
-    }
-
     return isValid;
   }
 
@@ -236,7 +279,13 @@ class _EditUserAddressState extends State<EditUserAddress> {
     return zip.length >= 4 && RegExp(r'^\d+$').hasMatch(zip);
   }
 
-  Future<void> _submitUserAddress() async {
+  Future<void> _submitUserAddress({bool navigateToNext = false}) async {
+    if (!_validateInputs()) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
     try {
       final userId = profileController.profile.first.id;
       int permanentCountryId = int.tryParse(countryIdController.text) ?? 1;
@@ -274,28 +323,23 @@ class _EditUserAddressState extends State<EditUserAddress> {
           await profileController.postuserAddress(
             id: userId,
             addressID: currentAddressId!,
-            country:
-                permanentCountryId.toString(), // Use permanent address country
-            province: provinceController.text, // Use permanent address province
-            city: cityController.text, // Use permanent address city
-            addressLineOne:
-                addressLineOneController.text, // Use permanent address line 1
-            addressLineTwo:
-                addressLineTwoController.text, // Use permanent address line 2
-            zipcode: zipController.text, // Use permanent address zip
+            country: permanentCountryId.toString(),
+            province: provinceController.text,
+            city: cityController.text,
+            addressLineOne: addressLineOneController.text,
+            addressLineTwo: addressLineTwoController.text,
+            zipcode: zipController.text,
             addressType: "current",
           );
         } else {
           await profileController.postnewuserAddress(
             profileID: userId,
-            issuedCountry: permanentCountryId, // Use permanent address country
-            province: provinceController.text, // Use permanent address province
-            city: cityController.text, // Use permanent address city
-            addressLineOne:
-                addressLineOneController.text, // Use permanent address line 1
-            addressLineTwo:
-                addressLineTwoController.text, // Use permanent address line 2
-            zipcode: zipController.text, // Use permanent address zip
+            issuedCountry: permanentCountryId,
+            province: provinceController.text,
+            city: cityController.text,
+            addressLineOne: addressLineOneController.text,
+            addressLineTwo: addressLineTwoController.text,
+            zipcode: zipController.text,
             addressType: "current",
           );
         }
@@ -330,33 +374,43 @@ class _EditUserAddressState extends State<EditUserAddress> {
         }
       }
 
-      Get.back();
-      Get.to(() => const EditUserDocument());
-    } catch (e) {
-      if (Get.isDialogOpen ?? false) {
-        Get.back();
+      // Navigate based on the parameter
+      if (navigateToNext) {
+        Get.to(() => const EditUserDocument());
+      } else {
+        Get.offAll(() => const BottomNavPage());
+        SSnackbarUtil.showSnackbar(
+          'Success',
+          'Address updated successfully',
+          SnackbarType.success,
+        );
       }
 
-      print("Error submitting address: $e");
+      setState(() {
+        _hasChanges = false;
+      });
+    } catch (e) {
+      // print("Error submitting address: $e");
       SSnackbarUtil.showSnackbar(
         'Error',
         'An unexpected error occurred: $e',
         SnackbarType.error,
       );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
   void _onNextPressed() async {
     if (!_validateInputs()) return;
 
-    Get.dialog(
-      const Center(
-        child: CircularProgressIndicator(),
-      ),
-      barrierDismissible: false,
-    );
+    setState(() {
+      _isLoading = true;
+    });
 
-    await _submitUserAddress();
+    await _submitUserAddress(navigateToNext: true);
   }
 
   void _onPreviousPressed() {
@@ -440,6 +494,7 @@ class _EditUserAddressState extends State<EditUserAddress> {
                   _fieldErrors.remove(fieldKey);
                 });
               }
+              _checkForChanges();
             },
           ),
           if (hasError)
@@ -496,11 +551,12 @@ class _EditUserAddressState extends State<EditUserAddress> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          // Previous Button
           ElevatedButton(
             onPressed: _onPreviousPressed,
             style: ElevatedButton.styleFrom(
               backgroundColor: isDarkMode ? Colors.blueAccent : Colors.black,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -520,8 +576,33 @@ class _EditUserAddressState extends State<EditUserAddress> {
               ],
             ),
           ),
+
+          // Save Changes Button
+          if (_hasChanges)
+            ElevatedButton(
+              onPressed: _isLoading
+                  ? null
+                  : () => _submitUserAddress(navigateToNext: false),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isDarkMode ? Colors.blueAccent : Colors.black,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: Text(
+                "Save Changes",
+                style: smallStyle.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+
+          // Next Button
           ElevatedButton(
-            onPressed: _onNextPressed,
+            onPressed: _isLoading ? null : _onNextPressed,
             style: ElevatedButton.styleFrom(
               backgroundColor: isDarkMode ? Colors.blueAccent : Colors.black,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -556,8 +637,6 @@ class _EditUserAddressState extends State<EditUserAddress> {
         valueName: countryNameController.text,
         onChanged: (CountryData? data) {
           if (data != null) {
-            print(
-                "Permanent country selected: ID=${data.id}, Name=${data.name}");
             setState(() {
               countryIdController.text = data.id.toString();
               countryNameController.text = data.name;
@@ -568,6 +647,7 @@ class _EditUserAddressState extends State<EditUserAddress> {
                 _fieldErrors.remove('currentCountry');
               }
             });
+            _checkForChanges();
           }
         },
         isDarkMode: isDarkMode,
@@ -599,12 +679,12 @@ class _EditUserAddressState extends State<EditUserAddress> {
         valueName: currentCountryNameController.text,
         onChanged: (CountryData? data) {
           if (data != null) {
-            print("Current country selected: ID=${data.id}, Name=${data.name}");
             setState(() {
               currentCountryIdController.text = data.id.toString();
               currentCountryNameController.text = data.name;
               _fieldErrors.remove('currentCountry');
             });
+            _checkForChanges();
           }
         },
         isDarkMode: isDarkMode,
@@ -645,33 +725,46 @@ class _EditUserAddressState extends State<EditUserAddress> {
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView(
-                children: [
-                  _buildAddressSection(
-                      "Permanent Address", Icons.location_on, isDarkMode),
-                  const SizedBox(height: 16),
-                  ..._buildPermanentAddressFields(isDarkMode),
-                  _buildSameAsPermanentCheckbox(isDarkMode),
-                  Obx(() {
-                    if (!profileController.isSameAsPermanent.value) {
-                      return Column(
-                        children: _buildCurrentAddressFields(isDarkMode),
-                      );
-                    } else {
-                      return const SizedBox.shrink();
-                    }
-                  }),
-                ],
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView(
+                    children: [
+                      _buildAddressSection(
+                          "Permanent Address", Icons.location_on, isDarkMode),
+                      const SizedBox(height: 16),
+                      ..._buildPermanentAddressFields(isDarkMode),
+                      _buildSameAsPermanentCheckbox(isDarkMode),
+                      Obx(() {
+                        if (!profileController.isSameAsPermanent.value) {
+                          return Column(
+                            children: _buildCurrentAddressFields(isDarkMode),
+                          );
+                        } else {
+                          return const SizedBox.shrink();
+                        }
+                      }),
+                    ],
+                  ),
+                ),
+                _buildBottomButtons(isDarkMode),
+              ],
+            ),
+          ),
+          if (_isLoading)
+            Container(
+              color: Colors.black.withOpacity(0.5),
+              child: const Center(
+                child: CircularProgressIndicator(
+                  color: Colors.green,
+                ),
               ),
             ),
-            _buildBottomButtons(isDarkMode),
-          ],
-        ),
+        ],
       ),
     );
   }

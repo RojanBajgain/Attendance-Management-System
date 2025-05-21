@@ -26,7 +26,7 @@ class TimeoffRepo {
 
   // Post Timeoff
   Future<ApiResponse> createtimeoff(
-    int profile,
+    int profileID,
     int type,
     String startDate,
     String endDate,
@@ -35,13 +35,8 @@ class TimeoffRepo {
     final token = apiClient.token;
     final orgApiKey = apiClient.organization;
 
-    // Verify all required parameters
-    if (profile == null || type == null) {
-      throw Exception('Missing required parameters');
-    }
-
     final requestBody = {
-      'profile': profile,
+      'profile': profileID,
       'type': type,
       'start_date': startDate,
       'end_date': endDate,
