@@ -27,6 +27,7 @@ class App extends StatelessWidget {
           initialRoute: isLoggedIn ? '/bottom-nav' : '/landing',
           getPages: [
             GetPage(name: '/landing', page: () => const LandingPage()),
+            // GetPage(name: '/landing', page: () => const LoginPage()),
             GetPage(name: '/bottom-nav', page: () => const BottomNavPage()),
             GetPage(
                 name: '/organization', page: () => const OrganizationPage()),
@@ -35,7 +36,8 @@ class App extends StatelessWidget {
           builder: (context, child) {
             final mediaQuery = MediaQuery.of(context);
             return MediaQuery(
-              data: mediaQuery.copyWith(textScaler: TextScaler.linear(1.0)),
+              data:
+                  mediaQuery.copyWith(textScaler: const TextScaler.linear(1.0)),
               child: child ?? const SizedBox(),
             );
           },

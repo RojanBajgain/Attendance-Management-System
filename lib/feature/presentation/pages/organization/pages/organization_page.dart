@@ -41,7 +41,7 @@ class _OrganizationPageState extends State<OrganizationPage> {
       appBar: AppBar(
         backgroundColor: isDarkMode ? Colors.black : Colors.white,
         title: Text(
-          'Organizations',
+          'Departments',
           style: normalStyle.copyWith(
               fontWeight: FontWeight.bold,
               color: isDarkMode ? Colors.white : Colors.black),
@@ -53,7 +53,7 @@ class _OrganizationPageState extends State<OrganizationPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Select Organization',
+              'Select Your Department',
               style: normalStyle.copyWith(
                 fontWeight: FontWeight.bold,
                 color: isDarkMode ? Colors.white : Colors.black,
@@ -61,7 +61,7 @@ class _OrganizationPageState extends State<OrganizationPage> {
             ),
             const SizedBox(height: 10),
             Text(
-              'Click on your desired organization',
+              'Click on your desired department to proceed. If you do not see your department.',
               style: miniStyle.copyWith(
                 fontWeight: FontWeight.w400,
                 color: isDarkMode ? Colors.white : Colors.black,
@@ -88,7 +88,7 @@ class _OrganizationPageState extends State<OrganizationPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'No Organizations found.',
+                          'No Department found.',
                           style: miniStyle.copyWith(color: Colors.grey),
                         ),
                       ],
@@ -146,7 +146,7 @@ class _OrganizationPageState extends State<OrganizationPage> {
     );
 
     SSnackbarUtil.showSnackbar(
-      'Organization Selected',
+      'Department Selected',
       'You have selected ${organization.title}',
       SnackbarType.success,
     );

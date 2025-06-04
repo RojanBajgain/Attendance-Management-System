@@ -54,8 +54,8 @@ class _LandingPageState extends State<LandingPage> {
               const Spacer(flex: 1),
               AnimatedTextKit(
                 animatedTexts: [
-                  TypewriterAnimatedText('"Welcome To Ayata"',
-                      textStyle: mediumStyle.copyWith(
+                  TypewriterAnimatedText('"Welcome To Your Attendence"',
+                      textStyle: normalStyle.copyWith(
                         fontWeight: FontWeight.bold,
                         color: isDarkMode
                             ? Colors.grey.shade400

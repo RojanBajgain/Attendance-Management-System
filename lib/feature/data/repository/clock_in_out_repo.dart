@@ -12,8 +12,6 @@ import 'package:http/http.dart' as http;
 
 class ClockInOutRepo {
   final ApiClient apiClient;
-  // Define a base URL constant to use consistently
-  static const String baseUrl = "http://192.168.254.45:8000/";
 
   ClockInOutRepo({required this.apiClient});
 
@@ -98,7 +96,7 @@ class ClockInOutRepo {
           (accessResponse.response as CheckAccessPointModel).data.first;
 
       // Step 2: Prepare request with proper URL construction
-      final url = Uri.parse(baseUrl + ApiUrls.postclockin);
+      final url = Uri.parse(ApiUrls.baseUrl + ApiUrls.postclockin);
 
       // Step 3: Prepare headers
       final headers = {
@@ -114,7 +112,7 @@ class ClockInOutRepo {
       };
 
       // Step 5: Add IP if required
-      if (accessPoint.ipAddress) {
+      if (accessPoint.ipAddress == true) {
         final ipResponse = await getCurrentIpAddress();
         if (ipResponse.status == ApiStatus.SUCCESS &&
             ipResponse.response != null) {
@@ -180,7 +178,7 @@ class ClockInOutRepo {
 
     try {
       // Use consistent base URL
-      final url = baseUrl + ApiUrls.postclockout;
+      const url = ApiUrls.baseUrl + ApiUrls.postclockout;
       log("📨 Sending clock-out request to: $url");
       log("📦 Request payload: {device_id: $deviceID, latitude: $latitude, longitude: $longitude, x-address: $ipAddress}");
 
@@ -228,7 +226,7 @@ class ClockInOutRepo {
     final token = apiClient.token;
 
     // Use consistent base URL
-    final url = ApiUrls.onbreak;
+    const url = ApiUrls.onbreak;
 
     if (kDebugMode) {
       print(url);
@@ -255,7 +253,7 @@ class ClockInOutRepo {
     final token = apiClient.token;
 
     // Use consistent base URL
-    final url = ApiUrls.onresume;
+    const url = ApiUrls.onresume;
 
     if (kDebugMode) {
       print(url);

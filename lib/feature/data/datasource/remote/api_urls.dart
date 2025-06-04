@@ -3,6 +3,8 @@ class ApiUrls {
   // static const String baseUrl = "http://192.168.254.49:8000/";
   // static const String baseUrl = "http://192.168.254.4:8000/";
 
+  // static const String baseUrl = "http://192.168.254.45:8000/";
+
   static const String baseUrl = "http://192.168.254.45:8000/";
 
   // static const String baseUrl = "http://192.168.0.103:8000/";
@@ -40,6 +42,8 @@ class ApiUrls {
 
   static const String policydetail = "api/policies/policydetail/";
 
+  static const String leavepolicy = "api/policies/userleavebypolicy/";
+
   static const String changePassword = "api/smtp/changepassword/";
 
   static const String payroll = "api/payrolls/payroll/";
@@ -53,6 +57,8 @@ class ApiUrls {
   static const String timesheetdetail = "api/timesheets/attendencelogs/";
 
   static const String notification = "api/inbox/notifications/";
+
+  static const String remainder = "api/policies/reminder/";
 
   static const String dashboardtimesheet = "api/dashboard/timesheet/user";
 
@@ -74,8 +80,10 @@ class ApiUrls {
   static const String onbreak = "api/timesheets/breaktime/start/";
   static const String onresume = "api/timesheets/breaktime/resume/";
 
+  static const String wsUrl = "ws://192.168.254.45:8000/ws/";
   static const String chat = "api/message/chat/";
-  static const String websocket = "ws://backend.ams.ayata.com.np/ws/chat/";
+  // static const String chatmessage = "ws://backend.ams.ayata.com.np/ws/chat/";
+  static const String chatmessage = "'ws://192.168.254.45:8000/ws/chat/'";
 
   static const String eventpolicy = "api/policies/calender/";
 

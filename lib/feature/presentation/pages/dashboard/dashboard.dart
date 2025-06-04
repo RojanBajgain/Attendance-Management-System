@@ -37,6 +37,8 @@ class _DashboardPageState extends State<DashboardPage> {
       Get.find<CalenderNotificationController>();
   final ProfileController profileController = Get.find<ProfileController>();
 
+  Rx<Profile?> profile = Rx<Profile?>(null);
+
   String _getGreeting() {
     final hour = DateTime.now().hour;
     if (hour < 12) {
@@ -51,6 +53,7 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
+    profileController.getProfile();
     // dashboardTimesheetController.getDashboardTimesheet();
     // timesheetController.getTimesheet();
   }
@@ -114,9 +117,13 @@ class _DashboardPageState extends State<DashboardPage> {
                               ),
                               children: [
                                 TextSpan(
-                                  text: profileController.profile.isNotEmpty
-                                      ? profileController.profile.first.username
-                                      : "Hello",
+                                  // text: profileController.profile.isNotEmpty
+                                  //     ? profileController.profile.first.username
+                                  //     : "Hello",
+                                  text: profileController
+                                          .profile.first.username ??
+                                      "User",
+
                                   style: smallStyle.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: isDarkMode

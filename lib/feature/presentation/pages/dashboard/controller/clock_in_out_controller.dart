@@ -103,9 +103,7 @@ class ClockInOutController extends GetxController {
       } else {
         log("Error: ${response.message}");
         SSnackbarUtil.showSnackbar(
-            "Error",
-            response.message ?? 'Failed to post CLock in time',
-            SnackbarType.error);
+            "Error", 'Failed to post CLock in time', SnackbarType.error);
       }
     } catch (e) {
       if (kDebugMode) {
@@ -113,7 +111,7 @@ class ClockInOutController extends GetxController {
       }
       SSnackbarUtil.showSnackbar(
         'Error',
-        'An unexpected error occurred: $e',
+        'An unexpected error occurred',
         SnackbarType.error,
       );
     }
@@ -182,9 +180,7 @@ class ClockInOutController extends GetxController {
           );
         } else {
           SSnackbarUtil.showSnackbar(
-              "Error",
-              response.message ?? "Already clocked out for today",
-              SnackbarType.error);
+              "Error", "Already clocked out for today", SnackbarType.error);
         }
       }
     } catch (e) {
@@ -193,7 +189,7 @@ class ClockInOutController extends GetxController {
       }
       SSnackbarUtil.showSnackbar(
         'Error',
-        'An unexpected error occurred: $e',
+        'An unexpected error occurred',
         SnackbarType.error,
       );
     } finally {
@@ -232,7 +228,7 @@ class ClockInOutController extends GetxController {
       }
       SSnackbarUtil.showSnackbar(
         'Error',
-        'An unexpected error occurred: $e',
+        'An unexpected error occurred',
         SnackbarType.error,
       );
     } finally {
@@ -276,7 +272,7 @@ class ClockInOutController extends GetxController {
         Get.back();
         SSnackbarUtil.showSnackbar(
             "Posted Resume",
-            response.message ?? 'Your Resume time has been successfully posted',
+            'Your Resume time has been successfully posted',
             SnackbarType.success);
       } else {
         log("Error: ${response.message}");
@@ -292,7 +288,7 @@ class ClockInOutController extends GetxController {
       }
       SSnackbarUtil.showSnackbar(
         'Error',
-        'An unexpected error occurred: $e',
+        'An unexpected error occurred',
         SnackbarType.error,
       );
     } finally {

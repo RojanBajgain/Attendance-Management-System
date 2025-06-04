@@ -23,6 +23,19 @@ class TimeoffRepo {
     return response;
   }
 
+  // Get Leave Policy
+  Future<ApiResponse> getUserLeaveByPolicy() async {
+    final token = apiClient.token;
+
+    final response = await ApiClient.getApi(
+      ApiUrls.leavepolicy,
+      token: token,
+      apiKey: apiClient.organization,
+      fromJson: (json) => json,
+    );
+    return response;
+  }
+
   // Post Timeoff
   Future<ApiResponse> createtimeoff(
     int profileID,
@@ -60,9 +73,9 @@ class TimeoffRepo {
   Future<ApiResponse> postReapply(int id, String reason) async {
     final token = apiClient.token;
 
-    if (token.isEmpty) {
-      throw Exception('JWT token is missing or invalid');
-    }
+    // if (token.isEmpty) {
+    //   throw Exception('JWT token is missing or invalid');
+    // }
 
     final url = '${ApiUrls.reapplytimeoff}$id/update_status/';
 
@@ -79,9 +92,9 @@ class TimeoffRepo {
   Future<ApiResponse> deleteTimeoff(int id) async {
     final token = apiClient.token;
 
-    if (token.isEmpty) {
-      throw Exception('JWT token is missing or invalid');
-    }
+    // if (token.isEmpty) {
+    //   throw Exception('JWT token is missing or invalid');
+    // }
 
     final url = '${ApiUrls.timeoff}$id/';
 

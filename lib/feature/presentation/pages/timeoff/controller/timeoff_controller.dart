@@ -95,7 +95,7 @@ class TimeoffController extends GetxController {
       } else {
         SSnackbarUtil.showSnackbar(
           'Error',
-          response.message ?? 'Failed to submit timeoff request',
+          'Failed to submit timeoff request',
           SnackbarType.error,
         );
       }
@@ -191,6 +191,47 @@ class TimeoffController extends GetxController {
         'An unexpected error occurred: $e',
         SnackbarType.error,
       );
+    }
+  }
+
+  Future<Map<String, dynamic>?> getUserLeaveByPolicy() async {
+    try {
+      isLoading(true);
+      final response = await timeoffRepo.getUserLeaveByPolicy();
+      log('API Response: $response');
+
+      if (response.status == ApiStatus.SUCCESS && response.response != null) {
+        final responseData = response.response as Map<String, dynamic>;
+        // Extract the nested leave_policies data
+        final userData = responseData['user'] as Map<String, dynamic>?;
+        final leavePolicies = responseData['leave_policies'] as List?;
+
+        if (userData != null && leavePolicies != null) {
+          return {
+            'user': userData,
+            'leave_policies': leavePolicies,
+          };
+        }
+        return null;
+      } else {
+        log('Error fetching user leave policy: ${response.message}');
+        SSnackbarUtil.showSnackbar(
+          'Error',
+          'Failed to fetch leave balance: ${response.message}',
+          SnackbarType.error,
+        );
+        return null;
+      }
+    } catch (e) {
+      log('Error in getUserLeaveByPolicy: $e');
+      SSnackbarUtil.showSnackbar(
+        'Error',
+        'An error occurred while fetching leave balance: $e',
+        SnackbarType.error,
+      );
+      return null;
+    } finally {
+      isLoading(false);
     }
   }
 }

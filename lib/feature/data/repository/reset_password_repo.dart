@@ -11,9 +11,9 @@ class ResetPasswordRepo {
   Future<ApiResponse> resetpassword(String email) async {
     final token = apiClient.token;
 
-    if (token.isEmpty) {
-      throw Exception('JWT token is missing or invalid');
-    }
+    // if (token.isEmpty) {
+    //   throw Exception('JWT token is missing or invalid');
+    // }
     const url = ApiUrls.passwordreset;
     if (kDebugMode) {
       print(url);

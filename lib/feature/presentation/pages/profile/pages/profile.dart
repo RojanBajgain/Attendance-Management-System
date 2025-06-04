@@ -254,7 +254,13 @@ class _ProfilePageState extends State<ProfilePage> {
           final profileData = profilecontroller.profile;
 
           if (profileData.isEmpty) {
-            return const Center(child: Text("No documents available."));
+            return Center(
+                child: Text(
+              "No documents available.",
+              style: smallStyle.copyWith(
+                color: isDarkMode ? Colors.black : Colors.white,
+              ),
+            ));
           }
 
           return ListView.builder(
@@ -297,7 +303,12 @@ class _ProfilePageState extends State<ProfilePage> {
                   ],
                 ),
           if (profiledata.documents.isEmpty && profiledata.resume == null)
-            const Text('No documents available.'),
+            Text(
+              'No documents available.',
+              style: normalStyle.copyWith(
+                color: isDarkMode ? Colors.white : Colors.black,
+              ),
+            ),
           if (profiledata.resume != null) _buildRow('Resume:', 'Available'),
         ],
       ),
@@ -320,7 +331,13 @@ class _ProfilePageState extends State<ProfilePage> {
           final profileData = profilecontroller.profile;
 
           if (profileData.isEmpty) {
-            return const Center(child: Text("No bank details available."));
+            return Center(
+                child: Text(
+              "No bank details available.",
+              style: smallStyle.copyWith(
+                color: isDarkMode ? Colors.black : Colors.white,
+              ),
+            ));
           }
 
           return Column(
@@ -336,7 +353,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildBankDetailList(List<BankDetail> bankDetails, bool isDarkMode) {
     if (bankDetails.isEmpty) {
-      return const Text('No bank details available.');
+      return Text(
+        'No bank details available.',
+        style: normalStyle.copyWith(
+          color: isDarkMode ? Colors.white : Colors.black,
+        ),
+      );
     }
 
     return Column(

@@ -129,10 +129,10 @@ class _ConstantAppBarState extends State<ConstantAppBar> {
         //       ),
         //     );
         //   },
-        //   icon: const Icon(
+        //   icon: Icon(
         //     Icons.chat_bubble_outline,
-        //     size: 28.0,
-        //     color: Colors.grey,
+        //     size: 25.0,
+        //     color: isDarkMode ? Colors.white : Colors.black,
         //   ),
         // ),
       ],

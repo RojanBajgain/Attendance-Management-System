@@ -1,137 +1,182 @@
+// import 'dart:convert';
 // import 'dart:developer';
-// import 'package:get/get.dart';
 // import 'package:ams/feature/data/datasource/remote/api_response.dart';
 // import 'package:ams/feature/data/repository/chat_repo.dart';
-// import 'package:ams/feature/presentation/pages/chat/model/chat_model.dart';
-// import 'package:ams/feature/presentation/pages/chat/service/websocket_service.dart';
+// import 'package:ams/feature/presentation/pages/chat/model/get_chat_by_id.dart';
+// import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
+// import 'package:ams/feature/presentation/pages/websocket/controller/websocket_controller.dart';
+// import 'package:ams/feature/utils/ssnackbar_utils.dart';
+// import 'package:get/get.dart';
 
 // class ChatController extends GetxController {
-//   var chatHistory = <ChatModel>[].obs;
+//   var chatHistory = <ChatByIdModel>[].obs;
 //   var isLoading = false.obs;
 //   var errorMessage = ''.obs;
-//   var currentConversation = RxInt(-1); // ID of current conversation/receiver
 
 //   final ChatRepo chatRepo;
-//   final WebSocketService _websocketService = WebSocketService();
 
 //   ChatController({required this.chatRepo});
 
 //   @override
 //   void onInit() {
 //     super.onInit();
-//     _initWebSocket();
 //     getChats();
+//     _setupWebSocketListener();
 //   }
 
-//   // Initialize WebSocket connection
-//   void _initWebSocket() {
-//     final token = chatRepo.apiClient.token;
-//     // Get current user ID from your auth service
-//     final userId =
-//         getUserId(); // Implement this method based on your auth system
-
-//     // Connect to WebSocket
-//     _websocketService.connect(token, userId: userId);
-
-//     // Listen for incoming messages
-//     _websocketService.messageStream.listen((message) {
-//       // Add new message to chat history
-//       _handleIncomingMessage(message);
-//     });
-//   }
-
-//   // Placeholder - implement based on your auth system
-//   int getUserId() {
-//     // Return the current user ID from your authentication system
-//     return 1; // Replace with actual implementation
-//   }
-
-//   // Handle incoming WebSocket message
-//   void _handleIncomingMessage(ChatModel message) {
-//     // If message belongs to current conversation, add to chat history
-//     if (message.receiver == currentConversation.value ||
-//         message.sender?.id == currentConversation.value) {
-//       chatHistory.add(message);
-//     }
-
-//     // You might want to update your UI to show notification for new messages
-//     // in other conversations as well
-//   }
-
-//   // Get chat history with a specific user
-//   Future<void> getChatHistory(int userId) async {
-//     isLoading(true);
-//     currentConversation.value = userId;
-
-//     try {
-//       ApiResponse response = await chatRepo.getChatHistory(userId);
-
-//       if (response.status == ApiStatus.SUCCESS && response.response != null) {
-//         log("Fetched chat history: ${response.response}");
-
-//         // Assume the API returns a list of ChatModel objects
-//         final List<dynamic> chatData = response.response;
-//         chatHistory.value =
-//             chatData.map((data) => ChatModel.fromJson(data)).toList();
-//       } else {
-//         errorMessage.value = "Error: ${response.message}";
-//       }
-//     } catch (e) {
-//       errorMessage.value = "An error occurred: $e";
-//     } finally {
-//       isLoading(false);
-//     }
-//   }
-
-//   // Get list of all chats/conversations
 //   Future<void> getChats() async {
 //     isLoading(true);
 //     try {
 //       ApiResponse response = await chatRepo.getChats();
 
 //       if (response.status == ApiStatus.SUCCESS && response.response != null) {
-//         log("Fetched chats list: ${response.response}");
-
-//         // Process response based on your API structure
+//         log('Fetched chats list: ${response.response}');
+//         chatHistory.value =
+//             chatByIdModelFromRawJson(jsonEncode(response.response));
 //       } else {
-//         errorMessage.value = "Error: ${response.message}";
+//         errorMessage.value = response.message ?? 'Failed to fetch chats';
+//         SSnackbarUtil.showSnackbar(
+//           'Chat Error',
+//           errorMessage.value,
+//           SnackbarType.error,
+//         );
 //       }
 //     } catch (e) {
-//       errorMessage.value = "An error occurred: $e";
+//       errorMessage.value = 'An error occurred: $e';
+//       SSnackbarUtil.showSnackbar(
+//         'Chat Error',
+//         errorMessage.value,
+//         SnackbarType.error,
+//       );
 //     } finally {
 //       isLoading(false);
 //     }
 //   }
 
-//   // Send a message
-//   Future<void> sendMessage(String message, int receiverId,
-//       {String? mediaUrl}) async {
-//     if (message.isEmpty && mediaUrl == null) return;
-
-//     final messageData = {
-//       "receiver": receiverId,
-//       "message": message,
-//       "media_url": mediaUrl
-//     };
-
+//   // Fetch messages for a specific user or department
+//   Future<void> getChatMessages({
+//     required int userId,
+//     int? departmentId,
+//   }) async {
+//     isLoading(true);
 //     try {
-//       // Send via WebSocket
-//       _websocketService.sendMessage(messageData);
+//       List<ChatByIdModel> allMessages = [];
+//       int page = 1;
+//       bool hasMore = true;
 
-//       // Optionally, you can also send via REST API as a fallback
-//       ApiResponse response = await chatRepo.sendMessage(messageData);
+//       while (hasMore) {
+//         ApiResponse response = await chatRepo.getChatMessages(
+//           userId: userId,
+//           departmentId: departmentId,
+//         );
 
-//       if (response.status != ApiStatus.SUCCESS) {
-//         errorMessage.value = "Error sending message: ${response.message}";
+//         if (response.status == ApiStatus.SUCCESS && response.response != null) {
+//           log('Fetched chat messages page $page: ${response.response}');
+//           final messages =
+//               chatByIdModelFromRawJson(jsonEncode(response.response));
+//           allMessages.addAll(messages);
+//           hasMore = response.response.length >= 10;
+//           page++;
+//         } else {
+//           errorMessage.value =
+//               response.message ?? 'Failed to fetch chat messages';
+//           SSnackbarUtil.showSnackbar(
+//             'Chat Error',
+//             errorMessage.value,
+//             SnackbarType.error,
+//           );
+//           break;
+//         }
 //       }
+//       chatHistory.value = allMessages;
+//       errorMessage.value = '';
+//       chatHistory.refresh();
 //     } catch (e) {
-//       errorMessage.value = "Failed to send message: $e";
+//       log('Error in getChatMessages: $e');
+//       SSnackbarUtil.showSnackbar(
+//         'Chat Error',
+//         errorMessage.value,
+//         SnackbarType.error,
+//       );
+//     } finally {
+//       isLoading(false);
 //     }
 //   }
 
-//   @override
-//   void onClose() {
-//     _websocketService.disconnect();
-//     super.onClose();
+//   // Set up WebSocket listener for real-time messages
+//   void _setupWebSocketListener() {
+//     try {
+//       final webSocketController = Get.find<WebSocketController>();
+//       webSocketController.stream?.listen(
+//         (message) {
+//           log('WebSocket message received in ChatController: $message');
+//           try {
+//             final data = message is String ? jsonDecode(message) : message;
+//             if (data is Map<String, dynamic>) {
+//               final newChat = ChatByIdModel.fromJson(data);
+//               chatHistory.insert(0, newChat);
+//               SSnackbarUtil.showSnackbar(
+//                 'New Message',
+//                 newChat.message ?? 'Media received',
+//                 SnackbarType.info,
+//               );
+//             }
+//           } catch (e) {
+//             log('Error parsing WebSocket message: $e');
+//           }
+//         },
+//         onError: (error) {
+//           log('WebSocket error: $error');
+//         },
+//         onDone: () {
+//           log('WebSocket closed');
+//         },
+//       );
+//     } catch (e) {
+//       log('Error setting up WebSocket listener: $e');
+//     }
+//   }
+
+//   // Send a message via WebSocket
+//   void sendMessage(
+//     String message, {
+//     int? receiverId,
+//     String? receiverName,
+//     int? departmentId,
+//     String? departmentName,
+//   }) {
+//     try {
+//       final webSocketController = Get.find<WebSocketController>();
+//       final authController = Get.find<AuthController>();
+//       final userId = authController.alluserData.value.user ?? 0;
+
+//       final chatMessage = ChatByIdModel(
+//         id: 0, // Temporary ID, server will assign actual ID
+//         sender: Receiver(
+//           id: userId,
+//           user:
+//               'Current User', // Replace with actual user name from AuthController
+//           isActive: true,
+//         ),
+//         receiver: receiverId != null
+//             ? Receiver(id: receiverId, user: receiverName, isActive: true)
+//             : null,
+//         department: departmentId != null
+//             ? {'id': departmentId, 'name': departmentName}
+//             : null,
+//         message: message,
+//         timestamp: DateTime.now(),
+//         hasRead: false,
+//       );
+
+//       // webSocketController.sendWebSocketMessage(chatMessage.toRawJson());
+//     } catch (e) {
+//       log('Error sending WebSocket message: $e');
+//       SSnackbarUtil.showSnackbar(
+//         'Chat Error',
+//         'Failed to send message: $e',
+//         SnackbarType.error,
+//       );
+//     }
 //   }
 // }

@@ -4,6 +4,7 @@ import 'package:ams/feature/presentation/pages/forget_password/forget_password.d
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/widget/button_large.dart';
 import 'package:ams/feature/presentation/widget/custom_textfield.dart';
+import 'package:ams/feature/presentation/widget/loading_animation_widget.dart';
 import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:ams/feature/utils/validator.dart';
 import 'package:flutter/material.dart';
@@ -237,6 +238,13 @@ class _LoginPageState extends State<LoginPage> {
                                           if (email.text.isNotEmpty) {
                                             _saveEmail(email.text);
                                           }
+
+                                          showDialog(
+                                            context: context,
+                                            barrierDismissible: false,
+                                            builder: (_) =>
+                                                const CombinedAnimatedDialog(),
+                                          );
 
                                           authController.loginMethod(
                                             email.text,

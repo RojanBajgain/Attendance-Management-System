@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../../../../data/datasource/remote/api_client.dart';
 
@@ -262,10 +263,10 @@ class AuthController extends GetxController {
     if (authIsLoading.value) return;
 
     authIsLoading.value = true;
-    Get.dialog(
-      const CombinedAnimatedDialog(),
-      barrierDismissible: false,
-    );
+    // Get.dialog(
+    //   const CombinedAnimatedDialog(),
+    //   barrierDismissible: false,
+    // );
 
     try {
       ApiResponse<LoginModel> response =
@@ -313,8 +314,8 @@ class AuthController extends GetxController {
         if (organizations.isEmpty) {
           Get.back();
           SSnackbarUtil.showSnackbar(
-            'No Organizations',
-            'No organizations found for this user. Please contact your Admin.',
+            'No Departments',
+            'No departments found for this user. Please contact your Admin.',
             SnackbarType.error,
           );
           return;
@@ -351,6 +352,9 @@ class AuthController extends GetxController {
         SnackbarType.error,
       );
     } finally {
+      if (Get.isDialogOpen == true) {
+        Get.back(); // Ensure the dialog is closed
+      }
       authIsLoading.value = false;
     }
   }
@@ -416,10 +420,16 @@ class AuthController extends GetxController {
       await prefs.remove('isLoggedIn');
       await prefs.remove('accessToken');
       await prefs.remove('refreshToken');
-      await prefs.remove('userData'); // Clear the stored user data
+      await prefs.remove('userData');
 
       // Restore biometrics setting
       await prefs.setBool('biometrics_enabled', biometricsEnabled);
+
+      GetStorage box = GetStorage();
+      box.remove('selectedOrganization');
+      box.remove('profile_id');
+      box.remove('organization_name');
+      box.remove('user_profile');
 
       // Clear user data from memory
       alluserData.value = LoginModel(access: "", refresh: "");
@@ -452,9 +462,6 @@ class AuthController extends GetxController {
     String newPassword,
     String confirmPassword,
   ) async {
-    // Clear any previous errors
-    // Get.closeAllSnackbars();
-
     // Validate password match
     if (newPassword != confirmPassword) {
       SSnackbarUtil.showSnackbar(

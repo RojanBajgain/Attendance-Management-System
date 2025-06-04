@@ -1,71 +1,53 @@
 import 'package:ams/config/resources/styles.dart';
-import 'package:ams/feature/presentation/pages/calender_notification/model/calender_model.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/controller/calender_notification_controller.dart';
+import 'package:ams/feature/presentation/pages/calender_notification/model/calender_model.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/sub_view_event/event_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'dart:developer';
 
 class HolidayEventNotification extends StatefulWidget {
+  const HolidayEventNotification({super.key});
+
   @override
   _HolidayEventNotificationState createState() =>
       _HolidayEventNotificationState();
 }
 
 class _HolidayEventNotificationState extends State<HolidayEventNotification> {
-  bool isHolidaySelected = true;
-  bool isEventSelected = false;
-  bool isNoticeSelected = false;
-
+  String selectedType = "HOLIDAY";
   final Map<String, bool> _expandedItems = {};
-
-  final CalenderNotificationController calenderController =
-      Get.put(CalenderNotificationController(eventCalenderrepo: Get.find()));
+  late final CalenderNotificationController calenderController;
 
   @override
   void initState() {
     super.initState();
-    calenderController.getEventCalenders();
-  }
-
-  void selectHoliday() {
-    setState(() {
-      isHolidaySelected = true;
-      isEventSelected = false;
-      isNoticeSelected = false;
+    // Initialize controller
+    try {
+      calenderController = Get.find<CalenderNotificationController>();
+    } catch (e) {
+      calenderController = Get.put(
+        CalenderNotificationController(eventCalenderrepo: Get.find()),
+        permanent: true,
+      );
+      log("Initialized new CalenderNotificationController: $e");
+    }
+    // Fetch data
+    calenderController.getEventCalenders().then((_) {
+      log("Fetched ${calenderController.eventCalenders.length} events");
     });
   }
 
-  void selectEvents() {
+  void selectType(String type) {
     setState(() {
-      isHolidaySelected = false;
-      isEventSelected = true;
-      isNoticeSelected = false;
-    });
-  }
-
-  void selectNotice() {
-    setState(() {
-      isHolidaySelected = false;
-      isEventSelected = false;
-      isNoticeSelected = true;
+      selectedType = type;
+      log("Selected type: $selectedType");
     });
   }
 
   void navigateToEventPage() {
-    EventType selectedType = isHolidaySelected
-        ? EventType.HOLIDAY
-        : isEventSelected
-            ? EventType.EVENT
-            : EventType.NOTICE;
-
-    Get.to(() => EventPage());
-  }
-
-  void _toggleExpanded(String itemId) {
-    setState(() {
-      _expandedItems[itemId] = !(_expandedItems[itemId] ?? false);
-    });
+    Get.to(() => const EventPage());
   }
 
   @override
@@ -79,7 +61,7 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
           Row(
             children: [
               GestureDetector(
-                onTap: selectHoliday,
+                onTap: () => selectType("HOLIDAY"),
                 child: Column(
                   children: [
                     Text(
@@ -88,7 +70,7 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                         color: isDarkMode ? Colors.grey[300] : Colors.black,
                       ),
                     ),
-                    if (isHolidaySelected)
+                    if (selectedType == "HOLIDAY")
                       Container(
                         margin: const EdgeInsets.only(top: 2.0),
                         height: 4.0,
@@ -100,7 +82,7 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
               ),
               const SizedBox(width: 15.0),
               GestureDetector(
-                onTap: selectEvents,
+                onTap: () => selectType("EVENT"),
                 child: Column(
                   children: [
                     Text(
@@ -109,7 +91,7 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                         color: isDarkMode ? Colors.grey[300] : Colors.black,
                       ),
                     ),
-                    if (isEventSelected)
+                    if (selectedType == "EVENT")
                       Container(
                         margin: const EdgeInsets.only(top: 2.0),
                         height: 4.0,
@@ -121,7 +103,7 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
               ),
               const SizedBox(width: 15.0),
               GestureDetector(
-                onTap: selectNotice,
+                onTap: () => selectType("NOTICE"),
                 child: Column(
                   children: [
                     Text(
@@ -130,7 +112,7 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                         color: isDarkMode ? Colors.grey[300] : Colors.black,
                       ),
                     ),
-                    if (isNoticeSelected)
+                    if (selectedType == "NOTICE")
                       Container(
                         margin: const EdgeInsets.only(top: 2.0),
                         height: 4.0,
@@ -145,21 +127,30 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
           const SizedBox(height: 15.0),
           Obx(() {
             if (calenderController.isLoading.value) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
+              return const Center(child: CircularProgressIndicator());
             }
 
-            // if (calenderController.errorMessage.value.isNotEmpty) {
-            //   return Center(
-            //     child: Text(
-            //       calenderController.errorMessage.value,
-            //       style: smallNStyle.copyWith(
-            //         color: isDarkMode ? Colors.white : Colors.black,
-            //       ),
-            //     ),
-            //   );
-            // }
+            if (calenderController.errorMessage.value.isNotEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      calenderController.errorMessage.value,
+                      style: smallNStyle.copyWith(
+                        color: isDarkMode ? Colors.white : Colors.black,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () => calenderController.getEventCalenders(),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              );
+            }
 
             if (calenderController.eventCalenders.isEmpty) {
               return Center(
@@ -172,25 +163,20 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
               );
             }
 
-            // Filter the list based on the selected type
             final filteredList =
                 calenderController.eventCalenders.where((item) {
-              if (isHolidaySelected) {
-                return item.type == EventType.HOLIDAY;
-              } else if (isEventSelected) {
-                return item.type == EventType.EVENT;
-              } else if (isNoticeSelected) {
-                return item.type == EventType.NOTICE;
-              }
-              return false;
+              return (item.type?.toUpperCase() ?? '') ==
+                  selectedType.toUpperCase();
             }).toList();
+
+            log("Filtered ${filteredList.length} items for type: $selectedType");
 
             if (filteredList.isEmpty) {
               return Center(
                 child: Text(
-                  isHolidaySelected
+                  selectedType == "HOLIDAY"
                       ? 'No Holidays found'
-                      : isEventSelected
+                      : selectedType == "EVENT"
                           ? 'No Events found'
                           : 'No Notices found',
                   style: smallNStyle.copyWith(
@@ -200,7 +186,6 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
               );
             }
 
-            // Limit to 3 items for display
             final displayList = filteredList.length > 3
                 ? filteredList.sublist(0, 3)
                 : filteredList;
@@ -216,29 +201,29 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                     return _buildCalendarItem(item, isDarkMode);
                   },
                 ),
-                // if (filteredList.length > 3)
-                //   Padding(
-                //     padding: const EdgeInsets.only(
-                //         top: 10.0, bottom: 10.0, left: 270.0),
-                //     child: InkWell(
-                //       onTap: navigateToEventPage,
-                //       child: Container(
-                //         padding: const EdgeInsets.symmetric(
-                //             vertical: 8.0, horizontal: 16.0),
-                //         decoration: BoxDecoration(
-                //           color: isDarkMode ? Colors.blueAccent : Colors.blue,
-                //           borderRadius: BorderRadius.circular(8.0),
-                //         ),
-                //         child: Text(
-                //           'View All',
-                //           style: smallStyle.copyWith(
-                //             color: Colors.white,
-                //             fontWeight: FontWeight.w500,
-                //           ),
-                //         ),
-                //       ),
-                //     ),
-                //   ),
+                if (filteredList.length > 3)
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        top: 10.0, bottom: 10.0, left: 270.0),
+                    child: InkWell(
+                      onTap: navigateToEventPage,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 16.0),
+                        decoration: BoxDecoration(
+                          color: isDarkMode ? Colors.blueAccent : Colors.blue,
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: Text(
+                          'View All',
+                          style: smallStyle.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             );
           }),
@@ -251,8 +236,6 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
     final itemId = item.id.toString();
     final isExpanded = _expandedItems[itemId] ?? false;
     final description = item.description ?? "No Description Available";
-
-    // Handle description length
     final isLongDescription = description.length > 100;
     final displayDescription = isLongDescription && !isExpanded
         ? "${description.substring(0, 100)}..."
@@ -276,12 +259,12 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
             ),
             child: Center(
               child: Text(
-                item.startDate != null ? "${item.startDate!.day}" : "--",
+                item.startDate != null ? "${item.startDate!.day}" : "N/A",
                 style: normalStyle.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: isDarkMode ? Colors.white : Colors.white,
+                  color: Colors.white,
                 ),
-                textAlign: TextAlign.start,
+                textAlign: TextAlign.center,
               ),
             ),
           ),
@@ -301,12 +284,34 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                 ),
                 const SizedBox(height: 5.0),
                 Text(
-                  item.name ?? "",
+                  item.title ?? item.name ?? "Untitled",
                   style: smallStyle.copyWith(
                     fontWeight: FontWeight.w500,
                     color: isDarkMode ? Colors.white : Colors.black,
                   ),
                 ),
+                const SizedBox(height: 5.0),
+                if (item.type != null)
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: _getEventTypeColor(item.type),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Text(
+                      item.type?.toUpperCase() == "EVENT"
+                          ? "Event"
+                          : item.type?.toUpperCase() == "HOLIDAY"
+                              ? "Holiday"
+                              : "Notice",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ),
                 const SizedBox(height: 5.0),
                 Text(
                   displayDescription,
@@ -314,9 +319,43 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                     color: isDarkMode ? Colors.grey.shade400 : Colors.black,
                   ),
                 ),
+                if (item.remarks != null && item.remarks!.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 5.0),
+                    child: Text(
+                      'Remarks: ${item.remarks}',
+                      style: smallStyle.copyWith(
+                        color: isDarkMode ? Colors.grey.shade400 : Colors.black,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                if (item.createdBy != null && item.createdBy!.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 5.0),
+                    child: Text(
+                      'Created by: ${item.createdBy}',
+                      style: smallStyle.copyWith(
+                        color: isDarkMode ? Colors.grey.shade400 : Colors.black,
+                      ),
+                    ),
+                  ),
+                if (item.user != null && item.user!.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 5.0),
+                    child: Text(
+                      'Assigned to: ${item.user}',
+                      style: smallStyle.copyWith(
+                        color: isDarkMode ? Colors.grey.shade400 : Colors.black,
+                      ),
+                    ),
+                  ),
                 if (isLongDescription)
                   InkWell(
-                    onTap: () => _toggleExpanded(itemId),
+                    onTap: () => setState(() {
+                      _expandedItems[itemId] = !isExpanded;
+                    }),
                     child: Padding(
                       padding: const EdgeInsets.only(top: 4.0),
                       child: Text(
@@ -345,9 +384,11 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
     final today = DateTime(now.year, now.month, now.day);
     final start = DateTime(startDate.year, startDate.month, startDate.day);
 
-    if (endDate != null && endDate != startDate) {
-      final DateFormat formatter = DateFormat('MMM d');
-      return "${formatter.format(startDate)} - ${formatter.format(endDate)}";
+    if (endDate != null &&
+        startDate.year == endDate.year &&
+        startDate.month == endDate.month &&
+        startDate.day == endDate.day) {
+      return DateFormat('MMM d, yyyy').format(startDate);
     }
 
     final difference = start.difference(today).inDays;
@@ -361,13 +402,13 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
     }
   }
 
-  Color _getEventTypeColor(EventType? type) {
-    switch (type) {
-      case EventType.HOLIDAY:
+  Color _getEventTypeColor(String? type) {
+    switch (type?.toUpperCase()) {
+      case "HOLIDAY":
         return Colors.red;
-      case EventType.EVENT:
+      case "EVENT":
         return Colors.blue;
-      case EventType.NOTICE:
+      case "NOTICE":
         return Colors.orange;
       default:
         return Colors.grey;

@@ -1,6 +1,7 @@
 import 'package:ams/feature/data/datasource/remote/api_client.dart';
 import 'package:ams/feature/data/repository/auth_repository_impl.dart';
 import 'package:ams/feature/data/repository/calender_notification.dart';
+import 'package:ams/feature/data/repository/chat_repo.dart';
 import 'package:ams/feature/data/repository/clock_in_out_repo.dart';
 import 'package:ams/feature/data/repository/has_clockedIn_repo.dart';
 import 'package:ams/feature/data/repository/notification_repo.dart';
@@ -9,6 +10,8 @@ import 'package:ams/feature/data/repository/payroll_repo.dart';
 import 'package:ams/feature/data/repository/policy_repo.dart';
 import 'package:ams/feature/data/repository/profile_repo.dart';
 import 'package:ams/feature/data/repository/reset_password_repo.dart';
+import 'package:ams/feature/data/repository/websocket_repo.dart';
+import 'package:ams/feature/presentation/pages/chat/controller/chat_controller.dart';
 import 'package:ams/feature/presentation/pages/organization/controller/organization_controller.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/controller/calender_notification_controller.dart';
 import 'package:ams/feature/presentation/pages/dashboard/controller/clock_in_out_controller.dart';
@@ -19,6 +22,7 @@ import 'package:ams/feature/presentation/pages/notification/controller/notificat
 import 'package:ams/feature/presentation/pages/payroll/controller/payroll_controller.dart';
 import 'package:ams/feature/presentation/pages/policy/controller/policy_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
+import 'package:ams/feature/presentation/pages/websocket/controller/websocket_controller.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -92,6 +96,11 @@ Future<void> init() async {
   Get.put<CalenderNotificationController>(CalenderNotificationController(
       eventCalenderrepo: Get.find<EventCalenderRepo>()));
 
+  // // WebSocket
+  // Get.put<WebsocketRepo>(WebsocketRepo(apiClient: Get.find<ApiClient>()));
+  // Get.put<WebSocketController>(
+  //     WebSocketController(websocketRepo: Get.find<WebsocketRepo>()));
+
   // Organization
   // Get.put<OrganizationRepo>(OrganizationRepo(apiClient: Get.find<ApiClient>()));
   // Get.put<OrganizationController>(
@@ -104,7 +113,7 @@ Future<void> init() async {
   Get.put<TimerController>(TimerController());
   Get.put<ClockTimeController>(ClockTimeController()); */
 
-  // Chat (commented out, kept as is)
+  // // Chat (commented out, kept as is)
   // Get.put<ChatRepo>(ChatRepo(apiClient: Get.find<ApiClient>()));
   // Get.put<ChatController>(ChatController(chatRepo: Get.find<ChatRepo>()));
 }

@@ -1,23 +1,24 @@
 import 'dart:convert';
 
-List<ChatModel> chatModelFromRawJson(String str) =>
-    List<ChatModel>.from(json.decode(str).map((x) => ChatModel.fromJson(x)));
+List<ChatByIdModel> chatByIdModelFromRawJson(String str) =>
+    List<ChatByIdModel>.from(
+        json.decode(str).map((x) => ChatByIdModel.fromJson(x)));
 
-String chatModelToRawJson(List<ChatModel> data) =>
+String chatByIdModelToRawJson(List<ChatByIdModel> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-class ChatModel {
+class ChatByIdModel {
   int id;
   dynamic document;
-  Sender? receiver;
-  Sender? sender;
-  Department? department;
+  Receiver? receiver;
+  Receiver? sender;
+  dynamic department;
   String? message;
   DateTime? timestamp;
   bool? hasRead;
   dynamic mediaUrl;
 
-  ChatModel({
+  ChatByIdModel({
     this.id = 0,
     this.document,
     this.receiver,
@@ -29,15 +30,15 @@ class ChatModel {
     this.mediaUrl,
   });
 
-  factory ChatModel.fromJson(Map<String, dynamic> json) => ChatModel(
+  factory ChatByIdModel.fromJson(Map<String, dynamic> json) => ChatByIdModel(
         id: json["id"] ?? 0,
         document: json["document"],
-        receiver:
-            json["receiver"] != null ? Sender.fromJson(json["receiver"]) : null,
-        sender: json["sender"] != null ? Sender.fromJson(json["sender"]) : null,
-        department: json["department"] != null
-            ? Department.fromJson(json["department"])
+        receiver: json["receiver"] != null
+            ? Receiver.fromJson(json["receiver"])
             : null,
+        sender:
+            json["sender"] != null ? Receiver.fromJson(json["sender"]) : null,
+        department: json["department"],
         message: json["message"],
         timestamp: json["timestamp"] != null
             ? DateTime.parse(json["timestamp"])
@@ -51,7 +52,7 @@ class ChatModel {
         "document": document,
         "receiver": receiver?.toJson(),
         "sender": sender?.toJson(),
-        "department": department?.toJson(),
+        "department": department,
         "message": message,
         "timestamp": timestamp?.toIso8601String(),
         "has_read": hasRead,
@@ -59,44 +60,25 @@ class ChatModel {
       };
 }
 
-class Department {
-  int id;
-  String? name;
-
-  Department({
-    this.id = 0,
-    this.name,
-  });
-
-  factory Department.fromJson(Map<String, dynamic> json) => Department(
-        id: json["id"] ?? 0,
-        name: json["name"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-      };
-}
-
-class Sender {
+class Receiver {
   int id;
   String? user;
   bool? isActive;
   dynamic profileImage;
 
-  Sender({
+  Receiver({
     this.id = 0,
     this.user,
     this.isActive,
     this.profileImage,
   });
 
-  factory Sender.fromRawJson(String str) => Sender.fromJson(json.decode(str));
+  factory Receiver.fromRawJson(String str) =>
+      Receiver.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
 
-  factory Sender.fromJson(Map<String, dynamic> json) => Sender(
+  factory Receiver.fromJson(Map<String, dynamic> json) => Receiver(
         id: json["id"] ?? 0,
         user: json["user"],
         isActive: json["is_active"],

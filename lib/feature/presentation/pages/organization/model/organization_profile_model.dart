@@ -29,6 +29,7 @@ class Profile {
   String role;
   String? profileImage;
   String designation;
+  int designationId;
   String employeeType;
   String organization;
 
@@ -39,6 +40,7 @@ class Profile {
     this.role = '',
     this.profileImage,
     this.designation = '',
+    this.designationId = 0,
     this.employeeType = '',
     this.organization = '',
   });
@@ -54,6 +56,7 @@ class Profile {
         role: json["role"] ?? '',
         profileImage: json["profile_image"],
         designation: json["designation"] ?? '',
+        designationId: json["designation_id"] ?? 0,
         employeeType: json["employee_type"] ?? '',
         organization: json["organization"] ?? '',
       );
@@ -65,6 +68,7 @@ class Profile {
         "role": role,
         "profile_image": profileImage,
         "designation": designation,
+        "designation_id": designationId,
         "employee_type": employeeType,
         "organization": organization,
       };

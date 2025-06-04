@@ -46,9 +46,9 @@ class ProfileRepo {
   Future<ApiResponse> getProfileDetail(String id) async {
     final token = apiClient.token;
 
-    if (token.isEmpty) {
-      throw Exception('JWT Token is missing or invalid');
-    }
+    // if (token.isEmpty) {
+    //   throw Exception('JWT Token is missing or invalid');
+    // }
 
     final response = await ApiClient.getApi(
       ApiUrls.profiledetail,
@@ -76,9 +76,9 @@ class ProfileRepo {
       final token = apiClient.token;
 
       // Check if the token is valid
-      if (token.isEmpty) {
-        throw Exception('JWT token is missing or invalid');
-      }
+      // if (token.isEmpty) {
+      //   throw Exception('JWT token is missing or invalid');
+      // }
 
       // Ensure the URL is complete (include the scheme and host)
       final url = '${ApiUrls.baseUrl}${ApiUrls.updateprofile}$id/';
@@ -181,9 +181,9 @@ class ProfileRepo {
   ) async {
     final token = apiClient.token;
 
-    if (token.isEmpty) {
-      throw Exception('JWT token is missing or invalid');
-    }
+    // if (token.isEmpty) {
+    //   throw Exception('JWT token is missing or invalid');
+    // }
 
     final url = ApiUrls.postuseraddress;
 
@@ -220,9 +220,9 @@ class ProfileRepo {
   ) async {
     final token = apiClient.token;
 
-    if (token.isEmpty) {
-      throw Exception('JWT token is missing or invalid');
-    }
+    // if (token.isEmpty) {
+    //   throw Exception('JWT token is missing or invalid');
+    // }
 
     final url = '${ApiUrls.updateaddress}$addressID/';
 
@@ -259,9 +259,9 @@ class ProfileRepo {
   ) async {
     final token = apiClient.token;
 
-    if (token.isEmpty) {
-      throw Exception('JWT token is missing or invalid');
-    }
+    // if (token.isEmpty) {
+    //   throw Exception('JWT token is missing or invalid');
+    // }
 
     // Debug print to verify values
     print('Updating bank detail with ID: $bankdetailID');
@@ -311,9 +311,9 @@ class ProfileRepo {
   ) async {
     final token = apiClient.token;
 
-    if (token.isEmpty) {
-      throw Exception("JWT token is missing or invalid");
-    }
+    // if (token.isEmpty) {
+    //   throw Exception("JWT token is missing or invalid");
+    // }
 
     const url = ApiUrls.postnewbankdetail;
 
@@ -352,9 +352,9 @@ class ProfileRepo {
   ) async {
     final token = apiClient.token;
 
-    if (token.isEmpty) {
-      throw Exception('JWT token is missing or invalid');
-    }
+    // if (token.isEmpty) {
+    //   throw Exception('JWT token is missing or invalid');
+    // }
 
     final url = '${ApiUrls.baseUrl}${ApiUrls.updatedocuments}$documentID/';
 
@@ -434,9 +434,9 @@ class ProfileRepo {
   }) async {
     final token = apiClient.token;
 
-    if (token.isEmpty) {
-      throw Exception('JWT token is missing or invalid');
-    }
+    // if (token.isEmpty) {
+    //   throw Exception('JWT token is missing or invalid');
+    // }
 
     final url = '${ApiUrls.baseUrl}${ApiUrls.postnewedocuments}';
 

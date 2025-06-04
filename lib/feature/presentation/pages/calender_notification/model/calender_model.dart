@@ -1,9 +1,21 @@
+import 'dart:convert';
+
+List<EventCalenderModel> eventCalenderModelFromJson(String str) =>
+    List<EventCalenderModel>.from(
+        json.decode(str).map((x) => EventCalenderModel.fromJson(x)));
+
+String eventCalenderModelToJson(List<EventCalenderModel> data) =>
+    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+
 class EventCalenderModel {
   int id;
   String? name;
   DateTime? startDate;
   DateTime? endDate;
-  EventType? type;
+  String? type;
+  String? user;
+  String? title;
+  String? remarks;
   String? description;
   String? createdBy;
 
@@ -13,6 +25,9 @@ class EventCalenderModel {
     this.startDate,
     this.endDate,
     this.type,
+    this.user,
+    this.title,
+    this.remarks,
     this.description,
     this.createdBy,
   });
@@ -21,36 +36,30 @@ class EventCalenderModel {
       EventCalenderModel(
         id: json["id"] ?? 0,
         name: json["name"],
-        startDate: json["start_date"] == null
-            ? null
-            : DateTime.parse(json["start_date"]),
-        endDate:
-            json["end_date"] == null ? null : DateTime.parse(json["end_date"]),
-        type: json["type"] != null &&
-                eventTypeValues.map.containsKey(json["type"])
-            ? eventTypeValues.map[json["type"]]
+        startDate: json["start_date"] != null
+            ? DateTime.tryParse(json["start_date"])
             : null,
+        endDate: json["end_date"] != null
+            ? DateTime.tryParse(json["end_date"])
+            : null,
+        type: json["type"],
+        user: json["user"],
+        title: json["title"],
+        remarks: json["remarks"],
         description: json["description"],
         createdBy: json["created_by"],
       );
-}
 
-enum EventType { EVENT, HOLIDAY, NOTICE }
-
-final eventTypeValues = EnumValues({
-  "event": EventType.EVENT,
-  "holiday": EventType.HOLIDAY,
-  "notice": EventType.NOTICE,
-});
-
-class EnumValues<T> {
-  Map<String, T> map;
-  late Map<T, String> reverseMap;
-
-  EnumValues(this.map);
-
-  Map<T, String> get reverse {
-    reverseMap = map.map((k, v) => MapEntry(v, k));
-    return reverseMap;
-  }
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "start_date": startDate?.toIso8601String(),
+        "end_date": endDate?.toIso8601String(),
+        "type": type,
+        "user": user,
+        "title": title,
+        "remarks": remarks,
+        "description": description,
+        "created_by": createdBy,
+      };
 }
