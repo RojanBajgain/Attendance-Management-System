@@ -4,10 +4,12 @@ import 'package:ams/feature/presentation/pages/calender_notification/controller/
 import 'package:ams/feature/presentation/pages/calender_notification/event_tooltip_page.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/sub_view_event/event_page.dart';
 import 'package:ams/feature/presentation/pages/chat/chat.dart';
+import 'package:ams/feature/presentation/pages/notification/controller/notification_controller.dart';
 import 'package:ams/feature/presentation/pages/notification/notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:badges/badges.dart' as badges;
 
 class ConstantAppBar extends StatefulWidget implements PreferredSizeWidget {
   const ConstantAppBar({super.key});
@@ -20,6 +22,8 @@ class ConstantAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _ConstantAppBarState extends State<ConstantAppBar> {
+  final notificationcontroller = Get.find<NotificationController>();
+
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -48,10 +52,25 @@ class _ConstantAppBarState extends State<ConstantAppBar> {
               ),
             );
           },
-          icon: Icon(
-            Icons.notifications_none_outlined,
-            color: isDarkMode ? Colors.white : Colors.black,
-            size: 25.0,
+          icon: badges.Badge(
+            showBadge: notificationcontroller.notification.isNotEmpty,
+            badgeContent: Text(
+              notificationcontroller.notification.length.toString(),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            badgeStyle: const badges.BadgeStyle(
+              badgeColor: Colors.red,
+              padding: EdgeInsets.all(6),
+            ),
+            child: Icon(
+              Icons.notifications_none_outlined,
+              color: isDarkMode ? Colors.white : Colors.black,
+              size: 25.0,
+            ),
           ),
         ),
 
@@ -120,21 +139,21 @@ class _ConstantAppBarState extends State<ConstantAppBar> {
           ),
         ),
         // Chat Icon
-        // IconButton(
-        //   onPressed: () {
-        //     Navigator.push(
-        //       context,
-        //       MaterialPageRoute(
-        //         builder: (context) => const ChatsScreen(),
-        //       ),
-        //     );
-        //   },
-        //   icon: Icon(
-        //     Icons.chat_bubble_outline,
-        //     size: 25.0,
-        //     color: isDarkMode ? Colors.white : Colors.black,
-        //   ),
-        // ),
+        IconButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ChatsScreen(),
+              ),
+            );
+          },
+          icon: Icon(
+            Icons.chat_bubble_outline,
+            size: 25.0,
+            color: isDarkMode ? Colors.white : Colors.black,
+          ),
+        ),
       ],
     );
   }

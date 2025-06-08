@@ -1,4 +1,5 @@
 import 'package:ams/config/resources/app_theme.dart';
+import 'package:ams/feature/presentation/pages/chat/chat.dart';
 import 'package:ams/feature/presentation/pages/organization/pages/organization_page.dart';
 import 'package:ams/feature/presentation/pages/bottom_nav/bottom_nav_page.dart';
 import 'package:ams/feature/presentation/pages/landing/landing_page.dart';
@@ -31,6 +32,7 @@ class App extends StatelessWidget {
             GetPage(name: '/bottom-nav', page: () => const BottomNavPage()),
             GetPage(
                 name: '/organization', page: () => const OrganizationPage()),
+            GetPage(name: '/chat', page: () => const ChatsScreen()),
             GetPage(name: '/login', page: () => const LoginPage()),
           ],
           builder: (context, child) {

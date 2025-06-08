@@ -140,7 +140,7 @@ class EventTooltip extends StatelessWidget {
                         break;
                       case "NOTICE":
                         typeName = "Notice";
-                        typeColor = Colors.orange;
+                        typeColor = Colors.green;
                         break;
                       case "EVENT":
                         typeName = "Event";

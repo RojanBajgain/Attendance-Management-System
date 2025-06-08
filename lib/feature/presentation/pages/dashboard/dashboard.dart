@@ -117,12 +117,15 @@ class _DashboardPageState extends State<DashboardPage> {
                               ),
                               children: [
                                 TextSpan(
-                                  // text: profileController.profile.isNotEmpty
-                                  //     ? profileController.profile.first.username
-                                  //     : "Hello",
-                                  text: profileController
-                                          .profile.first.username ??
-                                      "User",
+                                  text: profileController.profile.isNotEmpty
+                                      ? profileController.profile.first.username
+                                      : "Dear User",
+
+                                  // text: profileController.profiledetail.value
+                                  //         .username.isNotEmpty
+                                  //     ? profileController
+                                  //         .profiledetail.value.username
+                                  //     : "User",
 
                                   style: smallStyle.copyWith(
                                     fontWeight: FontWeight.bold,

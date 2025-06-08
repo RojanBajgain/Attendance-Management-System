@@ -5,6 +5,8 @@ class ApiUrls {
 
   // static const String baseUrl = "http://192.168.254.45:8000/";
 
+//  static const String baseUrl = "http://192.168.254.45:8000/";
+
   static const String baseUrl = "http://192.168.254.45:8000/";
 
   // static const String baseUrl = "http://192.168.0.103:8000/";
@@ -58,7 +60,7 @@ class ApiUrls {
 
   static const String notification = "api/inbox/notifications/";
 
-  static const String remainder = "api/policies/reminder/";
+  static const String addremainder = "api/policies/reminder/";
 
   static const String dashboardtimesheet = "api/dashboard/timesheet/user";
 
@@ -81,8 +83,11 @@ class ApiUrls {
   static const String onresume = "api/timesheets/breaktime/resume/";
 
   static const String wsUrl = "ws://192.168.254.45:8000/ws/";
+
   static const String chat = "api/message/chat/";
+
   // static const String chatmessage = "ws://backend.ams.ayata.com.np/ws/chat/";
+
   static const String chatmessage = "'ws://192.168.254.45:8000/ws/chat/'";
 
   static const String eventpolicy = "api/policies/calender/";

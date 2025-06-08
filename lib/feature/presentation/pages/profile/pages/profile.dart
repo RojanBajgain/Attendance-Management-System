@@ -140,10 +140,17 @@ class _ProfilePageState extends State<ProfilePage> {
             return const ShrimmerEffect.rectangular(height: 230);
           }
 
-          final profileData = profilecontroller.profile; // Access data list
+          final profileData = profilecontroller.profile;
 
           if (profileData.isEmpty) {
-            return const Center(child: Text("No Profile available."));
+            return Center(
+              child: Text(
+                "No profile data available. Please try refreshing.",
+                style: smallStyle.copyWith(
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
+              ),
+            );
           }
 
           return Column(

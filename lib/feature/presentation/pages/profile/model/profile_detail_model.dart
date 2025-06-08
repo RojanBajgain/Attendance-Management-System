@@ -176,6 +176,7 @@ class BankDetail {
   String? bankAccountName;
   String? bankBranch;
   bool? isPayroll;
+  String? organization;
 
   BankDetail({
     this.id,
@@ -185,6 +186,7 @@ class BankDetail {
     this.bankAccountName,
     this.bankBranch,
     this.isPayroll,
+    this.organization = '',
   });
 
   factory BankDetail.fromJson(Map<String, dynamic> json) => BankDetail(
@@ -195,6 +197,7 @@ class BankDetail {
         bankAccountName: json["bank_account_name"],
         bankBranch: json["bank_branch"],
         isPayroll: json["is_payroll"],
+        organization: json["organization"] ?? '',
       );
 
   Map<String, dynamic> toJson() => {
@@ -205,6 +208,7 @@ class BankDetail {
         "bank_account_name": bankAccountName,
         "bank_branch": bankBranch,
         "is_payroll": isPayroll,
+        "organization": organization,
       };
 }
 
@@ -232,6 +236,7 @@ class Device {
   String? fingerprintId;
   String? portalPin;
   String? appPin;
+  String? organization;
 
   Device({
     this.id,
@@ -240,15 +245,19 @@ class Device {
     this.fingerprintId,
     this.portalPin,
     this.appPin,
+    this.organization = '',
   });
 
   factory Device.fromJson(Map<String, dynamic> json) => Device(
         id: json["id"],
         user: json["user"],
-        deviceUserId: json["device_user_id"],
+        deviceUserId: json["device_user_id"] is int
+            ? json["device_user_id"]
+            : int.tryParse(json["device_user_id"]?.toString() ?? '0') ?? 0,
         fingerprintId: json["fingerprint_id"],
         portalPin: json["portal_pin"],
         appPin: json["app_pin"],
+        organization: json["organization"] ?? '',
       );
 
   Map<String, dynamic> toJson() => {
@@ -258,6 +267,7 @@ class Device {
         "fingerprint_id": fingerprintId,
         "portal_pin": portalPin,
         "app_pin": appPin,
+        "organization": organization,
       };
 }
 
@@ -269,6 +279,7 @@ class Document {
   DateTime? issuedDate;
   dynamic identifier;
   List<FileElement>? files;
+  String? organization;
 
   Document({
     this.id,
@@ -278,6 +289,7 @@ class Document {
     this.issuedDate,
     this.identifier,
     this.files,
+    this.organization = '',
   });
 
   factory Document.fromJson(Map<String, dynamic> json) => Document(
@@ -293,6 +305,7 @@ class Document {
             ? List<FileElement>.from(
                 json["files"].map((x) => FileElement.fromJson(x)))
             : null,
+        organization: json["organization"] ?? '',
       );
 
   Map<String, dynamic> toJson() => {
@@ -303,6 +316,7 @@ class Document {
         "issued_date": issuedDate?.toIso8601String(),
         "identifier": identifier,
         "files": files?.map((x) => x.toJson()).toList(),
+        "organization": organization,
       };
 }
 
@@ -371,6 +385,34 @@ class Organization {
         "id": id,
         "title": title,
         "description": description,
+      };
+}
+
+class Rank {
+  int? id;
+  String? name;
+  String? organization;
+  int? count;
+
+  Rank({
+    this.id = 0,
+    this.name = '',
+    this.organization = '',
+    this.count = 0,
+  });
+
+  factory Rank.fromJson(Map<String, dynamic> json) => Rank(
+        id: json["id"] ?? 0,
+        name: json["name"] ?? '',
+        organization: json["organization"] ?? '',
+        count: json["count"] ?? 0,
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "organization": organization,
+        "count": count,
       };
 }
 

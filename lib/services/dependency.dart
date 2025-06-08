@@ -5,14 +5,11 @@ import 'package:ams/feature/data/repository/chat_repo.dart';
 import 'package:ams/feature/data/repository/clock_in_out_repo.dart';
 import 'package:ams/feature/data/repository/has_clockedIn_repo.dart';
 import 'package:ams/feature/data/repository/notification_repo.dart';
-import 'package:ams/feature/data/repository/organization_repo.dart';
 import 'package:ams/feature/data/repository/payroll_repo.dart';
 import 'package:ams/feature/data/repository/policy_repo.dart';
 import 'package:ams/feature/data/repository/profile_repo.dart';
 import 'package:ams/feature/data/repository/reset_password_repo.dart';
-import 'package:ams/feature/data/repository/websocket_repo.dart';
 import 'package:ams/feature/presentation/pages/chat/controller/chat_controller.dart';
-import 'package:ams/feature/presentation/pages/organization/controller/organization_controller.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/controller/calender_notification_controller.dart';
 import 'package:ams/feature/presentation/pages/dashboard/controller/clock_in_out_controller.dart';
 import 'package:ams/feature/presentation/pages/dashboard/controller/has_clockedIn_controller.dart';
@@ -22,7 +19,6 @@ import 'package:ams/feature/presentation/pages/notification/controller/notificat
 import 'package:ams/feature/presentation/pages/payroll/controller/payroll_controller.dart';
 import 'package:ams/feature/presentation/pages/policy/controller/policy_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
-import 'package:ams/feature/presentation/pages/websocket/controller/websocket_controller.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -44,16 +40,6 @@ Future<void> init() async {
   Get.put<ProfileRepo>(ProfileRepo(apiClient: Get.find<ApiClient>()));
   Get.put<ProfileController>(ProfileController());
 
-  // Time off
-  // Get.put<TimeoffRepo>(TimeoffRepo(apiClient: Get.find<ApiClient>()));
-  // Get.put<TimeoffController>(
-  //     TimeoffController(timeoffRepo: Get.find<TimeoffRepo>()));
-
-  // TimeSheet
-  // Get.put<TimesheetRepo>(TimesheetRepo(apiClient: Get.find<ApiClient>()));
-  // Get.put<TimesheetController>(
-  //     TimesheetController(timesheetRepo: Get.find<TimesheetRepo>()));
-
   // Payroll
   Get.put<PayrollRepo>(PayrollRepo(apiClient: Get.find<ApiClient>()));
   Get.put<PayrollController>(
@@ -68,12 +54,6 @@ Future<void> init() async {
   Get.put<NotificationRepo>(NotificationRepo(apiClient: Get.find<ApiClient>()));
   Get.put<NotificationController>(
       NotificationController(notificationrepo: Get.find<NotificationRepo>()));
-
-  // Dashboard timesheet
-  // Get.put<DashboardTimesheetRepo>(
-  //     DashboardTimesheetRepo(apiClient: Get.find<ApiClient>()));
-  // Get.put<DashboardTimesheetController>(DashboardTimesheetController(
-  //     dashboardtimesheetrepo: Get.find<DashboardTimesheetRepo>()));
 
   // Dashboard Clock In / Clock Out
   Get.put<ClockInOutRepo>(ClockInOutRepo(apiClient: Get.find<ApiClient>()));
@@ -96,24 +76,12 @@ Future<void> init() async {
   Get.put<CalenderNotificationController>(CalenderNotificationController(
       eventCalenderrepo: Get.find<EventCalenderRepo>()));
 
-  // // WebSocket
+  // WebSocket
   // Get.put<WebsocketRepo>(WebsocketRepo(apiClient: Get.find<ApiClient>()));
   // Get.put<WebSocketController>(
   //     WebSocketController(websocketRepo: Get.find<WebsocketRepo>()));
 
-  // Organization
-  // Get.put<OrganizationRepo>(OrganizationRepo(apiClient: Get.find<ApiClient>()));
-  // Get.put<OrganizationController>(
-  //     OrganizationController(organizationRepo: Get.find<OrganizationRepo>()));
-
-  /*  // Bottom Navigation
-  Get.put<BottomNavController>(BottomNavController());
-
-  // Clock Time
-  Get.put<TimerController>(TimerController());
-  Get.put<ClockTimeController>(ClockTimeController()); */
-
-  // // Chat (commented out, kept as is)
-  // Get.put<ChatRepo>(ChatRepo(apiClient: Get.find<ApiClient>()));
-  // Get.put<ChatController>(ChatController(chatRepo: Get.find<ChatRepo>()));
+  // Chat
+  Get.put<ChatRepo>(ChatRepo(apiClient: Get.find<ApiClient>()));
+  Get.put<ChatController>(ChatController(chatRepo: Get.find<ChatRepo>()));
 }

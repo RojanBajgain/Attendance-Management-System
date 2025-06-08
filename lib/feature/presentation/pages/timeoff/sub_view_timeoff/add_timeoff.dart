@@ -252,13 +252,6 @@ class _AddTimeoffState extends State<AddTimeoff> {
           reason: reason,
         );
 
-        // Show success message
-        // SSnackbarUtil.showSnackbar(
-        //   'Success',
-        //   'Time off request submitted successfully',
-        //   SnackbarType.success,
-        // );
-
         // Reload user leave data after successful submission
         await _loadUserLeaveData();
 
@@ -266,7 +259,6 @@ class _AddTimeoffState extends State<AddTimeoff> {
         _clearForm();
 
         await Future.delayed(const Duration(milliseconds: 1500));
-        // Get.until((route) => route.settings.name == '/timeoff');
         Get.back();
       } catch (e) {
         log('Error submitting time off: $e');

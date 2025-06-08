@@ -4,12 +4,14 @@ class ProfileModel {
   int totalPages;
   int currentPage;
   int count;
+  int pageSize;
   List<Datum> data;
 
   ProfileModel({
     this.totalPages = 1,
     this.currentPage = 1,
     this.count = 0,
+    this.pageSize = 0,
     this.data = const [],
   });
 
@@ -17,6 +19,7 @@ class ProfileModel {
         totalPages: json["total_pages"] ?? 1,
         currentPage: json["current_page"] ?? 1,
         count: json["count"] ?? 0,
+        pageSize: json["page_size"] ?? 0,
         data: List<Datum>.from(
             (json["data"] ?? []).map((x) => Datum.fromJson(x))),
       );
@@ -25,6 +28,7 @@ class ProfileModel {
         "total_pages": totalPages,
         "current_page": currentPage,
         "count": count,
+        "page_size": pageSize,
         "data": List<dynamic>.from(data.map((x) => x.toJson())),
       };
 }
@@ -183,20 +187,20 @@ class Designation {
 class Rank {
   int id;
   String name;
-  int organization;
+  String organization;
   int count;
 
   Rank({
     this.id = 0,
     this.name = '',
-    this.organization = 0,
+    this.organization = '',
     this.count = 0,
   });
 
   factory Rank.fromJson(Map<String, dynamic> json) => Rank(
         id: json["id"] ?? 0,
         name: json["name"] ?? '',
-        organization: json["organization"] ?? 0,
+        organization: json["organization"] ?? '',
         count: json["count"] ?? 0,
       );
 
@@ -240,6 +244,7 @@ class Document {
   DateTime issuedDate;
   String identifier;
   List<FileElement> files;
+  String organization;
 
   Document({
     this.id = 0,
@@ -249,6 +254,7 @@ class Document {
     required this.issuedDate,
     this.identifier = '',
     this.files = const [],
+    this.organization = '',
   });
 
   factory Document.fromJson(Map<String, dynamic> json) => Document(
@@ -260,6 +266,7 @@ class Document {
         identifier: json["identifier"] ?? '',
         files: List<FileElement>.from(
             (json["files"] ?? []).map((x) => FileElement.fromJson(x))),
+        organization: json["organization"] ?? '',
       );
 
   Map<String, dynamic> toJson() => {
@@ -270,6 +277,7 @@ class Document {
         "issued_date": issuedDate.toIso8601String(),
         "identifier": identifier,
         "files": files.map((x) => x.toJson()).toList(),
+        "organization": organization,
       };
 }
 
@@ -305,6 +313,7 @@ class BankDetail {
   String bankAccountName;
   String bankBranch;
   bool isPayroll;
+  String organization;
 
   BankDetail({
     this.id = 0,
@@ -314,6 +323,7 @@ class BankDetail {
     this.bankAccountName = '',
     this.bankBranch = '',
     this.isPayroll = false,
+    this.organization = '',
   });
 
   factory BankDetail.fromJson(Map<String, dynamic> json) => BankDetail(
@@ -324,6 +334,7 @@ class BankDetail {
         bankAccountName: json["bank_account_name"] ?? '',
         bankBranch: json["bank_branch"] ?? '',
         isPayroll: json["is_payroll"] ?? false,
+        organization: json["organization"] ?? '',
       );
 
   Map<String, dynamic> toJson() => {
@@ -334,6 +345,7 @@ class BankDetail {
         "bank_account_name": bankAccountName,
         "bank_branch": bankBranch,
         "is_payroll": isPayroll,
+        "organization": organization,
       };
 }
 
@@ -344,6 +356,7 @@ class Device {
   String fingerprintId;
   String portalPin;
   String appPin;
+  String organization;
 
   Device({
     this.id = 0,
@@ -352,6 +365,7 @@ class Device {
     this.fingerprintId = '',
     this.portalPin = '',
     this.appPin = '',
+    this.organization = '',
   });
 
   factory Device.fromJson(Map<String, dynamic> json) => Device(
@@ -361,6 +375,7 @@ class Device {
         fingerprintId: json["fingerprint_id"] ?? '',
         portalPin: json["portal_pin"] ?? '',
         appPin: json["app_pin"] ?? '',
+        organization: json["organization"] ?? '',
       );
 
   Map<String, dynamic> toJson() => {
@@ -370,6 +385,7 @@ class Device {
         "fingerprint_id": fingerprintId,
         "portal_pin": portalPin,
         "app_pin": appPin,
+        "organization": organization,
       };
 }
 

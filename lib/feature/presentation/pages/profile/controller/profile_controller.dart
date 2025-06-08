@@ -55,7 +55,7 @@ class ProfileController extends GetxController {
         log("Error: ${response.message}");
       }
     } catch (e) {
-      // log('Error fetching profile: $e');
+      log('Error fetching profile: $e');
       errorMessage.value = 'An error occurred: $e';
     } finally {
       isLoading(false);
