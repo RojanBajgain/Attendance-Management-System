@@ -238,7 +238,7 @@ class _ProfilePageState extends State<ProfilePage> {
           _buildRow(
               'Gross Salary',
               profiledata.grossSalary != null
-                  ? profiledata.grossSalary.toString()
+                  ? "Rs. ${profiledata.grossSalary.toString()}"
                   : 'N/A'),
           _buildRow(
               'Organization:',
