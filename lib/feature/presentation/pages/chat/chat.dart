@@ -4,6 +4,7 @@ import 'package:ams/feature/presentation/pages/chat/model/chat_model.dart';
 import 'package:ams/feature/presentation/pages/chat/sub_view_chat/chat_card.dart';
 import 'package:ams/feature/presentation/pages/chat/sub_view_chat/message_page.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
+import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -98,8 +99,8 @@ class ChatsScreen extends StatelessWidget {
           Map<String, ChatModel> groupedChats = {};
 
           for (var chat in chatController.chats) {
-            final authController = Get.find<AuthController>();
-            final currentUserId = authController.alluserData.value.user ?? 0;
+            final profileController = Get.find<ProfileController>();
+            final currentUserId = profileController.profile.first.id ?? 0;
 
             String key;
             if (chat.department != null) {
@@ -122,12 +123,12 @@ class ChatsScreen extends StatelessWidget {
 
           // Convert to list and sort by timestamp
           List<ChatModel> sortedChats = groupedChats.values.toList();
-          sortedChats.sort((a, b) {
-            if (a.timestamp == null && b.timestamp == null) return 0;
-            if (a.timestamp == null) return 1;
-            if (b.timestamp == null) return -1;
-            return b.timestamp!.compareTo(a.timestamp!);
-          });
+          // sortedChats.sort((a, b) {
+          //   if (a.timestamp == null && b.timestamp == null) return 0;
+          //   if (a.timestamp == null) return 1;
+          //   if (b.timestamp == null) return -1;
+          //   return b.timestamp!.compareTo(a.timestamp!);
+          // });
 
           return ListView.builder(
             itemCount: sortedChats.length,

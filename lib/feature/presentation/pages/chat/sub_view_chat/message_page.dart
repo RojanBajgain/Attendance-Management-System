@@ -2,6 +2,7 @@ import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/chat/controller/chat_controller.dart';
 import 'package:ams/feature/presentation/pages/chat/model/chat_model.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
+import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -25,6 +26,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   final ScrollController _scrollController = ScrollController();
   final ChatController chatController = Get.find<ChatController>();
   final AuthController authController = Get.find<AuthController>();
+  final ProfileController profileController = Get.find<ProfileController>();
 
   @override
   void initState() {
@@ -52,11 +54,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       // Clear the input field immediately for better UX
       _messageController.clear();
 
+      // Determine if we're sending to a user or department
+      final isDepartmentChat = widget.department != null;
+
       // Send the message
       await chatController.sendMessage(
         message: messageText,
-        receiverId: widget.department == null ? widget.otherUser.id : null,
-        departmentId: widget.department?.id,
+        receiverId: isDepartmentChat ? null : widget.otherUser.id,
+        departmentId: isDepartmentChat ? widget.department?.id : null,
       );
 
       // Reload messages to show the new message
@@ -88,20 +93,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final currentUserId = authController.alluserData.value.user ?? 0;
+    final currentUserId = profileController.profile.first.id ?? 0;
 
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
-            // CircleAvatar(
-            //   backgroundImage: widget.otherUser.profileImage != null
-            //       ? NetworkImage(widget.otherUser.profileImage!)
-            //       : null,
-            // ),
-            // const SizedBox(width: 10),
             Text(
-              widget.otherUser.user ?? 'Unknown',
+              widget.department?.name ?? widget.otherUser.user ?? 'Unknown',
               style: smallStyle.copyWith(
                 color: isDarkMode ? Colors.white : Colors.black,
               ),

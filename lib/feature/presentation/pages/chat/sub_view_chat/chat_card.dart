@@ -1,6 +1,7 @@
 import 'package:ams/feature/presentation/pages/chat/controller/chat_controller.dart';
 import 'package:ams/feature/presentation/pages/chat/sub_view_chat/message_page.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
+import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -20,8 +21,8 @@ class ChatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final authController = Get.find<AuthController>();
-    final currentUserId = authController.alluserData.value.user ?? 0;
+    final profileController = Get.find<ProfileController>();
+    final currentUserId = profileController.profile.first.id ?? 0;
 
     // Determine who is the other user (not the current user)
     final isCurrentUserSender = chat.sender?.id == currentUserId;
