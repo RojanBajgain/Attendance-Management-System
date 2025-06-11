@@ -55,6 +55,7 @@ class Datum {
   List<Address> addresses;
   Organization organization;
   String status;
+  dynamic grossSalary;
   String username;
   String email;
 
@@ -80,6 +81,7 @@ class Datum {
     this.addresses = const [],
     required this.organization,
     this.status = '',
+    this.grossSalary,
     this.username = '',
     this.email = '',
   });
@@ -109,6 +111,7 @@ class Datum {
             (json["addresses"] ?? []).map((x) => Address.fromJson(x))),
         organization: Organization.fromJson(json["organization"]),
         status: json["status"] ?? '',
+        grossSalary: json["gross_salary"],
         username: json["username"] ?? '',
         email: json["email"] ?? '',
       );
@@ -135,6 +138,7 @@ class Datum {
         "addresses": addresses.map((x) => x.toJson()).toList(),
         "organization": organization.toJson(),
         "status": status,
+        "gross_salary": grossSalary,
         "username": username,
         "email": email,
       };

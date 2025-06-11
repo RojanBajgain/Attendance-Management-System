@@ -1,13 +1,7 @@
 import 'dart:convert';
 
-List<ChatModel> chatModelFromRawJson(String str) =>
-    List<ChatModel>.from(json.decode(str).map((x) => ChatModel.fromJson(x)));
-
-String chatModelToRawJson(List<ChatModel> data) =>
-    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
-
 class ChatModel {
-  int id;
+  int? id;
   dynamic document;
   Sender? receiver;
   Sender? sender;
@@ -18,7 +12,7 @@ class ChatModel {
   dynamic mediaUrl;
 
   ChatModel({
-    this.id = 0,
+    this.id,
     this.document,
     this.receiver,
     this.sender,
@@ -30,7 +24,7 @@ class ChatModel {
   });
 
   factory ChatModel.fromJson(Map<String, dynamic> json) => ChatModel(
-        id: json["id"] ?? 0,
+        id: json["id"],
         document: json["document"],
         receiver:
             json["receiver"] != null ? Sender.fromJson(json["receiver"]) : null,
@@ -60,16 +54,16 @@ class ChatModel {
 }
 
 class Department {
-  int id;
+  int? id;
   String? name;
 
   Department({
-    this.id = 0,
+    this.id,
     this.name,
   });
 
   factory Department.fromJson(Map<String, dynamic> json) => Department(
-        id: json["id"] ?? 0,
+        id: json["id"],
         name: json["name"],
       );
 
@@ -80,24 +74,20 @@ class Department {
 }
 
 class Sender {
-  int id;
+  int? id;
   String? user;
   bool? isActive;
-  dynamic profileImage;
+  String? profileImage;
 
   Sender({
-    this.id = 0,
+    this.id,
     this.user,
     this.isActive,
     this.profileImage,
   });
 
-  factory Sender.fromRawJson(String str) => Sender.fromJson(json.decode(str));
-
-  String toRawJson() => json.encode(toJson());
-
   factory Sender.fromJson(Map<String, dynamic> json) => Sender(
-        id: json["id"] ?? 0,
+        id: json["id"],
         user: json["user"],
         isActive: json["is_active"],
         profileImage: json["profile_image"],

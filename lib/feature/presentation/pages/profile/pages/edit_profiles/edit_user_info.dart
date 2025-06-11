@@ -47,6 +47,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
   final TextEditingController skillsController = TextEditingController();
   final TextEditingController dobController = TextEditingController();
   final TextEditingController joinedDateController = TextEditingController();
+  final TextEditingController grossSalary = TextEditingController();
 
   // Error state for each field
   final Map<String, String> _fieldErrors = {};
@@ -71,13 +72,10 @@ class _EditUserInfoState extends State<EditUserInfo> {
     setState(() {
       _initialValues = {
         'fullName': fullNameController.text,
-        'email': emailController.text,
         'gender': genderController.text,
         'phone': phoneController.text,
-        'designation': designationController.text,
         'skills': skillsController.text,
         'dob': dobController.text,
-        'joinedDate': joinedDateController.text,
       };
     });
   }
@@ -85,13 +83,10 @@ class _EditUserInfoState extends State<EditUserInfo> {
   void _checkForChanges() {
     final currentValues = {
       'fullName': fullNameController.text,
-      'email': emailController.text,
       'gender': genderController.text,
       'phone': phoneController.text,
-      'designation': designationController.text,
       'skills': skillsController.text,
       'dob': dobController.text,
-      'joinedDate': joinedDateController.text,
     };
 
     setState(() {
@@ -119,6 +114,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
       joinedDateController.text = profile.joinedDate != null
           ? DateFormat('yyyy-MM-dd').format(profile.joinedDate)
           : "";
+      grossSalary.text = profile.grossSalary.toString();
     }
   }
 
@@ -890,6 +886,12 @@ class _EditUserInfoState extends State<EditUserInfo> {
                         skillsController,
                         isDarkMode,
                         fieldKey: 'skills',
+                      ),
+                      _buildTextField(
+                        "Gross Salary",
+                        grossSalary,
+                        isDarkMode,
+                        enabled: false,
                       ),
                       _buildDateField(
                         "Date of Birth",

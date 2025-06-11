@@ -1,224 +1,250 @@
-// import 'package:ams/config/resources/styles.dart';
-// import 'package:ams/feature/presentation/pages/chat/controller/chat_controller.dart';
-// import 'package:ams/feature/presentation/pages/chat/model/get_chat_by_id.dart';
-// import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-// import 'package:intl/intl.dart';
+import 'package:ams/config/resources/styles.dart';
+import 'package:ams/feature/presentation/pages/chat/controller/chat_controller.dart';
+import 'package:ams/feature/presentation/pages/chat/model/chat_model.dart';
+import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
-// class ChatDetailScreen extends StatelessWidget {
-//   final ChatByIdModel chat;
+class ChatDetailScreen extends StatefulWidget {
+  final Sender otherUser;
+  final Department? department;
 
-//   const ChatDetailScreen({super.key, required this.chat});
+  const ChatDetailScreen({
+    super.key,
+    required this.otherUser,
+    this.department,
+  });
 
-//   @override
-//   Widget build(BuildContext context) {
-//     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-//     final chatController = Get.find<ChatController>();
-//     final textController = TextEditingController();
+  @override
+  State<ChatDetailScreen> createState() => _ChatDetailScreenState();
+}
 
-//     // Fetch messages for the conversation
-//     WidgetsBinding.instance.addPostFrameCallback((_) {
-//       final otherUserId =
-//           chat.receiver?.id == Get.find<AuthController>().alluserData.value.user
-//               ? chat.sender?.id
-//               : chat.receiver?.id;
-//       if (otherUserId != null) {
-//         chatController.getChatMessages(userId: otherUserId);
-//       }
-//     });
+class _ChatDetailScreenState extends State<ChatDetailScreen> {
+  final TextEditingController _messageController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  final ChatController chatController = Get.find<ChatController>();
+  final AuthController authController = Get.find<AuthController>();
 
-//     return Scaffold(
-//       backgroundColor: isDarkMode ? Colors.grey.shade300 : Colors.white,
-//       appBar: AppBar(
-//         centerTitle: false,
-//         elevation: 0,
-//         backgroundColor: isDarkMode ? Colors.black : Colors.blue,
-//         foregroundColor: Colors.white,
-//         title: Text(
-//           chat.receiver?.user ?? chat.sender?.user ?? 'Chat',
-//           style: normalStyle.copyWith(color: Colors.white),
-//         ),
-//       ),
-//       body: Obx(
-//         () => chatController.isLoading.value
-//             ? const Center(child: CircularProgressIndicator())
-//             : chatController.errorMessage.isNotEmpty
-//                 ? Center(
-//                     child: Column(
-//                       mainAxisAlignment: MainAxisAlignment.center,
-//                       children: [
-//                         Text(
-//                           chatController.errorMessage.value,
-//                           style: normalStyle.copyWith(color: Colors.red),
-//                         ),
-//                         const SizedBox(height: 16),
-//                         ElevatedButton(
-//                           onPressed: () {
-//                             final otherUserId = chat.receiver?.id ==
-//                                     Get.find<AuthController>()
-//                                         .alluserData
-//                                         .value
-//                                         .user
-//                                 ? chat.sender?.id
-//                                 : chat.receiver?.id;
-//                             if (otherUserId != null) {
-//                               chatController.getChatMessages(
-//                                   userId: otherUserId);
-//                             }
-//                           },
-//                           child: const Text('Retry'),
-//                         ),
-//                       ],
-//                     ),
-//                   )
-//                 : Column(
-//                     children: [
-//                       Expanded(
-//                         child: ListView.builder(
-//                           reverse: true, // Newest messages at the bottom
-//                           itemCount: chatController.chatHistory.length,
-//                           itemBuilder: (context, index) {
-//                             final message = chatController
-//                                 .chatHistory[index]; // Use index directly
-//                             final currentUserId = Get.find<AuthController>()
-//                                     .alluserData
-//                                     .value
-//                                     .user ??
-//                                 0;
-//                             final isCurrentUser = message.sender != null &&
-//                                 message.sender!.id == currentUserId;
-//                             return _buildMessageBubble(
-//                               context,
-//                               message,
-//                               isCurrentUser,
-//                               isDarkMode,
-//                             );
-//                           },
-//                         ),
-//                       ),
-//                       _buildMessageInput(
-//                           context, textController, chatController),
-//                     ],
-//                   ),
-//       ),
-//     );
-//   }
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadMessages();
+    });
+  }
 
-//   Widget _buildMessageBubble(
-//     BuildContext context,
-//     ChatByIdModel message,
-//     bool isCurrentUser,
-//     bool isDarkMode,
-//   ) {
-//     final timestamp = message.timestamp?.toLocal();
-//     final formattedTime =
-//         timestamp != null ? DateFormat('h:mm a').format(timestamp) : '';
+  void _loadMessages() {
+    chatController.getChatMessagesForUser(
+      widget.otherUser.id!,
+      departmentId: widget.department?.id,
+    );
+  }
 
-//     return Align(
-//       alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
-//       child: Container(
-//         margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-//         padding: const EdgeInsets.all(12),
-//         decoration: BoxDecoration(
-//           color: isCurrentUser
-//               ? (isDarkMode ? Colors.blue.shade700 : Colors.blue)
-//               : (isDarkMode ? Colors.grey.shade800 : Colors.grey.shade200),
-//           borderRadius: BorderRadius.circular(12),
-//         ),
-//         child: Column(
-//           crossAxisAlignment:
-//               isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-//           children: [
-//             if (message.message != null)
-//               Text(
-//                 message.message!,
-//                 style: normalStyle.copyWith(
-//                   color: isCurrentUser ? Colors.white : Colors.black87,
-//                 ),
-//               ),
-//             if (message.mediaUrl != null)
-//               GestureDetector(
-//                 onTap: () {
-//                   // Open media (e.g., launch URL or show image)
-//                   // Get.to(() => MediaViewer(url: message.mediaUrl!));
-//                 },
-//                 child: Text(
-//                   'Media',
-//                   style: normalStyle.copyWith(
-//                     color: isCurrentUser ? Colors.white : Colors.blue,
-//                     decoration: TextDecoration.underline,
-//                   ),
-//                 ),
-//               ),
-//             const SizedBox(height: 4),
-//             Text(
-//               formattedTime,
-//               style: normalStyle.copyWith(
-//                 fontSize: 10,
-//                 color: isCurrentUser ? Colors.white70 : Colors.grey,
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
+  void _sendMessage() async {
+    final messageText = _messageController.text.trim();
 
-//   Widget _buildMessageInput(
-//     BuildContext context,
-//     TextEditingController textController,
-//     ChatController chatController,
-//   ) {
-//     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-//     return Container(
-//       padding: const EdgeInsets.all(8),
-//       color: isDarkMode ? Colors.grey.shade600 : Colors.grey.shade100,
-//       child: Row(
-//         children: [
-//           Expanded(
-//             child: TextField(
-//               controller: textController,
-//               decoration: InputDecoration(
-//                 hintText: 'Type a message',
-//                 hintStyle: smallStyle.copyWith(color: Colors.grey),
-//                 border: OutlineInputBorder(
-//                   borderRadius: BorderRadius.circular(20),
-//                   borderSide: BorderSide.none,
-//                 ),
-//                 filled: true,
-//                 fillColor: isDarkMode ? Colors.grey.shade800 : Colors.white,
-//               ),
-//               style: normalStyle.copyWith(
-//                   color: isDarkMode ? Colors.white : Colors.black),
-//             ),
-//           ),
-//           const SizedBox(width: 8),
-//           IconButton(
-//             icon: const Icon(Icons.send, color: Colors.blue),
-//             onPressed: () {
-//               if (textController.text.isNotEmpty) {
-//                 final currentUserId =
-//                     Get.find<AuthController>().alluserData.value.user ?? 0;
-//                 final receiverId = chat.receiver?.id == currentUserId
-//                     ? chat.sender?.id
-//                     : chat.receiver?.id;
-//                 final receiverName = chat.receiver?.id == currentUserId
-//                     ? chat.sender?.user
-//                     : chat.receiver?.user;
-//                 chatController.sendMessage(
-//                   textController.text,
-//                   receiverId: receiverId,
-//                   receiverName: receiverName,
-//                   departmentId: null,
-//                   departmentName: null,
-//                 );
-//                 textController.clear();
-//               }
-//             },
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
+    if (messageText.isEmpty) {
+      return; // Don't send empty messages
+    }
+
+    try {
+      // Clear the input field immediately for better UX
+      _messageController.clear();
+
+      // Send the message
+      await chatController.sendMessage(
+        message: messageText,
+        receiverId: widget.department == null ? widget.otherUser.id : null,
+        departmentId: widget.department?.id,
+      );
+
+      // Reload messages to show the new message
+      _loadMessages();
+
+      // Scroll to bottom to show the new message
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          0.0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    } catch (e) {
+      // Handle error - you might want to show a snackbar or toast
+      Get.snackbar(
+        'Error',
+        'Failed to send message: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+
+      // Restore the message text if sending failed
+      _messageController.text = messageText;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final currentUserId = authController.alluserData.value.user ?? 0;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Row(
+          children: [
+            // CircleAvatar(
+            //   backgroundImage: widget.otherUser.profileImage != null
+            //       ? NetworkImage(widget.otherUser.profileImage!)
+            //       : null,
+            // ),
+            // const SizedBox(width: 10),
+            Text(
+              widget.otherUser.user ?? 'Unknown',
+              style: smallStyle.copyWith(
+                color: isDarkMode ? Colors.white : Colors.black,
+              ),
+            ),
+          ],
+        ),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: Obx(() {
+              if (chatController.isLoading.value) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              return ListView.builder(
+                controller: _scrollController,
+                reverse: true,
+                itemCount: chatController.currentChatMessages.length,
+                itemBuilder: (context, index) {
+                  final message = chatController.currentChatMessages[index];
+                  final isCurrentUser = message.sender?.id == currentUserId;
+
+                  return Container(
+                    alignment: isCurrentUser
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    child: Row(
+                      mainAxisAlignment: isCurrentUser
+                          ? MainAxisAlignment.end
+                          : MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        if (!isCurrentUser) ...[
+                          CircleAvatar(
+                            radius: 14,
+                            backgroundImage: message.sender?.profileImage !=
+                                    null
+                                ? NetworkImage(message.sender!.profileImage!)
+                                : null,
+                            child: message.sender?.profileImage == null
+                                ? const Icon(Icons.person, size: 14)
+                                : null,
+                          ),
+                          const SizedBox(width: 6),
+                        ],
+                        Flexible(
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: isCurrentUser
+                                  ? Colors.blue
+                                  : (isDarkMode
+                                      ? Colors.grey.shade800
+                                      : Colors.grey.shade200),
+                              borderRadius: BorderRadius.only(
+                                topLeft: const Radius.circular(12),
+                                topRight: const Radius.circular(12),
+                                bottomLeft:
+                                    Radius.circular(isCurrentUser ? 12 : 0),
+                                bottomRight:
+                                    Radius.circular(isCurrentUser ? 0 : 12),
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  message.message ?? '',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: isCurrentUser
+                                        ? Colors.white
+                                        : (isDarkMode
+                                            ? Colors.white
+                                            : Colors.black),
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  message.timestamp != null
+                                      ? DateFormat('h:mm a')
+                                          .format(message.timestamp!)
+                                      : '',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: isCurrentUser
+                                        ? Colors.white70
+                                        : (isDarkMode
+                                            ? Colors.grey.shade400
+                                            : Colors.grey.shade600),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        if (isCurrentUser) const SizedBox(width: 6),
+                      ],
+                    ),
+                  );
+                },
+              );
+            }),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: isDarkMode ? Colors.white : Colors.black,
+                    ),
+                    controller: _messageController,
+                    decoration: InputDecoration(
+                      hintText: 'Type a message...',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    onSubmitted: (value) =>
+                        _sendMessage(), // Allow sending with Enter key
+                  ),
+                ),
+                Obx(() => IconButton(
+                      icon: chatController.isSending.value
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.send),
+                      onPressed:
+                          chatController.isSending.value ? null : _sendMessage,
+                    )),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
