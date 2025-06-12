@@ -90,6 +90,61 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     }
   }
 
+  // Helper method to check if a URL is an image
+  bool _isImageUrl(String? url) {
+    if (url == null || url.isEmpty) return false;
+    final imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];
+    return imageExtensions.any((ext) => url.toLowerCase().endsWith(ext));
+  }
+
+  // Widget to display image with error handling
+  Widget _buildImageWidget(String imageUrl, bool isCurrentUser) {
+    return Container(
+      constraints: const BoxConstraints(
+        maxWidth: 250,
+        maxHeight: 200,
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Image.network(
+          imageUrl,
+          fit: BoxFit.cover,
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Container(
+              height: 100,
+              width: 200,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          },
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              height: 100,
+              width: 200,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.broken_image, size: 30, color: Colors.grey),
+                  Text('Failed to load image', style: TextStyle(fontSize: 12)),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -122,6 +177,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 itemBuilder: (context, index) {
                   final message = chatController.currentChatMessages[index];
                   final isCurrentUser = message.sender?.id == currentUserId;
+                  final hasImage =
+                      message.document != null && message.document!.isNotEmpty;
+                  final hasTextMessage =
+                      message.message != null && message.message!.isNotEmpty;
 
                   return Container(
                     alignment: isCurrentUser
@@ -169,17 +228,70 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  message.message ?? '',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: isCurrentUser
-                                        ? Colors.white
-                                        : (isDarkMode
-                                            ? Colors.white
-                                            : Colors.black),
+                                // Display image if present
+                                if (hasImage &&
+                                    _isImageUrl(message.document)) ...[
+                                  _buildImageWidget(
+                                      message.document!, isCurrentUser),
+                                  if (hasTextMessage) const SizedBox(height: 8),
+                                ],
+                                // Display document link if it's not an image
+                                if (hasImage &&
+                                    !_isImageUrl(message.document)) ...[
+                                  GestureDetector(
+                                    onTap: () {
+                                      // Handle document tap - you might want to open it in a browser
+                                      // or download it
+                                      print(
+                                          'Document tapped: ${message.document}');
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.2),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(
+                                            Icons.attach_file,
+                                            size: 16,
+                                            color: Colors.white70,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Flexible(
+                                            child: Text(
+                                              'Document',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: isCurrentUser
+                                                    ? Colors.white70
+                                                    : (isDarkMode
+                                                        ? Colors.grey.shade400
+                                                        : Colors.grey.shade600),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                  if (hasTextMessage) const SizedBox(height: 8),
+                                ],
+                                // Display text message if present
+                                if (hasTextMessage)
+                                  Text(
+                                    message.message!,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: isCurrentUser
+                                          ? Colors.white
+                                          : (isDarkMode
+                                              ? Colors.white
+                                              : Colors.black),
+                                    ),
+                                  ),
                                 const SizedBox(height: 4),
                                 Text(
                                   message.timestamp != null

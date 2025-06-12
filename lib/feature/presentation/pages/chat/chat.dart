@@ -123,12 +123,6 @@ class ChatsScreen extends StatelessWidget {
 
           // Convert to list and sort by timestamp
           List<ChatModel> sortedChats = groupedChats.values.toList();
-          // sortedChats.sort((a, b) {
-          //   if (a.timestamp == null && b.timestamp == null) return 0;
-          //   if (a.timestamp == null) return 1;
-          //   if (b.timestamp == null) return -1;
-          //   return b.timestamp!.compareTo(a.timestamp!);
-          // });
 
           return ListView.builder(
             itemCount: sortedChats.length,

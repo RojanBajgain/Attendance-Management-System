@@ -2,7 +2,7 @@ import 'dart:convert';
 
 class ChatModel {
   int? id;
-  dynamic document;
+  String? document;
   Sender? receiver;
   Sender? sender;
   Department? department;
