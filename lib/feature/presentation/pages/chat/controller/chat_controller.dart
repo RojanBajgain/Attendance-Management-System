@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/repository/chat_repo.dart';
 import 'package:ams/feature/presentation/pages/chat/model/chat_model.dart';
@@ -137,8 +138,6 @@ class ChatController extends GetxController {
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
         // Message sent successfully
-        // You might want to add the message to the current chat messages immediately
-        // for better UX, or just reload the messages
         print('Message sent successfully');
       } else {
         // Handle API error
@@ -146,6 +145,38 @@ class ChatController extends GetxController {
       }
     } catch (e) {
       print('Error sending message: $e');
+      rethrow; // Re-throw so the UI can handle the error
+    } finally {
+      isSending.value = false;
+    }
+  }
+
+  // New method to send message with file
+  Future<void> sendMessageWithFile({
+    required File file,
+    String? message,
+    int? receiverId,
+    int? departmentId,
+  }) async {
+    try {
+      isSending.value = true;
+
+      final response = await chatRepo.sendMessageWithFile(
+        file: file,
+        message: message ?? '',
+        receiverID: receiverId,
+        departmentID: departmentId,
+      );
+
+      if (response.status == ApiStatus.SUCCESS && response.response != null) {
+        // File sent successfully
+        print('File sent successfully');
+      } else {
+        // Handle API error
+        throw Exception(response.message ?? 'Failed to send file');
+      }
+    } catch (e) {
+      print('Error sending file: $e');
       rethrow; // Re-throw so the UI can handle the error
     } finally {
       isSending.value = false;

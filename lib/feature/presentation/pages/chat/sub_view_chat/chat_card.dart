@@ -60,13 +60,14 @@ class ChatCard extends StatelessWidget {
                 otherUser: otherUser,
                 department: null,
               ));
-        } else {
-          Get.snackbar(
-            'Error',
-            'Unable to open chat. Invalid user or department.',
-            snackPosition: SnackPosition.BOTTOM,
-          );
         }
+        // else {
+        //   Get.snackbar(
+        //     'Error',
+        //     'Unable to open chat. Invalid user or department.',
+        //     snackPosition: SnackPosition.BOTTOM,
+        //   );
+        // }
 
         // Call the optional onTap callback
         onTap?.call();
@@ -170,25 +171,24 @@ class ChatCard extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: Text(
-                          chat.message ?? 'No message',
-                          style: normalStyle.copyWith(
-                            color: chat.hasRead == false
-                                ? (isDarkMode ? Colors.white : Colors.black87)
-                                : (isDarkMode
-                                    ? Colors.grey.shade400
-                                    : Colors.grey.shade600),
-                            fontSize: 14,
-                            fontWeight: chat.hasRead == false
-                                ? FontWeight.w500
-                                : FontWeight.normal,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                          child: Text(
+                        _getMessagePreview(chat),
+                        style: normalStyle.copyWith(
+                          color: chat.hasRead == false
+                              ? (isDarkMode ? Colors.white : Colors.black87)
+                              : (isDarkMode
+                                  ? Colors.grey.shade400
+                                  : Colors.grey.shade600),
+                          fontSize: 14,
+                          fontWeight: chat.hasRead == false
+                              ? FontWeight.w500
+                              : FontWeight.normal,
                         ),
-                      ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      )),
 
-                      // Unread indicator
+                      /*  // Unread indicator
                       if (chat.hasRead == false)
                         Container(
                           margin: const EdgeInsets.only(left: 8),
@@ -198,7 +198,7 @@ class ChatCard extends StatelessWidget {
                             color: Colors.blue,
                             shape: BoxShape.circle,
                           ),
-                        ),
+                        ), */
                     ],
                   ),
                 ],
@@ -208,6 +208,27 @@ class ChatCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _getMessagePreview(ChatModel chat) {
+    // First check if there's a document (media file)
+    if (chat.document != null && chat.document!.isNotEmpty) {
+      final documentUrl = chat.document!.toLowerCase();
+      if (documentUrl.endsWith('.jpg') ||
+          documentUrl.endsWith('.jpeg') ||
+          documentUrl.endsWith('.png') ||
+          documentUrl.endsWith('.gif')) {
+        return 'You have an image message';
+      } else if (documentUrl.endsWith('.pdf')) {
+        return 'You have a PDF file message';
+      } else if (documentUrl.endsWith('.doc') ||
+          documentUrl.endsWith('.docx')) {
+        return 'You have a Word document message';
+      } else {
+        return 'You have a file message';
+      }
+    }
+    return chat.message ?? 'No message yet';
   }
 
   String _getInitials(String name) {
@@ -220,26 +241,28 @@ class ChatCard extends StatelessWidget {
   }
 
   String _getFormattedTime(DateTime timestamp) {
+    // Convert to local time first
+    final localTime = timestamp.toLocal();
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final messageDate =
-        DateTime(timestamp.year, timestamp.month, timestamp.day);
+        DateTime(localTime.year, localTime.month, localTime.day);
 
     if (messageDate == today) {
       // Today - show time
-      return DateFormat('h:mm a').format(timestamp);
+      return DateFormat('h:mm a').format(localTime);
     } else if (messageDate == today.subtract(const Duration(days: 1))) {
       // Yesterday
       return 'Yesterday';
-    } else if (now.difference(timestamp).inDays < 7) {
+    } else if (now.difference(localTime).inDays < 7) {
       // This week - show day name
-      return DateFormat('EEEE').format(timestamp);
-    } else if (timestamp.year == now.year) {
+      return DateFormat('EEEE').format(localTime);
+    } else if (localTime.year == now.year) {
       // This year - show month and day
-      return DateFormat('MMM d').format(timestamp);
+      return DateFormat('MMM d').format(localTime);
     } else {
       // Different year - show month, day, and year
-      return DateFormat('MMM d, y').format(timestamp);
+      return DateFormat('MMM d, y').format(localTime);
     }
   }
 }

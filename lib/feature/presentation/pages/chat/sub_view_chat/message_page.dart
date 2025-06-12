@@ -1,11 +1,15 @@
+import 'dart:io';
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/chat/controller/chat_controller.dart';
 import 'package:ams/feature/presentation/pages/chat/model/chat_model.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
+import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
 
 class ChatDetailScreen extends StatefulWidget {
   final Sender otherUser;
@@ -27,6 +31,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   final ChatController chatController = Get.find<ChatController>();
   final AuthController authController = Get.find<AuthController>();
   final ProfileController profileController = Get.find<ProfileController>();
+  final ImagePicker _imagePicker = ImagePicker();
 
   @override
   void initState() {
@@ -47,19 +52,52 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     final messageText = _messageController.text.trim();
 
     if (messageText.isEmpty) {
-      return; // Don't send empty messages
+      return;
     }
 
     try {
-      // Clear the input field immediately for better UX
       _messageController.clear();
 
-      // Determine if we're sending to a user or department
       final isDepartmentChat = widget.department != null;
 
       // Send the message
       await chatController.sendMessage(
         message: messageText,
+        receiverId: isDepartmentChat ? null : widget.otherUser.id,
+        departmentId: isDepartmentChat ? widget.department?.id : null,
+      );
+
+      _loadMessages();
+
+      // Scroll to bottom to show the new message
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          0.0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    } catch (e) {
+      SSnackbarUtil.showSnackbar(
+        'Error',
+        "Failed to send message",
+        SnackbarType.error,
+      );
+
+      // Restore the message text if sending failed
+      _messageController.text = messageText;
+    }
+  }
+
+  void _sendImageOrDocument(File file, {String? message}) async {
+    try {
+      // Determine if we're sending to a user or department
+      final isDepartmentChat = widget.department != null;
+
+      // Send the file
+      await chatController.sendMessageWithFile(
+        file: file,
+        message: message ?? '',
         receiverId: isDepartmentChat ? null : widget.otherUser.id,
         departmentId: isDepartmentChat ? widget.department?.id : null,
       );
@@ -76,17 +114,132 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         );
       }
     } catch (e) {
-      // Handle error - you might want to show a snackbar or toast
+      SSnackbarUtil.showSnackbar(
+        'Error',
+        "Failed to send message",
+        SnackbarType.error,
+      );
+    }
+  }
+
+  void _showAttachmentOptions() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_camera),
+                title: Text(
+                  'Camera',
+                  style: smallStyle.copyWith(
+                    color: isDarkMode ? Colors.white : Colors.black,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImageFromCamera();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: Text(
+                  'Gallery',
+                  style: smallStyle.copyWith(
+                    color: isDarkMode ? Colors.white : Colors.black,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImageFromGallery();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.attach_file),
+                title: Text(
+                  'Document',
+                  style: smallStyle.copyWith(
+                    color: isDarkMode ? Colors.white : Colors.black,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickDocument();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _pickImageFromCamera() async {
+    try {
+      final XFile? image = await _imagePicker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 80,
+      );
+
+      if (image != null) {
+        final file = File(image.path);
+        _sendImageOrDocument(file);
+      }
+    } catch (e) {
       Get.snackbar(
         'Error',
-        'Failed to send message: ${e.toString()}',
+        'Failed to pick image from camera: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
+    }
+  }
 
-      // Restore the message text if sending failed
-      _messageController.text = messageText;
+  void _pickImageFromGallery() async {
+    try {
+      final XFile? image = await _imagePicker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 80,
+      );
+
+      if (image != null) {
+        final file = File(image.path);
+        _sendImageOrDocument(file);
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to pick image from gallery: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
+
+  void _pickDocument() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.any,
+        allowMultiple: false,
+      );
+
+      if (result != null && result.files.single.path != null) {
+        final file = File(result.files.single.path!);
+        _sendImageOrDocument(file);
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to pick document: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 
@@ -295,8 +448,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                 const SizedBox(height: 4),
                                 Text(
                                   message.timestamp != null
-                                      ? DateFormat('h:mm a')
-                                          .format(message.timestamp!)
+                                      ? DateFormat('h:mm a').format(message
+                                          .timestamp!
+                                          .toLocal()) // Add toLocal() here
                                       : '',
                                   style: TextStyle(
                                     fontSize: 10,
@@ -306,7 +460,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                             ? Colors.grey.shade400
                                             : Colors.grey.shade600),
                                   ),
-                                ),
+                                )
                               ],
                             ),
                           ),
@@ -323,6 +477,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
+                // Attachment button
+                IconButton(
+                  icon: const Icon(Icons.attach_file),
+                  onPressed: _showAttachmentOptions,
+                ),
                 Expanded(
                   child: TextField(
                     style: TextStyle(

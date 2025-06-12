@@ -1,6 +1,11 @@
+import 'dart:io';
+import 'dart:convert';
+import 'dart:developer';
 import 'package:ams/feature/data/datasource/remote/api_client.dart';
 import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/datasource/remote/api_urls.dart';
+import 'package:http/http.dart' as http;
+import 'package:path/path.dart';
 
 class ChatRepo {
   final ApiClient apiClient;
@@ -82,7 +87,7 @@ class ChatRepo {
     return response;
   }
 
-  // Send a message (if you have an endpoint for this)
+  // Send a text message
   Future<ApiResponse> sendMessage({
     required String message,
     int? senderID,
@@ -91,26 +96,113 @@ class ChatRepo {
   }) async {
     final token = apiClient.token;
 
-    // final body = <String, dynamic>{
-    //   'message': message,
-    //   if (senderID != null) 'receiver': senderID,
-    //   if (departmentID != null) 'department': departmentID,
-    //   if (mediaUrl != null) 'media_url': mediaUrl,
-    // };
-
     final response = await ApiClient.postApi(
       ApiUrls.chat,
-      // body: body,
       requestBody: {
         'message': message,
         if (senderID != null) 'receiver': senderID,
         if (departmentID != null) 'department': departmentID,
-        // if (mediaUrl != null) 'media_url': mediaUrl,
+        if (mediaUrl != null) 'media_url': mediaUrl,
       },
       token: token,
       apiKey: apiClient.organization,
       fromJson: (json) => json,
     );
     return response;
+  }
+
+  // Send a message with file attachment
+  Future<ApiResponse> sendMessageWithFile({
+    required File file,
+    String message = '',
+    // int? senderID,
+    int? receiverID,
+    int? departmentID,
+  }) async {
+    try {
+      final token = apiClient.token;
+
+      // Check if the token is valid
+      // if (token.isEmpty) {
+      //   throw Exception('JWT token is missing or invalid');
+      // }
+
+      // Ensure the URL is complete (include the scheme and host)
+      final url = '${ApiUrls.baseUrl}${ApiUrls.chat}';
+
+      // Create multipart request
+      var request = http.MultipartRequest('POST', Uri.parse(url));
+
+      // Add headers
+      request.headers['Authorization'] = 'Bearer $token';
+      request.headers['Accept'] = 'application/json';
+      request.headers['x-organization'] = apiClient.organization;
+
+      // Add form fields
+      request.fields['message'] = message;
+      // if (senderID != null) {
+      //   request.fields['sender'] = senderID.toString();
+      // }
+      if (receiverID != null) {
+        request.fields['receiver'] = receiverID.toString();
+      }
+      if (departmentID != null) {
+        request.fields['department'] = departmentID.toString();
+      }
+
+      // Add file
+      String fileName = basename(file.path);
+      var multipartFile = await http.MultipartFile.fromPath(
+        'document',
+        file.path,
+        filename: fileName,
+      );
+      request.files.add(multipartFile);
+      log("Added document file: ${file.path}");
+
+      // Log the request
+      log("Request URL: $url");
+      log("Request Headers: ${request.headers}");
+      log("Request Fields: ${request.fields}");
+      if (request.files.isNotEmpty) {
+        log("Request Files: ${request.files.map((file) => '${file.field}: ${file.filename}').join(", ")}");
+      }
+
+      // Send request
+      var response = await request.send();
+
+      // Read the response
+      var responseData = await response.stream.bytesToString();
+      var jsonResponse = jsonDecode(responseData);
+
+      // Log the response
+      log("Response Status Code: ${response.statusCode}");
+      log("Response Body: $responseData");
+
+      // Check if the response is successful
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        return ApiResponse.fromJson(jsonResponse, (json) {
+          // Log the parsed JSON
+          log("Parsed JSON: $json");
+
+          // Ensure the JSON is not null
+          if (json == null) {
+            throw Exception("Response data is null");
+          }
+
+          // Return the parsed JSON
+          return json;
+        });
+      } else {
+        // Handle server errors
+        throw Exception(
+          "Failed to send file: ${jsonResponse['message'] ?? 'Unknown error'}",
+        );
+      }
+    } catch (e) {
+      // Log the error
+      log("Error in postProfileUpdate: $e");
+      throw Exception("An error occurred: $e");
+    }
   }
 }
