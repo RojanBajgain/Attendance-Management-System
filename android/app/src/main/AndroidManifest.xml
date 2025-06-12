@@ -67,5 +67,20 @@
             <action android:name="android.intent.action.PROCESS_TEXT" />
             <data android:mimeType="text/plain" />
         </intent>
+
+        <intent>
+    <action android:name="android.intent.action.VIEW" />
+    <data android:mimeType="application/pdf" />
+  </intent>
+  
+  <!-- For opening Office docs -->
+  <intent>
+    <action android:name="android.intent.action.VIEW" />
+    <data android:mimeType="application/msword" />
+  </intent>
+  <intent>
+    <action android:name="android.intent.action.VIEW" />
+    <data android:mimeType="application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+  </intent>
     </queries>
 </manifest>

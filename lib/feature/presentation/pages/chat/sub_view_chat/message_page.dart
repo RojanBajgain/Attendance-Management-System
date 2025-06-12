@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ChatDetailScreen extends StatefulWidget {
   final Sender otherUser;
@@ -189,12 +190,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         _sendImageOrDocument(file);
       }
     } catch (e) {
-      Get.snackbar(
+      SSnackbarUtil.showSnackbar(
         'Error',
-        'Failed to pick image from camera: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+        'Failed to capture image from camera. Please try again later',
+        SnackbarType.error,
       );
     }
   }
@@ -211,12 +210,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         _sendImageOrDocument(file);
       }
     } catch (e) {
-      Get.snackbar(
+      SSnackbarUtil.showSnackbar(
         'Error',
-        'Failed to pick image from gallery: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+        'Failed to pick an image. Please try again later',
+        SnackbarType.error,
       );
     }
   }
@@ -233,12 +230,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         _sendImageOrDocument(file);
       }
     } catch (e) {
-      Get.snackbar(
+      SSnackbarUtil.showSnackbar(
         'Error',
-        'Failed to pick document: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+        'Failed to pick an file. Please try again later',
+        SnackbarType.error,
       );
     }
   }
@@ -252,50 +247,191 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
   // Widget to display image with error handling
   Widget _buildImageWidget(String imageUrl, bool isCurrentUser) {
-    return Container(
-      constraints: const BoxConstraints(
-        maxWidth: 250,
-        maxHeight: 200,
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Image.network(
-          imageUrl,
-          fit: BoxFit.cover,
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null) return child;
-            return Container(
-              height: 100,
-              width: 200,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Center(
-                child: CircularProgressIndicator(),
-              ),
-            );
-          },
-          errorBuilder: (context, error, stackTrace) {
-            return Container(
-              height: 100,
-              width: 200,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.broken_image, size: 30, color: Colors.grey),
-                  Text('Failed to load image', style: TextStyle(fontSize: 12)),
-                ],
-              ),
-            );
-          },
+    return GestureDetector(
+      onTap: () => _showFullScreenImage(imageUrl),
+      child: Container(
+        constraints: const BoxConstraints(
+          maxWidth: 250,
+          maxHeight: 200,
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.network(
+            imageUrl,
+            fit: BoxFit.cover,
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+              return Container(
+                height: 100,
+                width: 200,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Center(
+                  child: CircularProgressIndicator(
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                        : null,
+                  ),
+                ),
+              );
+            },
+            errorBuilder: (context, error, stackTrace) {
+              return Container(
+                height: 100,
+                width: 200,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.broken_image, size: 30, color: Colors.grey),
+                    Text('Failed to load image',
+                        style: TextStyle(fontSize: 12)),
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
+  }
+
+  void _showFullScreenImage(String imageUrl) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          backgroundColor: Colors.black,
+          appBar: AppBar(
+            backgroundColor: Colors.black,
+            iconTheme: const IconThemeData(color: Colors.white),
+          ),
+          body: Center(
+            child: InteractiveViewer(
+              panEnabled: true,
+              minScale: 0.5,
+              maxScale: 3.0,
+              child: Image.network(
+                imageUrl,
+                fit: BoxFit.contain,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Center(
+                    child: CircularProgressIndicator(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                              loadingProgress.expectedTotalBytes!
+                          : null,
+                    ),
+                  );
+                },
+                errorBuilder: (context, error, stackTrace) {
+                  return const Center(
+                    child: Icon(Icons.error, color: Colors.white),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openDocument(String documentUrl) async {
+    try {
+      // Normalize the URL if needed
+      if (!documentUrl.startsWith('http://') &&
+          !documentUrl.startsWith('https://') &&
+          !documentUrl.startsWith('file://')) {
+        documentUrl = 'https://$documentUrl';
+      }
+
+      final Uri uri = Uri.parse(documentUrl);
+
+      // Check if it's a local file
+      if (uri.scheme == 'file') {
+        final file = File(uri.path);
+        if (!await file.exists()) {
+          throw Exception('File not found');
+        }
+      }
+
+      // Try to launch externally first
+      bool launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+
+      // Fallback: in-app browser view if external app fails
+      if (!launched) {
+        launched = await launchUrl(
+          uri,
+          mode: LaunchMode.inAppWebView,
+          webViewConfiguration: const WebViewConfiguration(
+            enableJavaScript: true,
+            enableDomStorage: true,
+          ),
+        );
+      }
+
+      if (!launched) {
+        throw Exception('Could not launch $documentUrl');
+      }
+    } catch (e) {
+      SSnackbarUtil.showSnackbar(
+        'Error',
+        'Could not open the document',
+        SnackbarType.error,
+      );
+    }
+  }
+
+  String _getFileNameFromUrl(String url) {
+    try {
+      final uri = Uri.parse(url);
+      final pathSegments = uri.pathSegments;
+      if (pathSegments.isNotEmpty) {
+        return pathSegments.last;
+      }
+      return 'Document';
+    } catch (e) {
+      return 'Document';
+    }
+  }
+
+  IconData _getFileIcon(String url) {
+    final uri = Uri.parse(url);
+    final path = uri.path.toLowerCase();
+
+    if (path.endsWith('.pdf')) return Icons.picture_as_pdf;
+    if (path.endsWith('.doc') || path.endsWith('.docx'))
+      return Icons.description;
+    if (path.endsWith('.xls') || path.endsWith('.xlsx'))
+      return Icons.table_chart;
+    if (path.endsWith('.ppt') || path.endsWith('.pptx')) return Icons.slideshow;
+    if (path.endsWith('.zip') || path.endsWith('.rar')) return Icons.archive;
+    if (path.endsWith('.txt')) return Icons.text_snippet;
+
+    return Icons.insert_drive_file;
+  }
+
+  String _getFileSizeAndType(String url) {
+    try {
+      final uri = Uri.parse(url);
+      final path = uri.path.toLowerCase();
+      final extension = path.split('.').last;
+
+      // You could enhance this to show actual file size if you have that information
+      return extension.toUpperCase() + ' file';
+    } catch (e) {
+      return 'Document';
+    }
   }
 
   @override
@@ -392,39 +528,57 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                 if (hasImage &&
                                     !_isImageUrl(message.document)) ...[
                                   GestureDetector(
-                                    onTap: () {
-                                      // Handle document tap - you might want to open it in a browser
-                                      // or download it
-                                      print(
-                                          'Document tapped: ${message.document}');
-                                    },
+                                    onTap: () =>
+                                        _openDocument(message.document!),
                                     child: Container(
                                       padding: const EdgeInsets.all(8),
                                       decoration: BoxDecoration(
-                                        color: Colors.white.withOpacity(0.2),
+                                        color: isCurrentUser
+                                            ? Colors.blue.shade700
+                                            : (isDarkMode
+                                                ? Colors.grey.shade700
+                                                : Colors.grey.shade300),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          const Icon(
-                                            Icons.attach_file,
-                                            size: 16,
-                                            color: Colors.white70,
+                                          Icon(
+                                            _getFileIcon(message.document!),
+                                            size: 24,
+                                            color: isCurrentUser
+                                                ? Colors.white70
+                                                : Colors.blue,
                                           ),
-                                          const SizedBox(width: 4),
-                                          Flexible(
-                                            child: Text(
-                                              'Document',
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: isCurrentUser
-                                                    ? Colors.white70
-                                                    : (isDarkMode
-                                                        ? Colors.grey.shade400
-                                                        : Colors.grey.shade600),
+                                          const SizedBox(width: 8),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                _getFileNameFromUrl(
+                                                    message.document!),
+                                                style: TextStyle(
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: isCurrentUser
+                                                      ? Colors.white
+                                                      : Colors.black,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 2,
                                               ),
-                                            ),
+                                              Text(
+                                                _getFileSizeAndType(
+                                                    message.document!),
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: isCurrentUser
+                                                      ? Colors.white70
+                                                      : Colors.grey.shade600,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),
@@ -448,9 +602,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                 const SizedBox(height: 4),
                                 Text(
                                   message.timestamp != null
-                                      ? DateFormat('h:mm a').format(message
-                                          .timestamp!
-                                          .toLocal()) // Add toLocal() here
+                                      ? DateFormat('h:mm a')
+                                          .format(message.timestamp!.toLocal())
                                       : '',
                                   style: TextStyle(
                                     fontSize: 10,
@@ -495,8 +648,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                    onSubmitted: (value) =>
-                        _sendMessage(), // Allow sending with Enter key
+                    onSubmitted: (value) => _sendMessage(),
                   ),
                 ),
                 Obx(() => IconButton(
