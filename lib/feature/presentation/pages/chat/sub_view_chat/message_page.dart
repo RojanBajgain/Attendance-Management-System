@@ -497,124 +497,145 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                           const SizedBox(width: 6),
                         ],
                         Flexible(
-                          child: Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: isCurrentUser
-                                  ? Colors.blue
-                                  : (isDarkMode
-                                      ? Colors.grey.shade800
-                                      : Colors.grey.shade200),
-                              borderRadius: BorderRadius.only(
-                                topLeft: const Radius.circular(12),
-                                topRight: const Radius.circular(12),
-                                bottomLeft:
-                                    Radius.circular(isCurrentUser ? 12 : 0),
-                                bottomRight:
-                                    Radius.circular(isCurrentUser ? 0 : 12),
-                              ),
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: MediaQuery.of(context).size.width *
+                                  0.7, // Limit to 70% of screen width
                             ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Display image if present
-                                if (hasImage &&
-                                    _isImageUrl(message.document)) ...[
-                                  _buildImageWidget(
-                                      message.document!, isCurrentUser),
-                                  if (hasTextMessage) const SizedBox(height: 8),
-                                ],
-                                // Display document link if it's not an image
-                                if (hasImage &&
-                                    !_isImageUrl(message.document)) ...[
-                                  GestureDetector(
-                                    onTap: () =>
-                                        _openDocument(message.document!),
-                                    child: Container(
-                                      padding: const EdgeInsets.all(8),
-                                      decoration: BoxDecoration(
+                            child: Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: isCurrentUser
+                                    ? Colors.blue
+                                    : (isDarkMode
+                                        ? Colors.grey.shade800
+                                        : Colors.grey.shade200),
+                                borderRadius: BorderRadius.only(
+                                  topLeft: const Radius.circular(12),
+                                  topRight: const Radius.circular(12),
+                                  bottomLeft:
+                                      Radius.circular(isCurrentUser ? 12 : 0),
+                                  bottomRight:
+                                      Radius.circular(isCurrentUser ? 0 : 12),
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Display image if present
+                                  if (hasImage &&
+                                      _isImageUrl(message.document)) ...[
+                                    _buildImageWidget(
+                                        message.document!, isCurrentUser),
+                                    if (hasTextMessage)
+                                      const SizedBox(height: 8),
+                                  ],
+                                  // Display document link if it's not an image
+                                  if (hasImage &&
+                                      !_isImageUrl(message.document)) ...[
+                                    GestureDetector(
+                                      onTap: () =>
+                                          _openDocument(message.document!),
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color: isCurrentUser
+                                              ? Colors.blue.shade700
+                                              : (isDarkMode
+                                                  ? Colors.grey.shade700
+                                                  : Colors.grey.shade300),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              _getFileIcon(message.document!),
+                                              size: 24,
+                                              color: isCurrentUser
+                                                  ? Colors.white70
+                                                  : Colors.blue,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Flexible(
+                                              // Add Flexible to constrain the Column
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    _getFileNameFromUrl(
+                                                        message.document!),
+                                                    style: TextStyle(
+                                                      fontSize: 10,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color: isCurrentUser
+                                                          ? Colors.white
+                                                          : Colors.black,
+                                                    ),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    maxLines: 2,
+                                                  ),
+                                                  Text(
+                                                    _getFileSizeAndType(
+                                                        message.document!),
+                                                    style: TextStyle(
+                                                      fontSize: 10,
+                                                      color: isCurrentUser
+                                                          ? Colors.white70
+                                                          : Colors
+                                                              .grey.shade600,
+                                                    ),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    maxLines: 2,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    if (hasTextMessage)
+                                      const SizedBox(height: 8),
+                                  ],
+                                  // Display text message if present
+                                  if (hasTextMessage)
+                                    Text(
+                                      message.message!,
+                                      style: TextStyle(
+                                        fontSize: 14,
                                         color: isCurrentUser
-                                            ? Colors.blue.shade700
+                                            ? Colors.white
                                             : (isDarkMode
-                                                ? Colors.grey.shade700
-                                                : Colors.grey.shade300),
-                                        borderRadius: BorderRadius.circular(8),
+                                                ? Colors.white
+                                                : Colors.black),
                                       ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(
-                                            _getFileIcon(message.document!),
-                                            size: 24,
-                                            color: isCurrentUser
-                                                ? Colors.white70
-                                                : Colors.blue,
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                _getFileNameFromUrl(
-                                                    message.document!),
-                                                style: TextStyle(
-                                                  fontSize: 10,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: isCurrentUser
-                                                      ? Colors.white
-                                                      : Colors.black,
-                                                ),
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 2,
-                                              ),
-                                              Text(
-                                                _getFileSizeAndType(
-                                                    message.document!),
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  color: isCurrentUser
-                                                      ? Colors.white70
-                                                      : Colors.grey.shade600,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
+                                      softWrap: true, // Allow text to wrap
+                                      overflow: TextOverflow
+                                          .clip, // Handle overflow gracefully
                                     ),
-                                  ),
-                                  if (hasTextMessage) const SizedBox(height: 8),
-                                ],
-                                // Display text message if present
-                                if (hasTextMessage)
+                                  const SizedBox(height: 4),
                                   Text(
-                                    message.message!,
+                                    message.timestamp != null
+                                        ? DateFormat('h:mm a').format(
+                                            message.timestamp!.toLocal())
+                                        : '',
                                     style: TextStyle(
-                                      fontSize: 14,
+                                      fontSize: 10,
                                       color: isCurrentUser
-                                          ? Colors.white
+                                          ? Colors.white70
                                           : (isDarkMode
-                                              ? Colors.white
-                                              : Colors.black),
+                                              ? Colors.grey.shade400
+                                              : Colors.grey.shade600),
                                     ),
                                   ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  message.timestamp != null
-                                      ? DateFormat('h:mm a')
-                                          .format(message.timestamp!.toLocal())
-                                      : '',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: isCurrentUser
-                                        ? Colors.white70
-                                        : (isDarkMode
-                                            ? Colors.grey.shade400
-                                            : Colors.grey.shade600),
-                                  ),
-                                )
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
