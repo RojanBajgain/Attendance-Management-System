@@ -20,7 +20,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
   @override
   void initState() {
     super.initState();
-    notificationcontroller.getNotification();
+    if (notificationcontroller.notification.isEmpty) {
+      notificationcontroller.getNotification();
+    }
   }
 
   @override

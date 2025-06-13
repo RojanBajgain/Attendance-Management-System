@@ -44,18 +44,25 @@ class _ConstantAppBarState extends State<ConstantAppBar> {
       ),
       actions: <Widget>[
         IconButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const NotificationsPage(),
-              ),
-            );
+          onPressed: () async {
+            await notificationcontroller.markAllAsRead();
+            Future.delayed(const Duration(milliseconds: 100), () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const NotificationsPage(),
+                ),
+              );
+            });
           },
           icon: badges.Badge(
-            showBadge: notificationcontroller.notification.isNotEmpty,
+            showBadge: notificationcontroller.notification
+                .any((notif) => notif.isRead == false),
             badgeContent: Text(
-              notificationcontroller.notification.length.toString(),
+              notificationcontroller.notification
+                  .where((notif) => notif.isRead == false)
+                  .length
+                  .toString(),
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 12,
