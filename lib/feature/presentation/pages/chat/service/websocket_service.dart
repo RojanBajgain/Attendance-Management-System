@@ -1,81 +1,107 @@
-// import 'dart:async';
-// import 'dart:convert';
-// import 'package:web_socket_channel/web_socket_channel.dart';
-// import 'package:web_socket_channel/status.dart' as status;
-// import 'package:ams/feature/presentation/pages/chat/model/chat_model.dart';
+import 'dart:convert';
+import 'dart:developer';
+import 'package:ams/feature/data/datasource/remote/api_urls.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket_channel/status.dart' as status;
 
-// class WebSocketService {
-//   // Singleton instance
-//   static final WebSocketService _instance = WebSocketService._internal();
-//   factory WebSocketService() => _instance;
-//   WebSocketService._internal();
+class WebSocketService {
+  WebSocketChannel? _channel;
+  String? _token;
+  String? _organization;
+  bool _isConnected = false;
 
-//   WebSocketChannel? _channel;
-//   final _messageController = StreamController<ChatModel>.broadcast();
-//   bool _isConnected = false;
+  // Singleton pattern
+  static final WebSocketService _instance = WebSocketService._internal();
+  factory WebSocketService() => _instance;
+  WebSocketService._internal();
 
-//   // Expose stream of messages
-//   Stream<ChatModel> get messageStream => _messageController.stream;
-//   bool get isConnected => _isConnected;
+  // Getters
+  bool get isConnected => _isConnected;
+  Stream? get stream => _channel?.stream;
 
-//   // Connect to WebSocket with authentication token
-//   void connect(String token, {int? userId}) {
-//     final wsUrl = 'ws://backend.ams.ayata.com.np/ws/chat/';
+  // Connect to WebSocket
+  Future<void> connect({
+    required String token,
+    required String organization,
+  }) async {
+    try {
+      _token = token;
+      _organization = organization;
 
-//     // Add token as query parameter
-//     final authenticatedUrl =
-//         '$wsUrl?token=$token${userId != null ? '&user_id=$userId' : ''}';
+      // Close existing connection if any
+      await disconnect();
 
-//     try {
-//       _channel = WebSocketChannel.connect(Uri.parse(authenticatedUrl));
-//       _isConnected = true;
+      const wsUrl = ApiUrls.chatmessage;
 
-//       // Listen for incoming messages
-//       _channel!.stream.listen(
-//         (message) {
-//           try {
-//             final decodedMessage = json.decode(message);
-//             final chatMessage = ChatModel.fromJson(decodedMessage);
-//             _messageController.add(chatMessage);
-//           } catch (e) {
-//             print('Error processing WebSocket message: $e');
-//           }
-//         },
-//         onDone: () {
-//           _isConnected = false;
-//           print('WebSocket connection closed');
-//         },
-//         onError: (error) {
-//           _isConnected = false;
-//           print('WebSocket error: $error');
-//         },
-//       );
-//     } catch (e) {
-//       print('Failed to connect to WebSocket: $e');
-//       _isConnected = false;
-//     }
-//   }
+      // Create WebSocket connection
+      _channel = WebSocketChannel.connect(
+        Uri.parse(wsUrl),
+        protocols: null,
+      );
 
-//   // Send a message through WebSocket
-//   void sendMessage(Map<String, dynamic> message) {
-//     if (_isConnected && _channel != null) {
-//       _channel!.sink.add(json.encode(message));
-//     } else {
-//       print('Cannot send message: WebSocket not connected');
-//     }
-//   }
+      // Send authentication after connection
+      _channel?.sink.add(jsonEncode({
+        // 'type': 'auth',
+        'token': token,
+        'organization': organization,
+      }));
 
-//   // Close the WebSocket connection
-//   void disconnect() {
-//     if (_channel != null) {
-//       _channel!.sink.close(status.goingAway);
-//       _isConnected = false;
-//     }
-//   }
+      _isConnected = true;
+      log('WebSocket connected successfully');
 
-//   // Dispose resources
-//   void dispose() {
-//     disconnect();
-//     _messageController.close();
-//   }
-// }
+      // Listen for connection close
+      _channel?.stream.listen(
+        (data) {
+          log('WebSocket received: $data');
+        },
+        onError: (error) {
+          log('WebSocket error: $error');
+          _isConnected = false;
+        },
+        onDone: () {
+          log('WebSocket connection closed');
+          _isConnected = false;
+        },
+      );
+    } catch (e) {
+      log('WebSocket connection failed: $e');
+      _isConnected = false;
+      rethrow;
+    }
+  }
+
+  // Send message via WebSocket
+  void sendMessage(Map<String, dynamic> message) {
+    if (_isConnected && _channel != null) {
+      try {
+        final messageJson = jsonEncode(message);
+        _channel?.sink.add(messageJson);
+        log('WebSocket message sent: $messageJson');
+      } catch (e) {
+        log('Error sending WebSocket message: $e');
+      }
+    } else {
+      log('WebSocket not connected, cannot send message');
+    }
+  }
+
+  // Disconnect WebSocket
+  Future<void> disconnect() async {
+    if (_channel != null) {
+      try {
+        await _channel?.sink.close(status.goingAway);
+        _isConnected = false;
+        log('WebSocket disconnected');
+      } catch (e) {
+        log('Error disconnecting WebSocket: $e');
+      }
+    }
+  }
+
+  // Reconnect WebSocket
+  Future<void> reconnect() async {
+    if (_token != null && _organization != null) {
+      await connect(token: _token!, organization: _organization!);
+    }
+  }
+}

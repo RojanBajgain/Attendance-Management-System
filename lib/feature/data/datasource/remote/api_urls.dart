@@ -7,17 +7,20 @@ class ApiUrls {
 
 //  static const String baseUrl = "http://192.168.254.45:8000/";
 
-  static const String baseUrl = "http://192.168.254.45:8000/";
-
   // static const String baseUrl = "http://192.168.0.103:8000/";
 
   // static const String baseUrl = "http://192.168.10.92:8000/";
 
   // static const String baseUrl = "https://backend.ams.ayata.com.np/";
 
+  static const String baseUrl = "http://192.168.254.45:8000/";
+
   static const String login = "api/login/";
 
   static const String logout = "api/logout/";
+
+  static const String wsUrl = "ws://192.168.254.45:8000/ws/";
+  static const String chatmessage = "ws://192.168.254.45:8000/ws/chat/";
 
   // static const String register = "auth/register/";
 
@@ -82,13 +85,9 @@ class ApiUrls {
   static const String onbreak = "api/timesheets/breaktime/start/";
   static const String onresume = "api/timesheets/breaktime/resume/";
 
-  static const String wsUrl = "ws://192.168.254.45:8000/ws/";
-
   static const String chat = "api/message/chat/";
 
   // static const String chatmessage = "ws://backend.ams.ayata.com.np/ws/chat/";
-
-  static const String chatmessage = "'ws://192.168.254.45:8000/ws/chat/'";
 
   static const String eventpolicy = "api/policies/calender/";
 

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/chat/controller/chat_controller.dart';
 import 'package:ams/feature/presentation/pages/chat/model/chat_model.dart';
+import 'package:ams/feature/presentation/pages/chat/widget/websocket_status_widget.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
 import 'package:ams/feature/utils/ssnackbar_utils.dart';
@@ -454,6 +455,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       ),
       body: Column(
         children: [
+          const WebSocketStatusWidget(),
           Expanded(
             child: Obx(() {
               if (chatController.isLoading.value) {
@@ -499,8 +501,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                         Flexible(
                           child: ConstrainedBox(
                             constraints: BoxConstraints(
-                              maxWidth: MediaQuery.of(context).size.width *
-                                  0.7, // Limit to 70% of screen width
+                              maxWidth: MediaQuery.of(context).size.width * 0.7,
                             ),
                             child: Container(
                               padding: const EdgeInsets.all(12),
@@ -615,9 +616,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                                 ? Colors.white
                                                 : Colors.black),
                                       ),
-                                      softWrap: true, // Allow text to wrap
-                                      overflow: TextOverflow
-                                          .clip, // Handle overflow gracefully
+                                      softWrap: true,
+                                      overflow: TextOverflow.clip,
                                     ),
                                   const SizedBox(height: 4),
                                   Text(

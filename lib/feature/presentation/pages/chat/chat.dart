@@ -2,12 +2,9 @@ import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/chat/controller/chat_controller.dart';
 import 'package:ams/feature/presentation/pages/chat/model/chat_model.dart';
 import 'package:ams/feature/presentation/pages/chat/sub_view_chat/chat_card.dart';
-import 'package:ams/feature/presentation/pages/chat/sub_view_chat/message_page.dart';
-import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 
 class ChatsScreen extends StatelessWidget {
   const ChatsScreen({super.key});
@@ -131,7 +128,6 @@ class ChatsScreen extends StatelessWidget {
               return ChatCard(
                 chat: chat,
                 onTap: () {
-                  // Optional: Add any additional logic when chat is tapped
                   print('Chat tapped: ${chat.id}');
                 },
               );

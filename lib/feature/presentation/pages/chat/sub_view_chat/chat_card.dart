@@ -12,17 +12,15 @@ class ChatCard extends StatelessWidget {
   final ChatModel chat;
   final VoidCallback? onTap;
 
-  const ChatCard({
-    super.key,
-    required this.chat,
-    this.onTap,
-  });
+  const ChatCard({super.key, required this.chat, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    final ChatController chatController = Get.find<ChatController>();
     final profileController = Get.find<ProfileController>();
-    final currentUserId = profileController.profile.first.id ?? 0;
+    final currentUserId = profileController.profile.first.id ?? 1;
 
     // Determine who is the other user (not the current user)
     final isCurrentUserSender = chat.sender?.id == currentUserId;
