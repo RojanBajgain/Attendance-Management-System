@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'package:ams/feature/data/datasource/remote/api_urls.dart';
+import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
+import 'package:get/get.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as status;
 
@@ -8,100 +11,222 @@ class WebSocketService {
   WebSocketChannel? _channel;
   String? _token;
   String? _organization;
-  bool _isConnected = false;
+  StreamController<dynamic>? _messageController;
+
+  // Make this reactive
+  final RxBool _isConnected = false.obs;
+  bool _isConnecting = false;
+  StreamSubscription? _streamSubscription;
+  Timer? _reconnectTimer;
+
+  final profilecontroller = Get.find<ProfileController>();
 
   // Singleton pattern
   static final WebSocketService _instance = WebSocketService._internal();
   factory WebSocketService() => _instance;
-  WebSocketService._internal();
+  WebSocketService._internal() {
+    _messageController = StreamController<dynamic>.broadcast();
+  }
 
-  // Getters
-  bool get isConnected => _isConnected;
-  Stream? get stream => _channel?.stream;
+  // Getters - make isConnected reactive
+  RxBool get isConnected => _isConnected;
+  bool get isConnecting => _isConnecting;
+  Stream<dynamic>? get stream => _messageController?.stream;
 
   // Connect to WebSocket
   Future<void> connect({
     required String token,
     required String organization,
+    int retryCount = 0,
   }) async {
-    try {
-      _token = token;
-      _organization = organization;
+    if (_isConnecting) return;
 
+    _isConnecting = true;
+    _token = token;
+    _organization = organization;
+
+    try {
       // Close existing connection if any
       await disconnect();
 
-      const wsUrl = ApiUrls.chatmessage;
+      // Construct WebSocket URL
+      final baseUrl = ApiUrls.wsUrl
+          .replaceAll('http://', 'ws://')
+          .replaceAll('https://', 'wss://');
+      final userId = profilecontroller.profile.first.id;
+      final wsUrl = '${baseUrl}chat/${userId}_$organization/';
+
+      log('Attempting WebSocket connection to: $wsUrl');
 
       // Create WebSocket connection
       _channel = WebSocketChannel.connect(
         Uri.parse(wsUrl),
-        protocols: null,
+        protocols: ['chat'],
       );
 
-      // Send authentication after connection
-      _channel?.sink.add(jsonEncode({
-        // 'type': 'auth',
+      // Set up listeners
+      _streamSubscription = _channel?.stream.listen(
+        (message) {
+          log('Raw WebSocket message: $message');
+          _handleIncomingMessage(message);
+          // Forward message to our broadcast stream
+          _messageController?.add(message);
+        },
+        onError: _handleConnectionError,
+        onDone: _handleConnectionClosed,
+      );
+
+      // Send authentication
+      final authMessage = jsonEncode({
+        'type': 'auth',
         'token': token,
         'organization': organization,
-      }));
+        'user_id': userId,
+      });
+      _channel?.sink.add(authMessage);
 
-      _isConnected = true;
+      // Update connection status reactively
+      _isConnected.value = true;
       log('WebSocket connected successfully');
 
-      // Listen for connection close
-      _channel?.stream.listen(
-        (data) {
-          log('WebSocket received: $data');
-        },
-        onError: (error) {
-          log('WebSocket error: $error');
-          _isConnected = false;
-        },
-        onDone: () {
-          log('WebSocket connection closed');
-          _isConnected = false;
-        },
-      );
+      // Cancel any pending reconnection attempts
+      _reconnectTimer?.cancel();
+      _reconnectTimer = null;
     } catch (e) {
       log('WebSocket connection failed: $e');
-      _isConnected = false;
-      rethrow;
+      _isConnected.value = false;
+
+      // Schedule reconnection if this wasn't already a retry
+      if (retryCount < 3) {
+        _scheduleReconnect(retryCount + 1);
+      }
+    } finally {
+      _isConnecting = false;
     }
+  }
+
+  void _handleIncomingMessage(dynamic message) {
+    try {
+      log('Processing WebSocket message: $message');
+
+      // Try to parse as JSON
+      if (message is String) {
+        try {
+          final data = jsonDecode(message);
+          if (data is Map<String, dynamic>) {
+            _processMessage(data);
+          }
+        } catch (e) {
+          log('Failed to parse message as JSON: $e');
+          // Handle as plain text if needed
+        }
+      } else if (message is Map<String, dynamic>) {
+        _processMessage(message);
+      }
+    } catch (e) {
+      log('Error processing WebSocket message: $e');
+    }
+  }
+
+  void _processMessage(Map<String, dynamic> data) {
+    if (data.containsKey('type')) {
+      switch (data['type']) {
+        case 'auth_response':
+          if (data['status'] == 'success') {
+            log('WebSocket authenticated successfully');
+            _isConnected.value = true;
+          } else {
+            log('WebSocket authentication failed: ${data['message']}');
+            disconnect();
+          }
+          break;
+        case 'chat_message':
+          log('Received chat message via WebSocket');
+          break;
+        default:
+          log('Unknown message type: ${data['type']}');
+      }
+    } else {
+      // Handle direct message format (like your log shows)
+      if (data.containsKey('id') && data.containsKey('message')) {
+        log('Received direct message format via WebSocket');
+      }
+    }
+  }
+
+  void _handleConnectionError(dynamic error) {
+    log('WebSocket error: $error');
+    _isConnected.value = false;
+    _scheduleReconnect();
+  }
+
+  void _handleConnectionClosed() {
+    log('WebSocket connection closed');
+    _isConnected.value = false;
+    _scheduleReconnect();
+  }
+
+  void _scheduleReconnect([int retryCount = 0]) {
+    if (_reconnectTimer != null || _isConnecting) return;
+
+    // Exponential backoff for reconnection
+    final delay = Duration(seconds: 2 * (retryCount + 1));
+    log('Scheduling WebSocket reconnection in ${delay.inSeconds} seconds...');
+
+    _reconnectTimer = Timer(delay, () {
+      if (_token != null && _organization != null) {
+        connect(
+          token: _token!,
+          organization: _organization!,
+          retryCount: retryCount,
+        );
+      }
+    });
   }
 
   // Send message via WebSocket
   void sendMessage(Map<String, dynamic> message) {
-    if (_isConnected && _channel != null) {
-      try {
-        final messageJson = jsonEncode(message);
-        _channel?.sink.add(messageJson);
-        log('WebSocket message sent: $messageJson');
-      } catch (e) {
-        log('Error sending WebSocket message: $e');
-      }
-    } else {
-      log('WebSocket not connected, cannot send message');
+    if (!_isConnected.value || _channel == null) {
+      log('Cannot send message - WebSocket not connected');
+      return;
+    }
+
+    try {
+      final fullMessage = {
+        'type': 'chat_message',
+        'timestamp': DateTime.now().toIso8601String(),
+        ...message,
+      };
+      _channel?.sink.add(jsonEncode(fullMessage));
+      log('WebSocket message sent: $fullMessage');
+    } catch (e) {
+      log('Error sending WebSocket message: $e');
     }
   }
 
   // Disconnect WebSocket
   Future<void> disconnect() async {
-    if (_channel != null) {
-      try {
-        await _channel?.sink.close(status.goingAway);
-        _isConnected = false;
-        log('WebSocket disconnected');
-      } catch (e) {
-        log('Error disconnecting WebSocket: $e');
-      }
+    _reconnectTimer?.cancel();
+    _reconnectTimer = null;
+
+    try {
+      await _streamSubscription?.cancel();
+      await _channel?.sink.close(status.goingAway);
+      log('WebSocket disconnected');
+    } catch (e) {
+      log('Error disconnecting WebSocket: $e');
+    } finally {
+      _channel = null;
+      _streamSubscription = null;
+      _isConnected.value = false;
+      _isConnecting = false;
     }
   }
 
-  // Reconnect WebSocket
-  Future<void> reconnect() async {
-    if (_token != null && _organization != null) {
-      await connect(token: _token!, organization: _organization!);
-    }
+  // Clean up resources
+  void dispose() {
+    disconnect();
+    _messageController?.close();
+    _messageController = null;
   }
 }

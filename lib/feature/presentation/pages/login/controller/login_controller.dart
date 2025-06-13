@@ -309,7 +309,7 @@ class AuthController extends GetxController {
 
         // Check number of organizations
         final organizations = alluserData.value.organization ?? [];
-        await Future.delayed(const Duration(milliseconds: 500));
+        await Future.delayed(const Duration(milliseconds: 50));
 
         if (organizations.isEmpty) {
           Get.back();

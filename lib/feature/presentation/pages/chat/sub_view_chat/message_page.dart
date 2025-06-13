@@ -38,9 +38,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadMessages();
-    });
+    _loadMessages();
   }
 
   void _loadMessages() {

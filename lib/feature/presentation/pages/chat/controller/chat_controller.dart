@@ -44,29 +44,42 @@ class ChatController extends GetxController {
       final token = chatRepo.apiClient.token;
       final organization = chatRepo.apiClient.organization;
 
+      if (token.isEmpty || organization.isEmpty) {
+        log('Token or organization not available');
+        return;
+      }
+
       await _webSocketService.connect(
         token: token,
         organization: organization,
       );
 
-      isWebSocketConnected.value = _webSocketService.isConnected;
-
-      // Listen to WebSocket messages
+      // Set up WebSocket message listener
       _webSocketService.stream?.listen(
         (message) {
+          log('WebSocket message received: $message');
           _handleWebSocketMessage(message);
         },
         onError: (error) {
-          log('WebSocket stream error: $error');
+          log('WebSocket error: $error');
           isWebSocketConnected.value = false;
         },
         onDone: () {
-          log('WebSocket stream closed');
+          log('WebSocket connection closed');
           isWebSocketConnected.value = false;
         },
       );
+
+      // Set up reactive connection status tracking
+      ever(_webSocketService.isConnected, (connected) {
+        isWebSocketConnected.value = connected;
+        log('WebSocket connection status changed: $connected');
+      });
+
+      // Initial connection status
+      isWebSocketConnected.value = _webSocketService.isConnected.value;
     } catch (e) {
-      log('Failed to initialize WebSocket: $e');
+      log('WebSocket init error: $e');
       isWebSocketConnected.value = false;
     }
   }
@@ -74,24 +87,41 @@ class ChatController extends GetxController {
   // Handle incoming WebSocket messages
   void _handleWebSocketMessage(dynamic message) {
     try {
-      final data = message is String ? jsonDecode(message) : message;
+      Map<String, dynamic> data;
 
-      if (data is Map<String, dynamic>) {
-        log('Received WebSocket message: $data');
+      if (message is String) {
+        data = jsonDecode(message);
+      } else if (message is Map<String, dynamic>) {
+        data = message;
+      } else {
+        log('Unknown message format: $message');
+        return;
+      }
 
-        // Handle different message types
+      log('Parsed WebSocket message: $data');
+
+      // Handle different message types based on your WebSocket structure
+      if (data.containsKey('type')) {
         switch (data['type']) {
           case 'chat_message':
             _handleNewChatMessage(data);
             break;
           case 'auth_success':
             log('WebSocket authentication successful');
+            isWebSocketConnected.value = true;
             break;
           case 'auth_error':
             log('WebSocket authentication failed');
+            isWebSocketConnected.value = false;
             break;
           default:
             log('Unknown WebSocket message type: ${data['type']}');
+        }
+      } else {
+        // Handle direct message format (like in your log)
+        // This handles the format: {"id": 8, "receiver": {...}, "sender": {...}, "message": "hello"}
+        if (data.containsKey('id') && data.containsKey('message')) {
+          _handleDirectMessage(data);
         }
       }
     } catch (e) {
@@ -99,29 +129,108 @@ class ChatController extends GetxController {
     }
   }
 
-  // Handle new chat message from WebSocket
-  void _handleNewChatMessage(Map<String, dynamic> data) {
+  // Handle direct message format (from your WebSocket log)
+  void _handleDirectMessage(Map<String, dynamic> data) {
     try {
-      final newMessage = ChatByIdModel.fromJson(data['message']);
+      log('Processing direct message: $data');
+
+      // Convert the message to ChatByIdModel format
+      final newMessage = ChatByIdModel(
+        id: data['id'],
+        message: data['message'],
+        timestamp:
+            DateTime.now(), // or parse from data if timestamp is available
+        sender: data['sender'] != null
+            ? Receiver(
+                id: data['sender']['id'],
+                user: data['sender']['user'],
+                isActive: data['sender']['is_active'],
+                profileImage: data['sender']['profile_image'],
+              )
+            : null,
+        receiver: data['receiver'] != null
+            ? Receiver(
+                id: data['receiver']['id'],
+                user: data['receiver']['user'],
+                isActive: data['receiver']['is_active'],
+                profileImage: data['receiver']['profile_image'],
+              )
+            : null,
+        department: data['department'],
+        document: data['document'],
+      );
 
       // Check if this message belongs to current chat
-      final isForCurrentUserChat = currentChatUserId.value > 0 &&
-          (newMessage.sender?.id == currentChatUserId.value ||
-              newMessage.receiver?.id == currentChatUserId.value);
+      final isForCurrentUserChat = _isMessageForCurrentUserChat(newMessage);
+      final isForCurrentDepartmentChat =
+          _isMessageForCurrentDepartmentChat(newMessage);
 
-      final isForCurrentDepartmentChat = currentChatDepartmentId.value > 0 &&
-          newMessage.department == currentChatDepartmentId.value;
+      log('Message for current user chat: $isForCurrentUserChat');
+      log('Message for current department chat: $isForCurrentDepartmentChat');
+      log('Current user ID: ${currentChatUserId.value}');
+      log('Current department ID: ${currentChatDepartmentId.value}');
+
+      if (isForCurrentUserChat || isForCurrentDepartmentChat) {
+        // Add to current chat messages at the beginning (since we're using reverse ListView)
+        currentChatMessages.insert(0, newMessage);
+        log('Added message to current chat. Total messages: ${currentChatMessages.length}');
+
+        // Force UI update by refreshing the observable
+        currentChatMessages.refresh();
+
+        // Refresh chat list to update last message
+        _updateChatsList(newMessage);
+      } else {
+        log('Message not for current chat, just updating chats list');
+        _updateChatsList(newMessage);
+      }
+    } catch (e) {
+      log('Error handling direct message: $e');
+    }
+  }
+
+  void _updateChatsList(ChatByIdModel newMessage) {
+    final chatIndex = chats.indexWhere((chat) {
+      if (newMessage.department != null) {
+        return chat.department?.id == newMessage.department;
+      } else {
+        return chat.sender?.id == newMessage.sender?.id ||
+            chat.receiver?.id == newMessage.sender?.id;
+      }
+    });
+
+    if (chatIndex != -1) {
+      final updatedChat = chats[chatIndex].copyWith(
+        message: newMessage.message,
+        timestamp: newMessage.timestamp,
+      );
+      chats[chatIndex] = updatedChat;
+      chats.refresh();
+    }
+  }
+
+  // Handle new chat message from WebSocket (structured format)
+  void _handleNewChatMessage(Map<String, dynamic> data) {
+    try {
+      // Expecting structure: {"type": "chat_message", "message": {...}}
+      if (!data.containsKey('message')) {
+        log('Chat message data missing message field');
+        return;
+      }
+
+      final messageData = data['message'];
+      final newMessage = ChatByIdModel.fromJson(messageData);
+
+      // Check if this message belongs to current chat
+      final isForCurrentUserChat = _isMessageForCurrentUserChat(newMessage);
+      final isForCurrentDepartmentChat =
+          _isMessageForCurrentDepartmentChat(newMessage);
 
       if (isForCurrentUserChat || isForCurrentDepartmentChat) {
         // Add to current chat messages
         currentChatMessages.insert(0, newMessage);
-
-        // Show notification
-        SSnackbarUtil.showSnackbar(
-          'New Message',
-          newMessage.message ?? 'New message received',
-          SnackbarType.info,
-        );
+        // Force UI update
+        currentChatMessages.refresh();
       }
 
       // Refresh chat list to update last message
@@ -131,9 +240,23 @@ class ChatController extends GetxController {
     }
   }
 
+  // Helper methods to check if message is for current chat
+  bool _isMessageForCurrentUserChat(ChatByIdModel message) {
+    if (currentChatUserId.value <= 0) return false;
+
+    return (message.sender?.id == currentChatUserId.value ||
+        message.receiver?.id == currentChatUserId.value);
+  }
+
+  bool _isMessageForCurrentDepartmentChat(ChatByIdModel message) {
+    if (currentChatDepartmentId.value <= 0) return false;
+
+    return message.department == currentChatDepartmentId.value;
+  }
+
   // Reconnect WebSocket if needed
   Future<void> reconnectWebSocket() async {
-    if (!_webSocketService.isConnected) {
+    if (!_webSocketService.isConnected.value) {
       await _initializeWebSocket();
     }
   }
@@ -156,22 +279,10 @@ class ChatController extends GetxController {
           if (b.timestamp == null) return -1;
           return b.timestamp!.compareTo(a.timestamp!);
         });
-      } else {
-        errorMessage.value = response.message ?? 'Failed to fetch chats';
-        SSnackbarUtil.showSnackbar(
-          'Chat Error',
-          errorMessage.value,
-          SnackbarType.error,
-        );
       }
     } catch (e) {
       errorMessage.value = 'An error occurred: $e';
       log('Error in getAllChats: $e');
-      SSnackbarUtil.showSnackbar(
-        'Chat Error',
-        errorMessage.value,
-        SnackbarType.error,
-      );
     } finally {
       isLoading(false);
     }
@@ -191,11 +302,13 @@ class ChatController extends GetxController {
         response = await chatRepo.getDepartmentMessages(departmentId);
         currentChatDepartmentId.value = departmentId;
         currentChatUserId.value = 0; // No specific user for department chat
+        log('Loading department chat for department ID: $departmentId');
       } else {
         // User chat
         response = await chatRepo.getUserMessages(userId);
         currentChatUserId.value = userId;
         currentChatDepartmentId.value = 0; // No department for user chat
+        log('Loading user chat for user ID: $userId');
       }
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
@@ -215,20 +328,10 @@ class ChatController extends GetxController {
         log('Loaded ${currentChatMessages.length} messages');
       } else {
         errorMessage.value = response.message ?? 'Failed to fetch messages';
-        SSnackbarUtil.showSnackbar(
-          'Chat Error',
-          errorMessage.value,
-          SnackbarType.error,
-        );
       }
     } catch (e) {
       errorMessage.value = 'An error occurred: $e';
       log('Error in getChatMessagesForUser: $e');
-      SSnackbarUtil.showSnackbar(
-        'Chat Error',
-        errorMessage.value,
-        SnackbarType.error,
-      );
     } finally {
       isLoading(false);
     }
@@ -243,7 +346,7 @@ class ChatController extends GetxController {
       isSending.value = true;
 
       // Send via WebSocket if connected
-      if (_webSocketService.isConnected) {
+      if (_webSocketService.isConnected.value) {
         _webSocketService.sendMessage({
           'message': message,
           'receiver_id': receiverId,
@@ -260,13 +363,13 @@ class ChatController extends GetxController {
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
         // Message sent successfully
-        print('Message sent successfully');
+        log('Message sent successfully');
       } else {
         // Handle API error
         throw Exception(response.message ?? 'Failed to send message');
       }
     } catch (e) {
-      print('Error sending message: $e');
+      log('Error sending message: $e');
       rethrow; // Re-throw so the UI can handle the error
     } finally {
       isSending.value = false;
@@ -292,13 +395,13 @@ class ChatController extends GetxController {
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
         // File sent successfully
-        print('File sent successfully');
+        log('File sent successfully');
       } else {
         // Handle API error
         throw Exception(response.message ?? 'Failed to send file');
       }
     } catch (e) {
-      print('Error sending file: $e');
+      log('Error sending file: $e');
       rethrow; // Re-throw so the UI can handle the error
     } finally {
       isSending.value = false;
@@ -318,6 +421,7 @@ class ChatController extends GetxController {
   // Add method to send messages (when you implement WebSocket)
   void addMessageToCurrentChat(ChatByIdModel message) {
     currentChatMessages.insert(0, message);
+    currentChatMessages.refresh();
   }
 
   // Add method to clear current chat when switching conversations

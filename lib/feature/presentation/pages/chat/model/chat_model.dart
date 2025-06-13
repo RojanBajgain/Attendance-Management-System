@@ -21,6 +21,30 @@ class ChatModel {
     this.mediaUrl,
   });
 
+  ChatModel copyWith({
+    int? id,
+    String? document,
+    Sender? receiver,
+    Sender? sender,
+    Department? department,
+    String? message,
+    DateTime? timestamp,
+    bool? hasRead,
+    dynamic mediaUrl,
+  }) {
+    return ChatModel(
+      id: id ?? this.id,
+      document: document ?? this.document,
+      receiver: receiver ?? this.receiver,
+      sender: sender ?? this.sender,
+      department: department ?? this.department,
+      message: message ?? this.message,
+      timestamp: timestamp ?? this.timestamp,
+      hasRead: hasRead ?? this.hasRead,
+      mediaUrl: mediaUrl ?? this.mediaUrl,
+    );
+  }
+
   factory ChatModel.fromJson(Map<String, dynamic> json) => ChatModel(
         id: json["id"],
         document: json["document"],
