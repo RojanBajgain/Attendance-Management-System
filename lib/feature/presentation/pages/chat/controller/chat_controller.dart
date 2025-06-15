@@ -5,7 +5,6 @@ import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/repository/chat_repo.dart';
 import 'package:ams/feature/presentation/pages/chat/model/chat_model.dart';
 import 'package:ams/feature/presentation/pages/chat/model/get_chat_by_id.dart';
-import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:get/get.dart';
 
 import '../service/websocket_service.dart';
@@ -138,8 +137,7 @@ class ChatController extends GetxController {
       final newMessage = ChatByIdModel(
         id: data['id'],
         message: data['message'],
-        timestamp:
-            DateTime.now(), // or parse from data if timestamp is available
+        timestamp: DateTime.now(),
         sender: data['sender'] != null
             ? Receiver(
                 id: data['sender']['id'],
@@ -167,18 +165,27 @@ class ChatController extends GetxController {
 
       log('Message for current user chat: $isForCurrentUserChat');
       log('Message for current department chat: $isForCurrentDepartmentChat');
-      log('Current user ID: ${currentChatUserId.value}');
-      log('Current department ID: ${currentChatDepartmentId.value}');
 
       if (isForCurrentUserChat || isForCurrentDepartmentChat) {
-        // Add to current chat messages at the beginning (since we're using reverse ListView)
-        currentChatMessages.insert(0, newMessage);
-        log('Added message to current chat. Total messages: ${currentChatMessages.length}');
+        // Check if message already exists to avoid duplicates
+        final existingMessageIndex = currentChatMessages.indexWhere(
+          (msg) => msg.id == newMessage.id,
+        );
 
-        // Force UI update by refreshing the observable
+        if (existingMessageIndex == -1) {
+          // Add new message only if it doesn't exist
+          currentChatMessages.insert(0, newMessage);
+          log('Added new message to current chat. Total messages: ${currentChatMessages.length}');
+        } else {
+          // Update existing message (in case it was a temporary one)
+          currentChatMessages[existingMessageIndex] = newMessage;
+          log('Updated existing message in current chat');
+        }
+
+        // Force UI update
         currentChatMessages.refresh();
 
-        // Refresh chat list to update last message
+        // Update chat list
         _updateChatsList(newMessage);
       } else {
         log('Message not for current chat, just updating chats list');
@@ -186,6 +193,14 @@ class ChatController extends GetxController {
       }
     } catch (e) {
       log('Error handling direct message: $e');
+    }
+  }
+
+  void replaceTemporaryMessage(int tempId, ChatByIdModel realMessage) {
+    final tempIndex = currentChatMessages.indexWhere((msg) => msg.id == tempId);
+    if (tempIndex != -1) {
+      currentChatMessages[tempIndex] = realMessage;
+      currentChatMessages.refresh();
     }
   }
 
@@ -362,8 +377,14 @@ class ChatController extends GetxController {
       );
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
-        // Message sent successfully
+        // Message sent successfully - don't reload, let WebSocket handle updates
         log('Message sent successfully');
+
+        // Optionally update the temporary message with server response
+        if (response.response is Map<String, dynamic>) {
+          final serverMessage = ChatByIdModel.fromJson(response.response);
+          // You could replace the temporary message here if needed
+        }
       } else {
         // Handle API error
         throw Exception(response.message ?? 'Failed to send message');
@@ -394,8 +415,21 @@ class ChatController extends GetxController {
       );
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
-        // File sent successfully
+        // File sent successfully - don't reload, let WebSocket handle updates
         log('File sent successfully');
+
+        // Update temporary message with real server URL if available
+        if (response.response is Map<String, dynamic>) {
+          final serverMessage = ChatByIdModel.fromJson(response.response);
+          // Replace the temporary message with local file path with server URL
+          final tempIndex = currentChatMessages.indexWhere(
+            (msg) => msg.document?.startsWith('/') == true, // Local file path
+          );
+          if (tempIndex != -1) {
+            currentChatMessages[tempIndex] = serverMessage;
+            currentChatMessages.refresh();
+          }
+        }
       } else {
         // Handle API error
         throw Exception(response.message ?? 'Failed to send file');

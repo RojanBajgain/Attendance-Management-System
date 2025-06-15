@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/chat/controller/chat_controller.dart';
 import 'package:ams/feature/presentation/pages/chat/model/chat_model.dart';
+import 'package:ams/feature/presentation/pages/chat/model/get_chat_by_id.dart';
 import 'package:ams/feature/presentation/pages/chat/widget/websocket_status_widget.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
@@ -59,15 +60,38 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       _messageController.clear();
 
       final isDepartmentChat = widget.department != null;
+      final currentUserId = profileController.profile.first.id ?? 0;
 
-      // Send the message
+      // Create a temporary message object for immediate UI update
+      final tempMessage = ChatByIdModel(
+        id: DateTime.now().millisecondsSinceEpoch,
+        message: messageText,
+        timestamp: DateTime.now(),
+        sender: Receiver(
+          id: currentUserId,
+          // user: profileController.profile.first.user ?? 'You',
+          profileImage: profileController.profile.first.profileImage,
+        ),
+        receiver: isDepartmentChat
+            ? null
+            : Receiver(
+                id: widget.otherUser.id,
+                user: widget.otherUser.user,
+                profileImage: widget.otherUser.profileImage,
+              ),
+        department: isDepartmentChat ? widget.department?.id : null,
+        document: null,
+      );
+
+      // Add message to UI immediately
+      chatController.addMessageToCurrentChat(tempMessage);
+
+      // Send the message via API/WebSocket
       await chatController.sendMessage(
         message: messageText,
         receiverId: isDepartmentChat ? null : widget.otherUser.id,
         departmentId: isDepartmentChat ? widget.department?.id : null,
       );
-
-      _loadMessages();
 
       // Scroll to bottom to show the new message
       if (_scrollController.hasClients) {
@@ -78,9 +102,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         );
       }
     } catch (e) {
+      // Remove the temporary message on error
+      if (chatController.currentChatMessages.isNotEmpty) {
+        chatController.currentChatMessages.removeAt(0);
+      }
+
       SSnackbarUtil.showSnackbar(
         'Error',
-        "Failed to send message",
+        "Something went wrong, Failed to send message.",
         SnackbarType.error,
       );
 
@@ -91,8 +120,32 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
   void _sendImageOrDocument(File file, {String? message}) async {
     try {
-      // Determine if we're sending to a user or department
       final isDepartmentChat = widget.department != null;
+      final currentUserId = profileController.profile.first.id ?? 0;
+
+      // Create a temporary message object for immediate UI update
+      final tempMessage = ChatByIdModel(
+        id: DateTime.now().millisecondsSinceEpoch,
+        message: message ?? '',
+        timestamp: DateTime.now(),
+        sender: Receiver(
+          id: currentUserId,
+          // user: profileController.profile.first.user ?? 'You',
+          profileImage: profileController.profile.first.profileImage,
+        ),
+        receiver: isDepartmentChat
+            ? null
+            : Receiver(
+                id: widget.otherUser.id,
+                user: widget.otherUser.user,
+                profileImage: widget.otherUser.profileImage,
+              ),
+        department: isDepartmentChat ? widget.department?.id : null,
+        document: file.path, // Show local file path temporarily
+      );
+
+      // Add message to UI immediately
+      chatController.addMessageToCurrentChat(tempMessage);
 
       // Send the file
       await chatController.sendMessageWithFile(
@@ -101,9 +154,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         receiverId: isDepartmentChat ? null : widget.otherUser.id,
         departmentId: isDepartmentChat ? widget.department?.id : null,
       );
-
-      // Reload messages to show the new message
-      _loadMessages();
 
       // Scroll to bottom to show the new message
       if (_scrollController.hasClients) {
@@ -114,6 +164,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         );
       }
     } catch (e) {
+      // Remove the temporary message on error
+      if (chatController.currentChatMessages.isNotEmpty) {
+        chatController.currentChatMessages.removeAt(0);
+      }
+
       SSnackbarUtil.showSnackbar(
         'Error',
         "Failed to send message",
@@ -409,10 +464,12 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     final path = uri.path.toLowerCase();
 
     if (path.endsWith('.pdf')) return Icons.picture_as_pdf;
-    if (path.endsWith('.doc') || path.endsWith('.docx'))
+    if (path.endsWith('.doc') || path.endsWith('.docx')) {
       return Icons.description;
-    if (path.endsWith('.xls') || path.endsWith('.xlsx'))
+    }
+    if (path.endsWith('.xls') || path.endsWith('.xlsx')) {
       return Icons.table_chart;
+    }
     if (path.endsWith('.ppt') || path.endsWith('.pptx')) return Icons.slideshow;
     if (path.endsWith('.zip') || path.endsWith('.rar')) return Icons.archive;
     if (path.endsWith('.txt')) return Icons.text_snippet;
@@ -427,7 +484,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       final extension = path.split('.').last;
 
       // You could enhance this to show actual file size if you have that information
-      return extension.toUpperCase() + ' file';
+      return '${extension.toUpperCase()} file';
     } catch (e) {
       return 'Document';
     }
