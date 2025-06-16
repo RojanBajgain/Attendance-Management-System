@@ -43,11 +43,13 @@ class HasClockedinController extends GetxController {
       // Get current user ID from profile controller
       final profileController = Get.find<ProfileController>();
       if (profileController.profile.isEmpty ||
-          profileController.profile.first.device?.deviceUserId == null) {
+          profileController.profile.first.userRecords.first.employeeNo ==
+              null) {
         return false;
       }
 
-      int currentUserId = profileController.profile.first.device!.deviceUserId!;
+      int currentUserId =
+          profileController.profile.first.userRecords.first.employeeNo;
 
       if (lastUserId.value != null && lastUserId.value != currentUserId) {
         log("User has changed from ${lastUserId.value} to $currentUserId");

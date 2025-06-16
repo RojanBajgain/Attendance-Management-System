@@ -282,8 +282,8 @@ class TimerController extends GetxController {
     // Get current user ID if available
     final profileController = Get.find<ProfileController>();
     if (profileController.profile.isNotEmpty &&
-        profileController.profile.first.device?.deviceUserId != null) {
-      int userId = profileController.profile.first.device!.deviceUserId!;
+        profileController.profile.first.userRecords.first.employeeNo != null) {
+      int userId = profileController.profile.first.userRecords.first.employeeNo;
       await prefs.setString('clockInTime_$userId', time);
     }
 

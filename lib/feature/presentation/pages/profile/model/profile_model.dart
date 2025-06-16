@@ -45,7 +45,6 @@ class Datum {
   String profileImage;
   List<Document> documents;
   List<BankDetail> bankDetails;
-  Device? device;
   DateTime joinedDate;
   bool isActive;
   String role;
@@ -55,7 +54,8 @@ class Datum {
   List<Address> addresses;
   Organization organization;
   String status;
-  dynamic grossSalary;
+  String grossSalary;
+  List<UserRecord> userRecords;
   String username;
   String email;
 
@@ -71,7 +71,6 @@ class Datum {
     this.profileImage = '',
     this.documents = const [],
     this.bankDetails = const [],
-    this.device,
     required this.joinedDate,
     this.isActive = false,
     this.role = '',
@@ -81,7 +80,8 @@ class Datum {
     this.addresses = const [],
     required this.organization,
     this.status = '',
-    this.grossSalary,
+    this.grossSalary = '',
+    this.userRecords = const [],
     this.username = '',
     this.email = '',
   });
@@ -100,7 +100,6 @@ class Datum {
             (json["documents"] ?? []).map((x) => Document.fromJson(x))),
         bankDetails: List<BankDetail>.from(
             (json["bank_details"] ?? []).map((x) => BankDetail.fromJson(x))),
-        device: json["device"] != null ? Device.fromJson(json["device"]) : null,
         joinedDate: DateTime.parse(json["joined_date"]),
         isActive: json["is_active"] ?? false,
         role: json["role"] ?? '',
@@ -111,7 +110,9 @@ class Datum {
             (json["addresses"] ?? []).map((x) => Address.fromJson(x))),
         organization: Organization.fromJson(json["organization"]),
         status: json["status"] ?? '',
-        grossSalary: json["gross_salary"],
+        grossSalary: json["gross_salary"] ?? '',
+        userRecords: List<UserRecord>.from(
+            (json["user_records"] ?? []).map((x) => UserRecord.fromJson(x))),
         username: json["username"] ?? '',
         email: json["email"] ?? '',
       );
@@ -128,7 +129,6 @@ class Datum {
         "profile_image": profileImage,
         "documents": documents.map((x) => x.toJson()).toList(),
         "bank_details": bankDetails.map((x) => x.toJson()).toList(),
-        "device": device?.toJson(),
         "joined_date": joinedDate.toIso8601String(),
         "is_active": isActive,
         "role": role,
@@ -139,6 +139,7 @@ class Datum {
         "organization": organization.toJson(),
         "status": status,
         "gross_salary": grossSalary,
+        "user_records": List<dynamic>.from(userRecords.map((x) => x.toJson())),
         "username": username,
         "email": email,
       };
@@ -458,5 +459,29 @@ class Country {
         "id": id,
         "name": name,
         "code": code,
+      };
+}
+
+class UserRecord {
+  int employeeNo;
+  String name;
+  String organization;
+
+  UserRecord({
+    this.employeeNo = 0,
+    this.name = '',
+    this.organization = '',
+  });
+
+  factory UserRecord.fromJson(Map<String, dynamic> json) => UserRecord(
+        employeeNo: json["employee_no"] ?? 0,
+        name: json["name"] ?? '',
+        organization: json["organization"] ?? '',
+      );
+
+  Map<String, dynamic> toJson() => {
+        "employee_no": employeeNo,
+        "name": name,
+        "organization": organization,
       };
 }

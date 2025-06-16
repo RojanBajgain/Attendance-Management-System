@@ -40,7 +40,7 @@ class CalenderNotificationController extends GetxController {
         log("Parsed ${eventCalenders.length} events: ${eventCalenders.map((e) => e.toJson())}");
       } else {
         log("Error: ${response.message}");
-        errorMessage.value = response.message ?? "Unknown error";
+        // errorMessage.value = response.message ?? "Unknown error";
       }
     } catch (e, stackTrace) {
       log("Error fetching calendar events: $e", stackTrace: stackTrace);

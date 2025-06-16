@@ -114,7 +114,7 @@ class _ProfilePageState extends State<ProfilePage> {
               _buildPersonalInfo(isDarkMode, 0),
               _buildDocuments(isDarkMode, 1),
               _buildBankDetails(isDarkMode, 2),
-              _buildDeviceDetails(isDarkMode, 3),
+              // _buildDeviceDetails(isDarkMode, 3),
               _buildChangePassword(),
               _buildTheme(),
               // _buildBiometrics(isDarkMode),
@@ -407,58 +407,58 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildDeviceDetails(bool isDarkMode, int index) {
-    return ProfileMenu(
-      text: "Device Details",
-      icon: Icons.tv_outlined,
-      isExpanded: _currentlyExpandedIndex == index,
-      onExpandToggle: () => _handleTileExpansion(index),
-      expandedContent: _buildExpandedContent(
-        isDarkMode,
-        child: Obx(() {
-          if (profilecontroller.isLoading.value) {
-            return const ShrimmerEffect.rectangular(height: 200);
-          }
+  // Widget _buildDeviceDetails(bool isDarkMode, int index) {
+  //   return ProfileMenu(
+  //     text: "Device Details",
+  //     icon: Icons.tv_outlined,
+  //     isExpanded: _currentlyExpandedIndex == index,
+  //     onExpandToggle: () => _handleTileExpansion(index),
+  //     expandedContent: _buildExpandedContent(
+  //       isDarkMode,
+  //       child: Obx(() {
+  //         if (profilecontroller.isLoading.value) {
+  //           return const ShrimmerEffect.rectangular(height: 200);
+  //         }
 
-          final profileData = profilecontroller.profile;
-          return SizedBox(
-            height: 70,
-            width: MediaQuery.of(context).size.width,
-            child: ListView.builder(
-              padding: EdgeInsets.zero,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: profileData.length,
-              itemBuilder: (BuildContext context, int index) {
-                final profiledata = profileData[index];
-                final device = profiledata.device;
-                return _buildDeviceDetail(device, isDarkMode);
-              },
-            ),
-          );
-        }),
-      ),
-    );
-  }
+  //         final profileData = profilecontroller.profile;
+  //         return SizedBox(
+  //           height: 70,
+  //           width: MediaQuery.of(context).size.width,
+  //           child: ListView.builder(
+  //             padding: EdgeInsets.zero,
+  //             shrinkWrap: true,
+  //             physics: const NeverScrollableScrollPhysics(),
+  //             itemCount: profileData.length,
+  //             itemBuilder: (BuildContext context, int index) {
+  //               final profiledata = profileData[index];
+  //               final device = profiledata.device;
+  //               return _buildDeviceDetail(device, isDarkMode);
+  //             },
+  //           ),
+  //         );
+  //       }),
+  //     ),
+  //   );
+  // }
 
-  Widget _buildDeviceDetail(Device? device, bool isDarkMode) {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      padding: const EdgeInsets.symmetric(vertical: 1.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildRow(
-              'Finger Print ID:',
-              device != null && device.fingerprintId.isNotEmpty
-                  ? device.fingerprintId
-                  : 'N/A'),
-          _buildRow('Device ID:',
-              device != null ? device.deviceUserId.toString() : 'N/A'),
-        ],
-      ),
-    );
-  }
+  // Widget _buildDeviceDetail(Device? device, bool isDarkMode) {
+  //   return Container(
+  //     width: MediaQuery.of(context).size.width,
+  //     padding: const EdgeInsets.symmetric(vertical: 1.0),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         _buildRow(
+  //             'Finger Print ID:',
+  //             device != null && device.fingerprintId.isNotEmpty
+  //                 ? device.fingerprintId
+  //                 : 'N/A'),
+  //         _buildRow('Device ID:',
+  //             device != null ? device.deviceUserId.toString() : 'N/A'),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildChangePassword() {
     return ProfileMenu(

@@ -51,7 +51,7 @@ class _ClockTimeState extends State<ClockTime> {
 
     // Check if user has changed
     if (profileController.profile.isNotEmpty &&
-        profileController.profile.first.device?.deviceUserId != null) {
+        profileController.profile.first.userRecords.first.employeeNo != null) {
       // Make sure the HasClockedinController knows about any user changes
       await hasClockedinController.handleUserChanged();
     }
@@ -192,7 +192,8 @@ class _ClockTimeState extends State<ClockTime> {
 
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.best);
-    int? deviceId = profileController.profile.first.device?.deviceUserId;
+    int? deviceId =
+        profileController.profile.first.userRecords.first.employeeNo;
     if (deviceId == null) {
       SSnackbarUtil.showSnackbar("Error",
           "Device info not found. Please log in again.", SnackbarType.error);
@@ -298,7 +299,8 @@ class _ClockTimeState extends State<ClockTime> {
 
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.best);
-    int? employeeId = profileController.profile.first.device?.deviceUserId;
+    int? employeeId =
+        profileController.profile.first.userRecords.first.employeeNo;
     if (employeeId == null) {
       SSnackbarUtil.showSnackbar("Error",
           "Employee info not found. Please log in again.", SnackbarType.error);
