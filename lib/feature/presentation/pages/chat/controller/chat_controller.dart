@@ -4,20 +4,22 @@ import 'dart:io';
 import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/repository/chat_repo.dart';
 import 'package:ams/feature/presentation/pages/chat/model/chat_model.dart';
-import 'package:ams/feature/presentation/pages/chat/model/get_chat_by_id.dart';
+import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
 import 'package:get/get.dart';
 
 import '../service/websocket_service.dart';
 
 class ChatController extends GetxController {
   var chats = <ChatModel>[].obs;
-  var currentChatMessages = <ChatByIdModel>[].obs;
+  var currentChatMessages = <ChatModel>[].obs;
   var isLoading = false.obs;
   var errorMessage = ''.obs;
   var currentChatUserId = 0.obs;
   var currentChatDepartmentId = 0.obs;
   final RxBool isSending = false.obs;
   final RxBool isWebSocketConnected = false.obs;
+
+  final ProfileController profilecontroller = Get.find<ProfileController>();
 
   final ChatRepo chatRepo;
   final WebSocketService _webSocketService = WebSocketService();
@@ -117,8 +119,6 @@ class ChatController extends GetxController {
             log('Unknown WebSocket message type: ${data['type']}');
         }
       } else {
-        // Handle direct message format (like in your log)
-        // This handles the format: {"id": 8, "receiver": {...}, "sender": {...}, "message": "hello"}
         if (data.containsKey('id') && data.containsKey('message')) {
           _handleDirectMessage(data);
         }
@@ -128,75 +128,85 @@ class ChatController extends GetxController {
     }
   }
 
-  // Handle direct message format (from your WebSocket log)
-  void _handleDirectMessage(Map<String, dynamic> data) {
+  // Add this new helper method
+  void _addMessageToCurrentChat(ChatModel message) {
     try {
-      log('Processing direct message: $data');
+      log('➕ Adding message to current chat: ${message.id}');
 
-      // Convert the message to ChatByIdModel format
-      final newMessage = ChatByIdModel(
-        id: data['id'],
-        message: data['message'],
-        timestamp: DateTime.now(),
-        sender: data['sender'] != null
-            ? Receiver(
-                id: data['sender']['id'],
-                user: data['sender']['user'],
-                isActive: data['sender']['is_active'],
-                profileImage: data['sender']['profile_image'],
-              )
-            : null,
-        receiver: data['receiver'] != null
-            ? Receiver(
-                id: data['receiver']['id'],
-                user: data['receiver']['user'],
-                isActive: data['receiver']['is_active'],
-                profileImage: data['receiver']['profile_image'],
-              )
-            : null,
-        department: data['department'],
-        document: data['document'],
-      );
+      // Check if message already exists
+      final existingIndex =
+          currentChatMessages.indexWhere((m) => m.id == message.id);
 
-      // Check if this message belongs to current chat
-      final isForCurrentUserChat = _isMessageForCurrentUserChat(newMessage);
-      final isForCurrentDepartmentChat =
-          _isMessageForCurrentDepartmentChat(newMessage);
-
-      log('Message for current user chat: $isForCurrentUserChat');
-      log('Message for current department chat: $isForCurrentDepartmentChat');
-
-      if (isForCurrentUserChat || isForCurrentDepartmentChat) {
-        // Check if message already exists to avoid duplicates
-        final existingMessageIndex = currentChatMessages.indexWhere(
-          (msg) => msg.id == newMessage.id,
-        );
-
-        if (existingMessageIndex == -1) {
-          // Add new message only if it doesn't exist
-          currentChatMessages.insert(0, newMessage);
-          log('Added new message to current chat. Total messages: ${currentChatMessages.length}');
-        } else {
-          // Update existing message (in case it was a temporary one)
-          currentChatMessages[existingMessageIndex] = newMessage;
-          log('Updated existing message in current chat');
-        }
-
-        // Force UI update
-        currentChatMessages.refresh();
-
-        // Update chat list
-        _updateChatsList(newMessage);
+      if (existingIndex == -1) {
+        // New message - add to beginning
+        currentChatMessages.insert(0, message);
+        log('   - Added new message');
       } else {
-        log('Message not for current chat, just updating chats list');
-        _updateChatsList(newMessage);
+        // Existing message - update it
+        currentChatMessages[existingIndex] = message;
+        log('   - Updated existing message');
       }
+
+      // Sort by timestamp (newest first)
+      currentChatMessages.sort((a, b) => b.timestamp!.compareTo(a.timestamp!));
+      currentChatMessages.refresh();
     } catch (e) {
-      log('Error handling direct message: $e');
+      log('Error adding message to current chat: $e');
     }
   }
 
-  void replaceTemporaryMessage(int tempId, ChatByIdModel realMessage) {
+  // Then update your _handleDirectMessage to use this method:
+  void _handleDirectMessage(Map<String, dynamic> data) {
+    try {
+      log('🔍 DEBUGGING MESSAGE MATCHING:');
+      log('📱 Current state: userId=${currentChatUserId.value}, deptId=${currentChatDepartmentId.value}');
+
+      final newMessage = ChatModel.fromJson(data);
+
+      // Enhanced logging
+      log('📨 Message details:');
+      log('   - Message ID: ${newMessage.id}');
+      log('   - Sender: ${newMessage.sender?.user} (${newMessage.sender?.id})');
+      log('   - Receiver: ${newMessage.receiver?.user} (${newMessage.receiver?.id})');
+      log('   - Department: ${newMessage.department?.name} (${newMessage.department?.id})');
+      log('   - Message: "${newMessage.message}"');
+
+      // Determine message type and if it belongs to current chat
+      bool isForCurrentChat = false;
+
+      // Check for department message first
+      if (newMessage.department != null) {
+        log('🏢 Department message detected');
+        isForCurrentChat =
+            currentChatDepartmentId.value == newMessage.department!.id;
+      }
+      // Check for user message
+      else if (newMessage.receiver != null) {
+        log('👤 User message detected');
+        isForCurrentChat = _isMessageForCurrentUserChat(newMessage);
+      }
+      // Handle potential department message without department field (workaround)
+      else if (currentChatDepartmentId.value > 0) {
+        log('⚠️ Potential department message without department field');
+        isForCurrentChat = true; // Assuming it's for current department
+      }
+
+      log('🎯 Message belongs to current chat: $isForCurrentChat');
+
+      if (isForCurrentChat) {
+        log('✅ ADDING MESSAGE TO CURRENT CHAT!');
+        _addMessageToCurrentChat(newMessage);
+      } else {
+        log('❌ Message not for current chat - updating list only');
+      }
+
+      _updateChatsList(newMessage);
+    } catch (e, stackTrace) {
+      log('💥 Error in _handleDirectMessage: $e\n$stackTrace');
+    }
+  }
+
+  void replaceTemporaryMessage(int tempId, ChatModel realMessage) {
     final tempIndex = currentChatMessages.indexWhere((msg) => msg.id == tempId);
     if (tempIndex != -1) {
       currentChatMessages[tempIndex] = realMessage;
@@ -204,37 +214,60 @@ class ChatController extends GetxController {
     }
   }
 
-  void _updateChatsList(ChatByIdModel newMessage) {
-    final chatIndex = chats.indexWhere((chat) {
-      if (newMessage.department != null) {
-        return chat.department?.id == newMessage.department;
-      } else {
-        return chat.sender?.id == newMessage.sender?.id ||
-            chat.receiver?.id == newMessage.sender?.id;
-      }
-    });
+  void _updateChatsList(ChatModel newMessage) {
+    try {
+      log('🔄 Updating chats list');
 
-    if (chatIndex != -1) {
-      final updatedChat = chats[chatIndex].copyWith(
-        message: newMessage.message,
-        timestamp: newMessage.timestamp,
-      );
-      chats[chatIndex] = updatedChat;
+      final chatIndex = chats.indexWhere((chat) {
+        // For department messages
+        if (newMessage.department != null) {
+          return chat.department?.id == newMessage.department?.id;
+        }
+        // For user messages
+        else if (newMessage.receiver != null) {
+          final currentUserId = profilecontroller.profile.first.id;
+          return (chat.sender?.id == newMessage.sender?.id &&
+                  chat.receiver?.id == currentUserId) ||
+              (chat.sender?.id == currentUserId &&
+                  chat.receiver?.id == newMessage.sender?.id);
+        }
+        // For potential department messages without department field
+        else {
+          return chat.department?.id == currentChatDepartmentId.value;
+        }
+      });
+
+      if (chatIndex != -1) {
+        log('   - Updating existing chat at index $chatIndex');
+        final updatedChat = chats[chatIndex].copyWith(
+          message: newMessage.message,
+          timestamp: newMessage.timestamp,
+          hasRead: newMessage.hasRead,
+        );
+        chats[chatIndex] = updatedChat;
+      } else {
+        log('   - Adding new chat to list');
+        chats.insert(0, newMessage);
+      }
+
+      // Sort by timestamp (newest first)
+      chats.sort((a, b) => b.timestamp!.compareTo(a.timestamp!));
       chats.refresh();
+    } catch (e) {
+      log('Error updating chats list: $e');
     }
   }
 
   // Handle new chat message from WebSocket (structured format)
   void _handleNewChatMessage(Map<String, dynamic> data) {
     try {
-      // Expecting structure: {"type": "chat_message", "message": {...}}
       if (!data.containsKey('message')) {
         log('Chat message data missing message field');
         return;
       }
 
       final messageData = data['message'];
-      final newMessage = ChatByIdModel.fromJson(messageData);
+      final newMessage = ChatModel.fromJson(messageData);
 
       // Check if this message belongs to current chat
       final isForCurrentUserChat = _isMessageForCurrentUserChat(newMessage);
@@ -242,31 +275,112 @@ class ChatController extends GetxController {
           _isMessageForCurrentDepartmentChat(newMessage);
 
       if (isForCurrentUserChat || isForCurrentDepartmentChat) {
-        // Add to current chat messages
         currentChatMessages.insert(0, newMessage);
+
         // Force UI update
         currentChatMessages.refresh();
       }
 
-      // Refresh chat list to update last message
       getAllChats();
     } catch (e) {
       log('Error handling new chat message: $e');
     }
   }
 
-  // Helper methods to check if message is for current chat
-  bool _isMessageForCurrentUserChat(ChatByIdModel message) {
-    if (currentChatUserId.value <= 0) return false;
+  bool _isMessageForCurrentUserChat(ChatModel message) {
+    if (currentChatUserId.value <= 0) {
+      log('🔍 No current user chat active');
+      return false;
+    }
 
-    return (message.sender?.id == currentChatUserId.value ||
-        message.receiver?.id == currentChatUserId.value);
+    final currentUserId = profilecontroller.profile.first.id;
+    final isFromCurrentUser = message.sender?.id == currentUserId;
+    final isToCurrentUser = message.receiver?.id == currentUserId;
+    final isFromCurrentChatUser = message.sender?.id == currentChatUserId.value;
+    final isToCurrentChatUser = message.receiver?.id == currentChatUserId.value;
+
+    // Message is between current user and current chat user
+    final isMatch = (isFromCurrentUser && isToCurrentChatUser) ||
+        (isToCurrentUser && isFromCurrentChatUser);
+
+    log('👤 User message check:');
+    log('   - Current user ID: $currentUserId');
+    log('   - Current chat user ID: ${currentChatUserId.value}');
+    log('   - From current user: $isFromCurrentUser');
+    log('   - To current user: $isToCurrentUser');
+    log('   - From chat user: $isFromCurrentChatUser');
+    log('   - To chat user: $isToCurrentChatUser');
+    log('   - Match: $isMatch');
+
+    return isMatch;
   }
 
-  bool _isMessageForCurrentDepartmentChat(ChatByIdModel message) {
-    if (currentChatDepartmentId.value <= 0) return false;
+  bool _isDepartmentMessageBasedOnUsers(ChatModel message) {
+    try {
+      // This is a workaround method since your backend sends department: null
+      // You need to implement logic based on your business requirements
 
-    return message.department == currentChatDepartmentId.value;
+      final currentUserId = profilecontroller.profile.first.id;
+      final departmentID = currentChatDepartmentId.value;
+
+      log('🔍 Inferring department message:');
+      log('   - Current user ID: $currentUserId');
+      log('   - Current dept ID: ${currentChatDepartmentId.value}');
+      log('   - Message sender ID: ${message.sender?.id}');
+      log('   - Message receiver ID: ${message.receiver?.id}');
+
+      // Example logic - adjust based on your needs:
+      // If the receiver is the current user and we're in a department chat,
+      // assume this message belongs to the current department
+      if (message.receiver?.id == currentUserId &&
+          currentChatDepartmentId.value > 0) {
+        log('   - Message is for current user in dept chat context');
+        return true;
+      }
+      if (message.receiver?.id == departmentID &&
+          currentChatDepartmentId.value > 0) {
+        log('   - Message is for current department in dept chat context');
+        return true;
+      }
+
+      // If the sender is the current user and we're in a department chat,
+      // assume this message belongs to the current department
+      if (message.sender?.id == currentUserId &&
+          currentChatDepartmentId.value > 0) {
+        log('   - Message is from current user in dept chat context');
+        return true;
+      }
+
+      // 🔥 IMPORTANT: You should work with your backend team to fix this
+      // The proper solution is to have the WebSocket send the correct department field
+
+      return false;
+    } catch (e) {
+      log('Error in _isDepartmentMessageBasedOnUsers: $e');
+      return false;
+    }
+  }
+
+// Enhanced department chat matching with debugging
+  bool _isMessageForCurrentDepartmentChat(ChatModel message) {
+    if (currentChatDepartmentId.value <= 0) {
+      log('🔍 Dept chat check: No current department chat (currentChatDepartmentId: ${currentChatDepartmentId.value})');
+      return false;
+    }
+
+    if (message.department == null) {
+      log('🔍 Dept chat check: Message has no department - using inference');
+      return _isDepartmentMessageBasedOnUsers(message);
+    }
+
+    log('🔍 Department chat matching:');
+    log('   - Current dept ID: ${currentChatDepartmentId.value}');
+    log('   - Message dept ID: ${message.department?.id}');
+
+    final isMatch = message.department!.id == currentChatDepartmentId.value;
+    log('   - Final result: $isMatch');
+
+    return isMatch;
   }
 
   // Reconnect WebSocket if needed
@@ -303,7 +417,7 @@ class ChatController extends GetxController {
     }
   }
 
-  // Get messages for user chat (admin messages)
+  // Get messages for user chat (admin messages) - updated to use ChatModel
   Future<void> getChatMessagesForUser(int userId, {int? departmentId}) async {
     isLoading(true);
     errorMessage('');
@@ -315,24 +429,26 @@ class ChatController extends GetxController {
       if (departmentId != null && departmentId > 0) {
         // Department chat
         response = await chatRepo.getDepartmentMessages(departmentId);
+
+        // 🔥 FIX: Set the current chat IDs properly
         currentChatDepartmentId.value = departmentId;
-        currentChatUserId.value = 0; // No specific user for department chat
-        log('Loading department chat for department ID: $departmentId');
+        currentChatUserId.value = 0; // Clear user chat ID
+        log('✅ SET current department chat ID: $departmentId');
       } else {
         // User chat
         response = await chatRepo.getUserMessages(userId);
+
+        // 🔥 FIX: Set the current chat IDs properly
         currentChatUserId.value = userId;
-        currentChatDepartmentId.value = 0; // No department for user chat
-        log('Loading user chat for user ID: $userId');
+        currentChatDepartmentId.value = 0; // Clear department chat ID
+        log('✅ SET current user chat ID: $userId');
       }
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
-        // Parse the message data
         List<dynamic> messageData = response.response;
         currentChatMessages.value =
-            messageData.map((json) => ChatByIdModel.fromJson(json)).toList();
+            messageData.map((json) => ChatModel.fromJson(json)).toList();
 
-        // Sort messages by timestamp (newest first for reverse ListView)
         currentChatMessages.sort((a, b) {
           if (a.timestamp == null && b.timestamp == null) return 0;
           if (a.timestamp == null) return 1;
@@ -340,7 +456,7 @@ class ChatController extends GetxController {
           return b.timestamp!.compareTo(a.timestamp!);
         });
 
-        log('Loaded ${currentChatMessages.length} messages');
+        log('Loaded ${currentChatMessages.length} messages for ${departmentId != null ? 'department $departmentId' : 'user $userId'}');
       } else {
         errorMessage.value = response.message ?? 'Failed to fetch messages';
       }
@@ -349,6 +465,23 @@ class ChatController extends GetxController {
       log('Error in getChatMessagesForUser: $e');
     } finally {
       isLoading(false);
+    }
+  }
+
+  void setCurrentChat({int? userId, int? departmentId}) {
+    if (departmentId != null && departmentId > 0) {
+      currentChatDepartmentId.value = departmentId;
+      currentChatUserId.value = 0;
+      log('✅ Switched to department chat: $departmentId');
+    } else if (userId != null && userId > 0) {
+      currentChatUserId.value = userId;
+      currentChatDepartmentId.value = 0;
+      log('✅ Switched to user chat: $userId');
+    } else {
+      // Clear both if neither is provided
+      currentChatUserId.value = 0;
+      currentChatDepartmentId.value = 0;
+      log('✅ Cleared current chat context');
     }
   }
 
@@ -377,13 +510,12 @@ class ChatController extends GetxController {
       );
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
-        // Message sent successfully - don't reload, let WebSocket handle updates
+        // Message sent successfully
         log('Message sent successfully');
 
         // Optionally update the temporary message with server response
         if (response.response is Map<String, dynamic>) {
-          final serverMessage = ChatByIdModel.fromJson(response.response);
-          // You could replace the temporary message here if needed
+          final serverMessage = ChatModel.fromJson(response.response);
         }
       } else {
         // Handle API error
@@ -415,21 +547,8 @@ class ChatController extends GetxController {
       );
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
-        // File sent successfully - don't reload, let WebSocket handle updates
+        // File sent successfully
         log('File sent successfully');
-
-        // Update temporary message with real server URL if available
-        if (response.response is Map<String, dynamic>) {
-          final serverMessage = ChatByIdModel.fromJson(response.response);
-          // Replace the temporary message with local file path with server URL
-          final tempIndex = currentChatMessages.indexWhere(
-            (msg) => msg.document?.startsWith('/') == true, // Local file path
-          );
-          if (tempIndex != -1) {
-            currentChatMessages[tempIndex] = serverMessage;
-            currentChatMessages.refresh();
-          }
-        }
       } else {
         // Handle API error
         throw Exception(response.message ?? 'Failed to send file');
@@ -444,7 +563,7 @@ class ChatController extends GetxController {
 
   // Separate method specifically for department messages
   Future<void> getDepartmentMessages(int departmentId) async {
-    await getChatMessagesForUser(0, departmentId: departmentId);
+    await getChatMessagesForUser(1, departmentId: departmentId);
   }
 
   // Separate method specifically for user messages
@@ -452,8 +571,7 @@ class ChatController extends GetxController {
     await getChatMessagesForUser(userId);
   }
 
-  // Add method to send messages (when you implement WebSocket)
-  void addMessageToCurrentChat(ChatByIdModel message) {
+  void addMessageToCurrentChat(ChatModel message) {
     currentChatMessages.insert(0, message);
     currentChatMessages.refresh();
   }

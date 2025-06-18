@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/chat/controller/chat_controller.dart';
 import 'package:ams/feature/presentation/pages/chat/model/chat_model.dart';
-import 'package:ams/feature/presentation/pages/chat/model/get_chat_by_id.dart';
 import 'package:ams/feature/presentation/pages/chat/widget/websocket_status_widget.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
@@ -62,25 +61,27 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       final isDepartmentChat = widget.department != null;
       final currentUserId = profileController.profile.first.id ?? 0;
 
-      // Create a temporary message object for immediate UI update
-      final tempMessage = ChatByIdModel(
-        id: DateTime.now().millisecondsSinceEpoch,
+      // Create a temporary message object using ChatModel
+      final tempMessage = ChatModel(
+        id: DateTime.now().millisecondsSinceEpoch, // Temporary ID
         message: messageText,
         timestamp: DateTime.now(),
-        sender: Receiver(
+        sender: Sender(
           id: currentUserId,
           // user: profileController.profile.first.user ?? 'You',
           profileImage: profileController.profile.first.profileImage,
         ),
         receiver: isDepartmentChat
             ? null
-            : Receiver(
+            : Sender(
                 id: widget.otherUser.id,
                 user: widget.otherUser.user,
                 profileImage: widget.otherUser.profileImage,
               ),
-        department: isDepartmentChat ? widget.department?.id : null,
+        department: isDepartmentChat ? widget.department : null,
         document: null,
+        mediaUrl: null,
+        hasRead: false,
       );
 
       // Add message to UI immediately
@@ -123,25 +124,27 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       final isDepartmentChat = widget.department != null;
       final currentUserId = profileController.profile.first.id ?? 0;
 
-      // Create a temporary message object for immediate UI update
-      final tempMessage = ChatByIdModel(
-        id: DateTime.now().millisecondsSinceEpoch,
+      // Create a temporary message object using ChatModel
+      final tempMessage = ChatModel(
+        id: DateTime.now().millisecondsSinceEpoch, // Temporary ID
         message: message ?? '',
         timestamp: DateTime.now(),
-        sender: Receiver(
+        sender: Sender(
           id: currentUserId,
           // user: profileController.profile.first.user ?? 'You',
           profileImage: profileController.profile.first.profileImage,
         ),
         receiver: isDepartmentChat
             ? null
-            : Receiver(
+            : Sender(
                 id: widget.otherUser.id,
                 user: widget.otherUser.user,
                 profileImage: widget.otherUser.profileImage,
               ),
-        department: isDepartmentChat ? widget.department?.id : null,
+        department: isDepartmentChat ? widget.department : null,
         document: file.path, // Show local file path temporarily
+        mediaUrl: null,
+        hasRead: false,
       );
 
       // Add message to UI immediately
@@ -523,10 +526,23 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 itemBuilder: (context, index) {
                   final message = chatController.currentChatMessages[index];
                   final isCurrentUser = message.sender?.id == currentUserId;
-                  final hasImage =
-                      message.document != null && message.document!.isNotEmpty;
+
+                  // Check for media content - now using mediaUrl or document
+                  final hasImage = (message.mediaUrl != null &&
+                          message.mediaUrl!.isNotEmpty) ||
+                      (message.document != null &&
+                          message.document!.isNotEmpty &&
+                          _isImageUrl(message.document));
+
+                  final hasDocument = message.document != null &&
+                      message.document!.isNotEmpty &&
+                      !_isImageUrl(message.document);
+
                   final hasTextMessage =
                       message.message != null && message.message!.isNotEmpty;
+
+                  // Determine which URL to use for media
+                  final mediaUrl = message.mediaUrl ?? message.document;
 
                   return Container(
                     alignment: isCurrentUser
@@ -579,16 +595,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   // Display image if present
-                                  if (hasImage &&
-                                      _isImageUrl(message.document)) ...[
-                                    _buildImageWidget(
-                                        message.document!, isCurrentUser),
+                                  if (hasImage && mediaUrl != null) ...[
+                                    _buildImageWidget(mediaUrl, isCurrentUser),
                                     if (hasTextMessage)
                                       const SizedBox(height: 8),
                                   ],
                                   // Display document link if it's not an image
-                                  if (hasImage &&
-                                      !_isImageUrl(message.document)) ...[
+                                  if (hasDocument &&
+                                      message.document != null) ...[
                                     GestureDetector(
                                       onTap: () =>
                                           _openDocument(message.document!),
@@ -615,7 +629,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                             ),
                                             const SizedBox(width: 8),
                                             Flexible(
-                                              // Add Flexible to constrain the Column
                                               child: Column(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,

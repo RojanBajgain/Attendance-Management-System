@@ -1,4 +1,5 @@
 import 'package:ams/config/resources/colors.dart';
+import 'package:ams/config/resources/images.dart';
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/forget_password/forget_password.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
@@ -129,7 +130,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            "AYATA",
+                            "Tranquility Spa",
                             style: mediumStyle.copyWith(
                                 color: isDarkMode ? Colors.white : Colors.black,
                                 fontWeight: FontWeight.w600),
@@ -142,8 +143,12 @@ class _LoginPageState extends State<LoginPage> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
-                            "Fill the credentials below to login into AYATA",
-                            style: Theme.of(context).textTheme.titleMedium,
+                            "Fill the credentials below to login into Tranquility Spa.",
+                            style: smallStyle.copyWith(
+                              fontSize: 13,
+                              color:
+                                  isDarkMode ? Colors.white70 : Colors.black54,
+                            ),
                           ),
                         ],
                       ),
@@ -297,7 +302,10 @@ class _LoginPageState extends State<LoginPage> {
                         ],
                       ),
                       const SizedBox(height: 200),
-                      Image.asset("assets/images/logo.png"),
+                      Image.asset(
+                        AppImages.tranquility,
+                        height: 130,
+                      ),
                     ],
                   ),
                 ),

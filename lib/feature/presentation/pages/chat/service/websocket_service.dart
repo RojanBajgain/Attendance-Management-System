@@ -82,6 +82,7 @@ class WebSocketService {
         'token': token,
         'organization': organization,
         'user_id': userId,
+        'department': profilecontroller.profile.first.organization.id,
       });
       _channel?.sink.add(authMessage);
 
@@ -107,22 +108,36 @@ class WebSocketService {
 
   void _handleIncomingMessage(dynamic message) {
     try {
-      log('Processing WebSocket message: $message');
+      log('=== RAW WEBSOCKET MESSAGE ===');
+      log('Message type: ${message.runtimeType}');
 
-      // Try to parse as JSON
+      Map<String, dynamic> data;
+
       if (message is String) {
         try {
-          final data = jsonDecode(message);
-          if (data is Map<String, dynamic>) {
-            _processMessage(data);
-          }
+          data = jsonDecode(message);
         } catch (e) {
           log('Failed to parse message as JSON: $e');
-          // Handle as plain text if needed
+          return;
         }
       } else if (message is Map<String, dynamic>) {
-        _processMessage(message);
+        data = message;
+      } else {
+        log('Unknown message format: $message');
+        return;
       }
+
+      // Enhanced logging
+      log('=== PARSED MESSAGE DATA ===');
+      log('Full message: $data');
+
+      // Check for department field and warn if missing for what appears to be a department message
+      if (data['receiver'] == null && data['department'] == null) {
+        log('⚠️ WARNING: Potential department message missing department field!');
+      }
+
+      // Process the message
+      _processMessage(data);
     } catch (e) {
       log('Error processing WebSocket message: $e');
     }

@@ -60,12 +60,15 @@ class _PaymentSlipState extends State<PaymentSlip> {
                         color: isDarkMode ? Colors.white : Colors.black,
                       ),
                     ),
-                    const Spacer(),
+                    // const Spacer(),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.05,
+                    ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Ayata Incorporation',
+                          'Tranquility Spa',
                           style: smallStyle.copyWith(
                             fontWeight: FontWeight.bold,
                             color: isDarkMode ? Colors.white : Colors.black,
@@ -73,7 +76,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                         ),
                         const SizedBox(height: 5.0),
                         Text(
-                          'Anamnagar, Kathmandu',
+                          'Lazimpat, Kathmandu',
                           style: smallStyle.copyWith(
                             color: isDarkMode ? Colors.white : Colors.black,
                           ),
@@ -81,7 +84,12 @@ class _PaymentSlipState extends State<PaymentSlip> {
                       ],
                     ),
                     const Spacer(),
-                    Image.asset(AppImages.appLogo),
+                    Image.asset(
+                      AppImages.tranquility,
+                      height: 45.0,
+                      width: 45.0,
+                      fit: BoxFit.cover,
+                    ),
                   ],
                 ),
                 const SizedBox(height: 10.0),
@@ -451,6 +459,22 @@ class _PaymentSlipState extends State<PaymentSlip> {
                     ),
                   );
                 }),
+                const SizedBox(height: 10.0),
+                const Divider(
+                  thickness: 0.5,
+                  color: Colors.grey,
+                ),
+                Text(
+                  'Note : Gross Earning - Unpaid Leave - Tax + Reimbursements + Paid Leave',
+                  style: miniStyle.copyWith(
+                    color: isDarkMode ? Colors.white : Colors.grey.shade600,
+                  ),
+                ),
+                // const SizedBox(height: 10.0),
+                // const Divider(
+                //   thickness: 0.5,
+                //   color: Colors.grey,
+                // ),
                 const SizedBox(height: 10.0),
                 Center(
                   child: ElevatedButton(

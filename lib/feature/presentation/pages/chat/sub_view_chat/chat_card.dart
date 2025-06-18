@@ -8,12 +8,17 @@ import 'package:intl/intl.dart';
 import 'package:ams/config/resources/styles.dart';
 import '../model/chat_model.dart';
 
-class ChatCard extends StatelessWidget {
+class ChatCard extends StatefulWidget {
   final ChatModel chat;
   final VoidCallback? onTap;
 
   const ChatCard({super.key, required this.chat, this.onTap});
 
+  @override
+  State<ChatCard> createState() => _ChatCardState();
+}
+
+class _ChatCardState extends State<ChatCard> {
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -23,13 +28,14 @@ class ChatCard extends StatelessWidget {
     final currentUserId = profileController.profile.first.id ?? 1;
 
     // Determine who is the other user (not the current user)
-    final isCurrentUserSender = chat.sender?.id == currentUserId;
-    final otherUser = isCurrentUserSender ? chat.receiver : chat.sender;
+    final isCurrentUserSender = widget.chat.sender?.id == currentUserId;
+    final otherUser =
+        isCurrentUserSender ? widget.chat.receiver : widget.chat.sender;
 
     // Get display name
     String displayName = '';
-    if (chat.department != null) {
-      displayName = chat.department!.name ?? 'Department Chat';
+    if (widget.chat.department != null) {
+      displayName = widget.chat.department!.name ?? 'Department Chat';
     } else if (otherUser != null) {
       displayName = otherUser.user ?? 'Unknown User';
     } else {
@@ -40,16 +46,17 @@ class ChatCard extends StatelessWidget {
       onTap: () {
         final chatController = Get.find<ChatController>();
 
-        if (chat.department != null && chat.department!.id != null) {
+        if (widget.chat.department != null &&
+            widget.chat.department!.id != null) {
           // Department chat
-          chatController.getDepartmentMessages(chat.department!.id!);
+          chatController.getDepartmentMessages(widget.chat.department!.id!);
           Get.to(() => ChatDetailScreen(
                 otherUser: Sender(
                   id: 0,
-                  user: chat.department!.name ?? 'Department',
+                  user: widget.chat.department!.name ?? 'Department',
                   isActive: true,
                 ),
-                department: chat.department,
+                department: widget.chat.department,
               ));
         } else if (otherUser?.id != null && otherUser!.id! > 0) {
           // User chat
@@ -68,7 +75,7 @@ class ChatCard extends StatelessWidget {
         // }
 
         // Call the optional onTap callback
-        onTap?.call();
+        widget.onTap?.call();
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -138,7 +145,7 @@ class ChatCard extends StatelessWidget {
                         child: Text(
                           displayName,
                           style: normalStyle.copyWith(
-                            fontWeight: chat.hasRead == false
+                            fontWeight: widget.chat.hasRead == false
                                 ? FontWeight.bold
                                 : FontWeight.w600,
                             color: isDarkMode ? Colors.white : Colors.black87,
@@ -148,17 +155,17 @@ class ChatCard extends StatelessWidget {
                         ),
                       ),
                       // Time display
-                      if (chat.timestamp != null)
+                      if (widget.chat.timestamp != null)
                         Text(
-                          _getFormattedTime(chat.timestamp!),
+                          _getFormattedTime(widget.chat.timestamp!),
                           style: normalStyle.copyWith(
                             fontSize: 12,
-                            color: chat.hasRead == false
+                            color: widget.chat.hasRead == false
                                 ? Colors.blue
                                 : (isDarkMode
                                     ? Colors.grey.shade400
                                     : Colors.grey.shade600),
-                            fontWeight: chat.hasRead == false
+                            fontWeight: widget.chat.hasRead == false
                                 ? FontWeight.w600
                                 : FontWeight.normal,
                           ),
@@ -170,15 +177,15 @@ class ChatCard extends StatelessWidget {
                     children: [
                       Expanded(
                           child: Text(
-                        _getMessagePreview(chat),
+                        _getMessagePreview(widget.chat),
                         style: normalStyle.copyWith(
-                          color: chat.hasRead == false
+                          color: widget.chat.hasRead == false
                               ? (isDarkMode ? Colors.white : Colors.black87)
                               : (isDarkMode
                                   ? Colors.grey.shade400
                                   : Colors.grey.shade600),
                           fontSize: 14,
-                          fontWeight: chat.hasRead == false
+                          fontWeight: widget.chat.hasRead == false
                               ? FontWeight.w500
                               : FontWeight.normal,
                         ),

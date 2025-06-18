@@ -97,7 +97,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                     const SizedBox(height: 15.0),
                     Container(
-                      height: 90.0,
+                      height: 115.0,
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 22.0, vertical: 22.0),
@@ -139,7 +139,16 @@ class _DashboardPageState extends State<DashboardPage> {
                           ),
                           const SizedBox(height: 5),
                           Text(
-                            'Welcome to Ayata attendance.',
+                            'Welcome to Tranquility Spa',
+                            style: smallStyle.copyWith(
+                              fontWeight: FontWeight.w400,
+                              color:
+                                  isDarkMode ? Colors.black87 : Colors.white70,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            'Department: ${profileController.profile.isNotEmpty ? profileController.profile.first.organization.title : "N/A"}',
                             style: smallStyle.copyWith(
                               fontWeight: FontWeight.w400,
                               color:

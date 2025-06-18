@@ -14,6 +14,7 @@ class AppImages {
   static const backImg = "assets/images/background.jpg";
   static const profileImage = "assets/images/profile_image.png";
   static const EditprofileImage = "assets/images/profile.png";
+  static const tranquility = "assets/images/tranquility_logo.png";
 }
 
 // class AppIcons {

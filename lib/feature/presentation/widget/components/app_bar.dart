@@ -39,7 +39,13 @@ class _ConstantAppBarState extends State<ConstantAppBar> {
         },
         child: Padding(
           padding: const EdgeInsets.all(2.0),
-          child: SvgPicture.asset(AppImages.ayata_ayata),
+          // child: SvgPicture.asset(AppImages.ayata_ayata),
+          child: Image.asset(
+            AppImages.tranquility,
+            height: 45,
+            width: 45,
+            fit: BoxFit.cover,
+          ),
         ),
       ),
       actions: <Widget>[

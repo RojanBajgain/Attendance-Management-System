@@ -330,7 +330,7 @@ class AuthController extends GetxController {
 
         SSnackbarUtil.showSnackbar(
           "Login Successful",
-          "Welcome",
+          "Welcome to Tranquility Spa",
           SnackbarType.success,
           duration: 2,
         );
@@ -438,7 +438,7 @@ class AuthController extends GetxController {
       Get.offAll(() => const LoginPage());
       SSnackbarUtil.showSnackbar(
         'Logout Successful',
-        response.message ?? 'Thank you for using AYATA Attendance.',
+        response.message ?? 'Thank you for using Tranquility Spa.',
         SnackbarType.success,
       );
     } else {

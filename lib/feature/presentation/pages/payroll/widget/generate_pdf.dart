@@ -59,7 +59,7 @@ Future<void> generateAndSavePDF(
   final fontBold = await PdfGoogleFonts.nunitoBold();
 
   // Create company logo image
-  final ByteData logoData = await rootBundle.load(AppImages.appLogo);
+  final ByteData logoData = await rootBundle.load(AppImages.tranquility);
   final Uint8List logoBytes = logoData.buffer.asUint8List();
   final logo = pw.MemoryImage(logoBytes);
 
@@ -80,12 +80,12 @@ Future<void> generateAndSavePDF(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
                       pw.Text(
-                        'Ayata Incorporation',
+                        'Tranquility Spa',
                         style: pw.TextStyle(font: fontBold, fontSize: 16),
                       ),
                       pw.SizedBox(height: 5),
                       pw.Text(
-                        'Anamnagar, Kathmandu',
+                        'Lazimpat,Kathmandu',
                         style: pw.TextStyle(font: font, fontSize: 12),
                       ),
                     ],

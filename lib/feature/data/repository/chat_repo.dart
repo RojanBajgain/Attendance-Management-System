@@ -122,13 +122,7 @@ class ChatRepo {
     try {
       final token = apiClient.token;
 
-      // Check if the token is valid
-      // if (token.isEmpty) {
-      //   throw Exception('JWT token is missing or invalid');
-      // }
-
-      // Ensure the URL is complete (include the scheme and host)
-      final url = '${ApiUrls.baseUrl}${ApiUrls.chat}';
+      const url = '${ApiUrls.baseUrl}${ApiUrls.chat}';
 
       // Create multipart request
       var request = http.MultipartRequest('POST', Uri.parse(url));
@@ -140,9 +134,7 @@ class ChatRepo {
 
       // Add form fields
       request.fields['message'] = message;
-      // if (senderID != null) {
-      //   request.fields['sender'] = senderID.toString();
-      // }
+
       if (receiverID != null) {
         request.fields['receiver'] = receiverID.toString();
       }

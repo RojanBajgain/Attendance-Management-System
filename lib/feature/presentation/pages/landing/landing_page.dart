@@ -46,7 +46,7 @@ class _LandingPageState extends State<LandingPage> {
                   child: AspectRatio(
                     aspectRatio: 1,
                     child: Image.asset(
-                      AppImages.appLogo,
+                      AppImages.tranquility,
                     ),
                   ),
                 ),
@@ -54,13 +54,15 @@ class _LandingPageState extends State<LandingPage> {
               const Spacer(flex: 1),
               AnimatedTextKit(
                 animatedTexts: [
-                  TypewriterAnimatedText('"Welcome To Your Attendence"',
-                      textStyle: normalStyle.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: isDarkMode
-                            ? Colors.grey.shade400
-                            : Colors.grey.shade500,
-                      )),
+                  TypewriterAnimatedText(
+                    '"Welcome To Tranquility Spa"',
+                    textStyle: normalStyle.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: isDarkMode
+                          ? Colors.grey.shade400
+                          : Colors.grey.shade500,
+                    ),
+                  ),
                 ],
                 totalRepeatCount: 10,
                 pause: const Duration(milliseconds: 2000),
