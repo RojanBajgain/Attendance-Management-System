@@ -4,12 +4,14 @@ class TimesheetModel {
   int totalPages;
   int currentPage;
   int count;
+  int pageSize;
   List<Datum> data;
 
   TimesheetModel({
     this.totalPages = 1,
     this.currentPage = 1,
     this.count = 1,
+    this.pageSize = 10,
     this.data = const [],
   });
 
@@ -17,6 +19,7 @@ class TimesheetModel {
         totalPages: json["total_pages"],
         currentPage: json["current_page"],
         count: json["count"],
+        pageSize: json["page_size"] ?? 10,
         data: List<Datum>.from(
           (json["data"] ?? []).map((x) => Datum.fromJson(x)),
         ),
@@ -26,6 +29,7 @@ class TimesheetModel {
         "total_pages": totalPages,
         "current_page": currentPage,
         "count": count,
+        "page_size": pageSize,
         "data": List<dynamic>.from(data.map((x) => x.toJson())),
       };
 }

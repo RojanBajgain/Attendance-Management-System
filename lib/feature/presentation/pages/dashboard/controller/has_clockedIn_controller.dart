@@ -80,17 +80,12 @@ class HasClockedinController extends GetxController {
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
         GetClockModel clockData = response.response;
 
-        if (clockData.clockedData != null) {
-          // Parse the UTC time from API
-          DateTime utcTime = DateTime.parse(clockData.clockedData!.toString());
-
+        // Handle clock in time
+        if (clockData.clockedInData != null) {
+          DateTime utcTime =
+              DateTime.parse(clockData.clockedInData!.toString());
           DateTime localTime =
               utcTime.add(const Duration(hours: 5, minutes: 45));
-
-          // Debug logs
-          // log("UTC time from API: $utcTime");
-          // log("Converted local time: $localTime");
-          // log("For user ID: ${lastUserId.value}");
 
           clockedInTime.value = localTime;
 
@@ -112,7 +107,7 @@ class HasClockedinController extends GetxController {
           }
         } else {
           clockedInTime.value = null;
-          log("No clock data available from API");
+          log("No clock in data available from API");
 
           // Clear any stored clock in times
           if (lastUserId.value != null) {
@@ -120,6 +115,18 @@ class HasClockedinController extends GetxController {
             await prefs.remove('clockInTime_${lastUserId.value}');
             await prefs.remove('clockInTime');
           }
+        }
+
+        // Handle clock out time
+        if (clockData.clockedOutData != null) {
+          DateTime utcTime =
+              DateTime.parse(clockData.clockedOutData!.toString());
+          DateTime localTime =
+              utcTime.add(const Duration(hours: 5, minutes: 45));
+
+          // Store clock out time
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('clockOutTime', localTime.toIso8601String());
         }
       } else {
         log("Error: ${response.message}");

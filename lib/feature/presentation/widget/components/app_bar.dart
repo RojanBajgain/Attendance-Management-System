@@ -152,21 +152,21 @@ class _ConstantAppBarState extends State<ConstantAppBar> {
           ),
         ),
         // Chat Icon
-        IconButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const ChatsScreen(),
-              ),
-            );
-          },
-          icon: Icon(
-            Icons.chat_bubble_outline,
-            size: 25.0,
-            color: isDarkMode ? Colors.white : Colors.black,
-          ),
-        ),
+        // IconButton(
+        //   onPressed: () {
+        //     Navigator.push(
+        //       context,
+        //       MaterialPageRoute(
+        //         builder: (context) => const ChatsScreen(),
+        //       ),
+        //     );
+        //   },
+        //   icon: Icon(
+        //     Icons.chat_bubble_outline,
+        //     size: 25.0,
+        //     color: isDarkMode ? Colors.white : Colors.black,
+        //   ),
+        // ),
       ],
     );
   }

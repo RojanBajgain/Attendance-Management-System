@@ -1,10 +1,12 @@
 import 'dart:convert';
 
 class GetClockModel {
-  DateTime? clockedData;
+  DateTime? clockedInData;
+  DateTime? clockedOutData;
 
   GetClockModel({
-    this.clockedData,
+    this.clockedInData,
+    this.clockedOutData,
   });
 
   factory GetClockModel.fromRawJson(String str) =>
@@ -13,10 +15,16 @@ class GetClockModel {
   String toRawJson() => json.encode(toJson());
 
   factory GetClockModel.fromJson(Map<String, dynamic> json) => GetClockModel(
-        clockedData: DateTime.parse(json["clocked_data"]),
+        clockedInData: json["clocked_in_data"] != null
+            ? DateTime.parse(json["clocked_in_data"])
+            : null,
+        clockedOutData: json["clocked_out_data"] != null
+            ? DateTime.parse(json["clocked_out_data"])
+            : null,
       );
 
   Map<String, dynamic> toJson() => {
-        "clocked_data": clockedData?.toIso8601String(),
+        "clocked_in_data": clockedInData?.toIso8601String(),
+        "clocked_out_data": clockedOutData?.toIso8601String(),
       };
 }

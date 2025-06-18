@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class ClockOutModel {
   int id;
   int user;
