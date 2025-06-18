@@ -35,7 +35,7 @@ class _PayrollPageState extends State<PayrollPage> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: const ConstantAppBar(),
+      appBar: ConstantAppBar(),
       body: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.all(16.0),

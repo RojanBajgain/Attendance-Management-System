@@ -28,6 +28,8 @@ class ApiUrls {
 
   // static const String register = "auth/register/";
 
+  static const String imageBrand = "api/image/brand/";
+
   static const String organization = "api/getorganizations/";
   static const String organizationProfile = "api/get-organization-profile/";
 

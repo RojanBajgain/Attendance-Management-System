@@ -207,15 +207,11 @@ class _ProfilePageState extends State<ProfilePage> {
                   : 'N/A'),
           _buildRow(
             'Date of Birth:',
-            profiledata.dob != null
-                ? DateFormat('yyyy-MM-dd').format(profiledata.dob)
-                : 'N/A',
+            DateFormat('yyyy-MM-dd').format(profiledata.dob),
           ),
           _buildRow(
             'Joined Date:',
-            profiledata.joinedDate != null
-                ? DateFormat('yyyy-MM-dd').format(profiledata.joinedDate)
-                : 'N/A',
+            DateFormat('yyyy-MM-dd').format(profiledata.joinedDate),
           ),
           _buildRow(
               'Contact:',

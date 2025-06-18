@@ -42,7 +42,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: const ConstantAppBar(),
+      appBar: ConstantAppBar(),
       body: SingleChildScrollView(
         child: SafeArea(
           child: Padding(

@@ -310,7 +310,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
           );
 
     return Scaffold(
-      appBar: const ConstantAppBar(),
+      appBar: ConstantAppBar(),
       body: RefreshIndicator(
         onRefresh: () async {
           await _loadUserLeaveData();

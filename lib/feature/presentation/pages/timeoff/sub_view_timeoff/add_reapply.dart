@@ -88,7 +88,7 @@ class _AddReapplyPageState extends State<AddReapplyPage> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: const ConstantAppBar(),
+      appBar: ConstantAppBar(),
       body: SingleChildScrollView(
         child: SafeArea(
           child: Padding(

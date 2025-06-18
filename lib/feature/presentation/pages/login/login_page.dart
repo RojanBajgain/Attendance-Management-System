@@ -1,6 +1,7 @@
 import 'package:ams/config/resources/colors.dart';
 import 'package:ams/config/resources/images.dart';
 import 'package:ams/config/resources/styles.dart';
+import 'package:ams/feature/presentation/pages/app_image_brand/controller/app_image_brand_controller.dart';
 import 'package:ams/feature/presentation/pages/forget_password/forget_password.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/widget/button_large.dart';
@@ -302,6 +303,7 @@ class _LoginPageState extends State<LoginPage> {
                         ],
                       ),
                       const SizedBox(height: 200),
+                      // In your LoginPage widget's build method, replace the Image.asset with this:
                       Image.asset(
                         AppImages.tranquility,
                         height: 130,

@@ -39,7 +39,7 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: const ConstantAppBar(),
+      appBar: ConstantAppBar(),
       body: RefreshIndicator(
         onRefresh: () async {
           await timesheetcontroller.refreshTimesheet();

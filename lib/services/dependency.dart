@@ -1,4 +1,5 @@
 import 'package:ams/feature/data/datasource/remote/api_client.dart';
+import 'package:ams/feature/data/repository/app_image_brand.dart';
 import 'package:ams/feature/data/repository/auth_repository_impl.dart';
 import 'package:ams/feature/data/repository/calender_notification.dart';
 import 'package:ams/feature/data/repository/chat_repo.dart';
@@ -21,6 +22,7 @@ import 'package:ams/feature/presentation/pages/policy/controller/policy_controll
 import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ams/feature/presentation/pages/app_image_brand/controller/app_image_brand_controller.dart';
 
 Future<void> init() async {
   // Initialize SharedPreferences
@@ -75,6 +77,12 @@ Future<void> init() async {
       EventCalenderRepo(apiClient: Get.find<ApiClient>()));
   Get.put<CalenderNotificationController>(CalenderNotificationController(
       eventCalenderrepo: Get.find<EventCalenderRepo>()));
+
+  /*  // Brand Image
+  Get.put<AppImageBrandRepo>(
+      AppImageBrandRepo(apiClient: Get.find<ApiClient>()));
+  Get.put<AppImageBrandController>(AppImageBrandController(
+      appImageBrandRepo: Get.find<AppImageBrandRepo>())); */
 
   // WebSocket
   // Get.put<WebsocketRepo>(WebsocketRepo(apiClient: Get.find<ApiClient>()));
