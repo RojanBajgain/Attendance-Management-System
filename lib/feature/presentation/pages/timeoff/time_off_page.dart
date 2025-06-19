@@ -35,7 +35,7 @@ class _TimeOffPageState extends State<TimeOffPage> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: ConstantAppBar(),
+      appBar: const ConstantAppBar(),
       body: RefreshIndicator(
         onRefresh: () async {
           await timeoffcontroller.getTimeoff(forceRefresh: true);
@@ -61,8 +61,11 @@ class _TimeOffPageState extends State<TimeOffPage> {
                   const SizedBox(width: 10.0),
                   GestureDetector(
                     onTap: () {
-                      Get.to(() => const AddTimeoff(),
-                          transition: Transition.rightToLeft);
+                      Get.to(
+                        () => const AddTimeoff(),
+                        transition: Transition.rightToLeft,
+                        duration: const Duration(milliseconds: 150),
+                      );
                     },
                     child: Container(
                       height: 35.0,

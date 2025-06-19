@@ -53,11 +53,16 @@ class _ConstantAppBarState extends State<ConstantAppBar> {
           onPressed: () async {
             await notificationcontroller.markAllAsRead();
             Future.delayed(const Duration(milliseconds: 100), () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const NotificationsPage(),
-                ),
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (context) => const NotificationsPage(),
+              //   ),
+              // );
+              Get.to(
+                () => const NotificationsPage(),
+                transition: Transition.downToUp,
+                duration: const Duration(milliseconds: 150),
               );
             });
           },
@@ -133,7 +138,11 @@ class _ConstantAppBarState extends State<ConstantAppBar> {
                           FocusScope.of(mainContext).unfocus();
 
                           Future.delayed(const Duration(milliseconds: 100), () {
-                            Get.to(() => const EventPage());
+                            Get.to(
+                              () => const EventPage(),
+                              transition: Transition.downToUp,
+                              duration: const Duration(milliseconds: 150),
+                            );
                           });
                         },
                         rootContext: context,
@@ -151,6 +160,7 @@ class _ConstantAppBarState extends State<ConstantAppBar> {
             color: isDarkMode ? Colors.white : Colors.black,
           ),
         ),
+
         // Chat Icon
         // IconButton(
         //   onPressed: () {

@@ -34,7 +34,7 @@ class _TimeSheetDetailState extends State<TimeSheetDetail> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: ConstantAppBar(),
+      appBar: const ConstantAppBar(),
       body: SingleChildScrollView(
         child: SafeArea(
           child: Padding(

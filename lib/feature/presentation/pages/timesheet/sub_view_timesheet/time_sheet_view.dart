@@ -40,6 +40,7 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
             timesheetId: widget.timesheetdata.id.toString(),
           ),
           transition: Transition.rightToLeft,
+          duration: const Duration(milliseconds: 150),
         );
       },
       child: Container(

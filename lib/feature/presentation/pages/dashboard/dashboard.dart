@@ -355,7 +355,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           ),
                         ),
                         const SizedBox(height: 20.0),
-                        HolidayEventNotification(),
+                        const HolidayEventNotification(),
                       ],
                     ),
                   ],

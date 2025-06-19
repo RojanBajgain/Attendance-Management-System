@@ -47,7 +47,11 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
   }
 
   void navigateToEventPage() {
-    Get.to(() => const EventPage());
+    Get.to(
+      () => const EventPage(),
+      transition: Transition.downToUp,
+      duration: const Duration(milliseconds: 150),
+    );
   }
 
   @override
@@ -135,13 +139,13 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      calenderController.errorMessage.value,
-                      style: smallNStyle.copyWith(
-                        color: isDarkMode ? Colors.white : Colors.black,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
+                    // Text(
+                    //   calenderController.errorMessage.value,
+                    //   style: smallNStyle.copyWith(
+                    //     color: isDarkMode ? Colors.white : Colors.black,
+                    //   ),
+                    //   textAlign: TextAlign.center,
+                    // ),
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () => calenderController.getEventCalenders(),
@@ -172,15 +176,18 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
             log("Filtered ${filteredList.length} items for type: $selectedType");
 
             if (filteredList.isEmpty) {
-              return Center(
-                child: Text(
-                  selectedType == "HOLIDAY"
-                      ? 'No Holidays found'
-                      : selectedType == "EVENT"
-                          ? 'No Events found'
-                          : 'No Notices found',
-                  style: smallNStyle.copyWith(
-                    color: isDarkMode ? Colors.white : Colors.black,
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 25.0),
+                child: Center(
+                  child: Text(
+                    selectedType == "HOLIDAY"
+                        ? 'No Holidays been found'
+                        : selectedType == "EVENT"
+                            ? 'No Events been found'
+                            : 'No Notices been found',
+                    style: smallNStyle.copyWith(
+                      color: isDarkMode ? Colors.white : Colors.black,
+                    ),
                   ),
                 ),
               );
