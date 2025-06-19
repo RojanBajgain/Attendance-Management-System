@@ -72,6 +72,7 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                       'Holiday',
                       style: smallNStyle.copyWith(
                         color: isDarkMode ? Colors.grey[300] : Colors.black,
+                        fontSize: 12.0,
                       ),
                     ),
                     if (selectedType == "HOLIDAY")
@@ -93,6 +94,7 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                       'Events',
                       style: smallNStyle.copyWith(
                         color: isDarkMode ? Colors.grey[300] : Colors.black,
+                        fontSize: 12.0,
                       ),
                     ),
                     if (selectedType == "EVENT")
@@ -114,6 +116,7 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                       'Notice',
                       style: smallNStyle.copyWith(
                         color: isDarkMode ? Colors.grey[300] : Colors.black,
+                        fontSize: 12.0,
                       ),
                     ),
                     if (selectedType == "NOTICE")
@@ -162,6 +165,7 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                   'No data available',
                   style: miniStyle.copyWith(
                     color: isDarkMode ? Colors.white : Colors.black,
+                    fontSize: 12.0,
                   ),
                 ),
               );
@@ -187,6 +191,7 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                             : 'No Notices been found',
                     style: smallNStyle.copyWith(
                       color: isDarkMode ? Colors.white : Colors.black,
+                      fontSize: 12.0,
                     ),
                   ),
                 ),
@@ -249,7 +254,7 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
         : description;
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0),
+      margin: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 6.0),
       padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10.0),
@@ -267,7 +272,7 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
             child: Center(
               child: Text(
                 item.startDate != null ? "${item.startDate!.day}" : "N/A",
-                style: normalStyle.copyWith(
+                style: smallNStyle.copyWith(
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -283,11 +288,11 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                 Text(
                   _getDateRangeText(item.startDate, item.endDate),
                   style: smallStyle.copyWith(
-                    color: isDarkMode
-                        ? Colors.grey.shade400
-                        : Colors.grey.shade700,
-                    fontSize: 12,
-                  ),
+                      color: isDarkMode
+                          ? Colors.grey.shade400
+                          : Colors.grey.shade700,
+                      fontSize: 11.0,
+                      fontStyle: FontStyle.italic),
                 ),
                 const SizedBox(height: 5.0),
                 Text(
@@ -295,6 +300,7 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                   style: smallStyle.copyWith(
                     fontWeight: FontWeight.w500,
                     color: isDarkMode ? Colors.white : Colors.black,
+                    fontSize: 12.0,
                   ),
                 ),
                 const SizedBox(height: 5.0),
@@ -324,6 +330,7 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                   displayDescription,
                   style: smallStyle.copyWith(
                     color: isDarkMode ? Colors.grey.shade400 : Colors.black,
+                    fontSize: 11.0,
                   ),
                 ),
                 if (item.remarks != null && item.remarks!.isNotEmpty)
@@ -345,6 +352,8 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                       'Created by: ${item.createdBy}',
                       style: smallStyle.copyWith(
                         color: isDarkMode ? Colors.grey.shade400 : Colors.black,
+                        fontSize: 12.0,
+                        fontStyle: FontStyle.italic,
                       ),
                     ),
                   ),

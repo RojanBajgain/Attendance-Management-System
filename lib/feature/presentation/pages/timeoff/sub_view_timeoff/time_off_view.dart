@@ -62,6 +62,7 @@ class TimeOffSheet extends StatelessWidget {
                                     color: isDarkMode
                                         ? Colors.white
                                         : Colors.black,
+                                    fontSize: 14.0,
                                   ),
                                 ),
                               ),
@@ -83,6 +84,7 @@ class TimeOffSheet extends StatelessWidget {
                                           color: isDarkMode
                                               ? Colors.white
                                               : Colors.black,
+                                          fontSize: 12.0,
                                         ),
                                       ),
                                     ],
@@ -94,6 +96,7 @@ class TimeOffSheet extends StatelessWidget {
                                       color: isDarkMode
                                           ? Colors.white
                                           : Colors.black,
+                                      fontSize: 12.0,
                                     ),
                                   ),
                                 ],
@@ -112,6 +115,7 @@ class TimeOffSheet extends StatelessWidget {
                                           color: isDarkMode
                                               ? Colors.white
                                               : Colors.black,
+                                          fontSize: 12.0,
                                         ),
                                       ),
                                     ],
@@ -123,6 +127,7 @@ class TimeOffSheet extends StatelessWidget {
                                       color: isDarkMode
                                           ? Colors.white
                                           : Colors.black,
+                                      fontSize: 12.0,
                                     ),
                                   ),
                                 ],
@@ -141,6 +146,7 @@ class TimeOffSheet extends StatelessWidget {
                                           color: isDarkMode
                                               ? Colors.white
                                               : Colors.black,
+                                          fontSize: 12.0,
                                         ),
                                       ),
                                     ],
@@ -155,6 +161,7 @@ class TimeOffSheet extends StatelessWidget {
                                       color: isDarkMode
                                           ? Colors.white
                                           : Colors.black,
+                                      fontSize: 12.0,
                                     ),
                                   ),
                                 ],
@@ -173,6 +180,7 @@ class TimeOffSheet extends StatelessWidget {
                                           color: isDarkMode
                                               ? Colors.white
                                               : Colors.black,
+                                          fontSize: 12.0,
                                         ),
                                       ),
                                     ],
@@ -187,6 +195,7 @@ class TimeOffSheet extends StatelessWidget {
                                       color: isDarkMode
                                           ? Colors.white
                                           : Colors.black,
+                                      fontSize: 12.0,
                                     ),
                                   ),
                                 ],
@@ -205,6 +214,7 @@ class TimeOffSheet extends StatelessWidget {
                                           color: isDarkMode
                                               ? Colors.white
                                               : Colors.black,
+                                          fontSize: 12.0,
                                         ),
                                       ),
                                     ],
@@ -216,6 +226,7 @@ class TimeOffSheet extends StatelessWidget {
                                       color: isDarkMode
                                           ? Colors.white
                                           : Colors.black,
+                                      fontSize: 12.0,
                                     ),
                                   ),
                                 ],
@@ -231,6 +242,7 @@ class TimeOffSheet extends StatelessWidget {
                                       color: isDarkMode
                                           ? Colors.white
                                           : Colors.black,
+                                      fontSize: 12.0,
                                     ),
                                   ),
                                   Column(
@@ -247,6 +259,7 @@ class TimeOffSheet extends StatelessWidget {
                                           color: isDarkMode
                                               ? Colors.white
                                               : Colors.black,
+                                          fontSize: 12.0,
                                         ),
                                       ),
                                       if ((timeoffdata.reason?.length ?? 0) >
@@ -288,6 +301,7 @@ class TimeOffSheet extends StatelessWidget {
                                           color: isDarkMode
                                               ? Colors.white
                                               : Colors.black,
+                                          fontSize: 12.0,
                                         ),
                                       ),
                                     ],
@@ -325,6 +339,7 @@ class TimeOffSheet extends StatelessWidget {
                                               color: isDarkMode
                                                   ? Colors.white
                                                   : Colors.black,
+                                              fontSize: 12.0,
                                             ),
                                           ),
                                         ],
@@ -347,7 +362,7 @@ class TimeOffSheet extends StatelessWidget {
         child: Container(
           width: double.infinity,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(13.0),
+            borderRadius: BorderRadius.circular(12.0),
             color: isDarkMode ? Colors.grey.shade800 : Colors.grey.shade50,
             boxShadow: [
               BoxShadow(
@@ -359,7 +374,7 @@ class TimeOffSheet extends StatelessWidget {
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(12.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -373,6 +388,7 @@ class TimeOffSheet extends StatelessWidget {
                           style: smallStyle.copyWith(
                             fontWeight: FontWeight.bold,
                             color: isDarkMode ? Colors.white : Colors.black,
+                            fontSize: 12.0,
                           ),
                         ),
                       ],
@@ -382,6 +398,7 @@ class TimeOffSheet extends StatelessWidget {
                       timeoffdata.type?.name ?? 'N/A',
                       style: smallStyle.copyWith(
                         color: isDarkMode ? Colors.white : Colors.black,
+                        fontSize: 12.0,
                       ),
                     ),
                   ],
@@ -397,6 +414,7 @@ class TimeOffSheet extends StatelessWidget {
                           style: smallStyle.copyWith(
                             fontWeight: FontWeight.bold,
                             color: isDarkMode ? Colors.white : Colors.black,
+                            fontSize: 12.0,
                           ),
                         ),
                       ],
@@ -409,6 +427,7 @@ class TimeOffSheet extends StatelessWidget {
                           : "N/A",
                       style: smallStyle.copyWith(
                         color: isDarkMode ? Colors.white : Colors.black,
+                        fontSize: 12.0,
                       ),
                     ),
                   ],
@@ -424,6 +443,7 @@ class TimeOffSheet extends StatelessWidget {
                           style: smallStyle.copyWith(
                             fontWeight: FontWeight.bold,
                             color: isDarkMode ? Colors.white : Colors.black,
+                            fontSize: 12.0,
                           ),
                         ),
                       ],
@@ -436,6 +456,7 @@ class TimeOffSheet extends StatelessWidget {
                           : "N/A",
                       style: smallStyle.copyWith(
                         color: isDarkMode ? Colors.white : Colors.black,
+                        fontSize: 12.0,
                       ),
                     ),
                   ],
@@ -451,6 +472,7 @@ class TimeOffSheet extends StatelessWidget {
                           style: smallStyle.copyWith(
                             fontWeight: FontWeight.bold,
                             color: isDarkMode ? Colors.white : Colors.black,
+                            fontSize: 12.0,
                           ),
                         ),
                       ],
@@ -460,6 +482,7 @@ class TimeOffSheet extends StatelessWidget {
                       "${timeoffdata.days.toString()} days",
                       style: smallStyle.copyWith(
                         color: isDarkMode ? Colors.white : Colors.black,
+                        fontSize: 12.0,
                       ),
                     ),
                   ],
@@ -475,6 +498,7 @@ class TimeOffSheet extends StatelessWidget {
                           style: smallStyle.copyWith(
                             fontWeight: FontWeight.bold,
                             color: isDarkMode ? Colors.white : Colors.black,
+                            fontSize: 12.0,
                           ),
                         ),
                       ],
@@ -486,6 +510,7 @@ class TimeOffSheet extends StatelessWidget {
                           : "N/A",
                       style: smallStyle.copyWith(
                         color: isDarkMode ? Colors.white : Colors.black,
+                        fontSize: 12.0,
                       ),
                     ),
                   ],
@@ -501,6 +526,7 @@ class TimeOffSheet extends StatelessWidget {
                           style: smallStyle.copyWith(
                             fontWeight: FontWeight.bold,
                             color: isDarkMode ? Colors.white : Colors.black,
+                            fontSize: 12.0,
                           ),
                         ),
                       ],
@@ -508,7 +534,9 @@ class TimeOffSheet extends StatelessWidget {
                     const Spacer(),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 16),
+                        vertical: 10,
+                        horizontal: 18,
+                      ),
                       decoration: BoxDecoration(
                         color: _getContainerColor(timeoffdata.status),
                         borderRadius: BorderRadius.circular(10),
@@ -516,7 +544,10 @@ class TimeOffSheet extends StatelessWidget {
                       child: Center(
                         child: Text(
                           _getButtonText(timeoffdata.status),
-                          style: smallStyle.copyWith(color: Colors.white),
+                          style: smallStyle.copyWith(
+                            color: Colors.white,
+                            fontSize: 12.0,
+                          ),
                         ),
                       ),
                     ),
@@ -545,7 +576,9 @@ class TimeOffSheet extends StatelessWidget {
                                   child: Text(
                                     'Re-apply',
                                     style: smallStyle.copyWith(
-                                        color: Colors.white),
+                                      color: Colors.white,
+                                      fontSize: 12.0,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -647,7 +680,7 @@ class TimeOffSheet extends StatelessWidget {
                                 },
                               );
                             },
-                            child: Icon(
+                            child: const Icon(
                               Icons.delete,
                               color: Colors.red,
                               size: 24.0,

@@ -110,41 +110,46 @@ class _AddReapplyPageState extends State<AddReapplyPage> {
                         style: smallNStyle.copyWith(
                           fontWeight: FontWeight.bold,
                           color: isDarkMode ? Colors.white : Colors.black,
+                          fontSize: 14.0,
                         ),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 30.0),
-                Column(
-                  children: [
-                    Text.rich(
-                      TextSpan(
-                        children: [
-                          TextSpan(
-                            text: 'Reason  ',
-                            style: smallStyle.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: isDarkMode ? Colors.white : Colors.black,
+                Padding(
+                  padding: const EdgeInsets.only(left: 6.0),
+                  child: Column(
+                    children: [
+                      Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Reason  ',
+                              style: smallStyle.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: isDarkMode ? Colors.white : Colors.black,
+                                fontSize: 12.0,
+                              ),
                             ),
-                          ),
-                          const TextSpan(
-                            text: '*',
-                            style: TextStyle(
-                              fontFamily: 'Mukta',
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16.0,
-                              color: Colors.red,
+                            const TextSpan(
+                              text: '*',
+                              style: TextStyle(
+                                fontFamily: 'Mukta',
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14.0,
+                                color: Colors.red,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 10.0),
                 Container(
-                  height: 180.0,
+                  height: 160.0,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(13.0),
@@ -164,6 +169,7 @@ class _AddReapplyPageState extends State<AddReapplyPage> {
                         hintText: "Write Your Reason",
                         hintStyle: smallStyle.copyWith(
                           color: isDarkMode ? Colors.white : Colors.black,
+                          fontSize: 12.0,
                         ),
                       ),
                     ),
@@ -198,6 +204,7 @@ class _AddReapplyPageState extends State<AddReapplyPage> {
                                   fontWeight: FontWeight.bold,
                                   color:
                                       isDarkMode ? Colors.black : Colors.white,
+                                  fontSize: 12.0,
                                 ),
                               ),
                             ],
@@ -229,6 +236,7 @@ class _AddReapplyPageState extends State<AddReapplyPage> {
                               "Re-Apply",
                               style: smallStyle.copyWith(
                                 color: Colors.white,
+                                fontSize: 12.0,
                               ),
                             ),
                           ],

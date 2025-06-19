@@ -209,6 +209,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
               'Confirm Deletion',
               style: normalStyle.copyWith(
                 color: isDarkMode ? Colors.white : Colors.black,
+                fontSize: 11,
               ),
             ),
           ),
@@ -216,6 +217,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
             'Are you sure you want to delete this document?',
             style: smallStyle.copyWith(
               color: isDarkMode ? Colors.white : Colors.black,
+              fontSize: 11,
             ),
           ),
           actions: [
@@ -225,6 +227,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
                 'Cancel',
                 style: smallStyle.copyWith(
                   color: Colors.blue,
+                  fontSize: 11,
                 ),
               ),
             ),
@@ -256,6 +259,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
                 'Delete',
                 style: smallStyle.copyWith(
                   color: Colors.red,
+                  fontSize: 11,
                 ),
               ),
             ),
@@ -485,6 +489,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
             ),
             style: smallStyle.copyWith(
               color: isDarkMode ? Colors.white : Colors.black,
+              fontSize: 11,
             ),
             onTap: () => _selectDate(context, controller, fieldKey),
           ),
@@ -554,6 +559,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
         style: smallStyle.copyWith(
           fontWeight: FontWeight.bold,
           color: isDarkMode ? Colors.white : Colors.black,
+          fontSize: 12,
         ),
       ),
     );
@@ -608,6 +614,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
                 color: hasError
                     ? Colors.red
                     : (isDarkMode ? Colors.white70 : Colors.black54),
+                fontSize: 11,
               ),
               filled: !enabled,
               fillColor: !enabled
@@ -616,6 +623,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
             ),
             style: smallStyle.copyWith(
               color: isDarkMode ? Colors.white : Colors.black,
+              fontSize: 11,
             ),
             onChanged: (value) {
               if (hasError) {
@@ -652,6 +660,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
           style: smallStyle.copyWith(
             fontWeight: FontWeight.w700,
             color: isDarkMode ? Colors.white : Colors.black,
+            fontSize: 14,
           ),
         ),
       ),
@@ -728,12 +737,16 @@ class _EditUserDocumentState extends State<EditUserDocument> {
           children: [
             Row(
               children: [
-                const Icon(Icons.edit_calendar_outlined),
+                const Icon(
+                  Icons.edit_calendar_outlined,
+                  size: 18,
+                ),
                 const SizedBox(width: 10.0),
                 Text(
                   "Edit Document - ${document.type.isNotEmpty ? document.type : 'N/A'}",
                   style: smallNStyle.copyWith(
                     color: isDarkMode ? Colors.white : Colors.black,
+                    fontSize: 12,
                   ),
                 ),
               ],
@@ -825,6 +838,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
                             : 'Unknown file',
                         style: smallStyle.copyWith(
                           color: isDarkMode ? Colors.white : Colors.black,
+                          fontSize: 12,
                         ),
                       ),
                     ),
@@ -887,6 +901,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
           "Add New Document",
           style: smallStyle.copyWith(
             color: isDarkMode ? Colors.white : Colors.black,
+            fontSize: 12,
           ),
         ),
       ],
@@ -984,6 +999,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
                 type,
                 style: smallStyle.copyWith(
                   color: isDarkMode ? Colors.white : Colors.black,
+                  fontSize: 12,
                 ),
               ),
             );
@@ -1051,6 +1067,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
                   style: smallStyle.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
+                    fontSize: 12,
                   ),
                 ),
               ],
@@ -1082,6 +1099,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
                 style: smallStyle.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.w700,
+                  fontSize: 12,
                 ),
               ),
             ),
@@ -1112,6 +1130,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
                   style: smallStyle.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
+                    fontSize: 12,
                   ),
                 ),
                 const SizedBox(width: 8),

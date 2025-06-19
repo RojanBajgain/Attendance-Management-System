@@ -37,6 +37,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
           style: normalStyle.copyWith(
             fontWeight: FontWeight.bold,
             color: isDarkMode ? Colors.white : Colors.black,
+            fontSize: 14.0,
           ),
         ),
       ),
@@ -64,7 +65,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
                         child: Text(
                           "No notification available",
                           style: smallStyle.copyWith(
-                              color: isDarkMode ? Colors.white : Colors.black),
+                            color: isDarkMode ? Colors.white : Colors.black,
+                            fontSize: 12.0,
+                          ),
                         ),
                       ),
                     );

@@ -61,6 +61,7 @@ class _TimesheetTimeoffTabViewState extends State<TimesheetTimeoffTabView> {
                       style: smallStyle.copyWith(
                         color: isDarkMode ? Colors.white : Colors.black,
                         fontWeight: FontWeight.bold,
+                        fontSize: 12.0,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -85,6 +86,7 @@ class _TimesheetTimeoffTabViewState extends State<TimesheetTimeoffTabView> {
                       style: smallStyle.copyWith(
                         color: isDarkMode ? Colors.white : Colors.black,
                         fontWeight: FontWeight.bold,
+                        fontSize: 12.0,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -96,7 +98,7 @@ class _TimesheetTimeoffTabViewState extends State<TimesheetTimeoffTabView> {
           ],
         ),
 
-        const SizedBox(height: 20),
+        const SizedBox(height: 18),
         // Content
         Obx(() {
           if (isTimesheetSelected) {
@@ -185,7 +187,11 @@ class _TimesheetTimeoffTabViewState extends State<TimesheetTimeoffTabView> {
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (context, index) {
             return Padding(
-              padding: const EdgeInsets.all(4.0),
+              padding: const EdgeInsets.only(
+                bottom: 15.0,
+                left: 4.0,
+                right: 6.0,
+              ),
               child: TimeSheetWidget(timesheetdata: displayList[index]),
             );
           },

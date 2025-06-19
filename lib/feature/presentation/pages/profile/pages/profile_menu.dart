@@ -62,6 +62,7 @@ class ProfileMenu extends StatelessWidget {
                     style: smallStyle.copyWith(
                       fontWeight: FontWeight.w600,
                       color: isDarkMode ? Colors.white : Colors.black,
+                      fontSize: 13.0,
                     ),
                   ),
                 ),
@@ -71,7 +72,7 @@ class ProfileMenu extends StatelessWidget {
                     onTap: onExpandToggle,
                     child: Icon(
                       isExpanded ? Icons.expand_less : Icons.expand_more,
-                      size: 27.0,
+                      size: 22.0,
                       color: isDarkMode ? Colors.white : Colors.black,
                     ),
                   ),

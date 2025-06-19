@@ -231,7 +231,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
       if (navigateToAddress) {
         Get.to(() => const EditUserAddress());
       } else {
-        Get.offAll(() => BottomNavPage());
+        Get.offAll(() => const BottomNavPage());
         SSnackbarUtil.showSnackbar(
           'Success',
           'Profile updated successfully',
@@ -398,6 +398,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
         style: normalStyle.copyWith(
           fontWeight: FontWeight.bold,
           color: isDarkMode ? Colors.white : Colors.black,
+          fontSize: 12,
         ),
       ),
     );
@@ -449,9 +450,10 @@ class _EditUserInfoState extends State<EditUserInfo> {
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
               labelStyle: smallStyle.copyWith(
+                fontSize: 11,
                 color: hasError
                     ? Colors.red
-                    : (isDarkMode ? Colors.white70 : Colors.black54),
+                    : (isDarkMode ? Colors.white70 : Colors.black),
               ),
               filled: !enabled,
               fillColor: !enabled
@@ -460,6 +462,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
             ),
             style: smallStyle.copyWith(
               color: isDarkMode ? Colors.white : Colors.black,
+              fontSize: 12,
             ),
             onChanged: (value) {
               if (hasError) {
@@ -502,9 +505,10 @@ class _EditUserInfoState extends State<EditUserInfo> {
           Text(
             title,
             style: smallStyle.copyWith(
+              fontSize: 11,
               color: hasError
                   ? Colors.red
-                  : (isDarkMode ? Colors.white70 : Colors.black54),
+                  : (isDarkMode ? Colors.white70 : Colors.black),
             ),
           ),
           const SizedBox(height: 6),
@@ -514,7 +518,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
             decoration: InputDecoration(
               contentPadding: const EdgeInsets.symmetric(vertical: 2),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(13),
+                borderRadius: BorderRadius.circular(8),
                 borderSide: BorderSide(
                   color: hasError
                       ? Colors.red
@@ -522,7 +526,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
                 ),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(13),
+                borderRadius: BorderRadius.circular(8),
                 borderSide: BorderSide(
                   color: hasError
                       ? Colors.red
@@ -530,7 +534,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
                 ),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(13),
+                borderRadius: BorderRadius.circular(8),
                 borderSide: BorderSide(
                   color: hasError
                       ? Colors.red
@@ -567,6 +571,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
                   style: smallStyle.copyWith(
                     color: isDarkMode ? Colors.white : Colors.black,
                     fontWeight: FontWeight.w500,
+                    fontSize: 11,
                   ),
                 ),
               );
@@ -586,15 +591,16 @@ class _EditUserInfoState extends State<EditUserInfo> {
               'Select Gender',
               style: smallStyle.copyWith(
                 color: isDarkMode ? Colors.white70 : Colors.black54,
+                fontSize: 11,
               ),
             ),
           ),
           if (hasError)
             Padding(
-              padding: const EdgeInsets.only(top: 4, left: 12),
+              padding: const EdgeInsets.only(top: 4, left: 8),
               child: Text(
                 _fieldErrors[fieldKey]!,
-                style: const TextStyle(color: Colors.red, fontSize: 12),
+                style: const TextStyle(color: Colors.red, fontSize: 11),
               ),
             ),
         ],
@@ -650,6 +656,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
                       style: smallStyle.copyWith(
                         fontWeight: FontWeight.w700,
                         color: isDarkMode ? AppColors.white : AppColors.black,
+                        fontSize: 12,
                       ),
                     ),
                   ],
@@ -670,37 +677,44 @@ class _EditUserInfoState extends State<EditUserInfo> {
     if (profile != null &&
         profile.resume != null &&
         profile.resume!.isNotEmpty) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildSectionTitle("Uploaded Resume", isDarkMode),
-          const SizedBox(height: 6),
-          InkWell(
-            onTap: () => _openResumeFile(profile.resume!),
-            child: Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.file_present),
-                  color: isDarkMode ? Colors.white : Colors.blue.shade800,
-                  onPressed: () => _openResumeFile(profile.resume!),
-                ),
-                Expanded(
-                  child: Text(
-                    profile.resume!.split('/').last.isNotEmpty
-                        ? profile.resume!.split('/').last
-                        : 'Resume',
-                    style: smallStyle.copyWith(
-                      color: isDarkMode ? Colors.white : Colors.blue.shade800,
+      return Padding(
+        padding: const EdgeInsets.only(left: 6.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSectionTitle("Uploaded Resume", isDarkMode),
+            // const SizedBox(height: 6),
+            InkWell(
+              onTap: () => _openResumeFile(profile.resume!),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(
+                      Icons.file_present,
+                      size: 20,
                     ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
+                    color: isDarkMode ? Colors.white : Colors.blue.shade800,
+                    onPressed: () => _openResumeFile(profile.resume!),
                   ),
-                ),
-              ],
+                  Expanded(
+                    child: Text(
+                      profile.resume!.split('/').last.isNotEmpty
+                          ? profile.resume!.split('/').last
+                          : 'Resume',
+                      style: smallStyle.copyWith(
+                        color: isDarkMode ? Colors.black : Colors.blue.shade800,
+                        fontSize: 12,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 3,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
-        ],
+            const SizedBox(height: 10),
+          ],
+        ),
       );
     } else {
       return Column(
@@ -719,7 +733,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
               }
             },
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 10),
         ],
       );
     }
@@ -920,7 +934,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
               color: Colors.black.withOpacity(0.5),
               child: const Center(
                 child: CircularProgressIndicator(
-                  color: Colors.green,
+                  color: Colors.cyan,
                 ),
               ),
             ),

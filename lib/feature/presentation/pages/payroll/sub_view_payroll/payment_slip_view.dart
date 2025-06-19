@@ -42,7 +42,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: ConstantAppBar(),
+      appBar: const ConstantAppBar(),
       body: SingleChildScrollView(
         child: SafeArea(
           child: Padding(
@@ -72,6 +72,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                           style: smallStyle.copyWith(
                             fontWeight: FontWeight.bold,
                             color: isDarkMode ? Colors.white : Colors.black,
+                            fontSize: 12.0,
                           ),
                         ),
                         const SizedBox(height: 5.0),
@@ -79,6 +80,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                           'Lazimpat, Kathmandu',
                           style: smallStyle.copyWith(
                             color: isDarkMode ? Colors.white : Colors.black,
+                            fontSize: 12.0,
                           ),
                         ),
                       ],
@@ -103,6 +105,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                     style: normalStyle.copyWith(
                       fontWeight: FontWeight.bold,
                       color: isDarkMode ? Colors.white : Colors.black,
+                      fontSize: 14.0,
                     ),
                   ),
                 ),
@@ -117,6 +120,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                         "Date: ${payrollDate.dateOfPayment != null ? DateFormat.yMMMd('en_US').format(payrollDate.dateOfPayment!) : "---"}",
                         style: smallStyle.copyWith(
                           color: isDarkMode ? Colors.white : Colors.black,
+                          fontSize: 12.0,
                         ),
                       );
                     }),
@@ -124,11 +128,15 @@ class _PaymentSlipState extends State<PaymentSlip> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text(
-                          'Pay Summary',
-                          style: normalStyle.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: isDarkMode ? Colors.white : Colors.black,
+                        Padding(
+                          padding: const EdgeInsets.only(left: 4.0),
+                          child: Text(
+                            'Pay Summary',
+                            style: normalStyle.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: isDarkMode ? Colors.white : Colors.black,
+                              fontSize: 14.0,
+                            ),
                           ),
                         ),
                       ],
@@ -213,6 +221,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                               style: smallStyle.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black,
+                                fontSize: 12.0,
                               ),
                             ),
                             const Spacer(),
@@ -221,6 +230,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                               style: smallStyle.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black,
+                                fontSize: 12.0,
                               ),
                             ),
                           ],
@@ -251,6 +261,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                               style: smallStyle.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: isDarkMode ? Colors.white : Colors.black,
+                                fontSize: 12.0,
                               ),
                             ),
                             const Spacer(),
@@ -258,6 +269,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                               "Rs. ${payrolldata.totalSalary.toString()}",
                               style: smallStyle.copyWith(
                                 color: isDarkMode ? Colors.white : Colors.black,
+                                fontSize: 12.0,
                               ),
                             ),
                           ],
@@ -278,6 +290,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                                     color: isDarkMode
                                         ? Colors.white
                                         : Colors.black,
+                                    fontSize: 12.0,
                                   ),
                                 ),
                                 const Spacer(),
@@ -287,6 +300,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                                     color: isDarkMode
                                         ? Colors.white
                                         : Colors.black,
+                                    fontSize: 12.0,
                                   ),
                                 ),
                               ],
@@ -307,6 +321,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                                         color: isDarkMode
                                             ? Colors.white
                                             : Colors.black,
+                                        fontSize: 12.0,
                                       ),
                                     ),
                                     const Spacer(),
@@ -316,6 +331,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                                         color: isDarkMode
                                             ? Colors.white
                                             : Colors.black,
+                                        fontSize: 12.0,
                                       ),
                                     ),
                                   ],
@@ -337,6 +353,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                                             color: isDarkMode
                                                 ? Colors.white
                                                 : Colors.black,
+                                            fontSize: 12.0,
                                           ),
                                         ),
                                         const Spacer(),
@@ -346,6 +363,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                                             color: isDarkMode
                                                 ? Colors.white
                                                 : Colors.black,
+                                            fontSize: 12.0,
                                           ),
                                         ),
                                       ],
@@ -391,6 +409,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                                   fontWeight: FontWeight.bold,
                                   color:
                                       isDarkMode ? Colors.white : Colors.black,
+                                  fontSize: 12.0,
                                 ),
                               ),
                               const Spacer(),
@@ -400,6 +419,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                                   fontWeight: FontWeight.bold,
                                   color:
                                       isDarkMode ? Colors.white : Colors.black,
+                                  fontSize: 12.0,
                                 ),
                               ),
                             ],
@@ -414,7 +434,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                   final payrollTotal = payrollcontroller.payrollDetail.value;
 
                   return Container(
-                    height: 90.0,
+                    height: 80.0,
                     width: double.infinity,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10.0),
@@ -424,7 +444,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.only(left: 20.0, top: 14.0),
+                          padding: const EdgeInsets.only(left: 12.0, top: 15.0),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -434,6 +454,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                                 style: smallStyle.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black,
+                                  fontSize: 12.0,
                                 ),
                               ),
                               Row(
@@ -447,6 +468,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                                       style: smallStyle.copyWith(
                                         fontWeight: FontWeight.bold,
                                         color: Colors.black,
+                                        fontSize: 12.0,
                                       ),
                                     ),
                                   ),
@@ -522,6 +544,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
               style: smallStyle.copyWith(
                 fontWeight: FontWeight.bold,
                 color: isDarkMode ? Colors.white : Colors.black,
+                fontSize: 12.0,
               ),
             ),
             const Spacer(),
@@ -530,6 +553,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
               value,
               style: smallStyle.copyWith(
                 color: isDarkMode ? Colors.white : Colors.black,
+                fontSize: 12.0,
               ),
             ),
           ],

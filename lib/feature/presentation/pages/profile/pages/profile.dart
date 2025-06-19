@@ -145,7 +145,7 @@ class _ProfilePageState extends State<ProfilePage> {
           if (profileData.isEmpty) {
             return Center(
               child: Text(
-                "No profile data available. Please try refreshing.",
+                "No profile data available. Please try login again.",
                 style: smallStyle.copyWith(
                   color: isDarkMode ? Colors.white : Colors.black,
                 ),
@@ -855,6 +855,7 @@ class _ProfilePageState extends State<ProfilePage> {
               fontWeight: FontWeight.w600,
               color: isDarkMode ? Colors.white : Colors.black,
               overflow: TextOverflow.ellipsis,
+              fontSize: 12.0,
             ),
           ),
           Flexible(
@@ -865,6 +866,7 @@ class _ProfilePageState extends State<ProfilePage> {
               textAlign: TextAlign.right,
               style: smallStyle.copyWith(
                 color: isDarkMode ? Colors.white : Colors.black,
+                fontSize: 12.0,
               ),
             ),
           ),

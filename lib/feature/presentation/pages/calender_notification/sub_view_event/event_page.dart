@@ -42,7 +42,7 @@ class _EventPageState extends State<EventPage>
           if (mounted) {
             setState(() {
               filteredEvents = _filterEvents(activeTabType);
-              log("Initial filtered events for $activeTabType: ${filteredEvents.length}");
+              // log("Initial filtered events for $activeTabType: ${filteredEvents.length}");
             });
           }
         });
@@ -91,7 +91,7 @@ class _EventPageState extends State<EventPage>
         .where(
             (event) => (event.type?.toUpperCase() ?? '') == type.toUpperCase())
         .toList();
-    log("Filtering for $type, found ${filtered.length} events");
+    // log("Filtering for $type, found ${filtered.length} events");
     return filtered;
   }
 
@@ -109,8 +109,8 @@ class _EventPageState extends State<EventPage>
         },
       );
     } catch (e) {
-      log("Error finding today's event: $e");
-      return null;
+      // log("Error finding today's event: $e");
+      // return null;
     }
   }
 
@@ -142,7 +142,9 @@ class _EventPageState extends State<EventPage>
         title: Text(
           'Events & Holidays',
           style: normalStyle.copyWith(
-              color: isDarkMode ? Colors.white : Colors.black),
+            color: isDarkMode ? Colors.white : Colors.black,
+            fontSize: 14.0,
+          ),
         ),
         titleSpacing: 0,
       ),
@@ -157,6 +159,7 @@ class _EventPageState extends State<EventPage>
           'Reminder',
           style: TextStyle(
             color: isDarkMode ? Colors.black : Colors.white,
+            fontSize: 12.0,
           ),
         ),
       ),
@@ -235,9 +238,14 @@ class _EventPageState extends State<EventPage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text("Today's Event",
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.bold)),
+                    const Text(
+                      "Today's Event",
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
                     const SizedBox(height: 8),
                     Container(
                       decoration: BoxDecoration(
@@ -249,9 +257,10 @@ class _EventPageState extends State<EventPage>
                         child: Row(
                           children: [
                             _buildDateCircle(
-                                month: todayFormatted,
-                                day: dayFormatted,
-                                color: Colors.red),
+                              month: todayFormatted,
+                              day: dayFormatted,
+                              color: Colors.red,
+                            ),
                             const SizedBox(width: 16),
                             Expanded(
                               child: Column(
@@ -262,8 +271,10 @@ class _EventPageState extends State<EventPage>
                                         todayEvent?.name ??
                                         "No events today",
                                     style: const TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold),
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.bold,
+                                      fontStyle: FontStyle.italic,
+                                    ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -291,8 +302,11 @@ class _EventPageState extends State<EventPage>
                                   const SizedBox(height: 6),
                                   Row(
                                     children: [
-                                      const Icon(Icons.calendar_today,
-                                          size: 13, color: Colors.grey),
+                                      const Icon(
+                                        Icons.calendar_today,
+                                        size: 13,
+                                        color: Colors.grey,
+                                      ),
                                       const SizedBox(width: 4),
                                       Text(
                                         todayEvent?.startDate != null
@@ -329,7 +343,8 @@ class _EventPageState extends State<EventPage>
                                       child: Text(
                                         'Created by: ${todayEvent.createdBy}',
                                         style: TextStyle(
-                                          fontSize: 12,
+                                          fontSize: 11,
+                                          fontStyle: FontStyle.italic,
                                           color: isDarkMode
                                               ? Colors.grey.shade400
                                               : Colors.black,
@@ -343,7 +358,8 @@ class _EventPageState extends State<EventPage>
                                       child: Text(
                                         'Created By: ${todayEvent.user}',
                                         style: TextStyle(
-                                          fontSize: 12,
+                                          fontSize: 11,
+                                          fontStyle: FontStyle.italic,
                                           color: isDarkMode
                                               ? Colors.grey.shade400
                                               : Colors.black,
@@ -366,9 +382,14 @@ class _EventPageState extends State<EventPage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("All ${getTabName(activeTabType)}",
-                        style: const TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.bold)),
+                    Text(
+                      "All ${getTabName(activeTabType)}",
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
                     const SizedBox(height: 8),
                     if (filteredEvents.isEmpty)
                       Padding(
@@ -377,9 +398,10 @@ class _EventPageState extends State<EventPage>
                           child: Text(
                             "No ${getTabName(activeTabType).toLowerCase()} found",
                             style: smallStyle.copyWith(
-                                color: isDarkMode
-                                    ? Colors.white70
-                                    : Colors.black54),
+                              color:
+                                  isDarkMode ? Colors.white70 : Colors.black54,
+                              fontSize: 12.0,
+                            ),
                           ),
                         ),
                       )
@@ -436,8 +458,9 @@ class _EventPageState extends State<EventPage>
                                                 event.name ??
                                                 "Untitled",
                                             style: const TextStyle(
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.bold),
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                             maxLines: 5,
                                             overflow: TextOverflow.ellipsis,
                                           ),
@@ -450,10 +473,11 @@ class _EventPageState extends State<EventPage>
                                             Text(
                                               event.description!,
                                               style: TextStyle(
-                                                  fontSize: 13,
-                                                  color: isDarkMode
-                                                      ? Colors.grey.shade400
-                                                      : Colors.black),
+                                                fontSize: 12,
+                                                color: isDarkMode
+                                                    ? Colors.grey.shade400
+                                                    : Colors.black,
+                                              ),
                                               maxLines: 5,
                                               overflow: TextOverflow.ellipsis,
                                             ),
@@ -463,10 +487,11 @@ class _EventPageState extends State<EventPage>
                                             Text(
                                               'Remarks: ${event.remarks}',
                                               style: TextStyle(
-                                                  fontSize: 12,
-                                                  color: isDarkMode
-                                                      ? Colors.grey.shade400
-                                                      : Colors.black),
+                                                fontSize: 12,
+                                                color: isDarkMode
+                                                    ? Colors.grey.shade400
+                                                    : Colors.black,
+                                              ),
                                               maxLines: 10,
                                               overflow: TextOverflow.ellipsis,
                                             ),
@@ -501,7 +526,8 @@ class _EventPageState extends State<EventPage>
                                                   color: isDarkMode
                                                       ? Colors.grey.shade400
                                                       : Colors.black,
-                                                  fontSize: 13,
+                                                  fontSize: 11,
+                                                  fontStyle: FontStyle.italic,
                                                 ),
                                               ),
                                             ],
@@ -525,7 +551,9 @@ class _EventPageState extends State<EventPage>
                                                             ? Colors
                                                                 .grey.shade400
                                                             : Colors.black,
-                                                        fontSize: 12,
+                                                        fontSize: 11,
+                                                        fontStyle:
+                                                            FontStyle.italic,
                                                       ),
                                                       overflow:
                                                           TextOverflow.ellipsis,
@@ -680,7 +708,7 @@ class _EventPageState extends State<EventPage>
                 'Add New Reminder',
                 style: TextStyle(
                   color: isDarkMode ? Colors.white : Colors.black,
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -706,7 +734,7 @@ class _EventPageState extends State<EventPage>
                           color: isDarkMode
                               ? Colors.grey.shade400
                               : Colors.grey.shade600,
-                          fontSize: 12,
+                          fontSize: 11,
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -747,7 +775,7 @@ class _EventPageState extends State<EventPage>
                           color: isDarkMode
                               ? Colors.grey.shade400
                               : Colors.grey.shade600,
-                          fontSize: 12,
+                          fontSize: 11,
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -868,7 +896,7 @@ class _EventPageState extends State<EventPage>
                                 style: TextStyle(
                                   color:
                                       isDarkMode ? Colors.white : Colors.black,
-                                  fontSize: 13,
+                                  fontSize: 11,
                                 ),
                               ),
                             ),
@@ -963,7 +991,7 @@ class _EventPageState extends State<EventPage>
                                 style: TextStyle(
                                   color:
                                       isDarkMode ? Colors.white : Colors.black,
-                                  fontSize: 13,
+                                  fontSize: 11,
                                 ),
                               ),
                             ),
@@ -984,7 +1012,7 @@ class _EventPageState extends State<EventPage>
                 ),
                 child: const Text(
                   'Cancel',
-                  style: TextStyle(fontSize: 14),
+                  style: TextStyle(fontSize: 12),
                 ),
               ),
               Obx(
@@ -1056,7 +1084,7 @@ class _EventPageState extends State<EventPage>
                         ),
                         child: const Text(
                           'Save',
-                          style: TextStyle(fontSize: 14),
+                          style: TextStyle(fontSize: 12),
                         ),
                       ),
               ),

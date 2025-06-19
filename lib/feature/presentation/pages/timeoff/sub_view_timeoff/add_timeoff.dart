@@ -310,7 +310,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
           );
 
     return Scaffold(
-      appBar: ConstantAppBar(),
+      appBar: const ConstantAppBar(),
       body: RefreshIndicator(
         onRefresh: () async {
           await _loadUserLeaveData();
@@ -340,17 +340,21 @@ class _AddTimeoffState extends State<AddTimeoff> {
                             style: smallNStyle.copyWith(
                               fontWeight: FontWeight.bold,
                               color: isDarkMode ? Colors.white : Colors.black,
+                              fontSize: 14.0,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 30.0),
+                    const SizedBox(height: 20.0),
 
                     // Display user leave balance info
                     Obx(() {
                       if (_userLeaveData.value == null) {
-                        return const Center(child: CircularProgressIndicator());
+                        return const Center(
+                            child: CircularProgressIndicator(
+                          color: Colors.cyan,
+                        ));
                       }
 
                       final leavePolicies =
@@ -378,6 +382,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
                               style: smallStyle.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: isDarkMode ? Colors.white : Colors.black,
+                                fontSize: 12.0,
                               ),
                             ),
                             const SizedBox(height: 8.0),
@@ -388,6 +393,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
                                   color: isDarkMode
                                       ? Colors.white70
                                       : Colors.black87,
+                                  fontSize: 12.0,
                                 ),
                               )
                             else
@@ -400,6 +406,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
                                       color: isDarkMode
                                           ? Colors.white70
                                           : Colors.black87,
+                                      fontSize: 12.0,
                                     ),
                                   ),
                                 );
@@ -423,6 +430,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
                                   fontWeight: FontWeight.bold,
                                   color:
                                       isDarkMode ? Colors.white : Colors.black,
+                                  fontSize: 12.0,
                                 ),
                               ),
                               const TextSpan(
@@ -430,18 +438,20 @@ class _AddTimeoffState extends State<AddTimeoff> {
                                 style: TextStyle(
                                   fontFamily: 'Mukta',
                                   fontWeight: FontWeight.w600,
-                                  fontSize: 16.0,
+                                  fontSize: 14.0,
                                   color: Colors.red,
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 10.0),
+                        const SizedBox(height: 5.0),
                         Obx(() {
                           if (_userLeaveData.value == null) {
                             return const Center(
-                                child: CircularProgressIndicator());
+                                child: CircularProgressIndicator(
+                              color: Colors.cyan,
+                            ));
                           }
                           final leavePolicies = _userLeaveData
                                   .value!['leave_policies'] as List? ??
@@ -485,7 +495,9 @@ class _AddTimeoffState extends State<AddTimeoff> {
                                           Text(
                                             policyName,
                                             style: const TextStyle(
-                                                fontWeight: FontWeight.w500),
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 12.0,
+                                            ),
                                           ),
                                           Text(
                                             '(${remainingLeave.toInt()} days)',
@@ -502,11 +514,11 @@ class _AddTimeoffState extends State<AddTimeoff> {
                                     );
                                   }).toList(),
                                   buttonStyleData: ButtonStyleData(
-                                    height: 50,
+                                    height: 45.0,
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 10),
+                                        horizontal: 6),
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(13.0),
+                                      borderRadius: BorderRadius.circular(8.0),
                                       border: Border.all(color: Colors.black),
                                       color: isDarkMode
                                           ? Colors.grey.shade800
@@ -516,7 +528,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
                                   dropdownStyleData: DropdownStyleData(
                                     maxHeight: 300,
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(13.0),
+                                      borderRadius: BorderRadius.circular(8.0),
                                       color: isDarkMode
                                           ? Colors.grey.shade800
                                           : Colors.white,
@@ -544,6 +556,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
                                   fontWeight: FontWeight.bold,
                                   color:
                                       isDarkMode ? Colors.white : Colors.black,
+                                  fontSize: 12.0,
                                 ),
                               ),
                               const TextSpan(
@@ -551,7 +564,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
                                 style: TextStyle(
                                   fontFamily: 'Mukta',
                                   fontWeight: FontWeight.w600,
-                                  fontSize: 16.0,
+                                  fontSize: 14.0,
                                   color: Colors.red,
                                 ),
                               ),
@@ -563,7 +576,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
                           height: 50.0,
                           width: double.infinity,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(13.0),
+                            borderRadius: BorderRadius.circular(8.0),
                             color: isDarkMode
                                 ? Colors.grey.shade800
                                 : Colors.grey.shade50,
@@ -578,6 +591,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
                                   Icons.calendar_month_outlined,
                                   color:
                                       isDarkMode ? Colors.grey : Colors.black,
+                                  size: 18.0,
                                 ),
                                 const SizedBox(width: 10),
                                 Expanded(
@@ -592,6 +606,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
                                           color: isDarkMode
                                               ? Colors.white
                                               : Colors.black,
+                                          fontSize: 12.0,
                                         ),
                                         border: InputBorder.none,
                                         contentPadding: EdgeInsets.zero,
@@ -641,6 +656,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
                                   fontWeight: FontWeight.bold,
                                   color:
                                       isDarkMode ? Colors.white : Colors.black,
+                                  fontSize: 12.0,
                                 ),
                               ),
                               const TextSpan(
@@ -648,7 +664,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
                                 style: TextStyle(
                                   fontFamily: 'Mukta',
                                   fontWeight: FontWeight.w600,
-                                  fontSize: 16.0,
+                                  fontSize: 14.0,
                                   color: Colors.red,
                                 ),
                               ),
@@ -675,6 +691,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
                                   Icons.calendar_month_outlined,
                                   color:
                                       isDarkMode ? Colors.grey : Colors.black,
+                                  size: 18.0,
                                 ),
                                 const SizedBox(width: 10),
                                 Expanded(
@@ -689,6 +706,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
                                           color: isDarkMode
                                               ? Colors.white
                                               : Colors.black,
+                                          fontSize: 12.0,
                                         ),
                                         border: InputBorder.none,
                                         contentPadding: EdgeInsets.zero,
@@ -740,6 +758,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
                                       color: isDarkMode
                                           ? Colors.white
                                           : Colors.black,
+                                      fontSize: 12.0,
                                     ),
                                   ),
                                   Text(
@@ -753,6 +772,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
                                                   _selectedValue.value!)
                                           ? Colors.green
                                           : Colors.red,
+                                      fontSize: 12.0,
                                     ),
                                   ),
                                 ],
@@ -779,6 +799,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
                                   fontWeight: FontWeight.bold,
                                   color:
                                       isDarkMode ? Colors.white : Colors.black,
+                                  fontSize: 12.0,
                                 ),
                               ),
                               const TextSpan(
@@ -786,7 +807,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
                                 style: TextStyle(
                                   fontFamily: 'Mukta',
                                   fontWeight: FontWeight.w600,
-                                  fontSize: 16.0,
+                                  fontSize: 14.0,
                                   color: Colors.red,
                                 ),
                               ),
@@ -795,7 +816,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
                         ),
                         const SizedBox(height: 10.0),
                         Container(
-                          height: 180.0,
+                          height: 140.0,
                           width: double.infinity,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(13.0),
@@ -818,6 +839,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
                                 hintStyle: smallStyle.copyWith(
                                   color:
                                       isDarkMode ? Colors.white : Colors.black,
+                                  fontSize: 12.0,
                                 ),
                               ),
                               textInputAction: TextInputAction.done,
@@ -837,7 +859,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 40.0),
+                    const SizedBox(height: 30.0),
 
                     // Clear and Save Buttons
                     Row(
@@ -879,6 +901,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
                                         color: isDarkMode
                                             ? Colors.black
                                             : Colors.white,
+                                        fontSize: 12.0,
                                       ),
                                     ),
                                   ],
@@ -922,6 +945,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
                                           "Request",
                                           style: smallStyle.copyWith(
                                             color: Colors.white,
+                                            fontSize: 12.0,
                                           ),
                                         ),
                                       ],

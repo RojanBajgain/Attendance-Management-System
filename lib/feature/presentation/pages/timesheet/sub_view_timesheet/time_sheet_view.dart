@@ -44,10 +44,10 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
         );
       },
       child: Container(
-        height: 90.0,
+        height: 80.0,
         width: double.infinity,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10.0),
+          borderRadius: BorderRadius.circular(8.0),
           color: Colors.grey[200],
           boxShadow: [
             BoxShadow(
@@ -89,6 +89,7 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
                 style: smallStyle.copyWith(
                   fontWeight: FontWeight.bold,
                   color: isDarkMode ? Colors.white : Colors.black,
+                  fontSize: 12.0,
                 ),
               ),
               const SizedBox(height: 15.0),
@@ -107,7 +108,7 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
                         : "",
                     style: smallNStyle.copyWith(
                       color: Colors.green,
-                      fontSize: 12.0,
+                      fontSize: 11.0,
                     ),
                   ),
                   const Spacer(),
@@ -123,7 +124,7 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
                         : "-----",
                     style: smallNStyle.copyWith(
                       color: Colors.red,
-                      fontSize: 12.0,
+                      fontSize: 11.0,
                     ),
                   ),
                   const Spacer(),
@@ -136,7 +137,7 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
                     "${widget.timesheetdata.totalHour.toString()} hrs",
                     style: smallNStyle.copyWith(
                       color: Colors.grey,
-                      fontSize: 12.0,
+                      fontSize: 11.0,
                     ),
                   ),
                 ],

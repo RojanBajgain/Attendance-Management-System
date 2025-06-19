@@ -350,6 +350,7 @@ class _EditUserBankState extends State<EditUserBank> {
           style: smallStyle.copyWith(
             fontWeight: FontWeight.w700,
             color: isDarkMode ? Colors.white : Colors.black,
+            fontSize: 14,
           ),
         ),
       ),
@@ -464,6 +465,7 @@ class _EditUserBankState extends State<EditUserBank> {
               "Is Payroll",
               style: smallStyle.copyWith(
                 color: isDarkMode ? Colors.white : Colors.black,
+                fontSize: 12,
               ),
             ),
           ],
@@ -522,6 +524,7 @@ class _EditUserBankState extends State<EditUserBank> {
                   dropdownColor: isDarkMode ? Colors.grey[800] : Colors.white,
                   style: smallStyle.copyWith(
                     color: isDarkMode ? Colors.white : Colors.black,
+                    fontSize: 11,
                   ),
                   items: _availableBanks.map((String bank) {
                     return DropdownMenuItem<String>(
@@ -594,13 +597,15 @@ class _EditUserBankState extends State<EditUserBank> {
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
               labelStyle: smallStyle.copyWith(
+                fontSize: 12,
                 color: hasError
                     ? Colors.red
-                    : (isDarkMode ? Colors.white70 : Colors.black54),
+                    : (isDarkMode ? Colors.white70 : Colors.black),
               ),
             ),
             style: smallStyle.copyWith(
               color: isDarkMode ? Colors.white : Colors.black,
+              fontSize: 11,
             ),
             onChanged: (value) {
               if (hasError) {
@@ -651,6 +656,7 @@ class _EditUserBankState extends State<EditUserBank> {
                   hint: Text(
                     hasError ? _fieldErrors[fieldKey]! : 'Select Bank',
                     style: smallStyle.copyWith(
+                      fontSize: 11,
                       color: hasError
                           ? Colors.red
                           : (isDarkMode ? Colors.white70 : Colors.black54),
@@ -659,6 +665,7 @@ class _EditUserBankState extends State<EditUserBank> {
                   dropdownColor: isDarkMode ? Colors.grey[800] : Colors.white,
                   style: smallStyle.copyWith(
                     color: isDarkMode ? Colors.white : Colors.black,
+                    fontSize: 11,
                   ),
                   items: _availableBanks.map((String bank) {
                     return DropdownMenuItem<String>(
@@ -716,6 +723,7 @@ class _EditUserBankState extends State<EditUserBank> {
               "Add New Bank",
               style: smallStyle.copyWith(
                 color: isDarkMode ? Colors.white : Colors.black,
+                fontSize: 12,
               ),
             ),
           ],
@@ -786,6 +794,7 @@ class _EditUserBankState extends State<EditUserBank> {
         style: normalStyle.copyWith(
           fontWeight: FontWeight.bold,
           color: isDarkMode ? Colors.white : Colors.black,
+          fontSize: 14,
         ),
       ),
     );
@@ -837,6 +846,7 @@ class _EditUserBankState extends State<EditUserBank> {
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
               labelStyle: smallStyle.copyWith(
+                fontSize: 12,
                 color: hasError
                     ? Colors.red
                     : (isDarkMode ? Colors.white70 : Colors.black54),
@@ -848,6 +858,7 @@ class _EditUserBankState extends State<EditUserBank> {
             ),
             style: smallStyle.copyWith(
               color: isDarkMode ? Colors.white : Colors.black,
+              fontSize: 11,
             ),
             onChanged: (value) {
               if (hasError) {
@@ -900,6 +911,7 @@ class _EditUserBankState extends State<EditUserBank> {
                   style: smallStyle.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
+                    fontSize: 12,
                   ),
                 ),
               ],
@@ -924,6 +936,7 @@ class _EditUserBankState extends State<EditUserBank> {
               style: smallStyle.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
+                fontSize: 12,
               ),
             ),
           ),

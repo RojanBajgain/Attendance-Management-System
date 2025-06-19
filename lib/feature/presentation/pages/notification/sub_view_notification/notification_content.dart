@@ -33,7 +33,7 @@ class _NotificationsContentState extends State<NotificationsContent> {
 
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(13.0),
+        borderRadius: BorderRadius.circular(8.0),
         color: isDarkMode ? Colors.grey.shade800 : Colors.grey.shade50,
         boxShadow: [
           BoxShadow(
@@ -45,13 +45,13 @@ class _NotificationsContentState extends State<NotificationsContent> {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(10.0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              height: MediaQuery.of(context).size.height * 0.08,
-              width: MediaQuery.of(context).size.height * 0.08,
+              height: MediaQuery.of(context).size.height * 0.07,
+              width: MediaQuery.of(context).size.height * 0.07,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20.0),
                 color: Colors.grey[200],
@@ -61,7 +61,7 @@ class _NotificationsContentState extends State<NotificationsContent> {
                   colors: [
                     Colors.red,
                     Colors.red,
-                    Colors.grey.shade100,
+                    Colors.grey.shade200,
                   ],
                   stops: const [
                     0.0,
@@ -74,7 +74,7 @@ class _NotificationsContentState extends State<NotificationsContent> {
                 children: [
                   Positioned(
                     top: 4.0,
-                    left: 22.0,
+                    left: 19.0,
                     child: Text(
                       widget.calenderTxt,
                       style: const TextStyle(
@@ -85,7 +85,7 @@ class _NotificationsContentState extends State<NotificationsContent> {
                     ),
                   ),
                   Positioned(
-                    top: 35.0,
+                    top: 32.0,
                     left: 0,
                     right: 0,
                     child: SizedBox(
@@ -96,6 +96,7 @@ class _NotificationsContentState extends State<NotificationsContent> {
                         style: smallNStyle.copyWith(
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
+                          fontSize: 12.0,
                         ),
                       ),
                     ),
@@ -114,6 +115,7 @@ class _NotificationsContentState extends State<NotificationsContent> {
                     style: smallStyle.copyWith(
                       fontWeight: FontWeight.bold,
                       color: isDarkMode ? Colors.white : Colors.black,
+                      fontSize: 12.0,
                     ),
                   ),
                   const SizedBox(height: 5.0),
@@ -129,6 +131,7 @@ class _NotificationsContentState extends State<NotificationsContent> {
                         softWrap: true,
                         style: miniStyle.copyWith(
                           color: isDarkMode ? Colors.grey[400] : Colors.black,
+                          fontSize: 11.0,
                         ),
                       ),
                       if (widget.contextTxtDetail.length > 100 && !_expanded)
@@ -156,6 +159,8 @@ class _NotificationsContentState extends State<NotificationsContent> {
                     widget.contextTime,
                     style: miniStyle.copyWith(
                       color: isDarkMode ? Colors.grey[400] : Colors.black,
+                      fontStyle: FontStyle.italic,
+                      fontSize: 11.0,
                     ),
                   ),
                 ],

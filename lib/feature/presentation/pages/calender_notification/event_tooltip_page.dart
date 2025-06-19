@@ -80,6 +80,7 @@ class EventTooltip extends StatelessWidget {
                   style: smallNStyle.copyWith(
                     fontWeight: FontWeight.bold,
                     color: isDarkMode ? Colors.white : Colors.black87,
+                    fontSize: 12.0,
                   ),
                 ),
               ),
@@ -97,6 +98,7 @@ class EventTooltip extends StatelessWidget {
                     "No events, holidays, or notices for today",
                     style: smallStyle.copyWith(
                       color: isDarkMode ? Colors.white70 : Colors.grey[600],
+                      fontSize: 12.0,
                     ),
                   ),
                 ),
@@ -162,7 +164,9 @@ class EventTooltip extends StatelessWidget {
 
                     return Padding(
                       padding: const EdgeInsets.symmetric(
-                          vertical: 12, horizontal: 16),
+                        vertical: 12,
+                        horizontal: 16,
+                      ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -203,7 +207,7 @@ class EventTooltip extends StatelessWidget {
                                 Text(
                                   event.title ?? event.name ?? "Untitled",
                                   style: TextStyle(
-                                    fontSize: 13,
+                                    fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                     color: isDarkMode
                                         ? Colors.white
@@ -280,9 +284,11 @@ class EventTooltip extends StatelessWidget {
                                   Padding(
                                     padding: const EdgeInsets.only(top: 8),
                                     child: Text(
-                                      'Assigned to: ${event.user}',
+                                      'Created By: ${event.user}',
                                       style: TextStyle(
                                         fontSize: 11,
+                                        fontStyle: FontStyle.italic,
+                                        fontWeight: FontWeight.w500,
                                         color: isDarkMode
                                             ? Colors.white70
                                             : Colors.black54,
@@ -304,6 +310,7 @@ class EventTooltip extends StatelessWidget {
                                       dateText,
                                       style: TextStyle(
                                         fontSize: 11,
+                                        fontStyle: FontStyle.italic,
                                         color: isDarkMode
                                             ? Colors.white70
                                             : Colors.black54,

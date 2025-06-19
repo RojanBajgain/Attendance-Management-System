@@ -45,9 +45,7 @@ class _TimeOffPageState extends State<TimeOffPage> {
           padding: const EdgeInsets.all(16.0),
           children: [
             Padding(
-              padding: const EdgeInsets.only(
-                left: 10.0,
-              ),
+              padding: const EdgeInsets.only(left: 10.0),
               child: Row(
                 children: [
                   Text(
@@ -109,6 +107,7 @@ class _TimeOffPageState extends State<TimeOffPage> {
                           style: TextStyle(
                             color: isDarkMode ? Colors.black : Colors.white,
                             fontWeight: FontWeight.bold,
+                            fontSize: 8.0,
                           ),
                           items: [
                             'All',

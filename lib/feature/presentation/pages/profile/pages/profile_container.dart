@@ -127,6 +127,7 @@ class _ProfilePicState extends State<ProfilePic> {
                         style: normalStyle.copyWith(
                           fontWeight: FontWeight.bold,
                           color: isDarkMode ? Colors.white : Colors.black,
+                          fontSize: 14.0,
                         ),
                       ),
                       const SizedBox(height: 5),
@@ -137,6 +138,7 @@ class _ProfilePicState extends State<ProfilePic> {
                             'Status',
                             style: smallStyle.copyWith(
                               color: isDarkMode ? Colors.white : Colors.black,
+                              fontSize: 12.0,
                             ),
                           ),
                           const SizedBox(width: 5.0),
@@ -156,6 +158,7 @@ class _ProfilePicState extends State<ProfilePic> {
                               style: smallStyle.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
+                                fontSize: 12.0,
                               ),
                             ),
                           ),

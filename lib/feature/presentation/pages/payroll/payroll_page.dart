@@ -35,13 +35,13 @@ class _PayrollPageState extends State<PayrollPage> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: ConstantAppBar(),
+      appBar: const ConstantAppBar(),
       body: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.all(16.0),
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 10.0),
+            padding: const EdgeInsets.only(left: 6.0),
             child: Row(
               children: [
                 Text(
@@ -217,7 +217,7 @@ class _PayrollPageState extends State<PayrollPage> {
                           final payroll =
                               payrollcontroller.filteredPayroll[index];
                           return Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(4.0),
                             child: PayRollSlip(
                               payrolldata: payroll,
                               dop: payroll.dateOfPayment != null

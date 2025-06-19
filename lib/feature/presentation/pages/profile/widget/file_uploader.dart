@@ -67,6 +67,7 @@ class _FileUploadFieldState extends State<FileUploadField> {
         Text(widget.title,
             style: smallStyle.copyWith(
               color: isDarkMode ? Colors.white : Colors.black,
+              fontSize: 11,
             )),
         const SizedBox(height: 8),
         GestureDetector(
@@ -84,7 +85,8 @@ class _FileUploadFieldState extends State<FileUploadField> {
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: Text(_fileName ?? widget.hintText,
                         style: smallStyle.copyWith(
-                          color: _fileName != null ? Colors.white : Colors.grey,
+                          color:
+                              _fileName != null ? Colors.white : Colors.black,
                         )),
                   ),
                 ),

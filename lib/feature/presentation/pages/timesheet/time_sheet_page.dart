@@ -39,7 +39,7 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: ConstantAppBar(),
+      appBar: const ConstantAppBar(),
       body: RefreshIndicator(
         onRefresh: () async {
           await timesheetcontroller.refreshTimesheet();
@@ -52,7 +52,7 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: 10.0),
+                    padding: const EdgeInsets.only(left: 6.0),
                     child: Row(
                       children: [
                         Text(
@@ -91,6 +91,7 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
                                 color: isDarkMode
                                     ? Colors.white70
                                     : Colors.black87,
+                                fontSize: 12.0,
                               ),
                             ),
                             Text(
@@ -99,6 +100,7 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
                                 color: isDarkMode
                                     ? Colors.white70
                                     : Colors.black87,
+                                fontSize: 12.0,
                               ),
                             ),
                           ],
@@ -117,7 +119,7 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
                 if (timesheetcontroller.isLoading.value) {
                   return ListView.builder(
                     padding: const EdgeInsets.all(12.0),
-                    itemCount: 6,
+                    itemCount: 7,
                     itemBuilder: (context, index) {
                       return const TimesheetSkeleton();
                     },
@@ -146,7 +148,7 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
                 } else {
                   return ListView.builder(
                     controller: timesheetcontroller.scrollController,
-                    padding: const EdgeInsets.all(12.0),
+                    padding: const EdgeInsets.all(8.0),
                     physics: const AlwaysScrollableScrollPhysics(),
                     itemCount: timesheetcontroller.timesheet.length +
                         (timesheetcontroller.hasMoreData.value ? 1 : 0),
@@ -154,7 +156,11 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
                       if (index < timesheetcontroller.timesheet.length) {
                         final timesheet = timesheetcontroller.timesheet[index];
                         return Padding(
-                          padding: const EdgeInsets.all(6.0),
+                          padding: const EdgeInsets.only(
+                            bottom: 15.0,
+                            left: 4.0,
+                            right: 6.0,
+                          ),
                           child: TimeSheetWidget(timesheetdata: timesheet),
                         );
                       } else {
@@ -166,7 +172,9 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
                               child: Center(
                                 child: Column(
                                   children: [
-                                    const CircularProgressIndicator(),
+                                    const CircularProgressIndicator(
+                                      color: Colors.cyan,
+                                    ),
                                     const SizedBox(height: 8.0),
                                     Text(
                                       "Loading more...",
@@ -174,6 +182,7 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
                                         color: isDarkMode
                                             ? Colors.white70
                                             : Colors.black54,
+                                        fontSize: 11.0,
                                       ),
                                     ),
                                   ],

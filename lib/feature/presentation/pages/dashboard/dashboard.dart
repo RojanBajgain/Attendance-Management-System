@@ -88,16 +88,20 @@ class _DashboardPageState extends State<DashboardPage> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "Dashboard",
-                      style: normalStyle.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: isDarkMode ? Colors.white : Colors.black,
+                    Padding(
+                      padding: const EdgeInsets.only(left: 6.0),
+                      child: Text(
+                        "Dashboard",
+                        style: normalStyle.copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16.0,
+                          color: isDarkMode ? Colors.white : Colors.black,
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 15.0),
+                    const SizedBox(height: 12.0),
                     Container(
-                      height: 115.0,
+                      height: 105.0,
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 22.0, vertical: 22.0),
@@ -114,6 +118,7 @@ class _DashboardPageState extends State<DashboardPage> {
                               style: smallStyle.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: isDarkMode ? Colors.black : Colors.white,
+                                fontSize: 12.0,
                               ),
                               children: [
                                 TextSpan(
@@ -132,6 +137,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                     color: isDarkMode
                                         ? Colors.black
                                         : Colors.white,
+                                    fontSize: 12.0,
+                                    fontStyle: FontStyle.italic,
                                   ),
                                 ),
                               ],
@@ -144,6 +151,7 @@ class _DashboardPageState extends State<DashboardPage> {
                               fontWeight: FontWeight.w400,
                               color:
                                   isDarkMode ? Colors.black87 : Colors.white70,
+                              fontSize: 12.0,
                             ),
                           ),
                           const SizedBox(height: 5),
@@ -153,12 +161,13 @@ class _DashboardPageState extends State<DashboardPage> {
                               fontWeight: FontWeight.w400,
                               color:
                                   isDarkMode ? Colors.black87 : Colors.white70,
+                              fontSize: 12.0,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 10.0),
+                    const SizedBox(height: 15.0),
                     const ClockTime(),
                     const SizedBox(height: 20.0),
                     SingleChildScrollView(
@@ -186,6 +195,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                           ? Colors.white
                                           : Colors.black,
                                       fontWeight: FontWeight.bold,
+                                      fontSize: 12.0,
                                     ),
                                   ),
                                   const SizedBox(height: 8.0),
@@ -271,6 +281,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                           ? Colors.white
                                           : Colors.black,
                                       fontWeight: FontWeight.bold,
+                                      fontSize: 12.0,
                                     ),
                                   ),
                                   const SizedBox(height: 8.0),
@@ -342,16 +353,20 @@ class _DashboardPageState extends State<DashboardPage> {
                       timeoffcontroller: timeoffController,
                       timesheetcontroller: timesheetController,
                     ),
-                    const SizedBox(height: 30.0),
+                    const SizedBox(height: 15.0),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          "Holidays & Events",
-                          style: normalStyle.copyWith(
-                            color: isDarkMode ? Colors.white : Colors.black,
-                            fontWeight: FontWeight.bold,
+                        Padding(
+                          padding: const EdgeInsets.only(left: 6.0),
+                          child: Text(
+                            "Holidays & Events",
+                            style: normalStyle.copyWith(
+                              color: isDarkMode ? Colors.white : Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14.0,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 20.0),

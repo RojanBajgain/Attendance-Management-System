@@ -394,12 +394,14 @@ class _ClockTimeState extends State<ClockTime> {
                         style: smallStyle.copyWith(
                           color: isDarkMode ? Colors.white : Colors.black,
                           fontWeight: FontWeight.bold,
+                          fontSize: 12.0,
                         ),
                       ),
                       Text(
                         _formatTime(clockInTime),
                         style: smallStyle.copyWith(
                           color: isDarkMode ? Colors.white70 : Colors.black87,
+                          fontSize: 12.0,
                         ),
                       ),
                     ],
@@ -416,12 +418,14 @@ class _ClockTimeState extends State<ClockTime> {
                         style: smallStyle.copyWith(
                           color: isDarkMode ? Colors.white : Colors.black,
                           fontWeight: FontWeight.bold,
+                          fontSize: 12.0,
                         ),
                       ),
                       Text(
                         _formatTime(clockOutTime),
                         style: smallStyle.copyWith(
                           color: isDarkMode ? Colors.white70 : Colors.black87,
+                          fontSize: 12.0,
                         ),
                       ),
                     ],
@@ -538,6 +542,7 @@ class _ClockTimeState extends State<ClockTime> {
                 style: smallStyle.copyWith(
                   color: isDarkMode ? Colors.white : Colors.black,
                   fontWeight: FontWeight.bold,
+                  fontSize: 12.0,
                 ),
               ),
               const SizedBox(height: 8),
@@ -550,6 +555,7 @@ class _ClockTimeState extends State<ClockTime> {
                 style: smallNStyle.copyWith(
                   color: isDarkMode ? Colors.blue : Colors.blue,
                   fontWeight: FontWeight.bold,
+                  fontSize: 12.0,
                 ),
               ),
             ],
@@ -600,6 +606,7 @@ class _ClockTimeState extends State<ClockTime> {
               style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
+                fontSize: 12.0,
               ),
             ),
           );
@@ -628,6 +635,7 @@ class _ClockTimeState extends State<ClockTime> {
             style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
+              fontSize: 12.0,
             ),
           ),
         );

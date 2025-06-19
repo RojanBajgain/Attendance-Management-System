@@ -38,7 +38,7 @@ class PayRollSlip extends StatelessWidget {
         );
       },
       child: Container(
-        height: 140.0,
+        height: 130.0,
         width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10.0),
@@ -83,6 +83,7 @@ class PayRollSlip extends StatelessWidget {
                     style: smallStyle.copyWith(
                       fontWeight: FontWeight.bold,
                       color: isDarkMode ? Colors.white : Colors.black,
+                      fontSize: 12.0,
                     ),
                   ),
                   const Spacer(),
@@ -91,6 +92,7 @@ class PayRollSlip extends StatelessWidget {
                     style: smallStyle.copyWith(
                       fontWeight: FontWeight.bold,
                       color: isDarkMode ? Colors.white : Colors.black,
+                      fontSize: 12.0,
                     ),
                   ),
                 ],
@@ -132,6 +134,7 @@ class PayRollSlip extends StatelessWidget {
                           style: smallStyle.copyWith(
                             fontWeight: FontWeight.bold,
                             color: isDarkMode ? Colors.white : Colors.black,
+                            fontSize: 12.0,
                           ),
                         ),
                         Text(
@@ -157,6 +160,7 @@ class PayRollSlip extends StatelessWidget {
                           style: smallStyle.copyWith(
                             fontWeight: FontWeight.bold,
                             color: isDarkMode ? Colors.white : Colors.black,
+                            fontSize: 12.0,
                           ),
                         ),
                         Text(
@@ -182,6 +186,7 @@ class PayRollSlip extends StatelessWidget {
                           style: smallStyle.copyWith(
                             fontWeight: FontWeight.bold,
                             color: isDarkMode ? Colors.white : Colors.black,
+                            fontSize: 12.0,
                           ),
                         ),
                         Text(

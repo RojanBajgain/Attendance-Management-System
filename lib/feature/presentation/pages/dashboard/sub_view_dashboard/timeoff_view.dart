@@ -14,14 +14,14 @@ class TimeoffView extends StatelessWidget {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      height: 170.0,
+      height: 155.0,
       width: double.infinity,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12.0),
+        borderRadius: BorderRadius.circular(8.0),
         color: isDarkMode ? Colors.grey.shade800 : Colors.grey.shade200,
       ),
       child: Padding(
-        padding: const EdgeInsets.all(14.0),
+        padding: const EdgeInsets.all(12.0),
         child: Column(
           // mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,7 +31,7 @@ class TimeoffView extends StatelessWidget {
               style: smallStyle.copyWith(
                 fontWeight: FontWeight.bold,
                 color: isDarkMode ? Colors.white : Colors.black,
-                // fontSize: 12.0
+                fontSize: 12.0,
               ),
             ),
             // SizedBox(height: 5.0),
@@ -42,6 +42,7 @@ class TimeoffView extends StatelessWidget {
                   style: smallStyle.copyWith(
                     fontWeight: FontWeight.bold,
                     color: isDarkMode ? Colors.white : Colors.black,
+                    fontSize: 12.0,
                   ),
                 ),
                 // const SizedBox(width: 20.0),
@@ -57,7 +58,10 @@ class TimeoffView extends StatelessWidget {
                   child: Center(
                     child: Text(
                       _getButtonText(timeoffdata.status),
-                      style: smallStyle.copyWith(color: Colors.white),
+                      style: smallStyle.copyWith(
+                        color: Colors.white,
+                        fontSize: 12.0,
+                      ),
                     ),
                   ),
                 ),
@@ -86,6 +90,7 @@ class TimeoffView extends StatelessWidget {
                       'Period',
                       style: smallStyle.copyWith(
                         color: isDarkMode ? Colors.white : Colors.black,
+                        fontSize: 12.0,
                       ),
                     ),
                     SizedBox(height: 5.0),
@@ -94,6 +99,7 @@ class TimeoffView extends StatelessWidget {
                       style: smallStyle.copyWith(
                         fontWeight: FontWeight.bold,
                         color: isDarkMode ? Colors.white : Colors.black,
+                        fontSize: 12.0,
                       ),
                     ),
                   ],
@@ -105,6 +111,7 @@ class TimeoffView extends StatelessWidget {
                       'Type',
                       style: smallStyle.copyWith(
                         color: isDarkMode ? Colors.white : Colors.black,
+                        fontSize: 12.0,
                       ),
                     ),
                     SizedBox(height: 5.0),
@@ -113,6 +120,7 @@ class TimeoffView extends StatelessWidget {
                       style: smallStyle.copyWith(
                         fontWeight: FontWeight.bold,
                         color: isDarkMode ? Colors.white : Colors.black,
+                        fontSize: 12.0,
                       ),
                     ),
                   ],
@@ -124,6 +132,7 @@ class TimeoffView extends StatelessWidget {
                       'Approved By',
                       style: smallStyle.copyWith(
                         color: isDarkMode ? Colors.white : Colors.black,
+                        fontSize: 12.0,
                       ),
                     ),
                     SizedBox(height: 5.0),
@@ -134,6 +143,7 @@ class TimeoffView extends StatelessWidget {
                       style: smallStyle.copyWith(
                         fontWeight: FontWeight.bold,
                         color: isDarkMode ? Colors.white : Colors.black,
+                        fontSize: 12.0,
                       ),
                     ),
                   ],

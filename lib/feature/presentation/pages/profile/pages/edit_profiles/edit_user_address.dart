@@ -476,9 +476,10 @@ class _EditUserAddressState extends State<EditUserAddress> {
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
               labelStyle: smallStyle.copyWith(
+                fontSize: 12,
                 color: hasError
                     ? Colors.red
-                    : (isDarkMode ? Colors.white70 : Colors.black54),
+                    : (isDarkMode ? Colors.white70 : Colors.black),
               ),
               filled: !enabled,
               fillColor: !enabled
@@ -487,6 +488,7 @@ class _EditUserAddressState extends State<EditUserAddress> {
             ),
             style: smallStyle.copyWith(
               color: isDarkMode ? Colors.white : Colors.black,
+              fontSize: 11,
             ),
             onChanged: (value) {
               if (hasError) {
@@ -520,6 +522,7 @@ class _EditUserAddressState extends State<EditUserAddress> {
           style: normalStyle.copyWith(
             color: isDarkMode ? Colors.white : Colors.black,
             fontWeight: FontWeight.w600,
+            fontSize: 14,
           ),
         ),
       ],
@@ -539,6 +542,7 @@ class _EditUserAddressState extends State<EditUserAddress> {
           "Same as Permanent Address",
           style: smallStyle.copyWith(
             color: isDarkMode ? Colors.white : Colors.black,
+            fontSize: 12,
           ),
         ),
       ),
@@ -571,6 +575,7 @@ class _EditUserAddressState extends State<EditUserAddress> {
                   style: smallStyle.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
+                    fontSize: 11,
                   ),
                 ),
               ],
@@ -596,6 +601,7 @@ class _EditUserAddressState extends State<EditUserAddress> {
                 style: smallStyle.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.w700,
+                  fontSize: 11,
                 ),
               ),
             ),
@@ -618,6 +624,7 @@ class _EditUserAddressState extends State<EditUserAddress> {
                   style: smallStyle.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
+                    fontSize: 11,
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -722,6 +729,7 @@ class _EditUserAddressState extends State<EditUserAddress> {
           style: smallStyle.copyWith(
             fontWeight: FontWeight.w700,
             color: isDarkMode ? Colors.white : Colors.black,
+            fontSize: 14,
           ),
         ),
       ),
@@ -760,7 +768,7 @@ class _EditUserAddressState extends State<EditUserAddress> {
               color: Colors.black.withOpacity(0.5),
               child: const Center(
                 child: CircularProgressIndicator(
-                  color: Colors.green,
+                  color: Colors.cyan,
                 ),
               ),
             ),
