@@ -920,7 +920,10 @@ class _EditUserBankState extends State<EditUserBank> {
           ElevatedButton(
             onPressed: () {
               if (_validateInputs()) {
-                Get.dialog(const Center(child: CircularProgressIndicator()));
+                Get.dialog(const Center(
+                    child: CircularProgressIndicator(
+                  color: Colors.cyan,
+                )));
                 _submitUserBankDetails();
               }
             },

@@ -213,8 +213,7 @@ class ProfileController extends GetxController {
         log("Error: ${response.message}");
         SSnackbarUtil.showSnackbar(
           'Server Error',
-          response.message ??
-              'Failed to create your address. Please try again later',
+          'Failed to create your address. Please try again later',
           SnackbarType.error,
         );
       }
@@ -280,8 +279,7 @@ class ProfileController extends GetxController {
         // log("Error: ${response.message}");
         SSnackbarUtil.showSnackbar(
           'Server Error',
-          response.message ??
-              'Failed to update your address. Please try again later',
+          'Failed to update your address. Please try again later',
           SnackbarType.error,
         );
       }
