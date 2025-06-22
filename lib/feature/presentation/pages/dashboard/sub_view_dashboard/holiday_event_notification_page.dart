@@ -214,27 +214,33 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                   },
                 ),
                 if (filteredList.length > 3)
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        top: 10.0, bottom: 10.0, left: 270.0),
-                    child: InkWell(
-                      onTap: navigateToEventPage,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 8.0, horizontal: 16.0),
-                        decoration: BoxDecoration(
-                          color: isDarkMode ? Colors.blueAccent : Colors.blue,
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: Text(
-                          'View All',
-                          style: smallStyle.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      InkWell(
+                        onTap: navigateToEventPage,
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 20.0, bottom: 15.0),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 16.0),
+                            decoration: BoxDecoration(
+                              color:
+                                  isDarkMode ? Colors.blueAccent : Colors.blue,
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            child: Text(
+                              'View All',
+                              style: smallStyle.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
               ],
             );

@@ -29,6 +29,7 @@ class _ConstantAppBarState extends State<ConstantAppBar> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       shadowColor: Colors.black,
       backgroundColor: isDarkMode ? Colors.black : Colors.white,

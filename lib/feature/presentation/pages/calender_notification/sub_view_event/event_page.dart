@@ -139,6 +139,7 @@ class _EventPageState extends State<EventPage>
     return Scaffold(
       backgroundColor: isDarkMode ? Colors.black : Colors.grey[100],
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
         title: Text(
           'Events & Holidays',
           style: normalStyle.copyWith(

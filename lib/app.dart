@@ -28,7 +28,6 @@ class App extends StatelessWidget {
           initialRoute: isLoggedIn ? '/bottom-nav' : '/landing',
           getPages: [
             GetPage(name: '/landing', page: () => const LandingPage()),
-            // GetPage(name: '/landing', page: () => const LoginPage()),
             GetPage(name: '/bottom-nav', page: () => const BottomNavPage()),
             GetPage(
                 name: '/organization', page: () => const OrganizationPage()),
