@@ -37,7 +37,7 @@ class SSnackbarUtil {
         isDismissible: true,
         dismissDirection: DismissDirection.horizontal,
         message: newMessage,
-        duration: Duration(seconds: duration ?? 2),
+        duration: Duration(seconds: duration ?? 3),
         title: title,
         messageText: Text(
           newMessage,
