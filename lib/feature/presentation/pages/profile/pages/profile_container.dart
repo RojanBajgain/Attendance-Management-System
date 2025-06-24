@@ -20,7 +20,7 @@ class ProfilePic extends StatefulWidget {
 
 class _ProfilePicState extends State<ProfilePic> {
   final authcontroller = Get.find<AuthController>();
-  final ProfileController profilecontroller = Get.put(ProfileController());
+  final profilecontroller = Get.put(ProfileController(profileRepo: Get.find()));
 
   // final ProfileController profilecontroller = Get.find();
 

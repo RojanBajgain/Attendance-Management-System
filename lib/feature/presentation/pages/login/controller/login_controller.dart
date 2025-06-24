@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:ams/feature/data/datasource/remote/api_response.dart';
+import 'package:ams/feature/data/datasource/remote/session_manager.dart';
 import 'package:ams/feature/data/repository/auth_repository_impl.dart';
+import 'package:ams/feature/presentation/pages/offline_page/controller/connectivity_services.dart';
 import 'package:ams/feature/presentation/pages/organization/pages/organization_page.dart';
 import 'package:ams/feature/presentation/pages/bottom_nav/bottom_nav_page.dart';
 import 'package:ams/feature/presentation/pages/login/login_page.dart';
@@ -30,6 +32,8 @@ class AuthController extends GetxController {
   var biometricsEnabled = false.obs;
 
   AuthController({required this.authRepo});
+
+  final offlinecontroller = Get.put(OfflineController());
 
   @override
   void onInit() {
@@ -263,10 +267,6 @@ class AuthController extends GetxController {
     if (authIsLoading.value) return;
 
     authIsLoading.value = true;
-    // Get.dialog(
-    //   const CombinedAnimatedDialog(),
-    //   barrierDismissible: false,
-    // );
 
     try {
       ApiResponse<LoginModel> response =
@@ -280,19 +280,24 @@ class AuthController extends GetxController {
         // Set new user data
         alluserData.value = response.response!;
 
-        // Save tokens
+        // Save tokens - FIX: Use consistent storage and key names
         final tokens = response.response;
         if (tokens != null) {
-          // Save tokens (apiKey will be set after organization selection)
+          // Save to both secure storage and shared preferences for consistency
+          await secureStorage.write(key: 'access_token', value: tokens.access);
+          await secureStorage.write(
+              key: 'refresh_token', value: tokens.refresh);
+
+          // Save tokens to API client
           apiClient.saveTokens(tokens.access, tokens.refresh, '');
+
+          // Save credentials for biometric login
+          await secureStorage.write(key: 'user_email', value: email);
+          await secureStorage.write(key: 'user_password', value: password);
+          await secureStorage.write(key: 'user_role', value: role);
         }
 
-        // Save credentials for biometric login
-        await secureStorage.write(key: 'user_email', value: email);
-        await secureStorage.write(key: 'user_password', value: password);
-
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        // GetStorage box = GetStorage();
 
         // Store user info in shared preferences for persistence
         if (alluserData.value.user != null) {
@@ -300,7 +305,7 @@ class AuthController extends GetxController {
               'userData', json.encode(alluserData.value.toJson()));
         }
 
-        // Handle keepMeLoggedIn
+        // Handle keepMeLoggedIn - FIX: Save to shared preferences as well for backup
         await prefs.setBool('isLoggedIn', keepMeLoggedIn);
         if (keepMeLoggedIn) {
           await prefs.setString('accessToken', tokens!.access);
@@ -312,7 +317,6 @@ class AuthController extends GetxController {
         await Future.delayed(const Duration(milliseconds: 50));
 
         if (organizations.isEmpty) {
-          Get.back();
           SSnackbarUtil.showSnackbar(
             'No Departments',
             'No departments found for this user. Please contact your Admin.',
@@ -335,7 +339,6 @@ class AuthController extends GetxController {
           duration: 2,
         );
       } else {
-        Get.back();
         log("Error: ${response.message ?? 'Login failed'}");
         SSnackbarUtil.showSnackbar(
           'Login Failed',
@@ -344,7 +347,6 @@ class AuthController extends GetxController {
         );
       }
     } catch (e) {
-      Get.back();
       log("Exception occurred: $e");
       SSnackbarUtil.showSnackbar(
         'Error',
@@ -353,48 +355,104 @@ class AuthController extends GetxController {
       );
     } finally {
       if (Get.isDialogOpen == true) {
-        Get.back(); // Ensure the dialog is closed
+        Get.back();
       }
       authIsLoading.value = false;
     }
   }
 
   Future<void> checkLoginStatus() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+    const secureStorage = FlutterSecureStorage();
+    final prefs = await SharedPreferences.getInstance();
+    final storage = GetStorage();
 
-    if (isLoggedIn) {
-      String? userDataJson = prefs.getString('userData');
+    // Check if we're in the middle of logging out
+    if (SessionManager.isLoggingOut) return;
+
+    // Check if user is logged in
+    final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+
+    // FIX: Try to get tokens from both storage locations
+    String? accessToken = await secureStorage.read(key: 'access_token');
+    String? refreshToken = await secureStorage.read(key: 'refresh_token');
+
+    // Fallback to SharedPreferences if secure storage is empty
+    if (accessToken == null || refreshToken == null) {
+      accessToken = prefs.getString('accessToken');
+      refreshToken = prefs.getString('refreshToken');
+
+      // If found in SharedPreferences, sync to secure storage
+      if (accessToken != null && refreshToken != null) {
+        await secureStorage.write(key: 'access_token', value: accessToken);
+        await secureStorage.write(key: 'refresh_token', value: refreshToken);
+      }
+    }
+
+    log("Login status check - isLoggedIn: $isLoggedIn, hasTokens: ${accessToken != null && refreshToken != null}");
+
+    // If no access token but marked as logged in, handle as expired session
+    if (isLoggedIn && accessToken == null) {
+      log("Session expired - no access token found");
+      await SessionManager.handleSessionExpired();
+      return;
+    }
+
+    // If not logged in or no tokens, go to login page
+    if (!isLoggedIn || accessToken == null || refreshToken == null) {
+      log("Not logged in or missing tokens - redirecting to login");
+      Get.offAll(() => const LoginPage(),
+          transition: Transition.rightToLeft,
+          duration: const Duration(milliseconds: 300));
+      return;
+    }
+
+    // Try to restore user data
+    try {
+      final userDataJson = prefs.getString('userData');
       if (userDataJson != null && userDataJson.isNotEmpty) {
-        try {
-          Map<String, dynamic> userDataMap = json.decode(userDataJson);
-          alluserData.value = LoginModel.fromJson(userDataMap);
+        final userDataMap = json.decode(userDataJson);
+        alluserData.value = LoginModel.fromJson(userDataMap);
 
-          // Restore tokens to API client
-          final accessToken = prefs.getString('accessToken');
-          final refreshToken = prefs.getString('refreshToken');
-          if (accessToken != null && refreshToken != null) {
-            apiClient.saveTokens(
-                accessToken, refreshToken, apiClient.organization);
-          }
+        // Restore tokens to API client
+        apiClient.saveTokens(accessToken, refreshToken, apiClient.organization);
 
-          // Restore user_id
-          GetStorage box = GetStorage();
-          if (alluserData.value.user != null) {
-            log("Restoring user_id: ${alluserData.value.user}");
-            box.write('user_id', alluserData.value.user);
-          }
-
-          // Clear stale profile_id or profileId
-          box.remove('profile_id');
-          box.remove('profileId');
-        } catch (e) {
-          log("Error restoring user data: $e");
+        // Restore user_id if available
+        if (alluserData.value.user != null) {
+          storage.write('user_id', alluserData.value.user);
         }
+
+        // Clear stale profile data
+        storage.remove('profile_id');
+        storage.remove('profileId');
+
+        log("User data restored successfully");
       }
 
-      await Future.delayed(const Duration(milliseconds: 300));
-      Get.offAll(() => const BottomNavPage());
+      // Check organization selection first
+      final selectedOrganization = storage.read('selectedOrganization');
+      final organizationName = storage.read('organization_name');
+
+      if (selectedOrganization == null || organizationName == null) {
+        // User hasn't selected an organization yet, redirect to organization page
+        log("No organization selected - redirecting to organization page");
+        final organizations = alluserData.value.organization ?? [];
+        if (organizations.isNotEmpty) {
+          Get.offAll(
+            () => const OrganizationPage(),
+            arguments: organizations.map((org) => org.toJson()).toList(),
+            transition: Transition.rightToLeft,
+          );
+        } else {
+          // No organizations available, this shouldn't happen but handle gracefully
+          log("No organizations available - redirecting to login");
+          Get.offAll(() => const LoginPage(),
+              transition: Transition.rightToLeft);
+        }
+        return;
+      }
+    } catch (e) {
+      log("Error restoring session: $e");
+      await SessionManager.handleSessionExpired();
     }
   }
 
@@ -421,6 +479,10 @@ class AuthController extends GetxController {
       await prefs.remove('accessToken');
       await prefs.remove('refreshToken');
       await prefs.remove('userData');
+
+      // Clear secure storage tokens
+      await secureStorage.delete(key: 'access_token');
+      await secureStorage.delete(key: 'refresh_token');
 
       // Restore biometrics setting
       await prefs.setBool('biometrics_enabled', biometricsEnabled);
@@ -454,6 +516,7 @@ class AuthController extends GetxController {
         SnackbarType.error,
       );
     }
+    offlinecontroller.clearStoredRoute();
   }
 
   // Change Password

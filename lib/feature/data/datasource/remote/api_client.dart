@@ -7,6 +7,7 @@ import 'package:ams/feature/data/datasource/remote/api_message.dart';
 import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/datasource/remote/api_urls.dart';
 import 'package:ams/feature/data/datasource/remote/http_client.dart';
+import 'package:ams/feature/data/datasource/remote/session_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiClient {
@@ -63,14 +64,20 @@ class ApiClient {
         final json = jsonDecode(responseBody);
         final data = fromJson != null ? fromJson(json) : json as T;
         return ApiResponse.completed(data);
+      } else if (response.statusCode == 401) {
+        await ApiMessage.getMessage(response.statusCode, response);
+        await SessionManager.handleSessionExpired();
+
+        return ApiResponse.error('Session expired. Please log in again.');
       } else {
         final message = ApiMessage.getMessage(response.statusCode, response);
         log('Error: $message');
         return ApiResponse.error(message);
       }
     } catch (e) {
-      log('Error: $e');
-      return ApiResponse.error(ApiExceptionMsg.getMessageForException(e));
+      // log('Error: $e');
+      // return ApiResponse.error(ApiExceptionMsg.getMessageForException(e));
+      throw Exception(e);
     }
   }
 

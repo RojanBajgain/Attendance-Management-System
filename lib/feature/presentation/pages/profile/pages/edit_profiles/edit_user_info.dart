@@ -36,7 +36,7 @@ class EditUserInfo extends StatefulWidget {
 
 class _EditUserInfoState extends State<EditUserInfo> {
   final authcontroller = Get.find<AuthController>();
-  final ProfileController profilecontroller = Get.put(ProfileController());
+  final profilecontroller = Get.put(ProfileController(profileRepo: Get.find()));
 
   // Text controllers
   final TextEditingController fullNameController = TextEditingController();

@@ -29,7 +29,7 @@ class EditProfileView extends StatefulWidget {
 
 class _EditProfileViewState extends State<EditProfileView> {
   final authcontroller = Get.find<AuthController>();
-  final ProfileController profilecontroller = Get.put(ProfileController());
+  final profilecontroller = Get.put(ProfileController(profileRepo: Get.find()));
 
   bool _isAddNewDocumentChecked = false;
 

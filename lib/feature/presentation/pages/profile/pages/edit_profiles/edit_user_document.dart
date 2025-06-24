@@ -27,7 +27,7 @@ class EditUserDocument extends StatefulWidget {
 
 class _EditUserDocumentState extends State<EditUserDocument> {
   final authcontroller = Get.find<AuthController>();
-  final ProfileController profileController = Get.put(ProfileController());
+  final profileController = Get.put(ProfileController(profileRepo: Get.find()));
 
   final List<int> _deletedFileIds = [];
   final List<int> _deletedDocumentIds = [];

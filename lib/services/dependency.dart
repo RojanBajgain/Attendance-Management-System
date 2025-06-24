@@ -1,5 +1,4 @@
 import 'package:ams/feature/data/datasource/remote/api_client.dart';
-import 'package:ams/feature/data/repository/app_image_brand.dart';
 import 'package:ams/feature/data/repository/auth_repository_impl.dart';
 import 'package:ams/feature/data/repository/calender_notification.dart';
 import 'package:ams/feature/data/repository/chat_repo.dart';
@@ -22,7 +21,6 @@ import 'package:ams/feature/presentation/pages/policy/controller/policy_controll
 import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:ams/feature/presentation/pages/app_image_brand/controller/app_image_brand_controller.dart';
 
 Future<void> init() async {
   // Initialize SharedPreferences
@@ -38,45 +36,36 @@ Future<void> init() async {
     AuthController(authRepo: Get.find<AuthRepositoryImpl>()),
   );
 
-  // // Profile
-  Get.put<ProfileRepo>(ProfileRepo(apiClient: Get.find<ApiClient>()));
-  Get.put<ProfileController>(ProfileController());
+  // Profile
+  Get.lazyPut(() => ProfileRepo(apiClient: Get.find<ApiClient>()));
+  Get.put(ProfileController(profileRepo: Get.find()));
 
   // Payroll
-  Get.put<PayrollRepo>(PayrollRepo(apiClient: Get.find<ApiClient>()));
-  Get.put<PayrollController>(
-      PayrollController(payrollRepo: Get.find<PayrollRepo>()));
+  Get.lazyPut(() => PayrollRepo(apiClient: Get.find<ApiClient>()));
+  Get.put(PayrollController(payrollRepo: Get.find()));
 
   // Policies
-  Get.put<PolicyRepo>(PolicyRepo(apiClient: Get.find<ApiClient>()));
-  Get.put<PolicyController>(
-      PolicyController(policyrepo: Get.find<PolicyRepo>()));
+  Get.lazyPut(() => PolicyRepo(apiClient: Get.find<ApiClient>()));
+  Get.put(PolicyController(policyrepo: Get.find()));
 
   // Notifications
-  Get.put<NotificationRepo>(NotificationRepo(apiClient: Get.find<ApiClient>()));
-  Get.put<NotificationController>(
-      NotificationController(notificationrepo: Get.find<NotificationRepo>()));
+  Get.lazyPut(() => NotificationRepo(apiClient: Get.find<ApiClient>()));
+  Get.put(NotificationController(notificationrepo: Get.find()));
 
   // Dashboard Clock In / Clock Out
-  Get.put<ClockInOutRepo>(ClockInOutRepo(apiClient: Get.find<ApiClient>()));
-  Get.put<ClockInOutController>(
-      ClockInOutController(clockinoutrepo: Get.find<ClockInOutRepo>()));
+  Get.lazyPut(() => ClockInOutRepo(apiClient: Get.find<ApiClient>()));
+  Get.put(ClockInOutController(clockinoutrepo: Get.find()));
 
-  Get.put<HasClockRepo>(HasClockRepo(apiClient: Get.find<ApiClient>()));
-  Get.put<HasClockedinController>(
-      HasClockedinController(hasClockedIn: Get.find<HasClockRepo>()));
+  Get.lazyPut(() => HasClockRepo(apiClient: Get.find<ApiClient>()));
+  Get.put(HasClockedinController(hasClockedIn: Get.find()));
 
   // Reset Password
-  Get.put<ResetPasswordRepo>(
-      ResetPasswordRepo(apiClient: Get.find<ApiClient>()));
-  Get.put<ResetPasswordController>(ResetPasswordController(
-      resetpasswordrepo: Get.find<ResetPasswordRepo>()));
+  Get.lazyPut(() => ResetPasswordRepo(apiClient: Get.find<ApiClient>()));
+  Get.put(ResetPasswordController(resetpasswordrepo: Get.find()));
 
   // Event Calender
-  Get.put<EventCalenderRepo>(
-      EventCalenderRepo(apiClient: Get.find<ApiClient>()));
-  Get.put<CalenderNotificationController>(CalenderNotificationController(
-      eventCalenderrepo: Get.find<EventCalenderRepo>()));
+  Get.lazyPut(() => EventCalenderRepo(apiClient: Get.find<ApiClient>()));
+  Get.put(CalenderNotificationController(eventCalenderrepo: Get.find()));
 
   /*  // Brand Image
   Get.put<AppImageBrandRepo>(
@@ -90,6 +79,7 @@ Future<void> init() async {
   //     WebSocketController(websocketRepo: Get.find<WebsocketRepo>()));
 
   // Chat
-  Get.put<ChatRepo>(ChatRepo(apiClient: Get.find<ApiClient>()));
-  Get.put<ChatController>(ChatController(chatRepo: Get.find<ChatRepo>()));
+
+  Get.lazyPut(() => ChatRepo(apiClient: Get.find<ApiClient>()));
+  Get.put(ChatController(chatRepo: Get.find()));
 }

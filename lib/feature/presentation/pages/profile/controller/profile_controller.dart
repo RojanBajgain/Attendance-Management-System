@@ -12,6 +12,10 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
 class ProfileController extends GetxController {
+  final ProfileRepo profileRepo;
+
+  ProfileController({required this.profileRepo});
+
   var profile = <Datum>[].obs;
   var countrylist = <Datumm>[].obs;
   var isLoading = false.obs;
@@ -27,10 +31,6 @@ class ProfileController extends GetxController {
   }
 
   final Rx<DateTime?> selectedDate = Rx<DateTime?>(null);
-
-  final ProfileRepo profileRepo = ProfileRepo(apiClient: Get.find<ApiClient>());
-
-  ProfileController();
 
   @override
   void onInit() {

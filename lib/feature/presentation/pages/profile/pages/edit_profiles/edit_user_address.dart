@@ -20,7 +20,7 @@ class EditUserAddress extends StatefulWidget {
 
 class _EditUserAddressState extends State<EditUserAddress> {
   final authcontroller = Get.find<AuthController>();
-  final ProfileController profileController = Get.put(ProfileController());
+  final profileController = Get.put(ProfileController(profileRepo: Get.find()));
 
   // Text controllers
   final TextEditingController countryNameController = TextEditingController();

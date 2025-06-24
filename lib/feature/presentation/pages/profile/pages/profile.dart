@@ -29,7 +29,8 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final authcontroller = Get.find<AuthController>();
-  final ProfileController profilecontroller = Get.put(ProfileController());
+
+  final profilecontroller = Get.put(ProfileController(profileRepo: Get.find()));
 
   int? _currentlyExpandedIndex;
 

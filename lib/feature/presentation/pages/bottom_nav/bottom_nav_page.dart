@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:ams/config/resources/colors.dart';
 import 'package:ams/config/resources/styles.dart';
+import 'package:ams/config/widget/close_app_dialog.dart';
 import 'package:ams/feature/presentation/pages/dashboard/dashboard.dart';
 import 'package:ams/feature/presentation/pages/organization/model/organization_profile_model.dart';
 import 'package:ams/feature/presentation/pages/payroll/payroll_page.dart';
@@ -7,6 +10,9 @@ import 'package:ams/feature/presentation/pages/profile/pages/profile.dart';
 import 'package:ams/feature/presentation/pages/timeoff/time_off_page.dart';
 import 'package:ams/feature/presentation/pages/timesheet/time_sheet_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:get_storage/get_storage.dart';
 
 class BottomNavPage extends StatefulWidget {
@@ -52,9 +58,7 @@ class _BottomNavPageState extends State<BottomNavPage> {
       }
     }
 
-    if (_apiKey == null) {
-      _apiKey = GetStorage().read('selectedOrganization')?['api_key'];
-    }
+    _apiKey ??= GetStorage().read('selectedOrganization')?['api_key'];
   }
 
   List<Widget> get _pages => [
@@ -94,41 +98,65 @@ class _BottomNavPageState extends State<BottomNavPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _pages[_selectedTab],
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? Colors.black
-            : Colors.white,
-        currentIndex: _selectedTab,
-        type: BottomNavigationBarType.fixed,
-        onTap: (index) => _changeTab(index),
-        selectedItemColor: Theme.of(context).brightness == Brightness.dark
-            ? AppColors.primary
-            : AppColors.tertiary,
-        unselectedItemColor: Theme.of(context).brightness == Brightness.dark
-            ? Colors.grey[400]
-            : Colors.grey,
-        selectedLabelStyle: miniStyle.copyWith(
-          color: Theme.of(context).brightness == Brightness.dark
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (!didPop) {
+          Get.dialog(CloseApp(
+            title: 'Close app',
+            subtitle: 'Are you sure you want to close this app?',
+            onButtonPressed: () {
+              Get.back();
+              Future.delayed(const Duration(milliseconds: 300), () {
+                if (Platform.isAndroid) {
+                  SystemNavigator.pop();
+                } else if (Platform.isIOS) {
+                  exit(0);
+                }
+              });
+            },
+            buttonText: 'Yes',
+          ));
+        }
+      },
+      child: Scaffold(
+        body: _pages[_selectedTab],
+        bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.black
+              : Colors.white,
+          currentIndex: _selectedTab,
+          type: BottomNavigationBarType.fixed,
+          onTap: (index) => _changeTab(index),
+          selectedItemColor: Theme.of(context).brightness == Brightness.dark
               ? AppColors.primary
-              : Colors.black,
-        ),
-        unselectedLabelStyle: miniStyle.copyWith(
-          color: Theme.of(context).brightness == Brightness.dark
+              : AppColors.tertiary,
+          unselectedItemColor: Theme.of(context).brightness == Brightness.dark
               ? Colors.grey[400]
               : Colors.grey,
+          selectedLabelStyle: miniStyle.copyWith(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.primary
+                : Colors.black,
+          ),
+          unselectedLabelStyle: miniStyle.copyWith(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.grey[400]
+                : Colors.grey,
+          ),
+          items: const [
+            BottomNavigationBarItem(
+                icon: Icon(Icons.home_outlined), label: "Home"),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.update), label: "Time Offs"),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.sd_card_outlined), label: "TimeSheet"),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.confirmation_num_outlined), label: "PayRoll"),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.settings), label: "Profile"),
+          ],
         ),
-        items: const [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.update), label: "Time Offs"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.sd_card_outlined), label: "TimeSheet"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.confirmation_num_outlined), label: "PayRoll"),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Profile"),
-        ],
       ),
     );
   }

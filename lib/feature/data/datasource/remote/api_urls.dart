@@ -23,8 +23,9 @@ class ApiUrls {
 
   static const String logout = "api/logout/";
 
-  static const String wsUrl = "ws://192.168.254.45:8000/ws/";
-  static const String chatmessage = "ws://192.168.254.45:8000/ws/chat/";
+  static const String wsUrl = "ws://tranquility.backend.ams.ayata.com.np/ws/";
+  static const String chatmessage =
+      "ws://tranquility.backend.ams.ayata.com.np/ws/chat/";
 
   // static const String register = "auth/register/";
 

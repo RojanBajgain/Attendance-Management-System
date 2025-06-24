@@ -18,7 +18,7 @@ class EditUserBank extends StatefulWidget {
 
 class _EditUserBankState extends State<EditUserBank> {
   final authcontroller = Get.find<AuthController>();
-  final ProfileController profilecontroller = Get.put(ProfileController());
+  final profilecontroller = Get.put(ProfileController(profileRepo: Get.find()));
 
   final RxList<BankDetail> _bankDetailsList = <BankDetail>[].obs;
   List<int> _deletedBankIds = [];

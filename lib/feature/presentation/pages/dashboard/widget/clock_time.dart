@@ -22,7 +22,7 @@ class ClockTime extends StatefulWidget {
 }
 
 class _ClockTimeState extends State<ClockTime> {
-  final ProfileController profileController = Get.put(ProfileController());
+  final profileController = Get.put(ProfileController(profileRepo: Get.find()));
 
   final ClockInOutController clockInOutController =
       Get.put(ClockInOutController(clockinoutrepo: Get.find()));
