@@ -328,16 +328,16 @@ class AuthController extends GetxController {
           transition: Transition.rightToLeft,
         );
 
-        SSnackbarUtil.showFadeSnackbar(
-          Get.context!,
+        // SSnackbarUtil.showFadeSnackbar(
+        //   Get.context!,
 
-          "Welcome",
-          SnackbarType.success,
-          // duration: 2,
-        );
+        //   "Welcome",
+        //   SnackbarType.success,
+        //   // duration: 2,
+        // );
       } else {
         Get.back();
-        log("Error: ${response.message ?? 'Login failed'}");
+        // log("Error: ${response.message ?? 'Login failed'}");
         SSnackbarUtil.showFadeSnackbar(
           Get.context!,
           'Invalid Email or Password.',

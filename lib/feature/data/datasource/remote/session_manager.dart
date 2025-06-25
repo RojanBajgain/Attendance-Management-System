@@ -13,7 +13,7 @@ class SessionManager {
   static Future<void> handleSessionExpired() async {
     if (isLoggingOut) return;
 
-    log("Handling session expiry...");
+    // log("Handling session expiry...");
     isLoggingOut = true;
 
     try {
@@ -35,7 +35,7 @@ class SessionManager {
       //   duration: const Duration(milliseconds: 300),
       // );
     } catch (e) {
-      log("Error handling session expiry: $e");
+      // log("Error handling session expiry: $e");
     } finally {
       // Reset the flag after a delay
       Future.delayed(const Duration(seconds: 3), () {
@@ -48,7 +48,7 @@ class SessionManager {
   static Future<void> handleLogout() async {
     if (isLoggingOut) return;
 
-    log("Handling logout...");
+    // log("Handling logout...");
     isLoggingOut = true;
 
     try {
@@ -62,7 +62,7 @@ class SessionManager {
         duration: const Duration(milliseconds: 300),
       );
     } catch (e) {
-      log("Error handling logout: $e");
+      // log("Error handling logout: $e");
     } finally {
       isLoggingOut = false;
     }
@@ -94,18 +94,17 @@ class SessionManager {
 
       // Clear API client tokens if available
       try {
-        final apiClient =
-            Get.find<dynamic>(); // Replace with your actual ApiClient type
-        if (apiClient != null && apiClient.hasMethod('clearTokens')) {
-          apiClient.clearTokens();
-        }
+        // final apiClient = Get.find();
+        // if (apiClient != null && apiClient.hasMethod('clearTokens')) {
+        //   apiClient.clearTokens();
+        // }
       } catch (e) {
-        log("API client not found or error clearing tokens: $e");
+        // log("API client not found or error clearing tokens: $e");
       }
 
-      log("All user data cleared successfully");
+      // log("All user data cleared successfully");
     } catch (e) {
-      log("Error clearing user data: $e");
+      // log("Error clearing user data: $e");
     }
   }
 
@@ -134,7 +133,7 @@ class SessionManager {
 
       return isLoggedIn && accessToken != null && refreshToken != null;
     } catch (e) {
-      log("Error checking login status: $e");
+      // log("Error checking login status: $e");
       return false;
     }
   }
@@ -156,7 +155,7 @@ class SessionManager {
       // For now, just check if token exists
       return true;
     } catch (e) {
-      log("Error validating tokens: $e");
+      // log("Error validating tokens: $e");
       return false;
     }
   }

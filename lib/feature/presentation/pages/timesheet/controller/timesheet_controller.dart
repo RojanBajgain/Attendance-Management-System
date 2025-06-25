@@ -12,8 +12,9 @@ import 'package:intl/intl.dart';
 
 class TimesheetController extends GetxController {
   var timesheet = <Datum>[].obs;
+  var filteredTimesheet = <Datum>[].obs;
   var isLoading = false.obs;
-  var isLoadingMore = false.obs; // For pagination loading
+  var isLoadMore = false.obs;
   var errorMessage = ''.obs;
   var timesheetDetail = TimesheetDetailModel().obs;
   var selectedDate = Rxn<DateTime>();
@@ -22,180 +23,82 @@ class TimesheetController extends GetxController {
   // Pagination variables
   var currentPage = 1.obs;
   var totalPages = 1.obs;
-  var totalCount = 0.obs;
-  var pageSize = 10.obs;
   var hasMoreData = true.obs;
+  final pageSize = 10.obs;
 
   final TimesheetRepo timesheetRepo =
       TimesheetRepo(apiClient: Get.find<ApiClient>());
 
-  ScrollController? _scrollController;
-  bool _isDisposed = false;
-
-  // Getter for scroll controller
-  ScrollController? get scrollController => _scrollController;
-
-  TimesheetController();
-
   @override
   void onInit() {
     super.onInit();
-    _initializeScrollController();
-    getTimesheet(isInitialLoad: true);
+    getTimesheet();
+    clearDateRange();
   }
 
-  void _initializeScrollController() {
-    if (!_isDisposed) {
-      _scrollController = ScrollController();
-      _setupScrollListener();
-    }
-  }
-
-  @override
-  void onClose() {
-    _isDisposed = true;
-    _scrollController?.dispose();
-    _scrollController = null;
-    super.onClose();
-  }
-
-  void _setupScrollListener() {
-    _scrollController?.addListener(_onScroll);
-  }
-
-  void _onScroll() {
-    if (_isDisposed ||
-        _scrollController == null ||
-        !_scrollController!.hasClients) {
-      return;
-    }
-
-    final scrollController = _scrollController!;
-    if (scrollController.position.pixels >=
-            scrollController.position.maxScrollExtent * 0.8 &&
-        !isLoadingMore.value &&
-        hasMoreData.value) {
-      loadMoreTimesheet();
-    }
-  }
-
-  Future<void> getTimesheet({
-    bool isInitialLoad = false,
-    int? page,
-    String? startDate,
-    String? endDate,
-  }) async {
-    if (_isDisposed) return;
-
-    if (isInitialLoad) {
+  Future<void> getTimesheet({bool loadMore = false}) async {
+    if (loadMore) {
+      if (!hasMoreData.value || isLoadMore.value) return;
+      isLoadMore(true);
+    } else {
+      if (isLoading.value) return;
       isLoading(true);
       currentPage.value = 1;
+      hasMoreData.value = true;
       timesheet.clear();
-    } else {
-      isLoadingMore(true);
+      filteredTimesheet.clear();
     }
 
     try {
-      final pageToLoad = page ?? currentPage.value;
-
       ApiResponse response = await timesheetRepo.getTimesheet(
-        page: pageToLoad,
+        page: currentPage.value,
         pageSize: pageSize.value,
-        startDate: startDate,
-        endDate: endDate,
       );
 
-      if (_isDisposed) return;
-
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
-        log("Fetched Timesheet data: ${response.response}");
-
-        TimesheetModel timesheetData = response.response;
+        TimesheetModel timesheetdata = response.response;
 
         // Update pagination info
-        totalPages.value = timesheetData.totalPages;
-        totalCount.value = timesheetData.count;
-        currentPage.value = timesheetData.currentPage;
-
-        // Check if there's more data to load
+        totalPages.value = timesheetdata.totalPages;
+        currentPage.value = timesheetdata.currentPage;
         hasMoreData.value = currentPage.value < totalPages.value;
 
-        if (isInitialLoad) {
-          timesheet.value = timesheetData.data;
+        // Add new data to existing list if loadMore
+        if (loadMore) {
+          timesheet.addAll(timesheetdata.data);
         } else {
-          // Append new data for pagination
-          timesheet.addAll(timesheetData.data);
+          timesheet.value = timesheetdata.data;
+        }
+
+        filteredTimesheet.value = timesheet;
+
+        // Increment page for next load
+        if (hasMoreData.value) {
+          currentPage.value++;
         }
       } else {
-        log("Error: ${response.message}");
-        errorMessage.value = response.message ?? "Unknown error occurred";
+        errorMessage.value = response.message ?? "Failed to load timesheet";
       }
     } catch (e) {
-      if (!_isDisposed) {
-        log("Error fetching timesheet: $e");
-        errorMessage.value = "An error occurred: $e";
-      }
+      errorMessage.value = "An error occurred: $e";
     } finally {
-      if (!_isDisposed) {
+      if (loadMore) {
+        isLoadMore(false);
+      } else {
         isLoading(false);
-        isLoadingMore(false);
       }
     }
   }
 
   Future<void> loadMoreTimesheet() async {
-    if (_isDisposed || !hasMoreData.value || isLoadingMore.value) {
-      return;
+    if (hasMoreData.value && !isLoadMore.value) {
+      await getTimesheet(loadMore: true);
     }
-
-    String? startDate;
-    String? endDate;
-
-    // Include date filters if active
-    if (dateRange.value != null) {
-      startDate = DateFormat('yyyy-MM-dd').format(dateRange.value!.start);
-      endDate = DateFormat('yyyy-MM-dd').format(dateRange.value!.end);
-    } else if (selectedDate.value != null) {
-      startDate = DateFormat('yyyy-MM-dd').format(selectedDate.value!);
-      endDate = startDate;
-    }
-
-    await getTimesheet(
-      page: currentPage.value + 1,
-      startDate: startDate,
-      endDate: endDate,
-    );
-  }
-
-  Future<void> refreshTimesheet() async {
-    if (_isDisposed) return;
-
-    String? startDate;
-    String? endDate;
-
-    // Include current filters in refresh
-    if (dateRange.value != null) {
-      startDate = DateFormat('yyyy-MM-dd').format(dateRange.value!.start);
-      endDate = DateFormat('yyyy-MM-dd').format(dateRange.value!.end);
-    } else if (selectedDate.value != null) {
-      startDate = DateFormat('yyyy-MM-dd').format(selectedDate.value!);
-      endDate = startDate;
-    }
-
-    await getTimesheet(
-      isInitialLoad: true,
-      startDate: startDate,
-      endDate: endDate,
-    );
   }
 
   Future<void> getTimesheetDetailData(String serialNo) async {
-    if (_isDisposed) return;
-
     ApiResponse response = await timesheetRepo.getTimesheetDetail(serialNo);
     try {
-      if (_isDisposed) return;
-
       if (response.status == ApiStatus.SUCCESS) {
         if (kDebugMode) {
           print(response.status);
@@ -208,9 +111,7 @@ class TimesheetController extends GetxController {
         if (kDebugMode) {
           print('its error is ${response.status}');
         }
-        if (!_isDisposed) {
-          Get.snackbar('Error', 'Failed to fetch Timesheet details.');
-        }
+        Get.snackbar('Error', 'Failed to fetch Timesheet details.');
       }
     } catch (e) {
       if (kDebugMode) {
@@ -221,58 +122,48 @@ class TimesheetController extends GetxController {
 
   // Function to filter by selected single date
   void filterByDate(DateTime date) {
-    if (_isDisposed) return;
-
     selectedDate.value = date;
     dateRange.value = null;
+    currentPage.value = 1;
+    hasMoreData.value = true;
 
     String formattedSelectedDate = DateFormat('yyyy-MM-dd').format(date);
-
-    // Reset pagination and fetch filtered data
-    getTimesheet(
-      isInitialLoad: true,
-      startDate: formattedSelectedDate,
-      endDate: formattedSelectedDate,
-    );
+    filteredTimesheet.value = timesheet.where((timesheetdate) {
+      if (timesheetdate.date == null) return false;
+      String formattedEntryDate =
+          DateFormat('yyyy-MM-dd').format(timesheetdate.date!);
+      return formattedEntryDate == formattedSelectedDate;
+    }).toList();
   }
 
-  // Function to filter by date range
+  // New function to filter by date range
   void filterByDateRange(DateTime startDate, DateTime endDate) {
-    if (_isDisposed) return;
-
     selectedDate.value = null;
-    dateRange.value = DateTimeRange(start: startDate, end: endDate);
+    currentPage.value = 1;
+    hasMoreData.value = true;
 
-    String formattedStartDate = DateFormat('yyyy-MM-dd').format(startDate);
-    String formattedEndDate = DateFormat('yyyy-MM-dd').format(endDate);
+    final start = DateTime(startDate.year, startDate.month, startDate.day);
+    final end = DateTime(endDate.year, endDate.month, endDate.day, 23, 59, 59);
 
-    // Reset pagination and fetch filtered data
-    getTimesheet(
-      isInitialLoad: true,
-      startDate: formattedStartDate,
-      endDate: formattedEndDate,
-    );
+    filteredTimesheet.value = timesheet.where((timesheetdate) {
+      if (timesheetdate.date == null) return false;
+      return (timesheetdate.date!.isAfter(start) ||
+              timesheetdate.date!.isAtSameMomentAs(start)) &&
+          (timesheetdate.date!.isBefore(end) ||
+              timesheetdate.date!.isAtSameMomentAs(end));
+    }).toList();
   }
 
   // Clear the selected date range and show all timesheet items
   void clearDateRange() {
-    if (_isDisposed) return;
-
     selectedDate.value = null;
     dateRange.value = null;
-
-    // Reset pagination and fetch all data
-    getTimesheet(isInitialLoad: true);
+    currentPage.value = 1;
+    hasMoreData.value = true;
+    filteredTimesheet.assignAll(timesheet);
   }
 
   void clearSelectedDate() {
-    clearDateRange(); // For backward compatibility
-  }
-
-  // Method to reinitialize scroll controller if needed
-  void reinitializeScrollController() {
-    if (!_isDisposed && _scrollController == null) {
-      _initializeScrollController();
-    }
+    clearDateRange();
   }
 }

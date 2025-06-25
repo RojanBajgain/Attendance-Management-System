@@ -18,7 +18,6 @@ class TimesheetRepo {
   }) async {
     final token = apiClient.token;
 
-    // Build query parameters
     final Map<String, String> queryParams = {
       'page': page.toString(),
       'page_size': pageSize.toString(),
@@ -32,7 +31,6 @@ class TimesheetRepo {
       queryParams['end_date'] = endDate;
     }
 
-    // Build URL with query parameters
     final uri =
         Uri.parse(ApiUrls.timesheet).replace(queryParameters: queryParams);
     final url = uri.toString();
