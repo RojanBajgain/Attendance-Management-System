@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/login/login_page.dart';
 import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -10,34 +9,30 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SessionManager {
   static bool isLoggingOut = false;
 
-  static Future<void> handleSessionExpired() async {
+  static Future<void> handleSessionExpired({String? customMessage}) async {
     if (isLoggingOut) return;
 
-    // log("Handling session expiry...");
     isLoggingOut = true;
 
     try {
-      // Clear all stored data
       await _clearAllUserData();
 
-      // Show session expired message
       SSnackbarUtil.showFadeSnackbar(
         Get.context!,
-        'Your session has expired. Please login again...',
+        customMessage ??
+            'Your session has expired or the server is unreachable. Please login again.',
         SnackbarType.warning,
       );
 
-      // Navigate to login page
       await Future.delayed(const Duration(milliseconds: 500));
-      // Get.offAll(
-      //   () => const LoginPage(),
-      //   transition: Transition.rightToLeft,
-      //   duration: const Duration(milliseconds: 300),
-      // );
+      Get.offAll(
+        () => const LoginPage(),
+        transition: Transition.rightToLeft,
+        duration: const Duration(milliseconds: 300),
+      );
     } catch (e) {
-      // log("Error handling session expiry: $e");
+      log("Error handling session expiry: $e");
     } finally {
-      // Reset the flag after a delay
       Future.delayed(const Duration(seconds: 3), () {
         isLoggingOut = false;
       });

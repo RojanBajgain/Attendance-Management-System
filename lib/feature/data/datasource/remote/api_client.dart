@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:ams/feature/data/datasource/remote/api_exception_msg.dart';
 import 'package:ams/feature/data/datasource/remote/api_message.dart';
@@ -43,7 +44,7 @@ class ApiClient {
     return headers;
   }
 
-//GET
+  //GET
   static Future<ApiResponse<T>> getApi<T>(
     String endPoint, {
     required String token,
@@ -55,9 +56,8 @@ class ApiClient {
       log('Headers used for request: $headers');
       final response = await MyHttpClient.client.get(
         Uri.parse(ApiUrls.baseUrl + endPoint),
-        headers: getHeader(token, apiKey: apiKey),
+        headers: headers,
       );
-      // log('Token being used for request: $token');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseBody = utf8.decode(response.bodyBytes);
@@ -67,7 +67,6 @@ class ApiClient {
       } else if (response.statusCode == 401) {
         await ApiMessage.getMessage(response.statusCode, response);
         await SessionManager.handleSessionExpired();
-
         return ApiResponse.error('Session expired. Please log in again.');
       } else {
         final message = ApiMessage.getMessage(response.statusCode, response);
@@ -75,9 +74,14 @@ class ApiClient {
         return ApiResponse.error(message);
       }
     } catch (e) {
-      // log('Error: $e');
-      // return ApiResponse.error(ApiExceptionMsg.getMessageForException(e));
-      throw Exception(e);
+      log('Error in getApi: $e');
+      if (e is SocketException || e is TimeoutException) {
+        // Treat network errors as session-critical
+        await SessionManager.handleSessionExpired();
+        return ApiResponse.error(
+            'Unable to connect to the server. Please log in again.');
+      }
+      return ApiResponse.error(ApiExceptionMsg.getMessageForException(e));
     }
   }
 
