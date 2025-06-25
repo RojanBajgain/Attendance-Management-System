@@ -66,10 +66,10 @@ class SSnackbarUtil {
     Color color = Colors.grey.shade300;
     switch (type ?? SnackbarType.info) {
       case SnackbarType.info:
-        color = Colors.black;
+        color = Colors.blue;
         break;
       case SnackbarType.warning:
-        color = Colors.red.shade300;
+        color = Colors.orange;
         break;
       case SnackbarType.error:
         color = Colors.red.shade300;
@@ -82,7 +82,7 @@ class SSnackbarUtil {
     final overlayEntry = OverlayEntry(
       builder: (_) {
         return Positioned(
-          top: 40,
+          bottom: 100,
           left: 20,
           right: 20,
           child: FadeInSnackbar(

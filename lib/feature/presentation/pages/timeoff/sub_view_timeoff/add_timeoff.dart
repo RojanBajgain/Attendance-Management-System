@@ -142,7 +142,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
       SSnackbarUtil.showFadeSnackbar(
         Get.context!,
         'You are requesting $requestedDays days but only have ${remainingLeave.toInt()} $policyName leave days remaining.',
-        SnackbarType.error,
+        SnackbarType.warning,
       );
       return false;
     }
@@ -919,6 +919,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
                             child: TapDebouncer(
                               cooldown: const Duration(seconds: 2),
                               onTap: () async {
+                                FocusScope.of(context).unfocus();
                                 await _submitTimeOff();
                               },
                               builder: (BuildContext context,

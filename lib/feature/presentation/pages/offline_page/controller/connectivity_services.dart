@@ -90,7 +90,7 @@ class OfflineController extends GetxController {
         SSnackbarUtil.showFadeSnackbar(
           Get.context!,
           "Please check your internet connection",
-          SnackbarType.warning,
+          SnackbarType.error,
         );
       }
     }
@@ -131,7 +131,7 @@ class OfflineController extends GetxController {
             SSnackbarUtil.showFadeSnackbar(
               Get.context!,
               "No internet connection detected",
-              SnackbarType.warning,
+              SnackbarType.error,
             );
           } else {
             SSnackbarUtil.showFadeSnackbar(

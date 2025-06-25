@@ -225,6 +225,8 @@ class _LoginPageState extends State<LoginPage> {
                                   onTap: authController.authIsLoading.value
                                       ? null
                                       : () {
+                                          FocusScope.of(context).unfocus();
+
                                           final emailError =
                                               Validator.validateEmail(
                                                   string: email.text);

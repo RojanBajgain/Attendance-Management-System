@@ -232,7 +232,7 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20.0),
+                    const SizedBox(height: 15.0),
                   ]),
                 ),
               ),
@@ -252,7 +252,7 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
                       final timesheet =
                           timesheetcontroller.filteredTimesheet[index];
                       return Padding(
-                        padding: const EdgeInsets.all(6.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: TimeSheetWidget(timesheetdata: timesheet),
                       );
                     },
@@ -263,9 +263,12 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
               // Load more indicator
               if (timesheetcontroller.isLoadMore.value)
                 const SliverPadding(
-                  padding: EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(12.0),
                   sliver: SliverToBoxAdapter(
-                    child: Center(child: CircularProgressIndicator()),
+                    child: Center(
+                        child: CircularProgressIndicator(
+                      color: Colors.cyan,
+                    )),
                   ),
                 ),
             ],

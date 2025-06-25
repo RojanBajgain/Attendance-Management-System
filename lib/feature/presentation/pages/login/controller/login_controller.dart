@@ -439,19 +439,19 @@ class AuthController extends GetxController {
       Get.offAll(() => const LoginPage());
       SSnackbarUtil.showFadeSnackbar(
         Get.context!,
-        response.message ?? 'You have successfully logged out.',
+        'You have successfully logged out.',
         SnackbarType.success,
       );
     } else {
-      log("Error: ${response.message ?? 'logout failed'}");
-      String errorMessage = response.message ?? 'An unexpected error occurred';
-      if (response.message?.toLowerCase().contains('organization') ?? false) {
-        errorMessage =
-            'Organization information is missing. Please log in again.';
-      }
+      log("Error: ${'logout failed'}");
+      // String errorMessage = response.message ?? 'An unexpected error occurred';
+      // if (response.message?.toLowerCase().contains('organization') ?? false) {
+      //   errorMessage =
+      //       'Organization information is missing. Please log in again.';
+      // }
       SSnackbarUtil.showFadeSnackbar(
         Get.context!,
-        errorMessage,
+        'An unexpected error occurred',
         SnackbarType.error,
       );
     }

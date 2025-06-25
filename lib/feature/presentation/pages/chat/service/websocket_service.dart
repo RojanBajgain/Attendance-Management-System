@@ -56,7 +56,7 @@ class WebSocketService {
       final userId = profilecontroller.profile.first.id;
       final wsUrl = '${baseUrl}chat/${userId}_$organization/';
 
-      log('Attempting WebSocket connection to: $wsUrl');
+      // log('Attempting WebSocket connection to: $wsUrl');
 
       // Create WebSocket connection
       _channel = WebSocketChannel.connect(
@@ -67,7 +67,7 @@ class WebSocketService {
       // Set up listeners
       _streamSubscription = _channel?.stream.listen(
         (message) {
-          log('Raw WebSocket message: $message');
+          // log('Raw WebSocket message: $message');
           _handleIncomingMessage(message);
           // Forward message to our broadcast stream
           _messageController?.add(message);
@@ -88,13 +88,13 @@ class WebSocketService {
 
       // Update connection status reactively
       _isConnected.value = true;
-      log('WebSocket connected successfully');
+      // log('WebSocket connected successfully');
 
       // Cancel any pending reconnection attempts
       _reconnectTimer?.cancel();
       _reconnectTimer = null;
     } catch (e) {
-      log('WebSocket connection failed: $e');
+      // log('WebSocket connection failed: $e');
       _isConnected.value = false;
 
       // Schedule reconnection if this wasn't already a retry
@@ -108,8 +108,8 @@ class WebSocketService {
 
   void _handleIncomingMessage(dynamic message) {
     try {
-      log('=== RAW WEBSOCKET MESSAGE ===');
-      log('Message type: ${message.runtimeType}');
+      // log('=== RAW WEBSOCKET MESSAGE ===');
+      // log('Message type: ${message.runtimeType}');
 
       Map<String, dynamic> data;
 
@@ -117,29 +117,29 @@ class WebSocketService {
         try {
           data = jsonDecode(message);
         } catch (e) {
-          log('Failed to parse message as JSON: $e');
+          // log('Failed to parse message as JSON: $e');
           return;
         }
       } else if (message is Map<String, dynamic>) {
         data = message;
       } else {
-        log('Unknown message format: $message');
+        // log('Unknown message format: $message');
         return;
       }
 
       // Enhanced logging
-      log('=== PARSED MESSAGE DATA ===');
-      log('Full message: $data');
+      // log('=== PARSED MESSAGE DATA ===');
+      // log('Full message: $data');
 
       // Check for department field and warn if missing for what appears to be a department message
       if (data['receiver'] == null && data['department'] == null) {
-        log('⚠️ WARNING: Potential department message missing department field!');
+        // log('⚠️ WARNING: Potential department message missing department field!');
       }
 
       // Process the message
       _processMessage(data);
     } catch (e) {
-      log('Error processing WebSocket message: $e');
+      // log('Error processing WebSocket message: $e');
     }
   }
 
@@ -148,35 +148,35 @@ class WebSocketService {
       switch (data['type']) {
         case 'auth_response':
           if (data['status'] == 'success') {
-            log('WebSocket authenticated successfully');
+            // log('WebSocket authenticated successfully');
             _isConnected.value = true;
           } else {
-            log('WebSocket authentication failed: ${data['message']}');
+            // log('WebSocket authentication failed: ${data['message']}');
             disconnect();
           }
           break;
         case 'chat_message':
-          log('Received chat message via WebSocket');
+          // log('Received chat message via WebSocket');
           break;
         default:
-          log('Unknown message type: ${data['type']}');
+        // log('Unknown message type: ${data['type']}');
       }
     } else {
       // Handle direct message format (like your log shows)
       if (data.containsKey('id') && data.containsKey('message')) {
-        log('Received direct message format via WebSocket');
+        // log('Received direct message format via WebSocket');
       }
     }
   }
 
   void _handleConnectionError(dynamic error) {
-    log('WebSocket error: $error');
+    // log('WebSocket error: $error');
     _isConnected.value = false;
     _scheduleReconnect();
   }
 
   void _handleConnectionClosed() {
-    log('WebSocket connection closed');
+    // log('WebSocket connection closed');
     _isConnected.value = false;
     _scheduleReconnect();
   }
@@ -186,7 +186,7 @@ class WebSocketService {
 
     // Exponential backoff for reconnection
     final delay = Duration(seconds: 2 * (retryCount + 1));
-    log('Scheduling WebSocket reconnection in ${delay.inSeconds} seconds...');
+    // log('Scheduling WebSocket reconnection in ${delay.inSeconds} seconds...');
 
     _reconnectTimer = Timer(delay, () {
       if (_token != null && _organization != null) {
@@ -202,7 +202,7 @@ class WebSocketService {
   // Send message via WebSocket
   void sendMessage(Map<String, dynamic> message) {
     if (!_isConnected.value || _channel == null) {
-      log('Cannot send message - WebSocket not connected');
+      // log('Cannot send message - WebSocket not connected');
       return;
     }
 
@@ -213,9 +213,9 @@ class WebSocketService {
         ...message,
       };
       _channel?.sink.add(jsonEncode(fullMessage));
-      log('WebSocket message sent: $fullMessage');
+      // log('WebSocket message sent: $fullMessage');
     } catch (e) {
-      log('Error sending WebSocket message: $e');
+      // log('Error sending WebSocket message: $e');
     }
   }
 
@@ -227,9 +227,9 @@ class WebSocketService {
     try {
       await _streamSubscription?.cancel();
       await _channel?.sink.close(status.goingAway);
-      log('WebSocket disconnected');
+      // log('WebSocket disconnected');
     } catch (e) {
-      log('Error disconnecting WebSocket: $e');
+      // log('Error disconnecting WebSocket: $e');
     } finally {
       _channel = null;
       _streamSubscription = null;
