@@ -1031,13 +1031,19 @@ class _EventPageState extends State<EventPage>
                     : ElevatedButton(
                         onPressed: () async {
                           if (titleController.text.isEmpty) {
-                            SSnackbarUtil.showSnackbar('Error',
-                                'Title is required', SnackbarType.error);
+                            SSnackbarUtil.showFadeSnackbar(
+                              Get.context!,
+                              'Title is required',
+                              SnackbarType.error,
+                            );
                             return;
                           }
                           if (startDate == null) {
-                            SSnackbarUtil.showSnackbar('Error',
-                                'Start date is required', SnackbarType.error);
+                            SSnackbarUtil.showFadeSnackbar(
+                              Get.context!,
+                              'Start date is required',
+                              SnackbarType.error,
+                            );
                             return;
                           }
                           final profileId = profileController.profile.first.id;

@@ -25,6 +25,7 @@ class ChatsScreen extends StatelessWidget {
         elevation: 0,
       ),
       body: RefreshIndicator(
+        color: Colors.cyan,
         onRefresh: chatController.getAllChats,
         child: Obx(() {
           if (chatController.isLoading.value) {

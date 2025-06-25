@@ -65,6 +65,7 @@ class _DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       appBar: ConstantAppBar(),
       body: RefreshIndicator(
+        color: Colors.cyan,
         onRefresh: () async {
           await Future.wait([
             dashboardTimesheetController.getDashboardTimesheet(),

@@ -31,121 +31,6 @@ class OrganizationController extends GetxController {
     // _restoreWebSocketConnection();
   }
 
-/*   @override
-  void onClose() {
-    _disconnectWebSocket();
-    super.onClose();
-  }
-
-  // Modified connectWebSocket to handle int userId
-  Future<void> connectWebSocket(int userId, String organizationApiKey) async {
-    try {
-      final wsUrl =
-          'ws://192.168.254.45:8000/ws/chat/${userId.toString()}_$organizationApiKey/';
-      _webSocketChannel = WebSocketChannel.connect(Uri.parse(wsUrl));
-      isWebSocketConnected.value = true;
-      log('WebSocket connected for user: $userId, organization: $organizationApiKey');
-
-      _webSocketChannel!.stream.listen(
-        (message) {
-          log('WebSocket message received: $message');
-          try {
-            final data = json.decode(message);
-            SSnackbarUtil.showSnackbar(
-              'WebSocket Message',
-              data.toString(),
-              SnackbarType.info,
-            );
-          } catch (e) {
-            log('Error parsing WebSocket message: $e');
-            SSnackbarUtil.showSnackbar(
-              'WebSocket Message',
-              message.toString(),
-              SnackbarType.info,
-            );
-          }
-        },
-        onError: (error) {
-          log('WebSocket error: $error');
-          isWebSocketConnected.value = false;
-          SSnackbarUtil.showSnackbar(
-            'WebSocket Error',
-            'Failed to connect to WebSocket server.',
-            SnackbarType.error,
-          );
-          _reconnectWebSocket(userId, organizationApiKey);
-        },
-        onDone: () {
-          log('WebSocket connection closed');
-          isWebSocketConnected.value = false;
-          _reconnectWebSocket(userId, organizationApiKey);
-        },
-      );
-    } catch (e) {
-      log('WebSocket connection failed: $e');
-      isWebSocketConnected.value = false;
-      SSnackbarUtil.showSnackbar(
-        'WebSocket Error',
-        'Failed to connect to WebSocket server.',
-        SnackbarType.error,
-      );
-    }
-  }
-
-  // Disconnect WebSocket
-  void _disconnectWebSocket() {
-    _webSocketChannel?.sink.close();
-    isWebSocketConnected.value = false;
-    log('WebSocket disconnected');
-  }
-
-  // Reconnect WebSocket with delay and retry limit
-  void _reconnectWebSocket(int userId, String organizationApiKey) async {
-    const maxRetries = 3;
-    int retryCount = 0;
-    while (!isWebSocketConnected.value && retryCount < maxRetries) {
-      log('Attempting to reconnect WebSocket (attempt ${retryCount + 1})...');
-      await Future.delayed(const Duration(seconds: 5));
-      await connectWebSocket(userId, organizationApiKey);
-      retryCount++;
-    }
-    if (!isWebSocketConnected.value) {
-      SSnackbarUtil.showSnackbar(
-        'WebSocket Error',
-        'Failed to reconnect to WebSocket server after $maxRetries attempts.',
-        SnackbarType.error,
-      );
-    }
-  }
-
-  // Send WebSocket message
-  void sendWebSocketMessage(String message) {
-    if (isWebSocketConnected.value && _webSocketChannel != null) {
-      _webSocketChannel!.sink.add(message);
-      log('WebSocket message sent: $message');
-    } else {
-      log('Cannot send message: WebSocket is not connected');
-      SSnackbarUtil.showSnackbar(
-        'WebSocket Error',
-        'Not connected to WebSocket server.',
-        SnackbarType.error,
-      );
-    }
-  }
-
-  // Restore WebSocket connection if organization is already selected
-  void _restoreWebSocketConnection() async {
-    final authController = Get.find<AuthController>();
-    final userId = authController.alluserData.value.user;
-    final selectedOrg = box.read('selectedOrganization');
-
-    if (userId != null &&
-        selectedOrg != null &&
-        selectedOrg['api_key'] != null) {
-      await connectWebSocket(userId, selectedOrg['api_key']);
-    }
-  } */
-
   Future<void> handleOrganizations() async {
     isLoading(true);
     try {
@@ -219,8 +104,8 @@ class OrganizationController extends GetxController {
           // await connectWebSocket(userId, organization.apiKey!);
         } else {
           log('Cannot connect to WebSocket: userId or apiKey is null');
-          SSnackbarUtil.showSnackbar(
-            'WebSocket Error',
+          SSnackbarUtil.showFadeSnackbar(
+            Get.context!,
             'User ID or Organization API Key is missing.',
             SnackbarType.error,
           );
@@ -233,8 +118,8 @@ class OrganizationController extends GetxController {
             ));
 
         if (organizationList.length > 1) {
-          SSnackbarUtil.showSnackbar(
-            'Organization Selected',
+          SSnackbarUtil.showFadeSnackbar(
+            Get.context!,
             'Welcome to ${organization.title}',
             SnackbarType.success,
           );
@@ -244,8 +129,8 @@ class OrganizationController extends GetxController {
       }
     } catch (e) {
       log("Error selecting organization: $e");
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'Failed to select organization: ${e.toString()}',
         SnackbarType.error,
       );

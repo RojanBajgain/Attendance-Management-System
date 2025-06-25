@@ -37,6 +37,7 @@ class _TimeOffPageState extends State<TimeOffPage> {
     return Scaffold(
       appBar: const ConstantAppBar(),
       body: RefreshIndicator(
+        color: Colors.cyan,
         onRefresh: () async {
           await timeoffcontroller.getTimeoff(forceRefresh: true);
         },

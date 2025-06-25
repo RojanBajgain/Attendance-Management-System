@@ -57,8 +57,8 @@ class _AddReapplyPageState extends State<AddReapplyPage> {
 
   Future<void> _submitReapply() async {
     if (_reasonController.text.isEmpty) {
-      SSnackbarUtil.showSnackbar(
-        'Required',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'Please fill in the reason field',
         SnackbarType.error,
       );

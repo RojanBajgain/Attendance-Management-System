@@ -41,6 +41,7 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
     return Scaffold(
       appBar: const ConstantAppBar(),
       body: RefreshIndicator(
+        color: Colors.cyan,
         onRefresh: () async {
           await timesheetcontroller.refreshTimesheet();
         },

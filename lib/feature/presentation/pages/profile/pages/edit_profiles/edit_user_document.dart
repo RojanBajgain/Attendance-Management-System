@@ -191,8 +191,8 @@ class _EditUserDocumentState extends State<EditUserDocument> {
 
   Future<void> _deleteDocument(int documentId) async {
     if (activeDocumentCount <= 1) {
-      SSnackbarUtil.showSnackbar(
-        'Cannot Delete',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'You must keep at least one document',
         SnackbarType.warning,
       );
@@ -248,8 +248,8 @@ class _EditUserDocumentState extends State<EditUserDocument> {
                   });
                   await profileController.getProfile();
                 } catch (e) {
-                  SSnackbarUtil.showSnackbar(
-                    'Error',
+                  SSnackbarUtil.showFadeSnackbar(
+                    Get.context!,
                     'Failed to delete document: $e',
                     SnackbarType.error,
                   );
@@ -342,8 +342,8 @@ class _EditUserDocumentState extends State<EditUserDocument> {
       Get.back();
 
       if (hasError) {
-        SSnackbarUtil.showSnackbar(
-          'Error',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           errorMessage,
           SnackbarType.error,
         );
@@ -354,8 +354,8 @@ class _EditUserDocumentState extends State<EditUserDocument> {
         } else {
           Get.offAll(() => const BottomNavPage());
 
-          SSnackbarUtil.showSnackbar(
-            'Success',
+          SSnackbarUtil.showFadeSnackbar(
+            Get.context!,
             'Documents updated successfully',
             SnackbarType.success,
           );
@@ -368,8 +368,8 @@ class _EditUserDocumentState extends State<EditUserDocument> {
       }
     } catch (e) {
       Get.back();
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'Failed to update documents: $e',
         SnackbarType.error,
       );
@@ -822,8 +822,8 @@ class _EditUserDocumentState extends State<EditUserDocument> {
                           if (await canLaunchUrl(url)) {
                             await launchUrl(url);
                           } else {
-                            SSnackbarUtil.showSnackbar(
-                              'Error',
+                            SSnackbarUtil.showFadeSnackbar(
+                              Get.context!,
                               'Could not open the document',
                               SnackbarType.error,
                             );

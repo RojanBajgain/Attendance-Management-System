@@ -24,8 +24,8 @@ class _ForgetPasswordState extends State<ForgetPassword> {
 
   Future<void> _submitresetpassword() async {
     if (email.text.isEmpty) {
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'Please fill the required field.',
         SnackbarType.error,
       );

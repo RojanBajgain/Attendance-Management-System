@@ -180,8 +180,11 @@ class _ClockTimeState extends State<ClockTime> {
       permission = await Geolocator.requestPermission();
     }
     if (permission == LocationPermission.deniedForever) {
-      SSnackbarUtil.showSnackbar(
-          "Error", "Enable Location permission in setting", SnackbarType.error);
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
+        "Enable Location permission in setting",
+        SnackbarType.error,
+      );
       return false;
     }
     return permission != LocationPermission.denied;
@@ -195,8 +198,11 @@ class _ClockTimeState extends State<ClockTime> {
     int? deviceId =
         profileController.profile.first.userRecords.first.employeeNo;
     if (deviceId == null) {
-      SSnackbarUtil.showSnackbar("Error",
-          "Device info not found. Please log in again.", SnackbarType.error);
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
+        "Device info not found. Please log in again.",
+        SnackbarType.error,
+      );
       return;
     }
 
@@ -302,8 +308,11 @@ class _ClockTimeState extends State<ClockTime> {
     int? employeeId =
         profileController.profile.first.userRecords.first.employeeNo;
     if (employeeId == null) {
-      SSnackbarUtil.showSnackbar("Error",
-          "Employee info not found. Please log in again.", SnackbarType.error);
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
+        "Employee info not found. Please log in again.",
+        SnackbarType.error,
+      );
       return;
     }
 

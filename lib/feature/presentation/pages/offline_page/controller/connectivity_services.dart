@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:ams/feature/presentation/pages/bottom_nav/bottom_nav_page.dart';
+import 'package:ams/feature/presentation/pages/chat/chat.dart';
+import 'package:ams/feature/presentation/pages/landing/landing_page.dart';
 import 'package:ams/feature/presentation/pages/login/login_page.dart';
 import 'package:ams/feature/presentation/pages/offline_page/page/offline_page.dart';
 import 'package:ams/feature/presentation/pages/organization/pages/organization_page.dart';
@@ -21,6 +23,7 @@ class OfflineController extends GetxController {
 
   Timer? _debounce;
   bool _isInitialized = false;
+  String? _lastRoute; // Store the last route before going offline
 
   @override
   void onInit() {
@@ -74,9 +77,13 @@ class OfflineController extends GetxController {
 
   void _handleDisconnection() {
     print('Handling disconnection - current route: ${Get.currentRoute}');
-    // Navigate to offline page if not already there
-    if (Get.currentRoute != '/nointernet' && Get.context != null) {
-      Get.offAll(() => OfflineView());
+
+    // Store the current route before navigating to offline page
+    if (Get.currentRoute != '/nointernet') {
+      _lastRoute = Get.currentRoute;
+      print('Stored last route: $_lastRoute');
+
+      Get.off(() => OfflineView());
 
       // Show snackbar if context is available
       if (Get.context != null) {
@@ -91,7 +98,9 @@ class OfflineController extends GetxController {
 
   void _handleReconnection() {
     print('Handling reconnection - current route: ${Get.currentRoute}');
-    // Show success message and navigate back
+    print('Last stored route: $_lastRoute');
+
+    // Show success message
     if (Get.context != null) {
       SSnackbarUtil.showFadeSnackbar(
         Get.context!,
@@ -102,7 +111,7 @@ class OfflineController extends GetxController {
 
     // Check if we're currently on the offline page before navigating
     if (Get.currentRoute == '/nointernet') {
-      checkLoginAndNavigate();
+      navigateToLastRoute();
     }
   }
 
@@ -131,7 +140,7 @@ class OfflineController extends GetxController {
               SnackbarType.success,
             );
             if (Get.currentRoute == '/nointernet') {
-              checkLoginAndNavigate();
+              navigateToLastRoute();
             }
           }
         }
@@ -201,6 +210,74 @@ class OfflineController extends GetxController {
       print('Error in checkLoginAndNavigate: $e');
       // In case of error, navigate to login page as fallback
       Get.offAll(() => const LoginPage());
+    }
+  }
+
+  void navigateToLastRoute() async {
+    try {
+      print('Attempting to navigate to last route: $_lastRoute');
+
+      // If no last route stored or it was the offline page, do normal navigation
+      if (_lastRoute == null || _lastRoute == '/nointernet') {
+        print('No valid last route, doing normal navigation');
+        checkLoginAndNavigate();
+        return;
+      }
+
+      // Verify user is still authenticated before navigating to protected routes
+      final prefs = await SharedPreferences.getInstance();
+      final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+      final userId = storage.read('user_id');
+      final selectedOrganization = storage.read('selectedOrganization');
+
+      // Check if the last route requires authentication
+      final protectedRoutes = ['/bottomNav', '/organization', '/chat'];
+      bool isProtectedRoute = protectedRoutes.contains(_lastRoute);
+
+      if (isProtectedRoute) {
+        if (!isLoggedIn || userId == null) {
+          print('User no longer authenticated, navigating to login');
+          Get.offAll(() => const LoginPage());
+          return;
+        }
+
+        // For bottom nav and chat routes, also check organization
+        if ((_lastRoute == '/bottomNav' || _lastRoute == '/chat') &&
+            (selectedOrganization == null || selectedOrganization.isEmpty)) {
+          print('Organization not selected, navigating to organization page');
+          Get.offAll(() => const OrganizationPage());
+          return;
+        }
+      }
+
+      // Navigate to the stored route
+      switch (_lastRoute) {
+        case '/LoginPage':
+          Get.offAll(() => const LoginPage());
+          break;
+        case '/LandingPage':
+          Get.offAll(() => const LandingPage());
+          break;
+        case '/bottomNav':
+          Get.offAll(() => const BottomNavPage(), arguments: 0);
+          break;
+        case '/organization':
+          Get.offAll(() => const OrganizationPage());
+          break;
+        case '/chat':
+          Get.offAll(() => const ChatsScreen());
+          break;
+        default:
+          print('Unhandled route: $_lastRoute, doing normal navigation');
+          checkLoginAndNavigate();
+      }
+
+      // Clear the stored route after successful navigation
+      _lastRoute = null;
+    } catch (e) {
+      print('Error navigating to last route: $e');
+      // Fallback to normal navigation
+      checkLoginAndNavigate();
     }
   }
 

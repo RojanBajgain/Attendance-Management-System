@@ -233,8 +233,8 @@ class _LoginPageState extends State<LoginPage> {
                                                   string: pw.text);
                                           if (emailError != null ||
                                               passwordError != null) {
-                                            SSnackbarUtil.showSnackbar(
-                                              'Invalid Input',
+                                            SSnackbarUtil.showFadeSnackbar(
+                                              Get.context!,
                                               emailError ?? passwordError!,
                                               SnackbarType.error,
                                             );

@@ -16,14 +16,10 @@ class OfflineView extends StatefulWidget {
 class _OfflineViewState extends State<OfflineView> {
   final OfflineController controller = Get.find<OfflineController>();
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   controller.checkConnectivity(context);
-  // }
-
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Obx(() {
       if (controller.isConnected.value) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -37,11 +33,12 @@ class _OfflineViewState extends State<OfflineView> {
         child: Directionality(
           textDirection: TextDirection.ltr,
           child: Scaffold(
-            backgroundColor: AppColors.white,
+            backgroundColor: isDarkMode ? Colors.black : Colors.white,
             body: Padding(
               padding: const EdgeInsets.all(16.0),
               child: RefreshIndicator(
-                color: AppColors.primary,
+                // backgroundColor: Colors.white,
+                color: Colors.cyan,
                 onRefresh: () async {
                   controller.checkConnectivity(context);
                 },
@@ -54,16 +51,16 @@ class _OfflineViewState extends State<OfflineView> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Image.asset(
-                            AppImages.appLogo,
+                            AppImages.tranquility,
                             height: 50,
                           ),
                           const SizedBox(height: 40),
                           Column(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.wifi_off,
                                 size: 70,
-                                color: AppColors.primary,
+                                color: isDarkMode ? Colors.white : Colors.black,
                               ),
                               const SizedBox(height: 20),
                               Text(
@@ -71,6 +68,8 @@ class _OfflineViewState extends State<OfflineView> {
                                 'Seems like you are offline.\nMake sure your internet is working fine',
                                 style: smallStyle.copyWith(
                                   fontWeight: FontWeight.bold,
+                                  color:
+                                      isDarkMode ? Colors.white : Colors.black,
                                 ),
                               ),
                               const SizedBox(height: 20),
@@ -82,13 +81,17 @@ class _OfflineViewState extends State<OfflineView> {
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 20, vertical: 8),
                                     decoration: BoxDecoration(
-                                      color: AppColors.primary,
+                                      color: isDarkMode
+                                          ? Colors.white70
+                                          : Colors.black,
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Text(
                                       'Refresh Now',
                                       style: smallStyle.copyWith(
-                                        color: Colors.white,
+                                        color: isDarkMode
+                                            ? Colors.black
+                                            : Colors.white,
                                       ),
                                     ),
                                   )),
@@ -112,7 +115,9 @@ class _OfflineViewState extends State<OfflineView> {
                                   child: Text(
                                     'Network Settings',
                                     style: smallStyle.copyWith(
-                                      color: Colors.black,
+                                      color: isDarkMode
+                                          ? Colors.white
+                                          : Colors.black,
                                     ),
                                   )),
                             ],

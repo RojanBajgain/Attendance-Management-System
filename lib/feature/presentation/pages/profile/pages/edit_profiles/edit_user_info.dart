@@ -232,16 +232,16 @@ class _EditUserInfoState extends State<EditUserInfo> {
         Get.to(() => const EditUserAddress());
       } else {
         Get.offAll(() => const BottomNavPage());
-        SSnackbarUtil.showSnackbar(
-          'Success',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           'Profile updated successfully',
           SnackbarType.success,
         );
       }
     } catch (e) {
       log('Error submitting user info: $e');
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'Failed to update profile: $e',
         SnackbarType.error,
       );
@@ -756,8 +756,8 @@ class _EditUserInfoState extends State<EditUserInfo> {
         throw Exception('Could not launch $urlString');
       }
     } catch (e) {
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'Could not open the document',
         SnackbarType.error,
       );

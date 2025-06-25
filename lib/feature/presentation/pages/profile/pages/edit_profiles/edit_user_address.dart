@@ -379,8 +379,8 @@ class _EditUserAddressState extends State<EditUserAddress> {
         Get.to(() => const EditUserDocument());
       } else {
         Get.offAll(() => const BottomNavPage());
-        SSnackbarUtil.showSnackbar(
-          'Success',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           'Address updated successfully',
           SnackbarType.success,
         );
@@ -391,8 +391,8 @@ class _EditUserAddressState extends State<EditUserAddress> {
       });
     } catch (e) {
       // print("Error submitting address: $e");
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'An unexpected error occurred: $e',
         SnackbarType.error,
       );

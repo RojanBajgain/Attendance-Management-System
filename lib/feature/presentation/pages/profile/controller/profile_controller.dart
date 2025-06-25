@@ -110,8 +110,8 @@ class ProfileController extends GetxController {
         if (kDebugMode) {
           print('its error is ${response.status}');
         }
-        SSnackbarUtil.showSnackbar(
-          'Error',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           'Failed to fetch Profile details.',
           SnackbarType.info,
         );
@@ -154,15 +154,15 @@ class ProfileController extends GetxController {
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
       } else {
-        SSnackbarUtil.showSnackbar(
-          'Server Error',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           'Failed to update profile. Please try again later',
           SnackbarType.error,
         );
       }
     } catch (e) {
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'An unexpected error occurred, please try again',
         SnackbarType.error,
       );
@@ -185,10 +185,10 @@ class ProfileController extends GetxController {
           city.isEmpty ||
           addressLineOne.isEmpty ||
           zipcode.isEmpty) {
-        SSnackbarUtil.showSnackbar(
-          'Validation Error',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           'All required fields must be filled',
-          SnackbarType.error,
+          SnackbarType.warning,
         );
         return;
       }
@@ -211,8 +211,8 @@ class ProfileController extends GetxController {
         await getProfile();
       } else {
         log("Error: ${response.message}");
-        SSnackbarUtil.showSnackbar(
-          'Server Error',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           'Failed to create your address. Please try again later',
           SnackbarType.error,
         );
@@ -221,8 +221,8 @@ class ProfileController extends GetxController {
       if (kDebugMode) {
         // print("Error creating address: $e");
       }
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'An unexpected error occurred: $e',
         SnackbarType.error,
       );
@@ -247,10 +247,10 @@ class ProfileController extends GetxController {
           city.isEmpty ||
           addressLineOne.isEmpty ||
           zipcode.isEmpty) {
-        SSnackbarUtil.showSnackbar(
-          'Validation Error',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           'All required fields must be filled',
-          SnackbarType.error,
+          SnackbarType.warning,
         );
         return;
       }
@@ -277,8 +277,8 @@ class ProfileController extends GetxController {
         await getProfile();
       } else {
         // log("Error: ${response.message}");
-        SSnackbarUtil.showSnackbar(
-          'Server Error',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           'Failed to update your address. Please try again later',
           SnackbarType.error,
         );
@@ -287,8 +287,8 @@ class ProfileController extends GetxController {
       if (kDebugMode) {
         print("Error updating address: $e");
       }
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'An unexpected error occurred: $e',
         SnackbarType.error,
       );
@@ -320,15 +320,15 @@ class ProfileController extends GetxController {
 
         Get.back();
 
-        SSnackbarUtil.showSnackbar(
-          'User Details has been updated',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           response.message ?? 'Your details has been successfully updated',
           SnackbarType.success,
         );
       } else {
         log("Error: ${response.message}");
-        SSnackbarUtil.showSnackbar(
-          'Server Error',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           'Failed to update your address. Please try again later',
           SnackbarType.error,
         );
@@ -337,8 +337,8 @@ class ProfileController extends GetxController {
       if (kDebugMode) {
         // print("Error fetching sub address data: $e");
       }
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'An unexpected error occurred: $e',
         SnackbarType.error,
       );
@@ -356,10 +356,10 @@ class ProfileController extends GetxController {
     try {
       // First verify we have a valid profile
       if (profile.isEmpty) {
-        SSnackbarUtil.showSnackbar(
-          'Error',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           'Please complete your profile before adding bank details',
-          SnackbarType.error,
+          SnackbarType.warning,
         );
         return;
       }
@@ -375,22 +375,22 @@ class ProfileController extends GetxController {
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
         Get.back();
-        SSnackbarUtil.showSnackbar(
-          'Success',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           'Bank details added successfully',
           SnackbarType.success,
         );
         // await getProfile();
       } else {
-        SSnackbarUtil.showSnackbar(
-          'Error',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           response.message ?? 'Failed to add bank details',
           SnackbarType.error,
         );
       }
     } catch (e) {
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'An error occurred: ${e.toString()}',
         SnackbarType.error,
       );
@@ -427,8 +427,8 @@ class ProfileController extends GetxController {
         // log("Fetched updated user documents details: ${response.response}");
       } else {
         // log("Error: ${response.message}");
-        SSnackbarUtil.showSnackbar(
-          'Server Error',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           'Failed to update your documents. Please try again later',
           SnackbarType.error,
         );
@@ -437,8 +437,8 @@ class ProfileController extends GetxController {
       if (kDebugMode) {
         print("Error updating document: $e");
       }
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'An unexpected error occurred: $e',
         SnackbarType.error,
       );
@@ -470,8 +470,8 @@ class ProfileController extends GetxController {
         // Get.back();
       } else {
         // log("Error: ${response.message}");
-        SSnackbarUtil.showSnackbar(
-          'Server Error',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           'Failed to add new document. Please try again later',
           SnackbarType.error,
         );
@@ -480,8 +480,8 @@ class ProfileController extends GetxController {
       if (kDebugMode) {
         print("Error adding new document: $e");
       }
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'An unexpected error occurred: $e',
         SnackbarType.error,
       );
@@ -498,7 +498,7 @@ class ProfileController extends GetxController {
         Get.back();
       } else {
         log("Error: ${response.message}");
-        // SSnackbarUtil.showSnackbar(
+        // SSnackbarUtil.showFadeSnackbar(
         //   'Server Error',
         //   'Something went wrong. Please try again later',
         //   SnackbarType.error,

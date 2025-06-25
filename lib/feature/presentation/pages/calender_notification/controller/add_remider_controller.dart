@@ -33,22 +33,22 @@ class AddReminderController extends GetxController {
       );
 
       if (response.status == ApiStatus.SUCCESS) {
-        SSnackbarUtil.showSnackbar(
-          'Success',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           'Reminder Posted successfully',
           SnackbarType.success,
         );
       } else {
-        SSnackbarUtil.showSnackbar(
-          'Error',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           'Failed to post reminder',
           SnackbarType.error,
         );
       }
     } catch (e) {
       log("Error creating reminder: $e");
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'An error occurred: ${e.toString()}',
         SnackbarType.error,
       );

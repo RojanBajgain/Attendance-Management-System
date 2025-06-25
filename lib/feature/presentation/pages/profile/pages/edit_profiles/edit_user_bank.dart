@@ -93,8 +93,8 @@ class _EditUserBankState extends State<EditUserBank> {
 
   Future<void> _deleteBankDetail(int bankId) async {
     if (activeBankDetailsCount <= 1) {
-      SSnackbarUtil.showSnackbar(
-        'Cannot Delete',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'You must keep at least one bank detail',
         SnackbarType.warning,
       );
@@ -105,8 +105,8 @@ class _EditUserBankState extends State<EditUserBank> {
         _bankDetailsList.any((bank) => bank.id == bankId && bank.isPayroll);
 
     if (isPayrollBank) {
-      SSnackbarUtil.showSnackbar(
-        'Cannot Delete',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'You cannot delete a bank detail marked as payroll',
         SnackbarType.warning,
       );
@@ -166,8 +166,8 @@ class _EditUserBankState extends State<EditUserBank> {
 
                   await profilecontroller.getProfile();
                 } catch (e) {
-                  SSnackbarUtil.showSnackbar(
-                    'Error',
+                  SSnackbarUtil.showFadeSnackbar(
+                    Get.context!,
                     'Failed to delete bank detail: $e',
                     SnackbarType.error,
                   );
@@ -242,8 +242,8 @@ class _EditUserBankState extends State<EditUserBank> {
 
       Get.offAll(() => const BottomNavPage());
     } catch (e) {
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'Failed to update bank details: $e',
         SnackbarType.error,
       );

@@ -79,14 +79,10 @@ class SSnackbarUtil {
         break;
     }
     final overlay = Overlay.of(Get.overlayContext!);
-    if (overlay == null) {
-      debugPrint('No overlay found');
-      return;
-    }
     final overlayEntry = OverlayEntry(
       builder: (_) {
         return Positioned(
-          bottom: 60,
+          top: 40,
           left: 20,
           right: 20,
           child: FadeInSnackbar(

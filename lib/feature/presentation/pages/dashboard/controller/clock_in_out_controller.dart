@@ -95,22 +95,25 @@ class ClockInOutController extends GetxController {
         hasClockedinController.clockedInTime.value = DateTime.now();
 
         Get.back();
-        SSnackbarUtil.showSnackbar(
-          "Posted Clock in",
-          response.message ?? 'Your Clock In time has been successfully posted',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
+          'You have successfully clocked in.',
           SnackbarType.success,
         );
       } else {
         log("Error: ${response.message}");
-        SSnackbarUtil.showSnackbar(
-            "Error", 'Failed to post CLock in time', SnackbarType.error);
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
+          'Failed to clock in.',
+          SnackbarType.error,
+        );
       }
     } catch (e) {
       if (kDebugMode) {
         print("Error fetching sub clock in data: $e");
       }
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'An unexpected error occurred',
         SnackbarType.error,
       );
@@ -130,8 +133,10 @@ class ClockInOutController extends GetxController {
       // FIXED: Check location and services before proceeding
       bool servicesEnabled = await Geolocator.isLocationServiceEnabled();
       if (!servicesEnabled) {
-        SSnackbarUtil.showSnackbar(
-          "Location Services Disabled",
+        SSnackbarUtil.showFadeSnackbar(
+          // "Location Services Disabled",
+          Get.context!,
+
           "Please enable location services on your device",
           SnackbarType.error,
         );
@@ -143,8 +148,11 @@ class ClockInOutController extends GetxController {
 
       if (ipAddress == null) {
         log("❌ Aborting clock-out - no IP address available");
-        SSnackbarUtil.showSnackbar(
-            "Error", "Failed to get IP address", SnackbarType.error);
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
+          "Failed to get IP address",
+          SnackbarType.error,
+        );
         return;
       }
 
@@ -164,31 +172,37 @@ class ClockInOutController extends GetxController {
         await hasClockedinController.getClockData();
 
         Get.back();
-        SSnackbarUtil.showSnackbar(
-            "Posted Clock out",
-            "Your Clock out time has been successfully posted",
+        SSnackbarUtil.showFadeSnackbar(
+            // "Posted Clock out",
+            Get.context!,
+            "You have successfully clocked out.",
             SnackbarType.success);
       } else {
         log("Error: ${response.message}");
         // Check for feature not enabled error
         if (response.message != null &&
             response.message!.contains("feature is not enabled")) {
-          SSnackbarUtil.showSnackbar(
-            "Feature Not Enabled",
+          SSnackbarUtil.showFadeSnackbar(
+            // "Feature Not Enabled",
+            Get.context!,
+
             "Clock-out feature is not enabled. Please contact your administrator.",
             SnackbarType.info,
           );
         } else {
-          SSnackbarUtil.showSnackbar(
-              "Error", "Already clocked out for today", SnackbarType.error);
+          SSnackbarUtil.showFadeSnackbar(
+            Get.context!,
+            "Already clocked out for today",
+            SnackbarType.error,
+          );
         }
       }
     } catch (e) {
       if (kDebugMode) {
         print("Error fetching sub clock out data: $e");
       }
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'An unexpected error occurred',
         SnackbarType.error,
       );
@@ -213,21 +227,27 @@ class ClockInOutController extends GetxController {
         // hasClockedinController.clockedInTime.value = null;
 
         Get.back();
-        SSnackbarUtil.showSnackbar(
-            "Posted On Break",
-            "Your Break time has been successfully posted",
+        SSnackbarUtil.showFadeSnackbar(
+            // "Posted On Break",
+            Get.context!,
+            "Your Break time has started",
             SnackbarType.success);
       } else {
         log("Error: ${response.message}");
-        SSnackbarUtil.showSnackbar(
-            "INFO", "Already clocked out for today", SnackbarType.info);
+        SSnackbarUtil.showFadeSnackbar(
+          // "INFO",
+          Get.context!,
+
+          "Already clocked out for today",
+          SnackbarType.info,
+        );
       }
     } catch (e) {
       if (kDebugMode) {
         print("Error fetching sub Break time data: $e");
       }
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'An unexpected error occurred',
         SnackbarType.error,
       );
@@ -248,8 +268,10 @@ class ClockInOutController extends GetxController {
       // FIXED: Check location services before proceeding
       bool servicesEnabled = await Geolocator.isLocationServiceEnabled();
       if (!servicesEnabled) {
-        SSnackbarUtil.showSnackbar(
-          "Location Services Disabled",
+        SSnackbarUtil.showFadeSnackbar(
+          // "Location Services Disabled",
+          Get.context!,
+
           "Please enable location services on your device",
           SnackbarType.error,
         );
@@ -270,14 +292,17 @@ class ClockInOutController extends GetxController {
         await hasClockedinController.getClockData();
 
         Get.back();
-        SSnackbarUtil.showSnackbar(
-            "Posted Resume",
-            'Your Resume time has been successfully posted',
+        SSnackbarUtil.showFadeSnackbar(
+            // "Posted Resume",
+            Get.context!,
+            'Your time has been resumed',
             SnackbarType.success);
       } else {
         log("Error: ${response.message}");
-        SSnackbarUtil.showSnackbar(
-          'INFO',
+        SSnackbarUtil.showFadeSnackbar(
+          // 'INFO',
+          Get.context!,
+
           response.message ?? 'No break time available',
           SnackbarType.info,
         );
@@ -286,8 +311,8 @@ class ClockInOutController extends GetxController {
       if (kDebugMode) {
         print("Error fetching sub Break time data: $e");
       }
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'An unexpected error occurred',
         SnackbarType.error,
       );

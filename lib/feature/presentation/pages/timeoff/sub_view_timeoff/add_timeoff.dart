@@ -66,8 +66,8 @@ class _AddTimeoffState extends State<AddTimeoff> {
         log('Loaded userLeaveData: ${_userLeaveData.value}');
       } else {
         _userLeaveData.value = null;
-        SSnackbarUtil.showSnackbar(
-          'Error',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           'Failed to load leave balance information',
           SnackbarType.error,
         );
@@ -75,8 +75,8 @@ class _AddTimeoffState extends State<AddTimeoff> {
     } catch (e) {
       log('Error loading user leave data: $e');
       _userLeaveData.value = null;
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'Failed to load leave balance information: $e',
         SnackbarType.error,
       );
@@ -130,8 +130,8 @@ class _AddTimeoffState extends State<AddTimeoff> {
     log('Validating leave request - Policy: $policyName, Requested: $requestedDays, Remaining: $remainingLeave');
 
     if (remainingLeave <= 0) {
-      SSnackbarUtil.showSnackbar(
-        'Insufficient Leave Balance',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'You have no remaining $policyName leave days available.',
         SnackbarType.error,
       );
@@ -139,8 +139,8 @@ class _AddTimeoffState extends State<AddTimeoff> {
     }
 
     if (requestedDays > remainingLeave) {
-      SSnackbarUtil.showSnackbar(
-        'Insufficient Leave Balance',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'You are requesting $requestedDays days but only have ${remainingLeave.toInt()} $policyName leave days remaining.',
         SnackbarType.error,
       );
@@ -176,8 +176,8 @@ class _AddTimeoffState extends State<AddTimeoff> {
       log('Submitting leave - Selected Value: $selectedValue, Start Date: $startDate, End Date: $endDate, Reason: $reason');
 
       if (selectedValue == null || selectedValue.isEmpty) {
-        SSnackbarUtil.showSnackbar(
-          'Missing Leave Type',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           'Please select a leave type',
           SnackbarType.error,
         );
@@ -185,8 +185,8 @@ class _AddTimeoffState extends State<AddTimeoff> {
       }
 
       if (startDate == null || endDate == null) {
-        SSnackbarUtil.showSnackbar(
-          'Missing Dates',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           'Please select both start and end dates',
           SnackbarType.error,
         );
@@ -194,8 +194,8 @@ class _AddTimeoffState extends State<AddTimeoff> {
       }
 
       if (reason == null || reason.isEmpty) {
-        SSnackbarUtil.showSnackbar(
-          'Missing Reason',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           'Please provide a reason for your time off',
           SnackbarType.error,
         );
@@ -210,8 +210,8 @@ class _AddTimeoffState extends State<AddTimeoff> {
           ? profilecontroller.profile.first.id
           : box.read('profile_id');
       if (profileId == null || profileId == 0) {
-        SSnackbarUtil.showSnackbar(
-          'Error',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           'Profile information not found. Please select an organization first.',
           SnackbarType.error,
         );
@@ -221,8 +221,8 @@ class _AddTimeoffState extends State<AddTimeoff> {
 
       try {
         if (policycontroller.policy.isEmpty) {
-          SSnackbarUtil.showSnackbar(
-            'Error',
+          SSnackbarUtil.showFadeSnackbar(
+            Get.context!,
             'No leave policies available. Please try again later.',
             SnackbarType.error,
           );
@@ -263,15 +263,15 @@ class _AddTimeoffState extends State<AddTimeoff> {
         Get.back();
       } catch (e) {
         log('Error submitting time off: $e');
-        SSnackbarUtil.showSnackbar(
-          'Error',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           'Failed to submit time off request. Please try again.',
           SnackbarType.error,
         );
       }
     } else {
-      SSnackbarUtil.showSnackbar(
-        'Validation Failed',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'Please correct the errors in the form',
         SnackbarType.error,
       );
@@ -313,6 +313,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
     return Scaffold(
       appBar: const ConstantAppBar(),
       body: RefreshIndicator(
+        color: Colors.cyan,
         onRefresh: () async {
           await _loadUserLeaveData();
         },

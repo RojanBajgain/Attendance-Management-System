@@ -68,8 +68,8 @@ class AuthController extends GetxController {
       // Check if biometrics are available on the device
       bool canAuthenticate = await canUseBiometrics();
       if (!canAuthenticate) {
-        SSnackbarUtil.showSnackbar(
-          'Biometrics Unavailable',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           'Your device does not support biometrics or it is not enabled.',
           SnackbarType.error,
         );
@@ -80,8 +80,8 @@ class AuthController extends GetxController {
       if (enabled) {
         bool authenticated = await authenticateWithBiometrics();
         if (!authenticated) {
-          SSnackbarUtil.showSnackbar(
-              'Authentication Failed',
+          SSnackbarUtil.showFadeSnackbar(
+              Get.context!,
               'Biometric authentication failed. Please try again.',
               SnackbarType.error);
           return;
@@ -95,8 +95,8 @@ class AuthController extends GetxController {
             email.isEmpty ||
             password == null ||
             password.isEmpty) {
-          SSnackbarUtil.showSnackbar(
-            'No Credentials',
+          SSnackbarUtil.showFadeSnackbar(
+            Get.context!,
             'Please log in with email and password first to enable biometric login.',
             SnackbarType.warning,
           );
@@ -112,7 +112,7 @@ class AuthController extends GetxController {
       biometricsEnabled.value = enabled;
 
       SSnackbarUtil.showSnackbar(
-        'Biometrics ' + (enabled ? 'Enabled' : 'Disabled'),
+        'Biometrics ${enabled ? 'Enabled' : 'Disabled'}',
         enabled
             ? 'You can now log in using biometric authentication.'
             : 'Biometric authentication has been disabled.',
@@ -120,8 +120,8 @@ class AuthController extends GetxController {
       );
     } catch (e) {
       log("Error toggling biometrics: $e");
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'Failed to update biometric settings.',
         SnackbarType.error,
       );
@@ -180,8 +180,8 @@ class AuthController extends GetxController {
       // Check if biometrics are available
       bool canAuthenticate = await canUseBiometrics();
       if (!canAuthenticate) {
-        SSnackbarUtil.showSnackbar(
-          'Biometrics Unavailable',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           'Your device does not support biometrics or it is not enabled.',
           SnackbarType.error,
         );
@@ -191,8 +191,8 @@ class AuthController extends GetxController {
       // Authenticate with biometrics
       bool authenticated = await authenticateWithBiometrics();
       if (!authenticated) {
-        SSnackbarUtil.showSnackbar(
-          'Authentication Failed',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           'Biometric authentication failed. Please try again.',
           SnackbarType.error,
         );
@@ -206,8 +206,8 @@ class AuthController extends GetxController {
           await secureStorage.read(key: 'user_role'); // Retrieve role
 
       if (email == null || password == null || role == null) {
-        SSnackbarUtil.showSnackbar(
-          'No Credentials',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           'Please log in with email, password, and role first to enable biometric login.',
           SnackbarType.error,
         );
@@ -218,8 +218,8 @@ class AuthController extends GetxController {
       await loginMethod(email, password, role, true);
     } catch (e) {
       log("Biometric login error: $e");
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'An error occurred during biometric login.',
         SnackbarType.error,
       );
@@ -243,15 +243,15 @@ class AuthController extends GetxController {
       await prefs.setBool('biometrics_enabled', true);
       biometricsEnabled.value = true;
 
-      SSnackbarUtil.showSnackbar(
-        'Biometrics Enabled',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'You can now log in using biometric authentication.',
         SnackbarType.success,
       );
     } catch (e) {
       log("Error saving credentials for biometric login: $e");
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'Failed to save credentials for biometric login.',
         SnackbarType.error,
       );
@@ -313,8 +313,8 @@ class AuthController extends GetxController {
 
         if (organizations.isEmpty) {
           Get.back();
-          SSnackbarUtil.showSnackbar(
-            'No Departments',
+          SSnackbarUtil.showFadeSnackbar(
+            Get.context!,
             'No departments found for this user. Please contact your Admin.',
             SnackbarType.error,
           );
@@ -328,26 +328,27 @@ class AuthController extends GetxController {
           transition: Transition.rightToLeft,
         );
 
-        SSnackbarUtil.showSnackbar(
-          "Login Successful",
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
+
           "Welcome",
           SnackbarType.success,
-          duration: 2,
+          // duration: 2,
         );
       } else {
         Get.back();
         log("Error: ${response.message ?? 'Login failed'}");
-        SSnackbarUtil.showSnackbar(
-          'Login Failed',
-          'Invalid Email, Password.',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
+          'Invalid Email or Password.',
           SnackbarType.error,
         );
       }
     } catch (e) {
       Get.back();
       log("Exception occurred: $e");
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'An error occurred. Please try again.',
         SnackbarType.error,
       );
@@ -436,9 +437,9 @@ class AuthController extends GetxController {
 
       await Future.delayed(const Duration(seconds: 2));
       Get.offAll(() => const LoginPage());
-      SSnackbarUtil.showSnackbar(
-        'Logout Successful',
-        response.message ?? 'Thank you for using AYATA Attendance.',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
+        response.message ?? 'You have successfully logged out.',
         SnackbarType.success,
       );
     } else {
@@ -448,8 +449,8 @@ class AuthController extends GetxController {
         errorMessage =
             'Organization information is missing. Please log in again.';
       }
-      SSnackbarUtil.showSnackbar(
-        'Logout Failed',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         errorMessage,
         SnackbarType.error,
       );
@@ -464,9 +465,9 @@ class AuthController extends GetxController {
   ) async {
     // Validate password match
     if (newPassword != confirmPassword) {
-      SSnackbarUtil.showSnackbar(
-        "Password Mismatch",
-        "New password and confirmation don't match",
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
+        "New password and confirmation doesnot match",
         SnackbarType.error,
       );
       return;
@@ -475,8 +476,8 @@ class AuthController extends GetxController {
     // Validate password strength
     final passwordValidation = _validatePassword(newPassword);
     if (passwordValidation != null) {
-      SSnackbarUtil.showSnackbar(
-        "Weak Password",
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         passwordValidation,
         SnackbarType.error,
       );
@@ -508,9 +509,9 @@ class AuthController extends GetxController {
         await secureStorage.delete(key: 'user_password');
         await secureStorage.write(key: 'biometrics_enabled', value: 'false');
 
-        SSnackbarUtil.showSnackbar(
-          'Success',
-          'Password changed successfully. Please login again.',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
+          'Password changed successfully. Please login again to continue.',
           SnackbarType.success,
         );
 
@@ -527,16 +528,16 @@ class AuthController extends GetxController {
           errorMessage = 'Password must be at least 8 characters';
         }
 
-        SSnackbarUtil.showSnackbar(
-          'Error',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           errorMessage,
           SnackbarType.error,
         );
       }
     } catch (e) {
       Get.back();
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'An unexpected error occurred: ${e.toString()}',
         SnackbarType.error,
       );

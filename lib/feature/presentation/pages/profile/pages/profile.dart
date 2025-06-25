@@ -802,10 +802,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 final accessToken = prefs.getString('access_token') ?? '';
 
                 if (refreshToken.isEmpty || accessToken.isEmpty) {
-                  SSnackbarUtil.showSnackbar(
-                    'Logout Failed',
+                  SSnackbarUtil.showFadeSnackbar(
+                    Get.context!,
                     'Tokens are missing. Please try again.',
-                    SnackbarType.info,
+                    SnackbarType.warning,
                   );
                   return;
                 }

@@ -87,22 +87,22 @@ class TimeoffController extends GetxController {
         await getTimeoff(forceRefresh: true);
 
         Get.back();
-        SSnackbarUtil.showSnackbar(
-          'Success',
-          'Timeoff request submitted successfully',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
+          'Your timeoff submitted successfully',
           SnackbarType.success,
         );
       } else {
-        SSnackbarUtil.showSnackbar(
-          'Error',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           'Failed to submit timeoff request',
           SnackbarType.error,
         );
       }
     } catch (e) {
       log("Error creating timeoff: $e");
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'An error occurred: ${e.toString()}',
         SnackbarType.error,
       );
@@ -137,23 +137,23 @@ class TimeoffController extends GetxController {
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
         Get.back();
 
-        SSnackbarUtil.showSnackbar(
-          'Posted Reapply',
-          response.message ?? 'Your reapply has been successfully posted',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
+          'Your re-aply has been successfully submitted.',
           SnackbarType.success,
         );
       } else {
         log("Error: ${response.message}");
-        SSnackbarUtil.showSnackbar(
-          'Server Error',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           'Failed to post timeoff reapply. Please try again later',
           SnackbarType.error,
         );
       }
     } catch (e) {
       log("Error for re-apply of timeoff: $e");
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'An unexpected error occurred: $e',
         SnackbarType.error,
       );
@@ -166,9 +166,9 @@ class TimeoffController extends GetxController {
 
       if (response.status == ApiStatus.SUCCESS || response.status == 204) {
         log("Timeoff deleted successfully: ID $id");
-        SSnackbarUtil.showSnackbar(
-          'Deleted Timeoff',
-          'Your timeoff has been successfully deleted',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
+          'You have deleted your timeoff',
           SnackbarType.success,
         );
         // Delay navigation to allow snackbar to display
@@ -177,8 +177,8 @@ class TimeoffController extends GetxController {
         await getTimeoff(forceRefresh: true);
       } else {
         log("Error deleting timeoff: ${response.message}");
-        SSnackbarUtil.showSnackbar(
-          'Server Error',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           response.message ??
               'Failed to delete timeoff. Please try again later',
           SnackbarType.error,
@@ -186,8 +186,8 @@ class TimeoffController extends GetxController {
       }
     } catch (e) {
       log("Exception in deleteTimeoff: $e");
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'An unexpected error occurred: $e',
         SnackbarType.error,
       );
@@ -215,8 +215,8 @@ class TimeoffController extends GetxController {
         return null;
       } else {
         log('Error fetching user leave policy: ${response.message}');
-        SSnackbarUtil.showSnackbar(
-          'Error',
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
           'Failed to fetch leave balance: ${response.message}',
           SnackbarType.error,
         );
@@ -224,8 +224,8 @@ class TimeoffController extends GetxController {
       }
     } catch (e) {
       log('Error in getUserLeaveByPolicy: $e');
-      SSnackbarUtil.showSnackbar(
-        'Error',
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
         'An error occurred while fetching leave balance: $e',
         SnackbarType.error,
       );

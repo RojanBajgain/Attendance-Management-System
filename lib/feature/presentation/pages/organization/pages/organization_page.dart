@@ -145,8 +145,8 @@ class _OrganizationPageState extends State<OrganizationPage> {
       transition: Transition.rightToLeft,
     );
 
-    SSnackbarUtil.showSnackbar(
-      'Department Selected',
+    SSnackbarUtil.showFadeSnackbar(
+      Get.context!,
       'You have selected ${organization.title}',
       SnackbarType.success,
     );
