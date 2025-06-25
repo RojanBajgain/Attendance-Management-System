@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:ams/feature/presentation/pages/bottom_nav/bottom_nav_page.dart';
 import 'package:ams/feature/presentation/pages/login/login_page.dart';
 import 'package:ams/feature/presentation/pages/offline_page/page/offline_page.dart';
+import 'package:ams/feature/presentation/pages/organization/pages/organization_page.dart';
 import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,6 @@ class OfflineController extends GetxController {
 
   Timer? _debounce;
   bool _isInitialized = false;
-  String? _previousRoute; // Store the previous route
 
   @override
   void onInit() {
@@ -74,29 +74,9 @@ class OfflineController extends GetxController {
 
   void _handleDisconnection() {
     print('Handling disconnection - current route: ${Get.currentRoute}');
-
-    // Check if we're already on offline page (handle different possible route names)
-    bool isOnOfflinePage = Get.currentRoute == '/nointernet' ||
-        Get.currentRoute == '/offline' ||
-        Get.currentRoute.contains('OfflineView');
-
-    if (!isOnOfflinePage && Get.context != null) {
-      // Store the current route before navigating to offline page
-      _previousRoute = Get.currentRoute;
-      print('Storing previous route: $_previousRoute');
-
-      try {
-        // Use direct widget navigation to avoid route configuration issues
-        Get.to(() => OfflineView(), preventDuplicates: true);
-      } catch (e) {
-        print('Error navigating to offline page: $e');
-        // Fallback: try named route
-        try {
-          Get.toNamed('/nointernet');
-        } catch (e2) {
-          print('Error with named route navigation: $e2');
-        }
-      }
+    // Navigate to offline page if not already there
+    if (Get.currentRoute != '/nointernet' && Get.context != null) {
+      Get.offAll(() => OfflineView());
 
       // Show snackbar if context is available
       if (Get.context != null) {
@@ -111,8 +91,7 @@ class OfflineController extends GetxController {
 
   void _handleReconnection() {
     print('Handling reconnection - current route: ${Get.currentRoute}');
-
-    // Show success message
+    // Show success message and navigate back
     if (Get.context != null) {
       SSnackbarUtil.showFadeSnackbar(
         Get.context!,
@@ -122,78 +101,8 @@ class OfflineController extends GetxController {
     }
 
     // Check if we're currently on the offline page before navigating
-    bool isOnOfflinePage = Get.currentRoute == '/nointernet' ||
-        Get.currentRoute == '/offline' ||
-        Get.currentRoute.contains('OfflineView');
-
-    if (isOnOfflinePage) {
-      _restoreUserToOriginalRoute();
-    }
-  }
-
-  void _restoreUserToOriginalRoute() {
-    print('Restoring user to previous route');
-
-    // Check if we're currently on any offline page variation
-    bool isOnOfflinePage = Get.currentRoute == '/nointernet' ||
-        Get.currentRoute == '/OfflineView' ||
-        Get.currentRoute == '/offline';
-
-    if (isOnOfflinePage) {
-      if (_previousRoute != null) {
-        _navigateToStoredRoute(); // Call this instead of just checking /nointernet
-      } else {
-        _navigateToAppropriateRoute();
-      }
-    }
-  }
-
-  void _navigateToStoredRoute() {
-    if (_previousRoute == null || _previousRoute!.isEmpty) return;
-
-    try {
-      // Clear the stored route first
-      String routeToNavigate = _previousRoute!;
-      _previousRoute = null;
-
-      // Handle different route patterns
-      if (routeToNavigate.contains('BottomNavPage') ||
-          routeToNavigate == '/bottomNav') {
-        Get.offAllNamed('/bottomNav');
-      } else if (routeToNavigate.contains('LoginPage') ||
-          routeToNavigate == '/login') {
-        Get.offAllNamed('/login');
-      } else if (routeToNavigate.contains('OrganizationPage') ||
-          routeToNavigate == '/organization') {
-        Get.offAllNamed('/organization');
-      } else if (routeToNavigate.contains('LandingPage') ||
-          routeToNavigate == '/landingpage') {
-        Get.offAllNamed('/landingpage');
-      } else if (routeToNavigate.contains('ChatsScreen') ||
-          routeToNavigate == '/chat') {
-        Get.offAllNamed('/chat');
-      } else {
-        // Try to navigate to the exact route
-        Get.offAllNamed(routeToNavigate);
-      }
-
-      print('Successfully navigated to stored route: $routeToNavigate');
-    } catch (e) {
-      print('Error navigating to stored route: $e');
-      // Fallback to appropriate route based on login status
-      _navigateToAppropriateRoute();
-    }
-  }
-
-  void _navigateToAppropriateRoute() {
-    final isLoggedIn = storage.read('isLoggedIn') ?? false;
-    final userId = storage.read('userId');
-    final organization = storage.read('selectedOrganization');
-
-    if (isLoggedIn && userId != null && organization != null) {
-      Get.offAllNamed('/bottomNav');
-    } else {
-      Get.offAllNamed('/login');
+    if (Get.currentRoute == '/nointernet') {
+      checkLoginAndNavigate();
     }
   }
 
@@ -221,10 +130,8 @@ class OfflineController extends GetxController {
               "Internet Restored",
               SnackbarType.success,
             );
-            if (Get.currentRoute == '/nointernet' ||
-                Get.currentRoute == '/offline' ||
-                Get.currentRoute.contains('OfflineView')) {
-              _restoreUserToOriginalRoute();
+            if (Get.currentRoute == '/nointernet') {
+              checkLoginAndNavigate();
             }
           }
         }
@@ -249,18 +156,51 @@ class OfflineController extends GetxController {
   }
 
   void checkLoginAndNavigate() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-    final userId = prefs.getString('userId');
-    final organization = storage.read('selectedOrganization');
+    try {
+      // Check SharedPreferences first
+      final prefs = await SharedPreferences.getInstance();
+      final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 
-    print(
-        'Checking login status: isLoggedIn=$isLoggedIn, userId=$userId, organization=$organization');
+      // Check GetStorage for user and organization data
+      final userId = storage.read('user_id');
+      final selectedOrganization = storage.read('selectedOrganization');
 
-    if (isLoggedIn && userId != null && organization != null) {
-      Get.offAll(() => BottomNavPage()); // Use direct widget navigation
-    } else {
-      Get.offAll(() => LoginPage()); // Use direct widget navigation
+      print('Checking login status:');
+      print('isLoggedIn: $isLoggedIn');
+      print('userId: $userId');
+      print('selectedOrganization: $selectedOrganization');
+
+      if (isLoggedIn && userId != null) {
+        // User is logged in, now check if organization is selected
+        if (selectedOrganization != null && selectedOrganization.isNotEmpty) {
+          // User is logged in and has selected an organization
+          print(
+              'Navigating to BottomNavPage - user logged in with organization');
+          Get.offAll(() => const BottomNavPage(), arguments: 0);
+        } else {
+          // User is logged in but hasn't selected an organization
+          // Check if user data exists in SharedPreferences to determine next step
+          final userData = prefs.getString('userData');
+          if (userData != null && userData.isNotEmpty) {
+            print(
+                'Navigating to OrganizationPage - user logged in but no organization selected');
+            // Parse user data to get organizations if needed
+            // For now, navigate to organization page
+            Get.offAll(() => const OrganizationPage());
+          } else {
+            print('Navigating to LoginPage - user data incomplete');
+            Get.offAll(() => const LoginPage());
+          }
+        }
+      } else {
+        // User is not logged in
+        print('Navigating to LoginPage - user not logged in');
+        Get.offAll(() => const LoginPage());
+      }
+    } catch (e) {
+      print('Error in checkLoginAndNavigate: $e');
+      // In case of error, navigate to login page as fallback
+      Get.offAll(() => const LoginPage());
     }
   }
 
@@ -270,18 +210,12 @@ class OfflineController extends GetxController {
     if (!isConnected.value) {
       // If offline initially, go to offline page
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        Get.offAllNamed('/nointernet');
+        Get.offAll(() => OfflineView());
       });
     } else {
       // If online, proceed with normal login flow
       checkLoginAndNavigate();
     }
-  }
-
-  // Method to clear stored route (call this when user logs out or app is closed)
-  void clearStoredRoute() {
-    _previousRoute = null;
-    print('Stored route cleared');
   }
 
   @override

@@ -8,15 +8,15 @@ import 'package:get/get.dart';
 
 class RouteHelper {
   RouteHelper._();
-  static const String home = '/home';
-  static const String landingpage = '/landingpage';
-  static const String login = '/login';
+  // static const String home = '/home';
+  static const String landingpage = '/LandingPage';
+  static const String login = '/LoginPage';
   static const String nointernet = '/nointernet';
   static const String bottomnav = '/bottomNav';
   static const String organization = '/organization';
   static const String chat = '/chat';
 
-  static String getHome() => home;
+  // static String getHome() => home;
   static String getlandingpage() => landingpage;
   static String getlogin() => login;
   static String getnointernet() => nointernet;
