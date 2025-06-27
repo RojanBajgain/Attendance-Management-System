@@ -2,8 +2,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class Environment {
   static String get fileName {
-    return '.env.development';
-    // return '.env.production';
+    // return '.env.development';
+    return '.env.production';
   }
 
   // static String get apiKey {
