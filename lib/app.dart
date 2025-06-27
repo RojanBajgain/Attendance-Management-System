@@ -30,7 +30,7 @@ class App extends StatelessWidget {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: themeController.currentThemeMode.value,
-          initialRoute: isLoggedIn ? '/bottomNav' : '/LandingPage',
+          initialRoute: isLoggedIn ? '/bottomNav' : '/landingpage',
           getPages: AppPages.routes,
           localizationsDelegates: const [
             GlobalMaterialLocalizations.delegate,

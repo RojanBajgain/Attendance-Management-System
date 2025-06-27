@@ -23,22 +23,15 @@ class OfflineController extends GetxController {
 
   Timer? _debounce;
   bool _isInitialized = false;
-  String? _lastRoute; // Store the last route before going offline
-
-  @override
-  void onInit() {
-    super.onInit();
-    // Don't auto-initialize here since we'll do it manually in main()
-  }
+  String? _lastRoute;
 
   Future<void> initConnectivity() async {
-    if (_isInitialized) return; // Prevent multiple initializations
+    if (_isInitialized) return;
 
     isChecking.value = true;
     try {
       final result = await _connectivity.checkConnectivity();
       _connectionStatus = result;
-      // Check if the list contains ConnectivityResult.none
       isConnected.value = !result.contains(ConnectivityResult.none);
 
       print('Initial connectivity status: ${isConnected.value}');
@@ -66,8 +59,6 @@ class OfflineController extends GetxController {
     print(
         'Connectivity changed: wasConnected=$wasConnected, isConnected=${isConnected.value}');
 
-    // Only show notifications and navigate if we have a valid context
-    // and the app is in the foreground
     if (!isConnected.value && wasConnected) {
       _handleDisconnection();
     } else if (isConnected.value && !wasConnected) {
@@ -152,21 +143,16 @@ class OfflineController extends GetxController {
     }
   }
 
-  // Remove the old checkConnectivity method and replace with this
   void checkConnectivity(BuildContext context) async {
-    // This method can be simplified since we're already monitoring
-    // connectivity changes in the background
     await refreshConnectivity();
   }
 
-  // Keep the existing refreshPage method but update it to use refreshConnectivity
   Future<void> refreshPage(BuildContext context) async {
     await refreshConnectivity();
   }
 
   void checkLoginAndNavigate() async {
     try {
-      // Check SharedPreferences first
       final prefs = await SharedPreferences.getInstance();
       final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 
@@ -191,21 +177,18 @@ class OfflineController extends GetxController {
           // Check if user data exists in SharedPreferences to determine next step
           final userData = prefs.getString('userData');
           if (userData != null && userData.isNotEmpty) {
-            print(
-                'Navigating to OrganizationPage - user logged in but no organization selected');
-            // Parse user data to get organizations if needed
-            // For now, navigate to organization page
             Get.offAll(() => const OrganizationPage());
           } else {
             print('Navigating to LoginPage - user data incomplete');
             Get.offAll(() => const LoginPage());
           }
         }
-      } else {
-        // User is not logged in
-        print('Navigating to LoginPage - user not logged in');
-        Get.offAll(() => const LoginPage());
       }
+      // else {
+      //   // User is not logged in
+      //   print('Navigating to LoginPage - user not logged in');
+      //   Get.offAll(() => const LandingPage());
+      // }
     } catch (e) {
       print('Error in checkLoginAndNavigate: $e');
       // In case of error, navigate to login page as fallback

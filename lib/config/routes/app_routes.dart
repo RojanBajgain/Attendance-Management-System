@@ -14,8 +14,8 @@ abstract class Routes {
 }
 
 abstract class _Paths {
-  static const LANDING_PAGE = '/LandingPage';
-  static const LOGIN = '/LoginPage';
+  static const LANDING_PAGE = '/landingpage';
+  static const LOGIN = '/loginpage';
 
   static const bottomnav = '/bottomNav';
   static const organization = '/organization';

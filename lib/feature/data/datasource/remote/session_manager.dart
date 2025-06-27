@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+import 'package:ams/feature/presentation/pages/landing/landing_page.dart';
+import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/login/login_page.dart';
 import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -9,7 +11,26 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SessionManager {
   static bool isLoggingOut = false;
 
-  static Future<void> handleSessionExpired({String? customMessage}) async {
+  // static Future<void> handleSessionExpired() async {
+  //   if (isLoggingOut) return;
+
+  //   isLoggingOut = true;
+  //   // Get.find<AuthController>().logoutmethod(true);
+  //   await const FlutterSecureStorage().deleteAll();
+  //   print('dsdsd');
+
+  //   SSnackbarUtil.showFadeSnackbar(
+  //     Get.context!,
+  //     'Your session has expired. Please login again...',
+  //     SnackbarType.warning,
+  //   );
+
+  //   Future.delayed(Duration(seconds: 3), () {
+  //     isLoggingOut = false;
+  //   });
+  // }
+
+  static Future<void> handleSessionExpired() async {
     if (isLoggingOut) return;
 
     isLoggingOut = true;
@@ -19,8 +40,7 @@ class SessionManager {
 
       SSnackbarUtil.showFadeSnackbar(
         Get.context!,
-        customMessage ??
-            'Your session has expired or the server is unreachable. Please login again.',
+        'Your session has expired or the server is unreachable. Please login again.',
         SnackbarType.warning,
       );
 
@@ -28,7 +48,7 @@ class SessionManager {
       Get.offAll(
         () => const LoginPage(),
         transition: Transition.rightToLeft,
-        duration: const Duration(milliseconds: 300),
+        // duration: const Duration(milliseconds: 300),
       );
     } catch (e) {
       log("Error handling session expiry: $e");
@@ -40,28 +60,28 @@ class SessionManager {
   }
 
   // Method to handle logout (called from AuthController)
-  static Future<void> handleLogout() async {
-    if (isLoggingOut) return;
+  // static Future<void> handleLogout() async {
+  //   if (isLoggingOut) return;
 
-    // log("Handling logout...");
-    isLoggingOut = true;
+  //   // log("Handling logout...");
+  //   isLoggingOut = true;
 
-    try {
-      // Clear all stored data
-      await _clearAllUserData();
+  //   try {
+  //     // Clear all stored data
+  //     await _clearAllUserData();
 
-      // Navigate to login page
-      Get.offAll(
-        () => const LoginPage(),
-        transition: Transition.rightToLeft,
-        duration: const Duration(milliseconds: 300),
-      );
-    } catch (e) {
-      // log("Error handling logout: $e");
-    } finally {
-      isLoggingOut = false;
-    }
-  }
+  //     // Navigate to login page
+  //     Get.offAll(
+  //       () => const LoginPage(),
+  //       transition: Transition.rightToLeft,
+  //       duration: const Duration(milliseconds: 300),
+  //     );
+  //   } catch (e) {
+  //     // log("Error handling logout: $e");
+  //   } finally {
+  //     isLoggingOut = false;
+  //   }
+  // }
 
   // Private method to clear all user data
   static Future<void> _clearAllUserData() async {
@@ -104,54 +124,54 @@ class SessionManager {
   }
 
   // Method to check if user should remain logged in
-  static Future<bool> shouldStayLoggedIn() async {
-    try {
-      const secureStorage = FlutterSecureStorage();
-      final prefs = await SharedPreferences.getInstance();
+  // static Future<bool> shouldStayLoggedIn() async {
+  //   try {
+  //     const secureStorage = FlutterSecureStorage();
+  //     final prefs = await SharedPreferences.getInstance();
 
-      final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-      final accessToken = await secureStorage.read(key: 'access_token');
-      final refreshToken = await secureStorage.read(key: 'refresh_token');
+  //     final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+  //     final accessToken = await secureStorage.read(key: 'access_token');
+  //     final refreshToken = await secureStorage.read(key: 'refresh_token');
 
-      // Check backup location if secure storage is empty
-      if (accessToken == null || refreshToken == null) {
-        final backupAccess = prefs.getString('accessToken');
-        final backupRefresh = prefs.getString('refreshToken');
+  //     // Check backup location if secure storage is empty
+  //     if (accessToken == null || refreshToken == null) {
+  //       final backupAccess = prefs.getString('accessToken');
+  //       final backupRefresh = prefs.getString('refreshToken');
 
-        if (backupAccess != null && backupRefresh != null) {
-          // Sync back to secure storage
-          await secureStorage.write(key: 'access_token', value: backupAccess);
-          await secureStorage.write(key: 'refresh_token', value: backupRefresh);
-          return isLoggedIn;
-        }
-      }
+  //       if (backupAccess != null && backupRefresh != null) {
+  //         // Sync back to secure storage
+  //         await secureStorage.write(key: 'access_token', value: backupAccess);
+  //         await secureStorage.write(key: 'refresh_token', value: backupRefresh);
+  //         return isLoggedIn;
+  //       }
+  //     }
 
-      return isLoggedIn && accessToken != null && refreshToken != null;
-    } catch (e) {
-      // log("Error checking login status: $e");
-      return false;
-    }
-  }
+  //     return isLoggedIn && accessToken != null && refreshToken != null;
+  //   } catch (e) {
+  //     // log("Error checking login status: $e");
+  //     return false;
+  //   }
+  // }
 
-  // Method to validate tokens (you can add token validation logic here)
-  static Future<bool> validateTokens() async {
-    try {
-      // Add your token validation logic here
-      // For example, check token expiry or make a test API call
+  // // Method to validate tokens (you can add token validation logic here)
+  // static Future<bool> validateTokens() async {
+  //   try {
+  //     // Add your token validation logic here
+  //     // For example, check token expiry or make a test API call
 
-      const secureStorage = FlutterSecureStorage();
-      final accessToken = await secureStorage.read(key: 'access_token');
+  //     const secureStorage = FlutterSecureStorage();
+  //     final accessToken = await secureStorage.read(key: 'access_token');
 
-      if (accessToken == null || accessToken.isEmpty) {
-        return false;
-      }
+  //     if (accessToken == null || accessToken.isEmpty) {
+  //       return false;
+  //     }
 
-      // Add JWT token validation logic here if needed
-      // For now, just check if token exists
-      return true;
-    } catch (e) {
-      // log("Error validating tokens: $e");
-      return false;
-    }
-  }
+  //     // Add JWT token validation logic here if needed
+  //     // For now, just check if token exists
+  //     return true;
+  //   } catch (e) {
+  //     // log("Error validating tokens: $e");
+  //     return false;
+  //   }
+  // }
 }

@@ -1,5 +1,6 @@
 import 'package:ams/config/resources/shimmer.dart';
 import 'package:ams/config/resources/styles.dart';
+import 'package:ams/feature/presentation/pages/Privacy/pages/privacy_page.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/organization/model/organization_profile_model.dart';
 import 'package:ams/feature/presentation/pages/password/change_password.dart';
@@ -118,6 +119,7 @@ class _ProfilePageState extends State<ProfilePage> {
               // _buildDeviceDetails(isDarkMode, 3),
               _buildChangePassword(),
               _buildTheme(),
+              // _buildPrivacyPolicies(),
               // _buildBiometrics(isDarkMode),
               _buildLogout(isDarkMode),
             ],
@@ -403,59 +405,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // Widget _buildDeviceDetails(bool isDarkMode, int index) {
-  //   return ProfileMenu(
-  //     text: "Device Details",
-  //     icon: Icons.tv_outlined,
-  //     isExpanded: _currentlyExpandedIndex == index,
-  //     onExpandToggle: () => _handleTileExpansion(index),
-  //     expandedContent: _buildExpandedContent(
-  //       isDarkMode,
-  //       child: Obx(() {
-  //         if (profilecontroller.isLoading.value) {
-  //           return const ShrimmerEffect.rectangular(height: 200);
-  //         }
-
-  //         final profileData = profilecontroller.profile;
-  //         return SizedBox(
-  //           height: 70,
-  //           width: MediaQuery.of(context).size.width,
-  //           child: ListView.builder(
-  //             padding: EdgeInsets.zero,
-  //             shrinkWrap: true,
-  //             physics: const NeverScrollableScrollPhysics(),
-  //             itemCount: profileData.length,
-  //             itemBuilder: (BuildContext context, int index) {
-  //               final profiledata = profileData[index];
-  //               final device = profiledata.device;
-  //               return _buildDeviceDetail(device, isDarkMode);
-  //             },
-  //           ),
-  //         );
-  //       }),
-  //     ),
-  //   );
-  // }
-
-  // Widget _buildDeviceDetail(Device? device, bool isDarkMode) {
-  //   return Container(
-  //     width: MediaQuery.of(context).size.width,
-  //     padding: const EdgeInsets.symmetric(vertical: 1.0),
-  //     child: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         _buildRow(
-  //             'Finger Print ID:',
-  //             device != null && device.fingerprintId.isNotEmpty
-  //                 ? device.fingerprintId
-  //                 : 'N/A'),
-  //         _buildRow('Device ID:',
-  //             device != null ? device.deviceUserId.toString() : 'N/A'),
-  //       ],
-  //     ),
-  //   );
-  // }
-
   Widget _buildChangePassword() {
     return ProfileMenu(
       text: "Change Password",
@@ -464,6 +413,7 @@ class _ProfilePageState extends State<ProfilePage> {
         Get.to(
           () => const ChangePassword(),
           transition: Transition.rightToLeft,
+          duration: const Duration(milliseconds: 100),
         );
       },
       showIcon: false,
@@ -478,11 +428,27 @@ class _ProfilePageState extends State<ProfilePage> {
         Get.to(
           () => const ChangeTheme(),
           transition: Transition.rightToLeft,
+          duration: const Duration(milliseconds: 100),
         );
       },
       showIcon: false,
     );
   }
+
+  /*  Widget _buildPrivacyPolicies() {
+    return ProfileMenu(
+      text: "Privacy Policies",
+      icon: Icons.privacy_tip,
+      press: () {
+        Get.to(
+          () => PrivacyPage(),
+          transition: Transition.rightToLeft,
+          duration: const Duration(milliseconds: 100),
+        );
+      },
+      showIcon: false,
+    );
+  } */
 
 //   Widget _buildBiometrics(bool isDarkMode) {
 //     return Obx(() => ProfileMenu(

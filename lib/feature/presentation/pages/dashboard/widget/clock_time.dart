@@ -599,7 +599,7 @@ class _ClockTimeState extends State<ClockTime> {
           return ElevatedButton(
             style: ElevatedButton.styleFrom(
               shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(16)),
+                borderRadius: BorderRadius.all(Radius.circular(6)),
               ),
               backgroundColor: isOnBreak.value
                   ? Colors.orange[700]
@@ -626,7 +626,7 @@ class _ClockTimeState extends State<ClockTime> {
 
   Widget _buildBreakButton(bool isDarkMode) {
     return TapDebouncer(
-      cooldown: const Duration(milliseconds: 500),
+      cooldown: const Duration(seconds: 3),
       onTap: () async {
         _handleBreak();
       },
@@ -634,7 +634,7 @@ class _ClockTimeState extends State<ClockTime> {
         return ElevatedButton(
           style: ElevatedButton.styleFrom(
             shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(16)),
+              borderRadius: BorderRadius.all(Radius.circular(6)),
             ),
             backgroundColor: Colors.orange[700],
           ),
