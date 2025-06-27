@@ -10,6 +10,7 @@ import 'package:ams/feature/presentation/pages/profile/controller/profile_contro
 
 class HasClockedinController extends GetxController {
   var clockedInTime = Rx<DateTime?>(null);
+  var clockedOutTime = Rx<DateTime?>(null);
   var isLoading = false.obs;
   var lastUserId = Rx<int?>(null);
 
@@ -124,11 +125,16 @@ class HasClockedinController extends GetxController {
           DateTime localTime =
               utcTime.add(const Duration(hours: 5, minutes: 45));
 
+          clockedOutTime.value = localTime;
+
           // Store clock out time
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('clockOutTime', localTime.toIso8601String());
         }
       } else {
+        clockedOutTime.value = null;
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.remove('clockOutTime');
         log("Error: ${response.message}");
       }
     } catch (e) {
