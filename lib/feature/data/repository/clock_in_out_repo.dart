@@ -178,7 +178,7 @@ class ClockInOutRepo {
 
     try {
       // Use consistent base URL
-      const url = ApiUrls.baseUrl + ApiUrls.postclockout;
+      final url = ApiUrls.baseUrl + ApiUrls.postclockout;
       log("📨 Sending clock-out request to: $url");
       log("📦 Request payload: {device_id: $deviceID, latitude: $latitude, longitude: $longitude, x-address: $ipAddress}");
 

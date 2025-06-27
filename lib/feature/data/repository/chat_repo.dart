@@ -122,7 +122,7 @@ class ChatRepo {
     try {
       final token = apiClient.token;
 
-      const url = '${ApiUrls.baseUrl}${ApiUrls.chat}';
+      final url = '${ApiUrls.baseUrl}${ApiUrls.chat}';
 
       // Create multipart request
       var request = http.MultipartRequest('POST', Uri.parse(url));

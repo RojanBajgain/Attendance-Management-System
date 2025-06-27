@@ -1,23 +1,7 @@
+import 'package:ams/feature/domain/model/environment.dart';
+
 class ApiUrls {
-  // static const String baseUrl = "http://192.168.254.81:8000/";
-  // static const String baseUrl = "http://192.168.254.49:8000/";
-  // static const String baseUrl = "http://192.168.254.4:8000/";
-
-  // static const String baseUrl = "http://192.168.254.45:8000/";
-
-//  static const String baseUrl = "http://192.168.254.45:8000/";
-
-  // static const String baseUrl = "http://192.168.0.103:8000/";
-
-  // static const String baseUrl = "http://192.168.10.92:8000/";
-
-  // static const String baseUrl = "https://backend.ams.ayata.com.np/";
-
-  // static const String baseUrl = "http://192.168.254.45:8000/";
-
-  // static const String baseUrl = "http://192.168.254.59:8000/";
-
-  static const String baseUrl = "https://tranquility.backend.ams.ayata.com.np/";
+  static final String baseUrl = Environment.apiBaseUrl;
 
   static const String login = "api/login/";
 
