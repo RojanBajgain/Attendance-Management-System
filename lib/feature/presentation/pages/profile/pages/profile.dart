@@ -65,14 +65,17 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    return Scaffold(
-      backgroundColor: isDarkMode ? Colors.black : Colors.grey.shade300,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildHeader(isDarkMode),
-            _buildProfileContent(isDarkMode),
-          ],
+    return SafeArea(
+      top: false,
+      child: Scaffold(
+        backgroundColor: isDarkMode ? Colors.black : Colors.grey.shade300,
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              _buildHeader(isDarkMode),
+              _buildProfileContent(isDarkMode),
+            ],
+          ),
         ),
       ),
     );
@@ -114,8 +117,9 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               const SizedBox(height: 80.0),
               _buildPersonalInfo(isDarkMode, 0),
-              _buildDocuments(isDarkMode, 1),
-              _buildBankDetails(isDarkMode, 2),
+              _buildEmployeeDetail(isDarkMode, 1),
+              _buildDocuments(isDarkMode, 2),
+              _buildBankDetails(isDarkMode, 3),
               // _buildDeviceDetails(isDarkMode, 3),
               _buildChangePassword(),
               _buildTheme(),
@@ -234,15 +238,65 @@ class _ProfilePageState extends State<ProfilePage> {
           //     profiledata.employeeType.isNotEmpty
           //         ? profiledata.employeeType
           //         : 'N/A'),
-          _buildRow(
-              'Gross Salary:', "Rs. ${profiledata.grossSalary.toString()}"),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmployeeDetail(bool isDarkMode, int index) {
+    return ProfileMenu(
+      text: "Employee Detail",
+      icon: Icons.account_box_outlined,
+      showIcon: true,
+      isExpanded: _currentlyExpandedIndex == index,
+      onExpandToggle: () => _handleTileExpansion(index),
+      expandedContent: _buildExpandedContent(
+        isDarkMode,
+        child: Obx(() {
+          if (profilecontroller.isLoading.value) {
+            return const ShrimmerEffect.rectangular(height: 230);
+          }
+
+          final profileData = profilecontroller.profile;
+
+          if (profileData.isEmpty) {
+            return Center(
+              child: Text(
+                "No profile data available. Please try login again.",
+                style: smallStyle.copyWith(
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
+              ),
+            );
+          }
+
+          return Column(
+            children: profileData
+                .map((profileData) =>
+                    _buildEmployeeDetails(profileData, isDarkMode))
+                .toList(),
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _buildEmployeeDetails(Datum profiledata, bool isDarkMode) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      padding: const EdgeInsets.symmetric(vertical: 1.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildRow('Employee ID:',
+              profiledata.userRecords.first.employeeNo.toString()),
           _buildRow(
               'Department:',
               profiledata.organization.title.isNotEmpty
                   ? profiledata.organization.title
                   : 'N/A'),
-          _buildRow('Employee ID:',
-              profiledata.userRecords.first.employeeNo.toString()),
+          _buildRow(
+              'Gross Salary:', "Rs. ${profiledata.grossSalary.toString()}"),
         ],
       ),
     );

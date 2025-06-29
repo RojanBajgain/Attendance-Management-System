@@ -34,165 +34,204 @@ class _TimeOffPageState extends State<TimeOffPage> {
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    return Scaffold(
-      appBar: const ConstantAppBar(),
-      body: RefreshIndicator(
-        color: Colors.cyan,
-        onRefresh: () async {
-          await timeoffcontroller.getTimeoff(forceRefresh: true);
-        },
-        child: ListView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(16.0),
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 10.0),
-              child: Row(
-                children: [
-                  Text(
-                    "Time offs",
-                    style: smallNStyle.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: isDarkMode ? Colors.white : Colors.black,
-                    ),
-                  ),
-                  const Spacer(),
-                  const SizedBox(width: 10.0),
-                  GestureDetector(
-                    onTap: () {
-                      Get.to(
-                        () => const AddTimeoff(),
-                        transition: Transition.rightToLeft,
-                        duration: const Duration(milliseconds: 150),
-                      );
-                    },
-                    child: Container(
-                      height: 35.0,
-                      width: 35.0,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black),
-                        borderRadius: BorderRadius.circular(70.0),
-                        color: isDarkMode ? Colors.grey.shade400 : Colors.black,
-                      ),
-                      child: Icon(
-                        Icons.add,
-                        color: isDarkMode ? Colors.black : Colors.white,
+    return SafeArea(
+      child: Scaffold(
+        // appBar: const ConstantAppBar(),
+        body: RefreshIndicator(
+          color: Colors.cyan,
+          onRefresh: () async {
+            await timeoffcontroller.getTimeoff(forceRefresh: true);
+          },
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(16.0),
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 10.0),
+                child: Row(
+                  children: [
+                    Text(
+                      "Time offs",
+                      style: smallNStyle.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: isDarkMode ? Colors.white : Colors.black,
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 10.0),
-                  // FILTER BUTTON
-                  Obx(() => Container(
-                        height: 40.0,
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                    const Spacer(),
+                    const SizedBox(width: 10.0),
+                    GestureDetector(
+                      onTap: () {
+                        Get.to(
+                          () => const AddTimeoff(),
+                          transition: Transition.rightToLeft,
+                          duration: const Duration(milliseconds: 150),
+                        );
+                      },
+                      child: Container(
+                        height: 35.0,
+                        width: 35.0,
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.black),
-                          borderRadius: BorderRadius.circular(10.0),
+                          borderRadius: BorderRadius.circular(70.0),
                           color:
                               isDarkMode ? Colors.grey.shade400 : Colors.black,
                         ),
-                        child: DropdownButton<String>(
-                          value: timeoffcontroller.selectedFilter.value,
-                          onChanged: (String? newValue) {
-                            if (newValue != null) {
-                              timeoffcontroller.filterTimeoff(newValue);
-                            }
-                          },
-                          icon: Icon(
-                            Icons.arrow_drop_down,
-                            color: isDarkMode ? Colors.black : Colors.white,
-                          ),
-                          dropdownColor:
-                              isDarkMode ? Colors.grey.shade400 : Colors.black,
-                          underline: const SizedBox(),
-                          style: TextStyle(
-                            color: isDarkMode ? Colors.black : Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 8.0,
-                          ),
-                          items: [
-                            'All',
-                            'Pending',
-                            'Approved',
-                            'Rejected',
-                            're-apply'
-                          ]
-                              .map((filter) => DropdownMenuItem(
-                                    value: filter,
-                                    child: Text(
-                                      filter == 're-apply'
-                                          ? 'Reapplied'
-                                          : filter,
-                                      style: smallStyle.copyWith(
-                                        color: isDarkMode
-                                            ? Colors.black
-                                            : Colors.white,
-                                      ),
-                                    ),
-                                  ))
-                              .toList(),
+                        child: Icon(
+                          Icons.add,
+                          color: isDarkMode ? Colors.black : Colors.white,
                         ),
-                      )),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20.0),
-            Obx(() {
-              if (timeoffcontroller.isLoading.value) {
-                // return Padding(
-                //   padding: const EdgeInsets.all(8.0),
-                //   child: ClipRRect(
-                //     borderRadius: BorderRadius.circular(12.0),
-                //     child: ShrimmerEffect.rectangular(
-                //       height: 150,
-                //       width: MediaQuery.sizeOf(context).width,
-                //     ),
-                //   ),
-                // );
-                return ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: 6,
-                  itemBuilder: (context, index) {
-                    return const TimeoffSkeleton();
-                  },
-                );
-              } else if (timeoffcontroller.timeoff.isEmpty) {
-                return SizedBox(
-                  height: 600,
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          'assets/images/no_data.png',
-                          height: 200,
-                          width: 250,
-                          fit: BoxFit.cover,
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          "No Data Available",
-                          style: smallStyle.copyWith(
-                            color: isDarkMode ? Colors.white : Colors.black,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                );
-              } else {
-                return Column(
-                  children: timeoffcontroller.filteredTimeoff
-                      .map((timeoff) => Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: TimeOffSheet(timeoffdata: timeoff),
-                          ))
-                      .toList(),
-                );
-              }
-            }),
-          ],
+                    const SizedBox(width: 10.0),
+                    // FILTER BUTTON
+                    Obx(() => Container(
+                          height: 40.0,
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black),
+                            borderRadius: BorderRadius.circular(10.0),
+                            color: isDarkMode
+                                ? Colors.grey.shade400
+                                : Colors.black,
+                          ),
+                          child: DropdownButton<String>(
+                            value: timeoffcontroller.selectedFilter.value,
+                            onChanged: (String? newValue) {
+                              if (newValue != null) {
+                                timeoffcontroller.filterTimeoff(newValue);
+                              }
+                            },
+                            icon: Icon(
+                              Icons.arrow_drop_down,
+                              color: isDarkMode ? Colors.black : Colors.white,
+                            ),
+                            dropdownColor: isDarkMode
+                                ? Colors.grey.shade400
+                                : Colors.black,
+                            underline: const SizedBox(),
+                            style: TextStyle(
+                              color: isDarkMode ? Colors.black : Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 8.0,
+                            ),
+                            items: [
+                              'All',
+                              'Pending',
+                              'Approved',
+                              'Rejected',
+                              're-apply'
+                            ]
+                                .map((filter) => DropdownMenuItem(
+                                      value: filter,
+                                      child: Text(
+                                        filter == 're-apply'
+                                            ? 'Reapplied'
+                                            : filter,
+                                        style: smallStyle.copyWith(
+                                          color: isDarkMode
+                                              ? Colors.black
+                                              : Colors.white,
+                                        ),
+                                      ),
+                                    ))
+                                .toList(),
+                          ),
+                        )),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20.0),
+              Obx(() {
+                if (timeoffcontroller.isLoading.value) {
+                  // return Padding(
+                  //   padding: const EdgeInsets.all(8.0),
+                  //   child: ClipRRect(
+                  //     borderRadius: BorderRadius.circular(12.0),
+                  //     child: ShrimmerEffect.rectangular(
+                  //       height: 150,
+                  //       width: MediaQuery.sizeOf(context).width,
+                  //     ),
+                  //   ),
+                  // );
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: 6,
+                    itemBuilder: (context, index) {
+                      return const TimeoffSkeleton();
+                    },
+                  );
+                } else if (timeoffcontroller.timeoff.isEmpty) {
+                  return SizedBox(
+                    height: 600,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            'assets/images/no_data.png',
+                            height: 200,
+                            width: 250,
+                            fit: BoxFit.cover,
+                          ),
+                          const SizedBox(height: 20),
+                          Text(
+                            "No Data Available",
+                            style: smallStyle.copyWith(
+                              color: isDarkMode ? Colors.white : Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                } else if (timeoffcontroller.filteredTimeoff.isEmpty) {
+                  // Data exists but filtered results are empty
+                  return SizedBox(
+                    height: 600,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            'assets/images/no_data.png',
+                            height: 200,
+                            width: 250,
+                            fit: BoxFit.cover,
+                          ),
+                          const SizedBox(height: 20),
+                          Text(
+                            "No ${timeoffcontroller.selectedFilter.value.toLowerCase()} Timeoff found.",
+                            style: smallStyle.copyWith(
+                              color: isDarkMode ? Colors.white : Colors.black,
+                            ),
+                          ),
+                          // const SizedBox(height: 10),
+                          // Text(
+                          //   "Try selecting a different filter",
+                          //   style: smallStyle.copyWith(
+                          //     color:
+                          //         isDarkMode ? Colors.white70 : Colors.black54,
+                          //     fontSize: 12,
+                          //   ),
+                          // ),
+                        ],
+                      ),
+                    ),
+                  );
+                } else {
+                  return Column(
+                    children: timeoffcontroller.filteredTimeoff
+                        .map((timeoff) => Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: TimeOffSheet(timeoffdata: timeoff),
+                            ))
+                        .toList(),
+                  );
+                }
+              }),
+            ],
+          ),
         ),
       ),
     );

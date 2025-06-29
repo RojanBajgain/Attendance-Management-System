@@ -71,6 +71,26 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
               0.0,
             ],
           ),
+
+          // gradient: LinearGradient(
+          //   begin: Alignment.centerLeft,
+          //   end: Alignment.centerRight,
+          //   colors: [
+          //     // Green if both entry and exit time exist, orange if only entry, red if neither
+          //     widget.timesheetdata.exitTime != null
+          //         ? Colors.green.shade600
+          //         : widget.timesheetdata.entryTime != null
+          //             ? Colors.orange.shade600
+          //             : Colors.red.shade600,
+          //     widget.timesheetdata.exitTime != null
+          //         ? Colors.green.shade600
+          //         : widget.timesheetdata.entryTime != null
+          //             ? Colors.orange.shade600
+          //             : Colors.red.shade600,
+          //     isDarkMode ? Colors.grey.shade800 : Colors.white,
+          //   ],
+          //   stops: const [0.0, 0.02, 0.02],
+          // ),
         ),
         child: Padding(
           padding: const EdgeInsets.only(
