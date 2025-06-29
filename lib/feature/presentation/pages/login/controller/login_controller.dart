@@ -364,39 +364,50 @@ class AuthController extends GetxController {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 
-    if (isLoggedIn) {
-      String? userDataJson = prefs.getString('userData');
-      if (userDataJson != null && userDataJson.isNotEmpty) {
-        try {
-          Map<String, dynamic> userDataMap = json.decode(userDataJson);
-          alluserData.value = LoginModel.fromJson(userDataMap);
-
-          // Restore tokens to API client
-          final accessToken = prefs.getString('accessToken');
-          final refreshToken = prefs.getString('refreshToken');
-          if (accessToken != null && refreshToken != null) {
-            apiClient.saveTokens(
-                accessToken, refreshToken, apiClient.organization);
-          }
-
-          // Restore user_id
-          GetStorage box = GetStorage();
-          if (alluserData.value.user != null) {
-            log("Restoring user_id: ${alluserData.value.user}");
-            box.write('user_id', alluserData.value.user);
-          }
-
-          // Clear stale profile_id or profileId
-          box.remove('profile_id');
-          box.remove('profileId');
-        } catch (e) {
-          log("Error restoring user data: $e");
-        }
-      }
-
-      await Future.delayed(const Duration(milliseconds: 300));
-      Get.offAll(() => const BottomNavPage());
+    if (!isLoggedIn) {
+      // Clear any existing tokens if user is not logged in
+      apiClient.clearTokens();
+      return;
     }
+
+    String? userDataJson = prefs.getString('userData');
+    if (userDataJson != null && userDataJson.isNotEmpty) {
+      try {
+        Map<String, dynamic> userDataMap = json.decode(userDataJson);
+        alluserData.value = LoginModel.fromJson(userDataMap);
+
+        // Restore tokens to API client
+        final accessToken = prefs.getString('accessToken');
+        final refreshToken = prefs.getString('refreshToken');
+        if (accessToken != null && refreshToken != null) {
+          apiClient.saveTokens(
+              accessToken, refreshToken, apiClient.organization);
+        }
+
+        // Restore user_id
+        GetStorage box = GetStorage();
+        if (alluserData.value.user != null) {
+          log("Restoring user_id: ${alluserData.value.user}");
+          box.write('user_id', alluserData.value.user);
+        }
+
+        // Clear stale profile_id or profileId
+        box.remove('profile_id');
+        box.remove('profileId');
+      } catch (e) {
+        log("Error restoring user data: $e");
+        // Clear tokens if there's an error
+        apiClient.clearTokens();
+        return;
+      }
+    } else {
+      // No user data found, clear tokens
+      apiClient.clearTokens();
+      return;
+    }
+
+    await Future.delayed(const Duration(milliseconds: 300));
+    Get.offAll(() => const BottomNavPage());
   }
 
   // Logout

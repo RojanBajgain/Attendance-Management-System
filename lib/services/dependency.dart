@@ -38,34 +38,24 @@ Future<void> init() async {
 
   // Profile
   Get.lazyPut(() => ProfileRepo(apiClient: Get.find<ApiClient>()));
-  Get.put(ProfileController(profileRepo: Get.find()));
-
-  // Payroll
   Get.lazyPut(() => PayrollRepo(apiClient: Get.find<ApiClient>()));
-  Get.put(PayrollController(payrollRepo: Get.find()));
-
-  // Policies
   Get.lazyPut(() => PolicyRepo(apiClient: Get.find<ApiClient>()));
-  Get.put(PolicyController(policyrepo: Get.find()));
-
-  // Notifications
   Get.lazyPut(() => NotificationRepo(apiClient: Get.find<ApiClient>()));
-  Get.put(NotificationController(notificationrepo: Get.find()));
-
-  // Dashboard Clock In / Clock Out
   Get.lazyPut(() => ClockInOutRepo(apiClient: Get.find<ApiClient>()));
-  Get.put(ClockInOutController(clockinoutrepo: Get.find()));
-
   Get.lazyPut(() => HasClockRepo(apiClient: Get.find<ApiClient>()));
-  Get.put(HasClockedinController(hasClockedIn: Get.find()));
-
-  // Reset Password
   Get.lazyPut(() => ResetPasswordRepo(apiClient: Get.find<ApiClient>()));
-  Get.put(ResetPasswordController(resetpasswordrepo: Get.find()));
-
-  // Event Calender
   Get.lazyPut(() => EventCalenderRepo(apiClient: Get.find<ApiClient>()));
+  Get.lazyPut(() => ChatRepo(apiClient: Get.find<ApiClient>()));
+
+  Get.put(ProfileController(profileRepo: Get.find()));
+  Get.put(PayrollController(payrollRepo: Get.find()));
+  Get.put(PolicyController(policyrepo: Get.find()));
+  Get.put(NotificationController(notificationrepo: Get.find()));
+  Get.put(ClockInOutController(clockinoutrepo: Get.find()));
+  Get.put(HasClockedinController(hasClockedIn: Get.find()));
+  Get.put(ResetPasswordController(resetpasswordrepo: Get.find()));
   Get.put(CalenderNotificationController(eventCalenderrepo: Get.find()));
+  Get.put(ChatController(chatRepo: Get.find()));
 
   /*  // Brand Image
   Get.put<AppImageBrandRepo>(
@@ -77,9 +67,4 @@ Future<void> init() async {
   // Get.put<WebsocketRepo>(WebsocketRepo(apiClient: Get.find<ApiClient>()));
   // Get.put<WebSocketController>(
   //     WebSocketController(websocketRepo: Get.find<WebsocketRepo>()));
-
-  // Chat
-
-  Get.lazyPut(() => ChatRepo(apiClient: Get.find<ApiClient>()));
-  Get.put(ChatController(chatRepo: Get.find()));
 }

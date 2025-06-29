@@ -136,7 +136,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                           const SizedBox(width: 5.0),
                           GestureDetector(
                             onTap: () {
-                              Get.to(() => const LoginPage());
+                              Get.off(() => const LoginPage());
                             },
                             child: Text(
                               "Login",

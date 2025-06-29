@@ -91,22 +91,40 @@ class _LoginPageState extends State<LoginPage> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
+        bottomNavigationBar: Stack(
+          // overflow: Overflow.visible,
+          alignment: const FractionalOffset(.5, 1.0),
+          children: [
+            Container(
+              height: 10,
+              // color: lightcolor,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              child: Text(
+                '© 2025 AMS. All Rights Reserved \nProduct of Ayata Inc.',
+                textAlign: TextAlign.center,
+                style: miniStyle.copyWith(fontSize: 10, color: Colors.grey),
+              ),
+            )
+          ],
+        ),
         body: SafeArea(
           child: Stack(
             children: [
-              Positioned(
-                right: 366,
-                child: Container(
-                  height: 275,
-                  width: 275,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: isDarkMode
-                        ? Colors.grey.shade700
-                        : Colors.grey.shade300,
-                  ),
-                ),
-              ),
+              // Positioned(
+              //   right: 366,
+              //   child: Container(
+              //     height: 275,
+              //     width: 275,
+              //     decoration: BoxDecoration(
+              //       shape: BoxShape.circle,
+              //       color: isDarkMode
+              //           ? Colors.grey.shade700
+              //           : Colors.grey.shade300,
+              //     ),
+              //   ),
+              // ),
               SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Padding(
@@ -114,7 +132,12 @@ class _LoginPageState extends State<LoginPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const SizedBox(height: 50.0),
+                      const SizedBox(height: 20),
+                      Image.asset(
+                        AppImages.tranquility,
+                        height: 100,
+                      ),
+                      const SizedBox(height: 20.0),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -145,6 +168,7 @@ class _LoginPageState extends State<LoginPage> {
                         children: [
                           Text(
                             "Fill the credentials below to login into Tranquility Spa.",
+                            maxLines: 2,
                             style: smallStyle.copyWith(
                               fontSize: 13,
                               color:
@@ -153,7 +177,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 100.0),
+                      const SizedBox(height: 50.0),
                       CustomTextField(
                         hint: "Email",
                         textEditingController: email,
@@ -199,7 +223,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              Get.to(() => const ForgetPassword());
+                              Get.off(() => const ForgetPassword());
                             },
                             child: Text(
                               "Forget your password?",
@@ -304,30 +328,24 @@ class _LoginPageState extends State<LoginPage> {
                           // ),
                         ],
                       ),
-                      const SizedBox(height: 200),
-                      // In your LoginPage widget's build method, replace the Image.asset with this:
-                      Image.asset(
-                        AppImages.tranquility,
-                        height: 130,
-                      ),
                     ],
                   ),
                 ),
               ),
-              Positioned(
-                left: 370.0,
-                bottom: 20.0,
-                child: Container(
-                  height: 275,
-                  width: 275,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: isDarkMode
-                        ? Colors.grey.shade700
-                        : Colors.grey.shade300,
-                  ),
-                ),
-              ),
+              // Positioned(
+              //   left: 370.0,
+              //   bottom: 20.0,
+              //   child: Container(
+              //     height: 275,
+              //     width: 275,
+              //     decoration: BoxDecoration(
+              //       shape: BoxShape.circle,
+              //       color: isDarkMode
+              //           ? Colors.grey.shade700
+              //           : Colors.grey.shade300,
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),

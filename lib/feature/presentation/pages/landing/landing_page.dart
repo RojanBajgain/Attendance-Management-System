@@ -78,7 +78,14 @@ class _LandingPageState extends State<LandingPage> {
                   );
                 },
               ),
-              const Spacer(flex: 2)
+              const Spacer(flex: 2),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20.0),
+                child: Text(
+                  'Powered by Ayata Inc',
+                  style: smallStyle.copyWith(fontSize: 14, color: Colors.grey),
+                ),
+              ),
             ],
           ),
         ),
