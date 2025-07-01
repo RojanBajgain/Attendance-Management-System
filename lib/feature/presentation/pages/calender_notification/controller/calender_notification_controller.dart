@@ -14,11 +14,11 @@ class CalenderNotificationController extends GetxController {
 
   CalenderNotificationController({required this.eventCalenderrepo});
 
-  @override
-  void onInit() {
-    super.onInit();
-    getEventCalenders();
-  }
+  // @override
+  // void onInit() {
+  //   super.onInit();
+  //   getEventCalenders();
+  // }
 
   Future<void> getEventCalenders() async {
     try {

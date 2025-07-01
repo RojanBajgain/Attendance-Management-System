@@ -17,11 +17,11 @@ class NotificationController extends GetxController {
 
   NotificationController({required this.notificationrepo});
 
-  @override
-  void onInit() {
-    getNotification();
-    super.onInit();
-  }
+  // @override
+  // void onInit() {
+  //   getNotification();
+  //   super.onInit();
+  // }
 
   Future<void> getNotification() async {
     isLoading(true);

@@ -70,8 +70,15 @@ class OrganizationController extends GetxController {
 
       // Update API client with organization API key
       final apiClient = Get.find<ApiClient>();
-      apiClient.saveTokens(
-          apiClient.token, apiClient.refreshToken, organization.apiKey ?? '');
+      // Await the asynchronous token and refreshToken
+      final accessToken = await apiClient.token;
+      final refreshToken = await apiClient.refreshToken;
+
+      await apiClient.saveTokens(
+        accessToken,
+        refreshToken,
+        organization.apiKey ?? '',
+      );
 
       // Get organization profile
       ApiResponse response = await organizationRepo.getOrganizationProfile();
@@ -113,8 +120,8 @@ class OrganizationController extends GetxController {
 
         // Navigate to BottomNavPage
         Get.offAll(() => BottomNavPage(
-              profileData: profile,
-              apiKey: organization.apiKey,
+            // profileData: profile,
+            // apiKey: organization.apiKey,
             ));
 
         if (organizationList.length > 1) {

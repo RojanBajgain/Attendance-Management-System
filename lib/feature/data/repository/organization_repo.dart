@@ -11,9 +11,9 @@ class OrganizationRepo {
   OrganizationRepo({required this.apiClient});
 
   Future<ApiResponse> getOrganization() async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
 
-    final response = await ApiClient.getApi(
+    final response = await apiClient.getApi(
       ApiUrls.organization,
       token: token,
       fromJson: (json) => OrganizationModel.fromJson(json),
@@ -22,12 +22,13 @@ class OrganizationRepo {
   }
 
   Future<ApiResponse> getOrganizationProfile() async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
-    final response = await ApiClient.postApi(
+    final response = await apiClient.postApi(
       ApiUrls.organizationProfile,
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       requestBody: {},
       fromJson: (json) => OrganizationProfileModel.fromJson(json),
     );

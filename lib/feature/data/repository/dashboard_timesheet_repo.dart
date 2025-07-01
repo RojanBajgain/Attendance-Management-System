@@ -9,16 +9,17 @@ class DashboardTimesheetRepo {
   DashboardTimesheetRepo({required this.apiClient});
 
   Future<ApiResponse> getDashboardtimesheet() async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
     // if (token.isEmpty) {
     //   throw Exception('JWT Token is missing or invalid');
     // }
 
-    final response = await ApiClient.getApi(
+    final response = await apiClient.getApi(
       ApiUrls.dashboardtimesheet,
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       fromJson: (json) => DashboardTimesheet.fromJson(json),
     );
     return response;

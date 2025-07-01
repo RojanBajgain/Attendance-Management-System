@@ -168,7 +168,7 @@ class TimeoffController extends GetxController {
         log("Timeoff deleted successfully: ID $id");
         SSnackbarUtil.showFadeSnackbar(
           Get.context!,
-          'You have deleted your timeoff',
+          'TimeOff Deleted',
           SnackbarType.success,
         );
         // Delay navigation to allow snackbar to display

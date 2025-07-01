@@ -9,7 +9,8 @@ class ResetPasswordRepo {
   ResetPasswordRepo({required this.apiClient});
 
   Future<ApiResponse> resetpassword(String email) async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
     // if (token.isEmpty) {
     //   throw Exception('JWT token is missing or invalid');
@@ -19,7 +20,7 @@ class ResetPasswordRepo {
       print(url);
     }
 
-    final response = await ApiClient.postApi(
+    final response = await apiClient.postApi(
       requestBody: {
         'email': email,
       },

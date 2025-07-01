@@ -38,7 +38,7 @@ class _PayrollPageState extends State<PayrollPage> {
       child: Scaffold(
         // appBar: const ConstantAppBar(),
         body: RefreshIndicator(
-          color: Colors.cyan,
+          color: Colors.black,
           onRefresh: () async {
             await payrollcontroller.getPayroll();
           },

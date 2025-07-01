@@ -17,12 +17,13 @@ class ClockInOutRepo {
 
   // Get office location
   Future<ApiResponse> getOfficeLocation() async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
-    final response = await ApiClient.getApi(
+    final response = await apiClient.getApi(
       ApiUrls.officelocation,
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       fromJson: (json) => LocationModel.fromJson(json),
     );
     return response;
@@ -30,12 +31,13 @@ class ClockInOutRepo {
 
   // Access Point
   Future<ApiResponse> checkAccessPoints() async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
-    final response = await ApiClient.getApi(
+    final response = await apiClient.getApi(
       ApiUrls.accesspoint,
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       fromJson: (json) => CheckAccessPointModel.fromJson(json),
     );
     return response;
@@ -74,7 +76,9 @@ class ClockInOutRepo {
     String latitude,
     String longitude,
   ) async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
+
     if (token.isEmpty) {
       throw Exception('JWT token is missing or invalid');
     }
@@ -101,7 +105,7 @@ class ClockInOutRepo {
       // Step 3: Prepare headers
       final headers = {
         'Authorization': 'Bearer $token',
-        'x-organization': apiClient.organization,
+        'x-organization': organization,
         'Content-Type': 'application/json',
       };
 
@@ -170,7 +174,8 @@ class ClockInOutRepo {
   // Post Clock Out with IP
   Future<ApiResponse> postClockout(
       int deviceID, String latitude, String longitude, String ipAddress) async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
     if (token.isEmpty) {
       throw Exception('JWT token is missing or invalid');
@@ -186,7 +191,7 @@ class ClockInOutRepo {
       final headers = {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
-        'x-organization': apiClient.organization,
+        'x-organization': organization,
       };
 
       // FIXED: Send raw location data without reformatting
@@ -223,7 +228,8 @@ class ClockInOutRepo {
 
   // Post on Break
   Future<ApiResponse> postOnBreak(int employeeId) async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
     // Use consistent base URL
     const url = ApiUrls.onbreak;
@@ -232,13 +238,13 @@ class ClockInOutRepo {
       print(url);
     }
 
-    final response = await ApiClient.postApi(
+    final response = await apiClient.postApi(
       requestBody: {
         'employee_no': employeeId,
       },
       url,
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       fromJson: null,
     );
     return response;
@@ -250,7 +256,8 @@ class ClockInOutRepo {
     String latitude,
     String longitude,
   ) async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
     // Use consistent base URL
     const url = ApiUrls.onresume;
@@ -259,7 +266,7 @@ class ClockInOutRepo {
       print(url);
     }
 
-    final response = await ApiClient.postApi(
+    final response = await apiClient.postApi(
       requestBody: {
         'employee_no': employeeId,
         'latitude': latitude,
@@ -267,7 +274,7 @@ class ClockInOutRepo {
       },
       url,
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       fromJson: null,
     );
     return response;

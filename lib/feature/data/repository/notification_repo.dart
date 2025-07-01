@@ -10,16 +10,13 @@ class NotificationRepo {
 
   // Get Notifications
   Future<ApiResponse> getNotification() async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
-    // if (token.isEmpty) {
-    //   throw Exception('JWT Token is missing or invalid');
-    // }
-
-    final response = await ApiClient.getApi(
+    final response = await apiClient.getApi(
       ApiUrls.notification,
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       fromJson: (json) => NotificationModel.fromJson(json),
     );
     return response;

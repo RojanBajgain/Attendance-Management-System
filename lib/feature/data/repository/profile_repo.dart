@@ -18,12 +18,13 @@ class ProfileRepo {
 
   // Get profile
   Future<ApiResponse> getProfile() async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
-    final response = await ApiClient.getApi(
+    final response = await apiClient.getApi(
       ApiUrls.profile,
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       fromJson: (json) => ProfileModel.fromJson(json),
     );
     return response;
@@ -31,12 +32,13 @@ class ProfileRepo {
 
   // Get country list
   Future<ApiResponse> getCountryList() async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
-    final response = await ApiClient.getApi(
+    final response = await apiClient.getApi(
       ApiUrls.getcountry,
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       fromJson: (json) => json,
     );
     return response;
@@ -44,16 +46,13 @@ class ProfileRepo {
 
   // Getting profile details
   Future<ApiResponse> getProfileDetail(String id) async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
-    // if (token.isEmpty) {
-    //   throw Exception('JWT Token is missing or invalid');
-    // }
-
-    final response = await ApiClient.getApi(
+    final response = await apiClient.getApi(
       ApiUrls.profiledetail,
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       fromJson: (json) => ProfileDetailModel.fromJson(json),
     );
     return response;
@@ -73,12 +72,8 @@ class ProfileRepo {
     File? resume,
   ) async {
     try {
-      final token = apiClient.token;
-
-      // Check if the token is valid
-      // if (token.isEmpty) {
-      //   throw Exception('JWT token is missing or invalid');
-      // }
+      final token = await apiClient.token;
+      final organization = await apiClient.organization;
 
       // Ensure the URL is complete (include the scheme and host)
       final url = '${ApiUrls.baseUrl}${ApiUrls.updateprofile}$id/';
@@ -89,7 +84,7 @@ class ProfileRepo {
       // Add headers
       request.headers['Authorization'] = 'Bearer $token';
       request.headers['Accept'] = 'application/json';
-      request.headers['x-organization'] = apiClient.organization;
+      request.headers['x-organization'] = organization;
 
       // Add fields
       request.fields['id'] = id.toString();
@@ -179,15 +174,12 @@ class ProfileRepo {
     String zipcode,
     String addressType,
   ) async {
-    final token = apiClient.token;
-
-    // if (token.isEmpty) {
-    //   throw Exception('JWT token is missing or invalid');
-    // }
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
     final url = ApiUrls.postuseraddress;
 
-    final response = await ApiClient.postApi(
+    final response = await apiClient.postApi(
       url,
       requestBody: {
         "profile": userID,
@@ -200,7 +192,7 @@ class ProfileRepo {
         "address_line_two": addressLineTwo,
       },
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       fromJson: null,
     );
     return response;
@@ -218,17 +210,14 @@ class ProfileRepo {
     String zipcode,
     String addressType,
   ) async {
-    final token = apiClient.token;
-
-    // if (token.isEmpty) {
-    //   throw Exception('JWT token is missing or invalid');
-    // }
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
     final url = '${ApiUrls.updateaddress}$addressID/';
 
     int countryId = int.tryParse(country) ?? 1;
 
-    final response = await ApiClient.patchApi(
+    final response = await apiClient.patchApi(
       url,
       requestBody: {
         "profile": id,
@@ -241,7 +230,7 @@ class ProfileRepo {
         "address_line_two": addressLineTwo,
       },
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       fromJson: null,
     );
     return response;
@@ -257,11 +246,8 @@ class ProfileRepo {
     String bankbranch,
     String ispayroll,
   ) async {
-    final token = apiClient.token;
-
-    // if (token.isEmpty) {
-    //   throw Exception('JWT token is missing or invalid');
-    // }
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
     // Debug print to verify values
     print('Updating bank detail with ID: $bankdetailID');
@@ -277,7 +263,7 @@ class ProfileRepo {
     final url = '${ApiUrls.updatebankdetail}$bankdetailID/';
 
     try {
-      final response = await ApiClient.patchApi(
+      final response = await apiClient.patchApi(
         url,
         requestBody: {
           "profile": profileID,
@@ -288,7 +274,7 @@ class ProfileRepo {
           "is_payroll": ispayroll.toLowerCase() == 'true',
         },
         token: token,
-        apiKey: apiClient.organization,
+        apiKey: organization,
         fromJson: null,
       );
 
@@ -309,18 +295,15 @@ class ProfileRepo {
     String bankBranch,
     String isPayroll,
   ) async {
-    final token = apiClient.token;
-
-    // if (token.isEmpty) {
-    //   throw Exception("JWT token is missing or invalid");
-    // }
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
     const url = ApiUrls.postnewbankdetail;
 
     // Debug print to verify the profile ID
     print('Attempting to create bank detail for profile ID: $profileID');
 
-    final response = await ApiClient.postApi(
+    final response = await apiClient.postApi(
       url,
       requestBody: {
         'profile': profileID.toString(),
@@ -331,7 +314,7 @@ class ProfileRepo {
         "is_payroll": isPayroll,
       },
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       fromJson: null,
     );
     return response;
@@ -350,18 +333,15 @@ class ProfileRepo {
     File? documentImage,
     File? file,
   ) async {
-    final token = apiClient.token;
-
-    // if (token.isEmpty) {
-    //   throw Exception('JWT token is missing or invalid');
-    // }
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
     final url = '${ApiUrls.baseUrl}${ApiUrls.updatedocuments}$documentID/';
 
     var request = http.MultipartRequest('PATCH', Uri.parse(url));
 
     request.headers['Authorization'] = 'Bearer $token';
-    request.headers['x-organization'] = apiClient.organization;
+    request.headers['x-organization'] = organization;
 
     request.fields['id'] = documentID.toString();
     request.fields['user'] = userID.toString();
@@ -432,18 +412,15 @@ class ProfileRepo {
     required int profileId,
     required File? documentFile,
   }) async {
-    final token = apiClient.token;
-
-    // if (token.isEmpty) {
-    //   throw Exception('JWT token is missing or invalid');
-    // }
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
     final url = '${ApiUrls.baseUrl}${ApiUrls.postnewedocuments}';
 
     var request = http.MultipartRequest('POST', Uri.parse(url));
 
     request.headers['Authorization'] = 'Bearer $token';
-    request.headers['x-organization'] = apiClient.organization;
+    request.headers['x-organization'] = organization;
 
     // Add fields according to the expected payload
     request.fields['documents[1][type]'] = type;
@@ -496,12 +473,13 @@ class ProfileRepo {
 
   // Delete User Document
   Future<ApiResponse> deleteuserDocument(int id) async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
-    final response = await ApiClient.deleteApi(
+    final response = await apiClient.deleteApi(
       '${ApiUrls.deletedocument}$id/',
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       fromJson: null,
     );
     return response;
@@ -509,12 +487,13 @@ class ProfileRepo {
 
   // Delete User Bank Details
   Future<ApiResponse> deleteuserBankDetails(int id) async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
-    final response = await ApiClient.deleteApi(
+    final response = await apiClient.deleteApi(
       '${ApiUrls.deletebankdetails}$id/',
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       fromJson: null,
     );
     return response;

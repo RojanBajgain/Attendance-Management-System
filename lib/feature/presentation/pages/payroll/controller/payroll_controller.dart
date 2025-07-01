@@ -20,11 +20,11 @@ class PayrollController extends GetxController {
 
   PayrollController({required this.payrollRepo});
 
-  @override
-  void onInit() {
-    super.onInit();
-    getPayroll();
-  }
+  // @override
+  // void onInit() {
+  //   super.onInit();
+  //   getPayroll();
+  // }
 
   Future<void> getPayroll() async {
     isLoading(true);

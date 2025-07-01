@@ -11,12 +11,13 @@ class PayrollRepo {
 
   // Get Payrolls
   Future<ApiResponse> getPayroll() async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
-    final response = await ApiClient.getApi(
+    final response = await apiClient.getApi(
       ApiUrls.payroll,
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       fromJson: (json) => PayRollModel.fromJson(json),
     );
     return response;
@@ -24,12 +25,13 @@ class PayrollRepo {
 
   // Getting payroll details
   Future<ApiResponse> getPayrollDetail(String id) async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
-    final response = await ApiClient.getApi(
+    final response = await apiClient.getApi(
       '${ApiUrls.payrolldetail}$id/',
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       fromJson: (json) => PayrollDetailModel.fromJson(json),
     );
     return response;

@@ -29,7 +29,7 @@ class ChatController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    getAllChats();
+    // getAllChats();
     _initializeWebSocket();
   }
 
@@ -42,8 +42,8 @@ class ChatController extends GetxController {
   // Initialize WebSocket connection
   Future<void> _initializeWebSocket() async {
     try {
-      final token = chatRepo.apiClient.token;
-      final organization = chatRepo.apiClient.organization;
+      final token = await chatRepo.apiClient.token;
+      final organization = await chatRepo.apiClient.organization;
 
       if (token.isEmpty || organization.isEmpty) {
         log('Token or organization not available');

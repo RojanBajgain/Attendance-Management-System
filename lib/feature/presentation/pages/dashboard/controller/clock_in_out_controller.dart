@@ -27,11 +27,11 @@ class ClockInOutController extends GetxController {
 
   ClockInOutController({required this.clockinoutrepo});
 
-  @override
-  void onInit() {
-    super.onInit();
-    getOfficeLocation();
-  }
+  // @override
+  // void onInit() {
+  //   super.onInit();
+  //   getOfficeLocation();
+  // }
 
   // Get Office Location
   Future<Location?> getOfficeLocation() async {

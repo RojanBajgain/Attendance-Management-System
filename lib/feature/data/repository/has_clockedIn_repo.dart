@@ -10,12 +10,13 @@ class HasClockRepo {
 
   // Get Payrolls
   Future<ApiResponse> getClock() async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
-    final response = await ApiClient.getApi(
+    final response = await apiClient.getApi(
       ApiUrls.hasClockedIn,
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       fromJson: (json) => GetClockModel.fromJson(json),
     );
     return response;

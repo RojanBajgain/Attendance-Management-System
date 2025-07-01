@@ -231,7 +231,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
       if (navigateToAddress) {
         Get.to(() => const EditUserAddress());
       } else {
-        Get.offAll(() => const BottomNavPage());
+        Get.offAll(() => BottomNavPage());
         SSnackbarUtil.showFadeSnackbar(
           Get.context!,
           'Profile updated successfully',

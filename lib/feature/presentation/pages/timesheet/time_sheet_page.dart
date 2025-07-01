@@ -52,7 +52,7 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
       child: Scaffold(
         // appBar: const ConstantAppBar(),
         body: RefreshIndicator(
-          color: Colors.cyan,
+          color: isDarkMode ? Colors.white : Colors.black,
           onRefresh: () async {
             await timesheetcontroller.getTimesheet();
           },

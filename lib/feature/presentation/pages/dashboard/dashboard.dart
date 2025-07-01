@@ -63,9 +63,9 @@ class _DashboardPageState extends State<DashboardPage> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: ConstantAppBar(),
+      appBar: const ConstantAppBar(),
       body: RefreshIndicator(
-        color: Colors.cyan,
+        color: isDarkMode ? Colors.white : Colors.black,
         onRefresh: () async {
           await Future.wait([
             dashboardTimesheetController.getDashboardTimesheet(),

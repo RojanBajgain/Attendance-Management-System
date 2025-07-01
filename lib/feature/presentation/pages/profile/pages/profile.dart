@@ -817,23 +817,16 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             IconsButton(
               onPressed: () async {
-                final prefs = await SharedPreferences.getInstance();
-                final refreshToken = prefs.getString('refresh_token') ?? '';
-                final accessToken = prefs.getString('access_token') ?? '';
+                Navigator.pop(context); // Close dialog first
 
-                if (refreshToken.isEmpty || accessToken.isEmpty) {
-                  SSnackbarUtil.showFadeSnackbar(
-                    Get.context!,
-                    'Tokens are missing. Please try again.',
-                    SnackbarType.warning,
-                  );
-                  return;
-                }
+                // Show loading indicator
+                Get.dialog(
+                  const Center(child: CircularProgressIndicator()),
+                  barrierDismissible: false,
+                );
 
-                await prefs.remove('refresh_token');
-                await prefs.remove('access_token');
-                authcontroller.logoutmethod(refreshToken, accessToken);
-                Navigator.pop(context);
+                // Call local logout method
+                await authcontroller.localLogout();
               },
               text: 'Logout',
               iconData: Icons.delete,

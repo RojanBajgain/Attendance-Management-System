@@ -15,21 +15,59 @@ class OfflineView extends StatefulWidget {
 
 class _OfflineViewState extends State<OfflineView> {
   final OfflineController controller = Get.find<OfflineController>();
+  bool _hasNavigated = false;
 
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Obx(() {
-      if (controller.isConnected.value) {
+      // Handle navigation when connected
+      if (controller.isConnected.value && !_hasNavigated) {
+        _hasNavigated = true;
+        print('OfflineView: Connection restored, scheduling navigation');
+
+        // Use addPostFrameCallback to ensure navigation happens after build
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          controller.checkLoginAndNavigate();
+          if (mounted && controller.isConnected.value) {
+            print('OfflineView: Executing navigation');
+            controller.navigateToLastRoute();
+          }
         });
-        return const SizedBox.shrink();
+
+        // Show loading indicator while navigating
+        return Scaffold(
+          backgroundColor: isDarkMode ? Colors.black : Colors.white,
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'Reconnecting...',
+                  style: smallStyle.copyWith(
+                    color: isDarkMode ? Colors.white : Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
       }
+
+      // Reset navigation flag when disconnected
+      if (!controller.isConnected.value) {
+        _hasNavigated = false;
+      }
+
       return PopScope(
-        canPop: controller.isConnected.value,
-        onPopInvoked: (didPop) {},
+        canPop: false, // Prevent back navigation from offline page
+        onPopInvoked: (didPop) {
+          // Optionally show a message that back navigation is disabled
+        },
         child: Directionality(
           textDirection: TextDirection.ltr,
           child: Scaffold(
@@ -37,10 +75,9 @@ class _OfflineViewState extends State<OfflineView> {
             body: Padding(
               padding: const EdgeInsets.all(16.0),
               child: RefreshIndicator(
-                // backgroundColor: Colors.white,
-                color: Colors.cyan,
+                color: isDarkMode ? Colors.white : Colors.black,
                 onRefresh: () async {
-                  controller.checkConnectivity(context);
+                  await controller.refreshPage(context);
                 },
                 child: SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
@@ -53,6 +90,13 @@ class _OfflineViewState extends State<OfflineView> {
                           Image.asset(
                             AppImages.tranquility,
                             height: 50,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Icon(
+                                Icons.wifi_off,
+                                size: 50,
+                                color: isDarkMode ? Colors.white : Colors.black,
+                              );
+                            },
                           ),
                           const SizedBox(height: 40),
                           Column(
@@ -73,31 +117,49 @@ class _OfflineViewState extends State<OfflineView> {
                                 ),
                               ),
                               const SizedBox(height: 20),
-                              GestureDetector(
-                                  onTap: () async {
-                                    await controller.refreshPage(context);
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 20, vertical: 8),
-                                    decoration: BoxDecoration(
-                                      color: isDarkMode
-                                          ? Colors.white70
-                                          : Colors.black,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Text(
-                                      'Refresh Now',
-                                      style: smallStyle.copyWith(
-                                        color: isDarkMode
-                                            ? Colors.black
-                                            : Colors.white,
+                              Obx(() => GestureDetector(
+                                    onTap: controller.isChecking.value
+                                        ? null
+                                        : () async {
+                                            await controller
+                                                .refreshPage(context);
+                                          },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20, vertical: 8),
+                                      decoration: BoxDecoration(
+                                        color: controller.isChecking.value
+                                            ? Colors.grey
+                                            : (isDarkMode
+                                                ? Colors.white70
+                                                : Colors.black),
+                                        borderRadius: BorderRadius.circular(8),
                                       ),
+                                      child: controller.isChecking.value
+                                          ? SizedBox(
+                                              width: 20,
+                                              height: 20,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                                color: isDarkMode
+                                                    ? Colors.black
+                                                    : Colors.white,
+                                              ),
+                                            )
+                                          : Text(
+                                              'Refresh Now',
+                                              style: smallStyle.copyWith(
+                                                color: isDarkMode
+                                                    ? Colors.black
+                                                    : Colors.white,
+                                              ),
+                                            ),
                                     ),
                                   )),
                               const SizedBox(height: 20),
                               GestureDetector(
-                                  onTap: () async {
+                                onTap: () async {
+                                  try {
                                     if (OpenSettingsPlus.shared
                                         is OpenSettingsPlusAndroid) {
                                       (OpenSettingsPlus.shared
@@ -108,18 +170,21 @@ class _OfflineViewState extends State<OfflineView> {
                                       (OpenSettingsPlus.shared
                                               as OpenSettingsPlusIOS)
                                           .wifi();
-                                    } else {
-                                      throw Exception('Platform not supported');
                                     }
-                                  },
-                                  child: Text(
-                                    'Network Settings',
-                                    style: smallStyle.copyWith(
-                                      color: isDarkMode
-                                          ? Colors.white
-                                          : Colors.black,
-                                    ),
-                                  )),
+                                  } catch (e) {
+                                    print('Error opening network settings: $e');
+                                  }
+                                },
+                                child: Text(
+                                  'Network Settings',
+                                  style: smallStyle.copyWith(
+                                    color: isDarkMode
+                                        ? Colors.white
+                                        : Colors.black,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ],

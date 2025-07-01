@@ -25,6 +25,8 @@ class OfflineController extends GetxController {
   bool _isInitialized = false;
   String? _lastRoute;
 
+  bool _isNavigating = false;
+
   Future<void> initConnectivity() async {
     if (_isInitialized) return;
 
@@ -54,19 +56,41 @@ class OfflineController extends GetxController {
   void _handleConnectivityChange(List<ConnectivityResult> results) {
     _connectionStatus = results;
     bool wasConnected = isConnected.value;
-    isConnected.value = !results.contains(ConnectivityResult.none);
+    bool newConnectionStatus = !results.contains(ConnectivityResult.none);
 
     print(
-        'Connectivity changed: wasConnected=$wasConnected, isConnected=${isConnected.value}');
+        'Connectivity changed: wasConnected=$wasConnected, newStatus=$newConnectionStatus');
 
-    if (!isConnected.value && wasConnected) {
-      _handleDisconnection();
-    } else if (isConnected.value && !wasConnected) {
-      _handleReconnection();
+    if (wasConnected == newConnectionStatus) {
+      print('No actual connectivity change, ignoring');
+      return;
     }
+
+    isConnected.value = newConnectionStatus;
+
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 1500), () {
+      // Double-check connectivity status before acting
+      _connectivity.checkConnectivity().then((currentResults) {
+        bool currentStatus = !currentResults.contains(ConnectivityResult.none);
+
+        if (currentStatus != isConnected.value) {
+          print('Connectivity status changed during debounce, updating');
+          isConnected.value = currentStatus;
+        }
+
+        if (!isConnected.value && wasConnected) {
+          _handleDisconnection();
+        } else if (isConnected.value && !wasConnected) {
+          _handleReconnection();
+        }
+      });
+    });
   }
 
   void _handleDisconnection() {
+    if (_isNavigating) return;
+
     print('Handling disconnection - current route: ${Get.currentRoute}');
 
     // Store the current route before navigating to offline page
@@ -74,7 +98,10 @@ class OfflineController extends GetxController {
       _lastRoute = Get.currentRoute;
       print('Stored last route: $_lastRoute');
 
-      Get.off(() => OfflineView());
+      _isNavigating = true;
+      Get.off(() => OfflineView())?.then((_) {
+        _isNavigating = false;
+      });
 
       // Show snackbar if context is available
       if (Get.context != null) {
@@ -88,8 +115,20 @@ class OfflineController extends GetxController {
   }
 
   void _handleReconnection() {
+    if (_isNavigating) {
+      print('Already navigating, skipping reconnection handling');
+      return;
+    }
+
     print('Handling reconnection - current route: ${Get.currentRoute}');
     print('Last stored route: $_lastRoute');
+
+    // Check if we're currently on the offline page before proceeding
+    if (Get.currentRoute != '/nointernet' &&
+        Get.currentRoute != '/OfflineView') {
+      print('Not on offline page, skipping reconnection navigation');
+      return;
+    }
 
     // Show success message
     if (Get.context != null) {
@@ -100,22 +139,41 @@ class OfflineController extends GetxController {
       );
     }
 
-    // Check if we're currently on the offline page before navigating
-    if (Get.currentRoute == '/nointernet') {
-      navigateToLastRoute();
-    }
+    _isNavigating = true;
+
+    // Add delay to ensure WebSocket settles and UI is ready
+    Timer(const Duration(milliseconds: 1000), () {
+      if (isConnected.value) {
+        // Double-check connection is still active
+        navigateToLastRoute();
+      } else {
+        print('Connection lost again, canceling navigation');
+        _isNavigating = false;
+      }
+    });
   }
 
   // Method to manually check connectivity (for refresh button)
   Future<void> refreshConnectivity() async {
+    if (_isNavigating) {
+      print('Navigation in progress, skipping refresh');
+      return;
+    }
+
     isChecking.value = true;
     try {
-      final results = await _connectivity.checkConnectivity();
-      _connectionStatus = results;
+      // Perform multiple checks to ensure stable connectivity
+      final results1 = await _connectivity.checkConnectivity();
+      await Future.delayed(const Duration(milliseconds: 200));
+      final results2 = await _connectivity.checkConnectivity();
+
+      bool isStableConnection = !results1.contains(ConnectivityResult.none) &&
+          !results2.contains(ConnectivityResult.none);
 
       if (_debounce?.isActive ?? false) _debounce!.cancel();
-      _debounce = Timer(const Duration(milliseconds: 500), () {
-        isConnected.value = !results.contains(ConnectivityResult.none);
+      _debounce = Timer(const Duration(milliseconds: 800), () {
+        bool wasConnected = isConnected.value;
+        isConnected.value = isStableConnection;
 
         if (Get.context != null) {
           if (!isConnected.value) {
@@ -124,20 +182,30 @@ class OfflineController extends GetxController {
               "No internet connection detected",
               SnackbarType.error,
             );
-          } else {
+          } else if (wasConnected != isConnected.value) {
             SSnackbarUtil.showFadeSnackbar(
               Get.context!,
               "Internet Restored",
               SnackbarType.success,
             );
-            if (Get.currentRoute == '/nointernet') {
-              navigateToLastRoute();
+            if (Get.currentRoute == '/nointernet' ||
+                Get.currentRoute == '/OfflineView') {
+              _isNavigating = true;
+              Timer(const Duration(milliseconds: 800), () {
+                if (isConnected.value) {
+                  // Double-check before navigating
+                  navigateToLastRoute();
+                } else {
+                  _isNavigating = false;
+                }
+              });
             }
           }
         }
       });
     } catch (e) {
       print('Error refreshing connectivity: $e');
+      isConnected.value = false;
     } finally {
       isChecking.value = false;
     }
@@ -152,6 +220,8 @@ class OfflineController extends GetxController {
   }
 
   void checkLoginAndNavigate() async {
+    if (_isNavigating) return;
+
     try {
       final prefs = await SharedPreferences.getInstance();
       final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
@@ -171,10 +241,9 @@ class OfflineController extends GetxController {
           // User is logged in and has selected an organization
           print(
               'Navigating to BottomNavPage - user logged in with organization');
-          Get.offAll(() => const BottomNavPage(), arguments: 0);
+          Get.offAll(() => BottomNavPage(), arguments: 0);
         } else {
           // User is logged in but hasn't selected an organization
-          // Check if user data exists in SharedPreferences to determine next step
           final userData = prefs.getString('userData');
           if (userData != null && userData.isNotEmpty) {
             Get.offAll(() => const OrganizationPage());
@@ -183,16 +252,17 @@ class OfflineController extends GetxController {
             Get.offAll(() => const LoginPage());
           }
         }
+      } else {
+        // User is not logged in - navigate to landing page
+        print('Navigating to LandingPage - user not logged in');
+        Get.offAll(() => const LandingPage());
       }
-      // else {
-      //   // User is not logged in
-      //   print('Navigating to LoginPage - user not logged in');
-      //   Get.offAll(() => const LandingPage());
-      // }
     } catch (e) {
       print('Error in checkLoginAndNavigate: $e');
-      // In case of error, navigate to login page as fallback
-      Get.offAll(() => const LoginPage());
+      // In case of error, navigate to landing page as fallback
+      Get.offAll(() => const LandingPage());
+    } finally {
+      _isNavigating = false;
     }
   }
 
@@ -200,8 +270,9 @@ class OfflineController extends GetxController {
     try {
       print('Attempting to navigate to last route: $_lastRoute');
 
-      // If no last route stored or it was the offline page, do normal navigation
-      if (_lastRoute == null || _lastRoute == '/nointernet') {
+      if (_lastRoute == null ||
+          _lastRoute == '/nointernet' ||
+          _lastRoute == '/OfflineView') {
         print('No valid last route, doing normal navigation');
         checkLoginAndNavigate();
         return;
@@ -213,36 +284,49 @@ class OfflineController extends GetxController {
       final userId = storage.read('user_id');
       final selectedOrganization = storage.read('selectedOrganization');
 
+      print(
+          'Auth check - isLoggedIn: $isLoggedIn, userId: $userId, org: $selectedOrganization');
+
+      // Fix route matching - handle both route formats
+      String normalizedRoute = _lastRoute!;
+      if (_lastRoute == '/BottomNavPage') normalizedRoute = '/bottomNav';
+      if (_lastRoute == '/LoginPage') normalizedRoute = '/loginpage';
+      if (_lastRoute == '/LandingPage') normalizedRoute = '/landingpage';
+      if (_lastRoute == '/OrganizationPage') normalizedRoute = '/organization';
+      if (_lastRoute == '/ChatsScreen') normalizedRoute = '/chat';
+
       // Check if the last route requires authentication
       final protectedRoutes = ['/bottomNav', '/organization', '/chat'];
-      bool isProtectedRoute = protectedRoutes.contains(_lastRoute);
+      bool isProtectedRoute = protectedRoutes.contains(normalizedRoute);
 
       if (isProtectedRoute) {
         if (!isLoggedIn || userId == null) {
           print('User no longer authenticated, navigating to login');
           Get.offAll(() => const LoginPage());
+          _isNavigating = false;
           return;
         }
 
         // For bottom nav and chat routes, also check organization
-        if ((_lastRoute == '/bottomNav' || _lastRoute == '/chat') &&
+        if ((normalizedRoute == '/bottomNav' || normalizedRoute == '/chat') &&
             (selectedOrganization == null || selectedOrganization.isEmpty)) {
           print('Organization not selected, navigating to organization page');
           Get.offAll(() => const OrganizationPage());
+          _isNavigating = false;
           return;
         }
       }
 
       // Navigate to the stored route
-      switch (_lastRoute) {
-        case '/LoginPage':
+      switch (normalizedRoute) {
+        case '/loginpage':
           Get.offAll(() => const LoginPage());
           break;
-        case '/LandingPage':
+        case '/landingpage':
           Get.offAll(() => const LandingPage());
           break;
         case '/bottomNav':
-          Get.offAll(() => const BottomNavPage(), arguments: 0);
+          Get.offAll(() => BottomNavPage(), arguments: 0);
           break;
         case '/organization':
           Get.offAll(() => const OrganizationPage());
@@ -251,12 +335,16 @@ class OfflineController extends GetxController {
           Get.offAll(() => const ChatsScreen());
           break;
         default:
-          print('Unhandled route: $_lastRoute, doing normal navigation');
+          print(
+              'Unhandled route: $_lastRoute (normalized: $normalizedRoute), doing normal navigation');
           checkLoginAndNavigate();
+          _isNavigating = false;
+          return;
       }
 
       // Clear the stored route after successful navigation
       _lastRoute = null;
+      _isNavigating = false;
     } catch (e) {
       print('Error navigating to last route: $e');
       // Fallback to normal navigation

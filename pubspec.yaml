@@ -87,6 +87,8 @@ dependencies:
   # flutter_localization: ^0.3.2
   open_settings_plus: ^0.4.0
   flutter_dotenv: ^5.2.1
+  logger: ^2.6.0
+  flutter_flavorizr: ^2.3.1
 
 dev_dependencies:
   flutter_test:

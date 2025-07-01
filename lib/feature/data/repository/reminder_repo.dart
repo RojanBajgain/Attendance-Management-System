@@ -16,8 +16,8 @@ class ReminderRepo {
     String startdate,
     String enddate,
   ) async {
-    final token = apiClient.token;
-    final orgApiKey = apiClient.organization;
+    final token = await apiClient.token;
+    final orgApiKey = await apiClient.organization;
 
     final requestBody = {
       'profile': profileID,
@@ -29,7 +29,7 @@ class ReminderRepo {
 
     log('Reminder request body: $requestBody');
 
-    final response = await ApiClient.postApi(
+    final response = await apiClient.postApi(
       ApiUrls.addremainder,
       token: token,
       apiKey: orgApiKey,

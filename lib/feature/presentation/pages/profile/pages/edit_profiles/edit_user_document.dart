@@ -352,7 +352,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
         if (navigateToNext) {
           Get.to(() => const EditUserBank());
         } else {
-          Get.offAll(() => const BottomNavPage());
+          Get.offAll(() => BottomNavPage());
 
           SSnackbarUtil.showFadeSnackbar(
             Get.context!,

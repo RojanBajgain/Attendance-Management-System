@@ -35,7 +35,7 @@ class RouteHelper {
     ),
     GetPage(
       name: bottomnav,
-      page: () => const BottomNavPage(),
+      page: () => BottomNavPage(),
     ),
     GetPage(
       name: organization,

@@ -18,12 +18,12 @@ class HasClockedinController extends GetxController {
 
   HasClockedinController({required this.hasClockedIn});
 
-  @override
-  void onInit() {
-    super.onInit();
-    _loadLastUserId();
-    getClockData();
-  }
+  // @override
+  // void onInit() {
+  //   super.onInit();
+  //   _loadLastUserId();
+  //   getClockData();
+  // }
 
   Future<void> _loadLastUserId() async {
     final prefs = await SharedPreferences.getInstance();

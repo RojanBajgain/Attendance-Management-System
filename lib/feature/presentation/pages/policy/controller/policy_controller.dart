@@ -15,11 +15,11 @@ class PolicyController extends GetxController {
 
   PolicyController({required this.policyrepo});
 
-  @override
-  void onInit() {
-    getPolicydetail();
-    super.onInit();
-  }
+  // @override
+  // void onInit() {
+  //   getPolicydetail();
+  //   super.onInit();
+  // }
 
   // Get Policy details
   Future<void> getPolicydetail() async {

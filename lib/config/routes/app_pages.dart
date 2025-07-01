@@ -15,7 +15,7 @@ class AppPages {
   static final routes = [
     GetPage(name: _Paths.LANDING_PAGE, page: () => const LandingPage()),
     GetPage(name: _Paths.LOGIN, page: () => const LoginPage()),
-    GetPage(name: _Paths.bottomnav, page: () => const BottomNavPage()),
+    GetPage(name: _Paths.bottomnav, page: () => BottomNavPage()),
     GetPage(name: _Paths.organization, page: () => const OrganizationPage()),
     GetPage(name: _Paths.chat, page: () => const ChatsScreen()),
   ];

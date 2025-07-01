@@ -59,7 +59,7 @@ class CloseApp extends StatelessWidget {
               children: [
                 _buildButton(
                   text: 'No',
-                  color: Colors.transparent,
+                  color: Colors.red.withOpacity(0.1),
                   textColor: Colors.black,
                   onTap: () => Get.back(),
                 ),

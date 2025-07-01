@@ -16,7 +16,8 @@ class TimesheetRepo {
     String? startDate,
     String? endDate,
   }) async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
     final Map<String, String> queryParams = {
       'page': page.toString(),
@@ -35,10 +36,10 @@ class TimesheetRepo {
         Uri.parse(ApiUrls.timesheet).replace(queryParameters: queryParams);
     final url = uri.toString();
 
-    final response = await ApiClient.getApi(
+    final response = await apiClient.getApi(
       url,
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       fromJson: (json) => TimesheetModel.fromJson(json),
     );
     return response;
@@ -46,15 +47,17 @@ class TimesheetRepo {
 
   // getting timesheet details
   Future<ApiResponse> getTimesheetDetail(String serialNo) async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
+
     if (token.isEmpty) {
       throw Exception('JWT token is missing or invalid token');
     }
 
-    final response = await ApiClient.getApi(
+    final response = await apiClient.getApi(
       '${ApiUrls.timesheetdetail}$serialNo/',
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       fromJson: (json) => TimesheetDetailModel.fromJson(json),
     );
     return response;

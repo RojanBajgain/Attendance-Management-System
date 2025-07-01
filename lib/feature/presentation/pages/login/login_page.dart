@@ -166,13 +166,15 @@ class _LoginPageState extends State<LoginPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Text(
-                            "Fill the credentials below to login into Tranquility Spa.",
-                            maxLines: 2,
-                            style: smallStyle.copyWith(
-                              fontSize: 13,
-                              color:
-                                  isDarkMode ? Colors.white70 : Colors.black54,
+                          Expanded(
+                            child: Text(
+                              "Fill the credentials below to login into Tranquility Spa.",
+                              style: smallStyle.copyWith(
+                                fontSize: 13,
+                                color: isDarkMode
+                                    ? Colors.white70
+                                    : Colors.black54,
+                              ),
                             ),
                           ),
                         ],

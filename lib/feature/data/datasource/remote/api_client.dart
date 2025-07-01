@@ -9,28 +9,31 @@ import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/datasource/remote/api_urls.dart';
 import 'package:ams/feature/data/datasource/remote/http_client.dart';
 import 'package:ams/feature/data/datasource/remote/session_manager.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiClient {
-  late SharedPreferences sharedPreferences;
+  final FlutterSecureStorage secureStorage;
 
-  ApiClient({required this.sharedPreferences});
+  ApiClient({required this.secureStorage});
 
-  String get token => sharedPreferences.getString('access_token') ?? '';
-  String get refreshToken => sharedPreferences.getString('refresh_token') ?? '';
-  String get organization =>
-      sharedPreferences.getString('x-organization') ?? '';
+  Future<String> get token async =>
+      await secureStorage.read(key: 'access_token') ?? '';
+  Future<String> get refreshToken async =>
+      await secureStorage.read(key: 'refresh_token') ?? '';
+  Future<String> get organization async =>
+      await secureStorage.read(key: 'x-organization') ?? '';
 
-  void saveTokens(String accessToken, String refreshToken, String apiKey) {
-    sharedPreferences.setString('access_token', accessToken);
-    sharedPreferences.setString('refresh_token', refreshToken);
-    sharedPreferences.setString('x-organization', apiKey);
+  Future<void> saveTokens(
+      String accessToken, String refreshToken, String apiKey) async {
+    await secureStorage.write(key: 'access_token', value: accessToken);
+    await secureStorage.write(key: 'refresh_token', value: refreshToken);
+    await secureStorage.write(key: 'x-organization', value: apiKey);
   }
 
-  void clearTokens() {
-    sharedPreferences.remove('access_token');
-    sharedPreferences.remove('refresh_token');
-    sharedPreferences.remove('x-organization');
+  Future<void> clearTokens() async {
+    await secureStorage.delete(key: 'access_token');
+    await secureStorage.delete(key: 'refresh_token');
+    await secureStorage.delete(key: 'x-organization');
   }
 
 //GETHEADER
@@ -45,7 +48,7 @@ class ApiClient {
   }
 
   //GET
-  static Future<ApiResponse<T>> getApi<T>(
+  Future<ApiResponse<T>> getApi<T>(
     String endPoint, {
     required String token,
     required T Function(dynamic json)? fromJson,
@@ -86,7 +89,7 @@ class ApiClient {
   }
 
 //POST
-  static Future<ApiResponse<T>> postApi<T>(
+  Future<ApiResponse<T>> postApi<T>(
     String endPoint, {
     required dynamic requestBody,
     required String token,
@@ -123,7 +126,7 @@ class ApiClient {
   }
 
 //PATCH
-  static Future<ApiResponse<T>> patchApi<T>(
+  Future<ApiResponse<T>> patchApi<T>(
     String endPoint, {
     required dynamic requestBody,
     required String token,
@@ -153,7 +156,7 @@ class ApiClient {
   }
 
   //DELETE
-  static Future<ApiResponse<T>> deleteApi<T>(
+  Future<ApiResponse<T>> deleteApi<T>(
     String endPoint, {
     required String token,
     String? apiKey,

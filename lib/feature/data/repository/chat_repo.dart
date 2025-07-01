@@ -14,12 +14,13 @@ class ChatRepo {
 
   // Get list of all chats/conversations
   Future<ApiResponse> getChats() async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
-    final response = await ApiClient.getApi(
+    final response = await apiClient.getApi(
       ApiUrls.chat,
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       fromJson: (json) => json,
     );
     return response;
@@ -32,7 +33,8 @@ class ChatRepo {
     int? userId,
     int? departmentId,
   }) async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
     // Build query parameters based on the type of chat
     String queryString = '';
@@ -50,10 +52,10 @@ class ChatRepo {
 
     String url = '${ApiUrls.chat}$queryString';
 
-    final response = await ApiClient.getApi(
+    final response = await apiClient.getApi(
       url,
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       fromJson: (json) => json,
     );
     return response;
@@ -61,13 +63,15 @@ class ChatRepo {
 
   // Get department messages specifically
   Future<ApiResponse> getDepartmentMessages(int departmentId) async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
+
     String url = '${ApiUrls.chat}?user=&department=$departmentId';
 
-    final response = await ApiClient.getApi(
+    final response = await apiClient.getApi(
       url,
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       fromJson: (json) => json,
     );
     return response;
@@ -75,13 +79,15 @@ class ChatRepo {
 
   // Get admin/user messages specifically
   Future<ApiResponse> getUserMessages(int userId) async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
+
     String url = '${ApiUrls.chat}?user=$userId&department=';
 
-    final response = await ApiClient.getApi(
+    final response = await apiClient.getApi(
       url,
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       fromJson: (json) => json,
     );
     return response;
@@ -94,9 +100,10 @@ class ChatRepo {
     int? departmentID,
     String? mediaUrl,
   }) async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
-    final response = await ApiClient.postApi(
+    final response = await apiClient.postApi(
       ApiUrls.chat,
       requestBody: {
         'message': message,
@@ -105,7 +112,7 @@ class ChatRepo {
         if (mediaUrl != null) 'media_url': mediaUrl,
       },
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       fromJson: (json) => json,
     );
     return response;
@@ -120,7 +127,8 @@ class ChatRepo {
     int? departmentID,
   }) async {
     try {
-      final token = apiClient.token;
+      final token = await apiClient.token;
+      final organization = await apiClient.organization;
 
       final url = '${ApiUrls.baseUrl}${ApiUrls.chat}';
 
@@ -130,7 +138,7 @@ class ChatRepo {
       // Add headers
       request.headers['Authorization'] = 'Bearer $token';
       request.headers['Accept'] = 'application/json';
-      request.headers['x-organization'] = apiClient.organization;
+      request.headers['x-organization'] = organization;
 
       // Add form fields
       request.fields['message'] = message;

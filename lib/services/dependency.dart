@@ -19,16 +19,16 @@ import 'package:ams/feature/presentation/pages/notification/controller/notificat
 import 'package:ams/feature/presentation/pages/payroll/controller/payroll_controller.dart';
 import 'package:ams/feature/presentation/pages/policy/controller/policy_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> init() async {
-  // Initialize SharedPreferences
-  final sharedPreferences = await SharedPreferences.getInstance();
-  Get.put<SharedPreferences>(sharedPreferences);
+  // // Initialize SharedPreferences
+  // final sharedPreferences = await SharedPreferences.getInstance();
+  // Get.put<SharedPreferences>(sharedPreferences);
 
-  // Initialize other dependencies
-  Get.put<ApiClient>(ApiClient(sharedPreferences: Get.find()));
+  Get.put(ApiClient(secureStorage: FlutterSecureStorage()));
 
   Get.put<AuthRepositoryImpl>(
       AuthRepositoryImpl(apiClient: Get.find<ApiClient>()));
@@ -56,15 +56,4 @@ Future<void> init() async {
   Get.put(ResetPasswordController(resetpasswordrepo: Get.find()));
   Get.put(CalenderNotificationController(eventCalenderrepo: Get.find()));
   Get.put(ChatController(chatRepo: Get.find()));
-
-  /*  // Brand Image
-  Get.put<AppImageBrandRepo>(
-      AppImageBrandRepo(apiClient: Get.find<ApiClient>()));
-  Get.put<AppImageBrandController>(AppImageBrandController(
-      appImageBrandRepo: Get.find<AppImageBrandRepo>())); */
-
-  // WebSocket
-  // Get.put<WebsocketRepo>(WebsocketRepo(apiClient: Get.find<ApiClient>()));
-  // Get.put<WebSocketController>(
-  //     WebSocketController(websocketRepo: Get.find<WebsocketRepo>()));
 }

@@ -32,11 +32,11 @@ class ProfileController extends GetxController {
 
   final Rx<DateTime?> selectedDate = Rx<DateTime?>(null);
 
-  @override
-  void onInit() {
-    getProfile();
-    super.onInit();
-  }
+  // @override
+  // void onInit() {
+  //   getProfile();
+  //   super.onInit();
+  // }
 
   void updateSelectedDate(DateTime newDate) {
     selectedDate.value = newDate;

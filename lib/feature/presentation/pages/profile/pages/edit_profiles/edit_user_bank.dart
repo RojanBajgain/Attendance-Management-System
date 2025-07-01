@@ -240,7 +240,7 @@ class _EditUserBankState extends State<EditUserBank> {
         );
       }
 
-      Get.offAll(() => const BottomNavPage());
+      Get.offAll(() => BottomNavPage());
     } catch (e) {
       SSnackbarUtil.showFadeSnackbar(
         Get.context!,

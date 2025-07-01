@@ -315,7 +315,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
       child: Scaffold(
         // appBar: const ConstantAppBar(),
         body: RefreshIndicator(
-          color: Colors.cyan,
+          color: isDarkMode ? Colors.white : Colors.black,
           onRefresh: () async {
             await _loadUserLeaveData();
           },

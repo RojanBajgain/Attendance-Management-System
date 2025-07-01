@@ -12,12 +12,13 @@ class TimeoffRepo {
 
   // Get timeoffs
   Future<ApiResponse> getTimeoff() async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
-    final response = await ApiClient.getApi(
+    final response = await apiClient.getApi(
       ApiUrls.timeoff,
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       fromJson: (json) => TimeoffModel.fromJson(json),
     );
     return response;
@@ -25,12 +26,13 @@ class TimeoffRepo {
 
   // Get Leave Policy
   Future<ApiResponse> getUserLeaveByPolicy() async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
-    final response = await ApiClient.getApi(
+    final response = await apiClient.getApi(
       ApiUrls.leavepolicy,
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       fromJson: (json) => json,
     );
     return response;
@@ -44,8 +46,8 @@ class TimeoffRepo {
     String endDate,
     String reason,
   ) async {
-    final token = apiClient.token;
-    final orgApiKey = apiClient.organization;
+    final token = await apiClient.token;
+    final orgApiKey = await apiClient.organization;
 
     final requestBody = {
       'profile': profileID,
@@ -57,7 +59,7 @@ class TimeoffRepo {
 
     log('Timeoff request body: $requestBody');
 
-    final response = await ApiClient.postApi(
+    final response = await apiClient.postApi(
       ApiUrls.posttimeoff,
       token: token,
       apiKey: orgApiKey,
@@ -71,7 +73,8 @@ class TimeoffRepo {
 
   // Patch timeoff
   Future<ApiResponse> postReapply(int id, String reason) async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
     // if (token.isEmpty) {
     //   throw Exception('JWT token is missing or invalid');
@@ -79,18 +82,19 @@ class TimeoffRepo {
 
     final url = '${ApiUrls.reapplytimeoff}$id/update_status/';
 
-    final response = await ApiClient.patchApi(
+    final response = await apiClient.patchApi(
       url,
       requestBody: {'reason': reason, 'status': 're-apply'},
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       fromJson: null,
     );
     return response;
   }
 
   Future<ApiResponse> deleteTimeoff(int id) async {
-    final token = apiClient.token;
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
     // if (token.isEmpty) {
     //   throw Exception('JWT token is missing or invalid');
@@ -98,10 +102,10 @@ class TimeoffRepo {
 
     final url = '${ApiUrls.timeoff}$id/';
 
-    final response = await ApiClient.deleteApi(
+    final response = await apiClient.deleteApi(
       url,
       token: token,
-      apiKey: apiClient.organization,
+      apiKey: organization,
       fromJson: null,
     );
 

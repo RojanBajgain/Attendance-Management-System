@@ -124,7 +124,7 @@ class _OrganizationPageState extends State<OrganizationPage> {
     );
   }
 
-  void selectOrganization(Datum organization) {
+  void selectOrganization(Datum organization) async {
     // Save selected organization
     GetStorage box = GetStorage();
     box.write('selectedOrganization', {
@@ -134,14 +134,18 @@ class _OrganizationPageState extends State<OrganizationPage> {
 
     // Update ApiClient with selected organization's apiKey
     final apiClient = Get.find<ApiClient>();
-    apiClient.saveTokens(
-      apiClient.token,
-      apiClient.refreshToken,
+    // Await the asynchronous token and refreshToken
+    final accessToken = await apiClient.token;
+    final refreshToken = await apiClient.refreshToken;
+
+    await apiClient.saveTokens(
+      accessToken,
+      refreshToken,
       organization.apiKey ?? '',
     );
 
     Get.offAll(
-      () => const BottomNavPage(),
+      () => BottomNavPage(),
       transition: Transition.rightToLeft,
     );
 

@@ -378,7 +378,7 @@ class _EditUserAddressState extends State<EditUserAddress> {
       if (navigateToNext) {
         Get.to(() => const EditUserDocument());
       } else {
-        Get.offAll(() => const BottomNavPage());
+        Get.offAll(() => BottomNavPage());
         SSnackbarUtil.showFadeSnackbar(
           Get.context!,
           'Address updated successfully',

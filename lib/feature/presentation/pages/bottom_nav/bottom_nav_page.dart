@@ -1,161 +1,171 @@
-import 'dart:io';
-
-import 'package:ams/config/resources/colors.dart';
-import 'package:ams/config/resources/styles.dart';
 import 'package:ams/config/widget/close_app_dialog.dart';
+import 'package:ams/feature/presentation/pages/bottom_nav/controller/bottom_nav_controller.dart';
 import 'package:ams/feature/presentation/pages/dashboard/dashboard.dart';
-import 'package:ams/feature/presentation/pages/organization/model/organization_profile_model.dart';
 import 'package:ams/feature/presentation/pages/payroll/payroll_page.dart';
 import 'package:ams/feature/presentation/pages/profile/pages/profile.dart';
 import 'package:ams/feature/presentation/pages/timeoff/time_off_page.dart';
 import 'package:ams/feature/presentation/pages/timesheet/time_sheet_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get_storage/get_storage.dart';
+import 'dart:io';
+import 'package:flutter/services.dart';
 
-class BottomNavPage extends StatefulWidget {
-  final Profile? profileData;
-  final String? apiKey;
-
-  const BottomNavPage({
+class BottomNavPage extends StatelessWidget {
+  BottomNavPage({
     super.key,
-    this.profileData,
-    this.apiKey,
   });
-
-  @override
-  State<BottomNavPage> createState() => _BottomNavPageState();
-}
-
-class _BottomNavPageState extends State<BottomNavPage> {
-  int _selectedTab = 0;
-  late Profile? _profileData;
-  late String? _apiKey;
-
-  @override
-  void initState() {
-    super.initState();
-    _profileData = widget.profileData;
-    _apiKey = widget.apiKey;
-
-    // If data wasn't passed directly, try to get from storage
-    if (_profileData == null) {
-      final box = GetStorage();
-      final storedProfile = box.read('user_profile');
-      if (storedProfile != null) {
-        _profileData = Profile(
-          profileId: box.read('profile_id') ?? 0,
-          fullName: storedProfile['full_name'] ?? '',
-          email: storedProfile['email'] ?? '',
-          role: storedProfile['role'] ?? '',
-          profileImage: storedProfile['profile_image'],
-          designation: storedProfile['designation'] ?? '',
-          employeeType: storedProfile['employee_type'] ?? '',
-          organization: box.read('organization_name') ?? '',
-        );
-      }
-    }
-
-    _apiKey ??= GetStorage().read('selectedOrganization')?['api_key'];
-  }
-
-  List<Widget> get _pages => [
-        DashboardPage(
-          profileData: _profileData,
-          apiKey: _apiKey,
-        ),
-        TimeOffPage(
-          profileId: _profileData?.profileId,
-          apiKey: _apiKey,
-        ),
-        TimeSheetPage(
-          profileId: _profileData?.profileId,
-          apiKey: _apiKey,
-        ),
-        PayrollPage(
-          profileId: _profileData?.profileId,
-          apiKey: _apiKey,
-        ),
-        ProfilePage(
-          profileData: _profileData,
-          apiKey: _apiKey,
-        ),
-      ];
-
-  void _changeTab(int index) {
-    setState(() {
-      _selectedTab = index;
-    });
-  }
-
-  void switchToTab(int index) {
-    setState(() {
-      _selectedTab = index;
-    });
-  }
+  final bottomNavController = Get.put(BottomNavController());
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    List<Widget> pages = [
+      DashboardPage(),
+      TimeOffPage(),
+      TimeSheetPage(),
+      PayrollPage(),
+      ProfilePage(),
+    ];
+
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) {
         if (!didPop) {
-          Get.dialog(CloseApp(
-            title: 'Close app',
-            subtitle: 'Are you sure you want to close this app?',
-            onButtonPressed: () {
-              Get.back();
-              Future.delayed(const Duration(milliseconds: 300), () {
-                if (Platform.isAndroid) {
-                  SystemNavigator.pop();
-                } else if (Platform.isIOS) {
-                  exit(0);
-                }
-              });
-            },
-            buttonText: 'Yes',
-          ));
+          Get.dialog(
+            CloseApp(
+              title: 'Close app',
+              subtitle: 'Are you sure you want to close this app?',
+              onButtonPressed: () {
+                Get.back();
+                Future.delayed(
+                  const Duration(milliseconds: 300),
+                  () {
+                    if (Platform.isAndroid) {
+                      SystemNavigator.pop();
+                    } else if (Platform.isIOS) {
+                      exit(0);
+                    }
+                  },
+                );
+              },
+              buttonText: 'Yes',
+            ),
+          );
         }
       },
       child: Scaffold(
-        body: _pages[_selectedTab],
-        bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: Theme.of(context).brightness == Brightness.dark
-              ? Colors.black
-              : Colors.white,
-          currentIndex: _selectedTab,
-          type: BottomNavigationBarType.fixed,
-          onTap: (index) => _changeTab(index),
-          selectedItemColor: Theme.of(context).brightness == Brightness.dark
-              ? AppColors.primary
-              : AppColors.tertiary,
-          unselectedItemColor: Theme.of(context).brightness == Brightness.dark
-              ? Colors.grey[400]
-              : Colors.grey,
-          selectedLabelStyle: miniStyle.copyWith(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? AppColors.primary
-                : Colors.black,
+        body: Obx(() {
+          return pages[bottomNavController.selectedTab.value];
+        }),
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            color: theme.scaffoldBackgroundColor,
+            boxShadow: [
+              BoxShadow(
+                color: isDarkMode
+                    ? Colors.black.withOpacity(0.3)
+                    : Colors.grey.withOpacity(0.1),
+                spreadRadius: 0,
+                blurRadius: 20,
+                offset: const Offset(0, -5),
+              ),
+            ],
+            border: isDarkMode
+                ? Border(
+                    top: BorderSide(
+                      color: Colors.grey.withOpacity(0.2),
+                      width: 0.5,
+                    ),
+                  )
+                : null,
           ),
-          unselectedLabelStyle: miniStyle.copyWith(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.grey[400]
-                : Colors.grey,
+          child: SafeArea(
+            child: Container(
+              height: 60,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              child: Obx(() {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _buildNavItem(
+                      icon: Icons.home_outlined,
+                      selectedIcon: Icons.home,
+                      index: 0,
+                      isSelected: bottomNavController.selectedTab.value == 0,
+                      theme: theme,
+                    ),
+                    _buildNavItem(
+                      icon: Icons.update_outlined,
+                      selectedIcon: Icons.update,
+                      index: 1,
+                      isSelected: bottomNavController.selectedTab.value == 1,
+                      theme: theme,
+                    ),
+                    _buildNavItem(
+                      icon: Icons.sd_card_outlined,
+                      selectedIcon: Icons.sd_card,
+                      index: 2,
+                      isSelected: bottomNavController.selectedTab.value == 2,
+                      theme: theme,
+                    ),
+                    _buildNavItem(
+                      icon: Icons.confirmation_num_outlined,
+                      selectedIcon: Icons.confirmation_num,
+                      index: 3,
+                      isSelected: bottomNavController.selectedTab.value == 3,
+                      theme: theme,
+                    ),
+                    _buildNavItem(
+                      icon: Icons.person_outline,
+                      selectedIcon: Icons.person,
+                      index: 4,
+                      isSelected: bottomNavController.selectedTab.value == 4,
+                      theme: theme,
+                    ),
+                  ],
+                );
+              }),
+            ),
           ),
-          items: const [
-            BottomNavigationBarItem(
-                icon: Icon(Icons.home_outlined), label: "Home"),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.update), label: "Time Offs"),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.sd_card_outlined), label: "TimeSheet"),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.confirmation_num_outlined), label: "PayRoll"),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.settings), label: "Profile"),
-          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem({
+    required IconData icon,
+    required IconData selectedIcon,
+    required int index,
+    required bool isSelected,
+    required ThemeData theme,
+  }) {
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    return GestureDetector(
+      onTap: () => bottomNavController.changeTab(index),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? (isDarkMode
+                  ? Colors.white.withOpacity(0.1)
+                  : Colors.black.withOpacity(0.1))
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          child: Icon(
+            isSelected ? selectedIcon : icon,
+            key: ValueKey(isSelected),
+            color: isSelected
+                ? (isDarkMode ? Colors.white : Colors.black)
+                : (isDarkMode ? Colors.white60 : Colors.grey),
+            size: 26,
+          ),
         ),
       ),
     );
