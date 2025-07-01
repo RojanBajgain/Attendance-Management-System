@@ -826,7 +826,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 );
 
                 // Call local logout method
-                await authcontroller.localLogout();
+                await authcontroller.localLogout(true);
               },
               text: 'Logout',
               iconData: Icons.delete,

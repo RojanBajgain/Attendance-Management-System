@@ -88,7 +88,7 @@ class _OfflineViewState extends State<OfflineView> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Image.asset(
-                            AppImages.tranquility,
+                            AppImages.appLogo,
                             height: 50,
                             errorBuilder: (context, error, stackTrace) {
                               return Icon(

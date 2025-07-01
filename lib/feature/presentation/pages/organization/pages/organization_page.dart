@@ -1,5 +1,6 @@
 import 'package:ams/config/resources/shimmer.dart';
 import 'package:ams/config/resources/styles.dart';
+import 'package:ams/config/routes/route_helper.dart';
 import 'package:ams/feature/data/datasource/remote/api_client.dart';
 import 'package:ams/feature/presentation/pages/organization/controller/organization_controller.dart';
 import 'package:ams/feature/presentation/pages/organization/model/organization_model.dart';
@@ -144,9 +145,10 @@ class _OrganizationPageState extends State<OrganizationPage> {
       organization.apiKey ?? '',
     );
 
-    Get.offAll(
-      () => BottomNavPage(),
-      transition: Transition.rightToLeft,
+    Get.offAllNamed(
+      RouteHelper.bottomnav,
+      // () => BottomNavPage(),
+      // transition: Transition.rightToLeft,
     );
 
     SSnackbarUtil.showFadeSnackbar(

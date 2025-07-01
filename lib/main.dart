@@ -3,6 +3,7 @@ import 'package:ams/feature/domain/model/environment.dart';
 import 'package:ams/feature/presentation/pages/offline_page/controller/connectivity_services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -24,7 +25,9 @@ Future<void> main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 
-  runApp(App(isLoggedIn: isLoggedIn));
+  runApp(
+    App(isLoggedIn: isLoggedIn),
+  );
 
   // Handle initial navigation after app starts
   WidgetsBinding.instance.addPostFrameCallback((_) {

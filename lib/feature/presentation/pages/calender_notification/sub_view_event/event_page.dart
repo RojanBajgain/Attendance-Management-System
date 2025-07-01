@@ -1,6 +1,7 @@
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/data/datasource/remote/api_client.dart';
 import 'package:ams/feature/data/repository/reminder_repo.dart';
+import 'package:ams/feature/presentation/pages/bottom_nav/bottom_nav_page.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/controller/add_remider_controller.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/controller/calender_notification_controller.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/model/calender_model.dart';
@@ -110,7 +111,7 @@ class _EventPageState extends State<EventPage>
       );
     } catch (e) {
       // log("Error finding today's event: $e");
-      // return null;
+      return null;
     }
   }
 
@@ -129,6 +130,14 @@ class _EventPageState extends State<EventPage>
     }
   }
 
+  void _handleBackNavigation() {
+    if (Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+    } else {
+      Get.offAll(() => BottomNavPage());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -136,479 +145,673 @@ class _EventPageState extends State<EventPage>
     final todayFormatted = DateFormat('MMM').format(now).substring(0, 3);
     final dayFormatted = DateFormat('d').format(now);
 
-    return Scaffold(
-      backgroundColor: isDarkMode ? Colors.black : Colors.grey[100],
-      appBar: AppBar(
-        surfaceTintColor: Colors.transparent,
-        title: Text(
-          'Events & Holidays',
-          style: normalStyle.copyWith(
-            color: isDarkMode ? Colors.white : Colors.black,
-            fontSize: 14.0,
-          ),
-        ),
-        titleSpacing: 0,
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _showAddReminderDialog,
-        backgroundColor: isDarkMode ? Colors.white : Colors.blue,
-        icon: Icon(
-          Icons.add,
-          color: isDarkMode ? Colors.black : Colors.white,
-        ),
-        label: Text(
-          'Reminder',
-          style: TextStyle(
-            color: isDarkMode ? Colors.black : Colors.white,
-            fontSize: 12.0,
-          ),
-        ),
-      ),
-      body: Obx(() {
-        if (_controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        if (_controller.errorMessage.value.isNotEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  _controller.errorMessage.value,
-                  style: TextStyle(
-                      color: isDarkMode ? Colors.white : Colors.black),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    _controller.getEventCalenders().then((_) {
-                      if (mounted) {
-                        setState(() {
-                          filteredEvents = _filterEvents(activeTabType);
-                        });
-                      }
-                    });
-                  },
-                  child: const Text('Retry'),
-                ),
-              ],
+    return WillPopScope(
+      onWillPop: () async {
+        _handleBackNavigation();
+        return false; // Prevent default back navigation
+      },
+      child: Scaffold(
+        backgroundColor: isDarkMode ? Colors.black : Colors.grey[100],
+        appBar: AppBar(
+          surfaceTintColor: Colors.transparent,
+          title: Text(
+            'Events & Holidays',
+            style: normalStyle.copyWith(
+              color: isDarkMode ? Colors.white : Colors.black,
+              fontSize: 14.0,
             ),
-          );
-        }
+          ),
+          titleSpacing: 0,
+          leading: IconButton(
+            onPressed: _handleBackNavigation,
+            icon: Icon(
+              Icons.arrow_back,
+            ),
+          ),
+        ),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: _showAddReminderDialog,
+          backgroundColor: isDarkMode ? Colors.white : Colors.blue,
+          icon: Icon(
+            Icons.add,
+            color: isDarkMode ? Colors.black : Colors.white,
+          ),
+          label: Text(
+            'Reminder',
+            style: TextStyle(
+              color: isDarkMode ? Colors.black : Colors.white,
+              fontSize: 12.0,
+            ),
+          ),
+        ),
+        body: Obx(() {
+          if (_controller.isLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-        if (_controller.eventCalenders.isNotEmpty && filteredEvents.isEmpty) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) {
-              setState(() {
-                filteredEvents = _filterEvents(activeTabType);
-              });
-            }
-          });
-        }
-
-        final todayEvent = getTodayEvent();
-
-        return SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                color: isDarkMode ? Colors.black : Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: TabBar(
-                  controller: _tabController,
-                  isScrollable: false,
-                  labelColor: isDarkMode ? Colors.white : Colors.black,
-                  unselectedLabelColor: Colors.grey,
-                  indicatorColor: isDarkMode ? Colors.white : Colors.black,
-                  indicatorWeight: 3,
-                  labelPadding: const EdgeInsets.symmetric(horizontal: 8),
-                  tabs: const [
-                    Tab(text: 'Events'),
-                    Tab(text: 'Notices'),
-                    Tab(text: 'Holidays'),
-                    Tab(text: 'Reminders'),
-                  ],
-                ),
+          if (_controller.errorMessage.value.isNotEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    _controller.errorMessage.value,
+                    style: TextStyle(
+                        color: isDarkMode ? Colors.white : Colors.black),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      _controller.getEventCalenders().then((_) {
+                        if (mounted) {
+                          setState(() {
+                            filteredEvents = _filterEvents(activeTabType);
+                          });
+                        }
+                      });
+                    },
+                    child: const Text('Retry'),
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Today's Event",
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: isDarkMode ? Colors.grey.shade800 : Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Row(
-                          children: [
-                            _buildDateCircle(
-                              month: todayFormatted,
-                              day: dayFormatted,
-                              color: Colors.red,
+            );
+          }
+
+          if (_controller.eventCalenders.isNotEmpty && filteredEvents.isEmpty) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                setState(() {
+                  filteredEvents = _filterEvents(activeTabType);
+                });
+              }
+            });
+          }
+
+          final todayEvent = getTodayEvent();
+
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: isDarkMode ? Colors.grey[800] : Colors.grey[200],
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            _tabController.animateTo(0);
+                            setState(() {
+                              activeTabType = "EVENT";
+                              filteredEvents = _filterEvents(activeTabType);
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            decoration: BoxDecoration(
+                              color: activeTabType == "EVENT"
+                                  ? (isDarkMode ? Colors.white : Colors.white)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: activeTabType == "EVENT"
+                                  ? [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ]
+                                  : null,
                             ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    todayEvent?.title ??
-                                        todayEvent?.name ??
-                                        "No events today",
-                                    style: const TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.bold,
-                                      fontStyle: FontStyle.italic,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 6),
-                                  if (todayEvent?.type != null)
-                                    _buildEventTag(todayEvent!.type!),
-                                  const SizedBox(height: 6),
-                                  if (todayEvent?.description != null &&
-                                      todayEvent!.description!.isNotEmpty)
-                                    Text(
-                                      todayEvent.description!,
-                                      style: const TextStyle(fontSize: 12),
-                                      maxLines: 3,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  const SizedBox(height: 6),
-                                  if (todayEvent?.remarks != null &&
-                                      todayEvent!.remarks!.isNotEmpty)
-                                    Text(
-                                      'Remarks: ${todayEvent.remarks}',
-                                      style: const TextStyle(fontSize: 12),
-                                      maxLines: 10,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  const SizedBox(height: 6),
-                                  Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.calendar_today,
-                                        size: 13,
-                                        color: Colors.grey,
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        todayEvent?.startDate != null
-                                            ? (todayEvent?.endDate != null &&
-                                                    todayEvent!
-                                                            .startDate!.year ==
-                                                        todayEvent
-                                                            .endDate!.year &&
-                                                    todayEvent
-                                                            .startDate!.month ==
-                                                        todayEvent
-                                                            .endDate!.month &&
-                                                    todayEvent.startDate!.day ==
-                                                        todayEvent.endDate!.day
-                                                ? DateFormat('d MMM yyyy')
-                                                    .format(
-                                                        todayEvent.startDate!)
-                                                : "${DateFormat('d MMM yyyy').format(todayEvent!.startDate!)} - ${DateFormat('d MMM yyyy').format(todayEvent.endDate!)}")
-                                            : DateFormat('d MMM yyyy')
-                                                .format(now),
-                                        style: TextStyle(
-                                          color: isDarkMode
-                                              ? Colors.grey.shade400
-                                              : Colors.black,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  if (todayEvent?.createdBy != null &&
-                                      todayEvent!.createdBy!.isNotEmpty)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 6.0),
-                                      child: Text(
-                                        'Created by: ${todayEvent.createdBy}',
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontStyle: FontStyle.italic,
-                                          color: isDarkMode
-                                              ? Colors.grey.shade400
-                                              : Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                  if (todayEvent?.user != null &&
-                                      todayEvent!.user!.isNotEmpty)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 6.0),
-                                      child: Text(
-                                        'Created By: ${todayEvent.user}',
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontStyle: FontStyle.italic,
-                                          color: isDarkMode
-                                              ? Colors.grey.shade400
-                                              : Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                ],
+                            child: Text(
+                              'Events',
+                              style: smallNStyle.copyWith(
+                                color: activeTabType == "EVENT"
+                                    ? (isDarkMode ? Colors.black : Colors.black)
+                                    : (isDarkMode
+                                        ? Colors.white70
+                                        : Colors.black54),
+                                fontWeight: activeTabType == "EVENT"
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                                fontSize: 12.0,
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "All ${getTabName(activeTabType)}",
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    if (filteredEvents.isEmpty)
-                      Padding(
-                        padding: const EdgeInsets.all(32),
-                        child: Center(
-                          child: Text(
-                            "No ${getTabName(activeTabType).toLowerCase()} found",
-                            style: smallStyle.copyWith(
-                              color:
-                                  isDarkMode ? Colors.white70 : Colors.black54,
-                              fontSize: 12.0,
+                              textAlign: TextAlign.center,
                             ),
                           ),
                         ),
-                      )
-                    else
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: filteredEvents.length,
-                        itemBuilder: (context, index) {
-                          final event = filteredEvents[index];
-                          final month = event.startDate != null
-                              ? DateFormat('MMM')
-                                  .format(event.startDate!)
-                                  .substring(0, 3)
-                              : 'N/A';
-                          final day = event.startDate != null
-                              ? DateFormat('d').format(event.startDate!)
-                              : 'N/A';
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: isDarkMode
-                                    ? Colors.grey.shade800
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(8),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.2),
-                                    spreadRadius: 1,
-                                    blurRadius: 3,
-                                    offset: const Offset(0, 1),
-                                  ),
-                                ],
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            _tabController.animateTo(1);
+                            setState(() {
+                              activeTabType = "NOTICE";
+                              filteredEvents = _filterEvents(activeTabType);
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            decoration: BoxDecoration(
+                              color: activeTabType == "NOTICE"
+                                  ? (isDarkMode ? Colors.white : Colors.white)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: activeTabType == "NOTICE"
+                                  ? [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ]
+                                  : null,
+                            ),
+                            child: Text(
+                              'Notices',
+                              style: smallNStyle.copyWith(
+                                color: activeTabType == "NOTICE"
+                                    ? (isDarkMode ? Colors.black : Colors.black)
+                                    : (isDarkMode
+                                        ? Colors.white70
+                                        : Colors.black54),
+                                fontWeight: activeTabType == "NOTICE"
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                                fontSize: 12.0,
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Row(
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            _tabController.animateTo(2);
+                            setState(() {
+                              activeTabType = "HOLIDAY";
+                              filteredEvents = _filterEvents(activeTabType);
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            decoration: BoxDecoration(
+                              color: activeTabType == "HOLIDAY"
+                                  ? (isDarkMode ? Colors.white : Colors.white)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: activeTabType == "HOLIDAY"
+                                  ? [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ]
+                                  : null,
+                            ),
+                            child: Text(
+                              'Holidays',
+                              style: smallNStyle.copyWith(
+                                color: activeTabType == "HOLIDAY"
+                                    ? (isDarkMode ? Colors.black : Colors.black)
+                                    : (isDarkMode
+                                        ? Colors.white70
+                                        : Colors.black54),
+                                fontWeight: activeTabType == "HOLIDAY"
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                                fontSize: 12.0,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            _tabController.animateTo(3);
+                            setState(() {
+                              activeTabType = "REMINDER";
+                              filteredEvents = _filterEvents(activeTabType);
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            decoration: BoxDecoration(
+                              color: activeTabType == "REMINDER"
+                                  ? (isDarkMode ? Colors.white : Colors.white)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: activeTabType == "REMINDER"
+                                  ? [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ]
+                                  : null,
+                            ),
+                            child: Text(
+                              'Reminders',
+                              style: smallNStyle.copyWith(
+                                color: activeTabType == "REMINDER"
+                                    ? (isDarkMode ? Colors.black : Colors.black)
+                                    : (isDarkMode
+                                        ? Colors.white70
+                                        : Colors.black54),
+                                fontWeight: activeTabType == "REMINDER"
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                                fontSize: 12.0,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Today's Event",
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        decoration: BoxDecoration(
+                          color:
+                              isDarkMode ? Colors.grey.shade800 : Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Row(
+                            children: [
+                              _buildDateCircle(
+                                month: todayFormatted,
+                                day: dayFormatted,
+                                color: Colors.red,
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    _buildDateCircle(
-                                        month: month,
-                                        day: day,
-                                        color:
-                                            _getColorForEventType(event.type)),
-                                    const SizedBox(width: 16),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            event.title ??
-                                                event.name ??
-                                                "Untitled",
-                                            style: const TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                            maxLines: 5,
-                                            overflow: TextOverflow.ellipsis,
+                                    Text(
+                                      todayEvent?.title ??
+                                          todayEvent?.name ??
+                                          "No events today",
+                                      style: const TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.bold,
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 6),
+                                    if (todayEvent?.type != null)
+                                      _buildEventTag(todayEvent!.type!),
+                                    const SizedBox(height: 6),
+                                    if (todayEvent?.description != null &&
+                                        todayEvent!.description!.isNotEmpty)
+                                      Text(
+                                        todayEvent.description!,
+                                        style: const TextStyle(fontSize: 12),
+                                        maxLines: 3,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    const SizedBox(height: 6),
+                                    if (todayEvent?.remarks != null &&
+                                        todayEvent!.remarks!.isNotEmpty)
+                                      Text(
+                                        'Remarks: ${todayEvent.remarks}',
+                                        style: const TextStyle(fontSize: 12),
+                                        maxLines: 10,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    const SizedBox(height: 6),
+                                    Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.calendar_today,
+                                          size: 13,
+                                          color: Colors.grey,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          todayEvent?.startDate != null
+                                              ? (todayEvent?.endDate != null &&
+                                                      todayEvent!.startDate!
+                                                              .year ==
+                                                          todayEvent
+                                                              .endDate!.year &&
+                                                      todayEvent.startDate!
+                                                              .month ==
+                                                          todayEvent
+                                                              .endDate!.month &&
+                                                      todayEvent
+                                                              .startDate!.day ==
+                                                          todayEvent
+                                                              .endDate!.day
+                                                  ? DateFormat('d MMM yyyy')
+                                                      .format(
+                                                          todayEvent.startDate!)
+                                                  : "${DateFormat('d MMM yyyy').format(todayEvent!.startDate!)} - ${DateFormat('d MMM yyyy').format(todayEvent.endDate!)}")
+                                              : DateFormat('d MMM yyyy')
+                                                  .format(now),
+                                          style: TextStyle(
+                                            color: isDarkMode
+                                                ? Colors.grey.shade400
+                                                : Colors.black,
+                                            fontSize: 12,
                                           ),
-                                          const SizedBox(height: 6),
-                                          if (event.type != null)
-                                            _buildEventTag(event.type!),
-                                          const SizedBox(height: 6),
-                                          if (event.description != null &&
-                                              event.description!.isNotEmpty)
+                                        ),
+                                      ],
+                                    ),
+                                    if (todayEvent?.createdBy != null &&
+                                        todayEvent!.createdBy!.isNotEmpty)
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(top: 6.0),
+                                        child: Text(
+                                          'Created by: ${todayEvent.createdBy}',
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            fontStyle: FontStyle.italic,
+                                            color: isDarkMode
+                                                ? Colors.grey.shade400
+                                                : Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                    if (todayEvent?.user != null &&
+                                        todayEvent!.user!.isNotEmpty)
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(top: 6.0),
+                                        child: Text(
+                                          'Created By: ${todayEvent.user}',
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            fontStyle: FontStyle.italic,
+                                            color: isDarkMode
+                                                ? Colors.grey.shade400
+                                                : Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "All ${getTabName(activeTabType)}",
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      if (filteredEvents.isEmpty)
+                        Padding(
+                          padding: const EdgeInsets.all(32),
+                          child: Center(
+                            child: Text(
+                              "No ${getTabName(activeTabType).toLowerCase()} found",
+                              style: smallStyle.copyWith(
+                                color: isDarkMode
+                                    ? Colors.white70
+                                    : Colors.black54,
+                                fontSize: 12.0,
+                              ),
+                            ),
+                          ),
+                        )
+                      else
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: filteredEvents.length,
+                          itemBuilder: (context, index) {
+                            final event = filteredEvents[index];
+                            final month = event.startDate != null
+                                ? DateFormat('MMM')
+                                    .format(event.startDate!)
+                                    .substring(0, 3)
+                                : 'N/A';
+                            final day = event.startDate != null
+                                ? DateFormat('d').format(event.startDate!)
+                                : 'N/A';
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: isDarkMode
+                                      ? Colors.grey.shade800
+                                      : Colors.white,
+                                  borderRadius: BorderRadius.circular(8),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.2),
+                                      spreadRadius: 1,
+                                      blurRadius: 3,
+                                      offset: const Offset(0, 1),
+                                    ),
+                                  ],
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      _buildDateCircle(
+                                          month: month,
+                                          day: day,
+                                          color: _getColorForEventType(
+                                              event.type)),
+                                      const SizedBox(width: 16),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
                                             Text(
-                                              event.description!,
-                                              style: TextStyle(
+                                              event.title ??
+                                                  event.name ??
+                                                  "Untitled",
+                                              style: const TextStyle(
                                                 fontSize: 12,
-                                                color: isDarkMode
-                                                    ? Colors.grey.shade400
-                                                    : Colors.black,
+                                                fontWeight: FontWeight.bold,
                                               ),
                                               maxLines: 5,
                                               overflow: TextOverflow.ellipsis,
                                             ),
-                                          const SizedBox(height: 6),
-                                          if (event.remarks != null &&
-                                              event.remarks!.isNotEmpty)
-                                            Text(
-                                              'Remarks: ${event.remarks}',
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: isDarkMode
-                                                    ? Colors.grey.shade400
-                                                    : Colors.black,
-                                              ),
-                                              maxLines: 10,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          const SizedBox(height: 6),
-                                          Row(
-                                            children: [
-                                              const Icon(Icons.calendar_today,
-                                                  size: 13, color: Colors.grey),
-                                              const SizedBox(width: 4),
+                                            const SizedBox(height: 6),
+                                            if (event.type != null)
+                                              _buildEventTag(event.type!),
+                                            const SizedBox(height: 6),
+                                            if (event.description != null &&
+                                                event.description!.isNotEmpty)
                                               Text(
-                                                event.startDate != null
-                                                    ? (event.endDate != null &&
-                                                            event.startDate!
-                                                                    .year ==
-                                                                event.endDate!
-                                                                    .year &&
-                                                            event.startDate!
-                                                                    .month ==
-                                                                event.endDate!
-                                                                    .month &&
-                                                            event.startDate!
-                                                                    .day ==
-                                                                event.endDate!
-                                                                    .day
-                                                        ? DateFormat(
-                                                                'd MMM yyyy')
-                                                            .format(event
-                                                                .startDate!)
-                                                        : "${DateFormat('d MMM yyyy').format(event.startDate!)} - ${DateFormat('d MMM yyyy').format(event.endDate ?? event.startDate!)}")
-                                                    : 'Date not specified',
+                                                event.description!,
                                                 style: TextStyle(
+                                                  fontSize: 12,
                                                   color: isDarkMode
                                                       ? Colors.grey.shade400
                                                       : Colors.black,
-                                                  fontSize: 11,
-                                                  fontStyle: FontStyle.italic,
+                                                ),
+                                                maxLines: 5,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            const SizedBox(height: 6),
+                                            if (event.remarks != null &&
+                                                event.remarks!.isNotEmpty)
+                                              Text(
+                                                'Remarks: ${event.remarks}',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: isDarkMode
+                                                      ? Colors.grey.shade400
+                                                      : Colors.black,
+                                                ),
+                                                maxLines: 10,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            const SizedBox(height: 6),
+                                            Row(
+                                              children: [
+                                                const Icon(Icons.calendar_today,
+                                                    size: 13,
+                                                    color: Colors.grey),
+                                                const SizedBox(width: 4),
+                                                Text(
+                                                  event.startDate != null
+                                                      ? (event.endDate !=
+                                                                  null &&
+                                                              event.startDate!
+                                                                      .year ==
+                                                                  event.endDate!
+                                                                      .year &&
+                                                              event.startDate!
+                                                                      .month ==
+                                                                  event.endDate!
+                                                                      .month &&
+                                                              event.startDate!
+                                                                      .day ==
+                                                                  event.endDate!
+                                                                      .day
+                                                          ? DateFormat(
+                                                                  'd MMM yyyy')
+                                                              .format(event
+                                                                  .startDate!)
+                                                          : "${DateFormat('d MMM yyyy').format(event.startDate!)} - ${DateFormat('d MMM yyyy').format(event.endDate ?? event.startDate!)}")
+                                                      : 'Date not specified',
+                                                  style: TextStyle(
+                                                    color: isDarkMode
+                                                        ? Colors.grey.shade400
+                                                        : Colors.black,
+                                                    fontSize: 11,
+                                                    fontStyle: FontStyle.italic,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            if (event.createdBy != null &&
+                                                event.createdBy!.isNotEmpty)
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 6.0),
+                                                child: Row(
+                                                  children: [
+                                                    const Icon(Icons.person,
+                                                        size: 14,
+                                                        color: Colors.grey),
+                                                    const SizedBox(width: 4),
+                                                    Flexible(
+                                                      child: Text(
+                                                        "Created by: ${event.createdBy}",
+                                                        style: TextStyle(
+                                                          color: isDarkMode
+                                                              ? Colors
+                                                                  .grey.shade400
+                                                              : Colors.black,
+                                                          fontSize: 11,
+                                                          fontStyle:
+                                                              FontStyle.italic,
+                                                        ),
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
-                                            ],
-                                          ),
-                                          if (event.createdBy != null &&
-                                              event.createdBy!.isNotEmpty)
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 6.0),
-                                              child: Row(
-                                                children: [
-                                                  const Icon(Icons.person,
-                                                      size: 14,
-                                                      color: Colors.grey),
-                                                  const SizedBox(width: 4),
-                                                  Flexible(
-                                                    child: Text(
-                                                      "Created by: ${event.createdBy}",
-                                                      style: TextStyle(
-                                                        color: isDarkMode
-                                                            ? Colors
-                                                                .grey.shade400
-                                                            : Colors.black,
-                                                        fontSize: 11,
-                                                        fontStyle:
-                                                            FontStyle.italic,
+                                            if (event.user != null &&
+                                                event.user!.isNotEmpty)
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 6.0),
+                                                child: Row(
+                                                  children: [
+                                                    const Icon(
+                                                        Icons.person_outline,
+                                                        size: 14,
+                                                        color: Colors.grey),
+                                                    const SizedBox(width: 4),
+                                                    Flexible(
+                                                      child: Text(
+                                                        "Assigned to: ${event.user}",
+                                                        style: TextStyle(
+                                                          color: isDarkMode
+                                                              ? Colors
+                                                                  .grey.shade400
+                                                              : Colors.black,
+                                                          fontSize: 12,
+                                                        ),
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
                                                       ),
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
                                                     ),
-                                                  ),
-                                                ],
+                                                  ],
+                                                ),
                                               ),
-                                            ),
-                                          if (event.user != null &&
-                                              event.user!.isNotEmpty)
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 6.0),
-                                              child: Row(
-                                                children: [
-                                                  const Icon(
-                                                      Icons.person_outline,
-                                                      size: 14,
-                                                      color: Colors.grey),
-                                                  const SizedBox(width: 4),
-                                                  Flexible(
-                                                    child: Text(
-                                                      "Assigned to: ${event.user}",
-                                                      style: TextStyle(
-                                                        color: isDarkMode
-                                                            ? Colors
-                                                                .grey.shade400
-                                                            : Colors.black,
-                                                        fontSize: 12,
-                                                      ),
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          );
-                        },
-                      ),
-                  ],
+                            );
+                          },
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-        );
-      }),
+              ],
+            ),
+          );
+        }),
+      ),
     );
   }
 

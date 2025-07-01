@@ -1,3 +1,4 @@
+import 'package:ams/config/resources/images.dart';
 import 'package:ams/config/widget/close_app_dialog.dart';
 import 'package:ams/feature/presentation/pages/bottom_nav/controller/bottom_nav_controller.dart';
 import 'package:ams/feature/presentation/pages/dashboard/dashboard.dart';
@@ -90,36 +91,31 @@ class BottomNavPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     _buildNavItem(
-                      icon: Icons.home_outlined,
-                      selectedIcon: Icons.home,
+                      iconPath: AppIcons.home,
                       index: 0,
                       isSelected: bottomNavController.selectedTab.value == 0,
                       theme: theme,
                     ),
                     _buildNavItem(
-                      icon: Icons.update_outlined,
-                      selectedIcon: Icons.update,
+                      iconPath: AppIcons.timeoff,
                       index: 1,
                       isSelected: bottomNavController.selectedTab.value == 1,
                       theme: theme,
                     ),
                     _buildNavItem(
-                      icon: Icons.sd_card_outlined,
-                      selectedIcon: Icons.sd_card,
+                      iconPath: AppIcons.timesheet,
                       index: 2,
                       isSelected: bottomNavController.selectedTab.value == 2,
                       theme: theme,
                     ),
                     _buildNavItem(
-                      icon: Icons.confirmation_num_outlined,
-                      selectedIcon: Icons.confirmation_num,
+                      iconPath: AppIcons.payroll,
                       index: 3,
                       isSelected: bottomNavController.selectedTab.value == 3,
                       theme: theme,
                     ),
                     _buildNavItem(
-                      icon: Icons.person_outline,
-                      selectedIcon: Icons.person,
+                      iconPath: AppIcons.profile,
                       index: 4,
                       isSelected: bottomNavController.selectedTab.value == 4,
                       theme: theme,
@@ -135,8 +131,7 @@ class BottomNavPage extends StatelessWidget {
   }
 
   Widget _buildNavItem({
-    required IconData icon,
-    required IconData selectedIcon,
+    required String iconPath,
     required int index,
     required bool isSelected,
     required ThemeData theme,
@@ -158,13 +153,14 @@ class BottomNavPage extends StatelessWidget {
         ),
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),
-          child: Icon(
-            isSelected ? selectedIcon : icon,
+          child: Image.asset(
+            iconPath,
             key: ValueKey(isSelected),
             color: isSelected
                 ? (isDarkMode ? Colors.white : Colors.black)
                 : (isDarkMode ? Colors.white60 : Colors.grey),
-            size: 26,
+            height: 26,
+            width: 26,
           ),
         ),
       ),

@@ -31,7 +31,7 @@ class _ConstantAppBarState extends State<ConstantAppBar> {
     return AppBar(
       surfaceTintColor: Colors.transparent,
       elevation: 0,
-      shadowColor: Colors.black,
+      // shadowColor: Colors.black,
       backgroundColor: isDarkMode ? Colors.black : Colors.white,
       automaticallyImplyLeading: false,
       title: GestureDetector(
@@ -40,14 +40,22 @@ class _ConstantAppBarState extends State<ConstantAppBar> {
         },
         child: Padding(
           padding: const EdgeInsets.all(2.0),
-          // child: SvgPicture.asset(AppImages.ayata_ayata),
           child: Image.asset(
-            AppImages.tranquility,
-            height: 45,
-            width: 45,
-            fit: BoxFit.cover,
+            AppImages.logo,
+            height: 90,
+            width: 90,
           ),
         ),
+        // child: Padding(
+        //   padding: const EdgeInsets.all(2.0),
+        //   // child: SvgPicture.asset(AppImages.ayata_ayata),
+        //   child: Image.asset(
+        //     AppImages.tranquility,
+        //     height: 45,
+        //     width: 45,
+        //     fit: BoxFit.cover,
+        //   ),
+        // ),
       ),
       actions: <Widget>[
         IconButton(

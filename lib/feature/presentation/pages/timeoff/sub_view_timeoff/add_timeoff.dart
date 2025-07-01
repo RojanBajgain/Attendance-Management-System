@@ -51,12 +51,6 @@ class _AddTimeoffState extends State<AddTimeoff> {
     });
   }
 
-  @override
-  void dispose() {
-    _reasonController.dispose();
-    super.dispose();
-  }
-
   // Method to load user leave data
   Future<void> _loadUserLeaveData() async {
     try {
@@ -250,7 +244,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
           type: selectedPolicy.id,
           startdate: startDateIso,
           enddate: endDateIso,
-          reason: reason,
+          reason: reason ?? '',
         );
 
         // Reload user leave data after successful submission
@@ -987,4 +981,10 @@ class _AddTimeoffState extends State<AddTimeoff> {
       ),
     );
   }
+
+  // @override
+  // void dispose() {
+  //   _reasonController.dispose();
+  //   super.dispose();
+  // }
 }

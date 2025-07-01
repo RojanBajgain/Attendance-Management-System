@@ -147,7 +147,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           ),
                           const SizedBox(height: 5),
                           Text(
-                            'Welcome to Tranquility Spa',
+                            'Welcome to Ayata Attendence',
                             style: smallStyle.copyWith(
                               fontWeight: FontWeight.w400,
                               color:

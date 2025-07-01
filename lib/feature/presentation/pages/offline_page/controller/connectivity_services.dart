@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:ams/feature/presentation/pages/bottom_nav/bottom_nav_page.dart';
+import 'package:ams/feature/presentation/pages/calender_notification/sub_view_event/event_page.dart';
 import 'package:ams/feature/presentation/pages/chat/chat.dart';
 import 'package:ams/feature/presentation/pages/landing/landing_page.dart';
 import 'package:ams/feature/presentation/pages/login/login_page.dart';
@@ -294,9 +295,15 @@ class OfflineController extends GetxController {
       if (_lastRoute == '/LandingPage') normalizedRoute = '/landingpage';
       if (_lastRoute == '/OrganizationPage') normalizedRoute = '/organization';
       if (_lastRoute == '/ChatsScreen') normalizedRoute = '/chat';
+      if (_lastRoute == '/EventPage') normalizedRoute = '/EventPage';
 
       // Check if the last route requires authentication
-      final protectedRoutes = ['/bottomNav', '/organization', '/chat'];
+      final protectedRoutes = [
+        '/bottomNav',
+        '/organization',
+        '/chat',
+        '/EventPage'
+      ];
       bool isProtectedRoute = protectedRoutes.contains(normalizedRoute);
 
       if (isProtectedRoute) {
@@ -333,6 +340,9 @@ class OfflineController extends GetxController {
           break;
         case '/chat':
           Get.offAll(() => const ChatsScreen());
+          break;
+        case '/EventPage':
+          Get.offAll(() => const EventPage());
           break;
         default:
           print(

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:ams/config/routes/route_helper.dart';
 import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/repository/auth_repository_impl.dart';
 import 'package:ams/feature/presentation/pages/organization/pages/organization_page.dart';
@@ -21,6 +22,7 @@ class AuthController extends GetxController {
   final AuthRepositoryImpl authRepo;
   final ApiClient apiClient = Get.find<ApiClient>();
   var authIsLoading = false.obs;
+  var isLoggingOut = false.obs;
   var alluserData = LoginModel(access: "", refresh: "", organization: []).obs;
 
   AuthController({required this.authRepo});
@@ -153,11 +155,17 @@ class AuthController extends GetxController {
     }
 
     await Future.delayed(const Duration(milliseconds: 300));
-    Get.offAll(() => BottomNavPage());
+    Get.offAllNamed(
+      RouteHelper.bottomnav,
+      // () => BottomNavPage(),
+    );
   }
 
   // Logout
-  Future<void> localLogout() async {
+  Future<void> localLogout(bool success) async {
+    if (isLoggingOut.value) return;
+    isLoggingOut.value = true;
+
     try {
       await apiClient.clearTokens();
 
@@ -177,7 +185,9 @@ class AuthController extends GetxController {
 
       alluserData.value = LoginModel(access: "", refresh: "", organization: []);
 
-      Get.offAll(() => const LoginPage());
+      Get.offAll(() => const LoginPage(), transition: Transition.rightToLeft);
+
+      isLoggingOut.value = false;
 
       // Show success message
       SSnackbarUtil.showFadeSnackbar(
@@ -191,11 +201,11 @@ class AuthController extends GetxController {
       // Even if there's an error, still navigate to login for security
       Get.offAll(() => const LoginPage());
 
-      SSnackbarUtil.showFadeSnackbar(
-        Get.context!,
-        'Logged out with some cleanup issues.',
-        SnackbarType.warning,
-      );
+      // SSnackbarUtil.showFadeSnackbar(
+      //   Get.context!,
+      //   'Logged out with some cleanup issues.',
+      //   SnackbarType.warning,
+      // );
     }
   }
 

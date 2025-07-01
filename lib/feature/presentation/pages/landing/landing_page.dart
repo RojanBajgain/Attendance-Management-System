@@ -46,7 +46,7 @@ class _LandingPageState extends State<LandingPage> {
                   child: AspectRatio(
                     aspectRatio: 1,
                     child: Image.asset(
-                      AppImages.tranquility,
+                      AppImages.ayataLogoAppBar,
                     ),
                   ),
                 ),
@@ -55,7 +55,7 @@ class _LandingPageState extends State<LandingPage> {
               AnimatedTextKit(
                 animatedTexts: [
                   TypewriterAnimatedText(
-                    '"Welcome To Tranquility Spa"',
+                    '"Welcome To AYATA"',
                     textStyle: normalStyle.copyWith(
                       fontWeight: FontWeight.bold,
                       color: isDarkMode

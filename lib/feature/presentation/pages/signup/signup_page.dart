@@ -79,7 +79,7 @@ class _SignupPageState extends State<SignupPage> {
                             ),
                             SizedBox(width: 8),
                             Text(
-                              "Tranquility Spa",
+                              "Ayata Incorporation",
                               style: mediumStyle.copyWith(
                                   color:
                                       isDarkMode ? Colors.white : Colors.black,
@@ -92,7 +92,7 @@ class _SignupPageState extends State<SignupPage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Text(
-                              "Fill the credentials below to login into Tranquility Spa",
+                              "Fill the credentials below to login into Ayata Incorporation",
                               style: Theme.of(context).textTheme.titleMedium,
                               textAlign: TextAlign.start,
                             ),

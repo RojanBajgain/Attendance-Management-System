@@ -11,6 +11,10 @@ class ApiUrls {
   static const String chatmessage =
       "ws://tranquility.backend.ams.ayata.com.np/ws/chat/";
 
+  // static const String wsUrl = "ws://tranquility.backend.ams.ayata.com.np/ws/";
+  // static const String chatmessage =
+  //     "ws://tranquility.backend.ams.ayata.com.np/ws/chat/";
+
   // static const String register = "auth/register/";
 
   static const String imageBrand = "api/image/brand/";

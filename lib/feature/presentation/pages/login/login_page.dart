@@ -134,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
                     children: [
                       const SizedBox(height: 20),
                       Image.asset(
-                        AppImages.tranquility,
+                        AppImages.ayataLogoAppBar,
                         height: 100,
                       ),
                       const SizedBox(height: 20.0),
@@ -154,7 +154,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            "Tranquility Spa",
+                            "AYATA",
                             style: mediumStyle.copyWith(
                                 color: isDarkMode ? Colors.white : Colors.black,
                                 fontWeight: FontWeight.w600),
@@ -168,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
                         children: [
                           Expanded(
                             child: Text(
-                              "Fill the credentials below to login into Tranquility Spa.",
+                              "Fill the credentials below to login into AYATA",
                               style: smallStyle.copyWith(
                                 fontSize: 13,
                                 color: isDarkMode

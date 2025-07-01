@@ -1,4 +1,5 @@
 import 'package:ams/feature/presentation/pages/bottom_nav/bottom_nav_page.dart';
+import 'package:ams/feature/presentation/pages/calender_notification/sub_view_event/event_page.dart';
 import 'package:ams/feature/presentation/pages/chat/chat.dart';
 import 'package:ams/feature/presentation/pages/landing/landing_page.dart';
 import 'package:ams/feature/presentation/pages/login/login_page.dart';
@@ -18,5 +19,6 @@ class AppPages {
     GetPage(name: _Paths.bottomnav, page: () => BottomNavPage()),
     GetPage(name: _Paths.organization, page: () => const OrganizationPage()),
     GetPage(name: _Paths.chat, page: () => const ChatsScreen()),
+    GetPage(name: _Paths.event, page: () => const EventPage()),
   ];
 }

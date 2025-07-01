@@ -1,3 +1,4 @@
+import 'package:ams/config/resources/images.dart';
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/controller/calender_notification_controller.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/model/calender_model.dart';
@@ -62,74 +63,128 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            children: [
-              GestureDetector(
-                onTap: () => selectType("HOLIDAY"),
-                child: Column(
-                  children: [
-                    Text(
-                      'Holiday',
-                      style: smallNStyle.copyWith(
-                        color: isDarkMode ? Colors.grey[300] : Colors.black,
-                        fontSize: 12.0,
+          // Rounded Tab Bar
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: isDarkMode ? Colors.grey[800] : Colors.grey[200],
+              borderRadius: BorderRadius.circular(25),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => selectType("HOLIDAY"),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color: selectedType == "HOLIDAY"
+                            ? (isDarkMode ? Colors.white : Colors.white)
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: selectedType == "HOLIDAY"
+                            ? [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
+                            : null,
+                      ),
+                      child: Text(
+                        'Holiday',
+                        style: smallNStyle.copyWith(
+                          color: selectedType == "HOLIDAY"
+                              ? (isDarkMode ? Colors.black : Colors.black)
+                              : (isDarkMode ? Colors.white70 : Colors.black54),
+                          fontWeight: selectedType == "HOLIDAY"
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                          fontSize: 12.0,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
-                    if (selectedType == "HOLIDAY")
-                      Container(
-                        margin: const EdgeInsets.only(top: 2.0),
-                        height: 4.0,
-                        width: 60.0,
-                        color: isDarkMode ? Colors.grey[300] : Colors.black,
-                      ),
-                  ],
+                  ),
                 ),
-              ),
-              const SizedBox(width: 15.0),
-              GestureDetector(
-                onTap: () => selectType("EVENT"),
-                child: Column(
-                  children: [
-                    Text(
-                      'Events',
-                      style: smallNStyle.copyWith(
-                        color: isDarkMode ? Colors.grey[300] : Colors.black,
-                        fontSize: 12.0,
+                const SizedBox(width: 4),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => selectType("EVENT"),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color: selectedType == "EVENT"
+                            ? (isDarkMode ? Colors.white : Colors.white)
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: selectedType == "EVENT"
+                            ? [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
+                            : null,
+                      ),
+                      child: Text(
+                        'Events',
+                        style: smallNStyle.copyWith(
+                          color: selectedType == "EVENT"
+                              ? (isDarkMode ? Colors.black : Colors.black)
+                              : (isDarkMode ? Colors.white70 : Colors.black54),
+                          fontWeight: selectedType == "EVENT"
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                          fontSize: 12.0,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
-                    if (selectedType == "EVENT")
-                      Container(
-                        margin: const EdgeInsets.only(top: 2.0),
-                        height: 4.0,
-                        width: 60.0,
-                        color: isDarkMode ? Colors.grey[300] : Colors.black,
-                      ),
-                  ],
+                  ),
                 ),
-              ),
-              const SizedBox(width: 15.0),
-              GestureDetector(
-                onTap: () => selectType("NOTICE"),
-                child: Column(
-                  children: [
-                    Text(
-                      'Notice',
-                      style: smallNStyle.copyWith(
-                        color: isDarkMode ? Colors.grey[300] : Colors.black,
-                        fontSize: 12.0,
+                const SizedBox(width: 4),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => selectType("NOTICE"),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color: selectedType == "NOTICE"
+                            ? (isDarkMode ? Colors.white : Colors.white)
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: selectedType == "NOTICE"
+                            ? [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
+                            : null,
+                      ),
+                      child: Text(
+                        'Notice',
+                        style: smallNStyle.copyWith(
+                          color: selectedType == "NOTICE"
+                              ? (isDarkMode ? Colors.black : Colors.black)
+                              : (isDarkMode ? Colors.white70 : Colors.black54),
+                          fontWeight: selectedType == "NOTICE"
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                          fontSize: 12.0,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
-                    if (selectedType == "NOTICE")
-                      Container(
-                        margin: const EdgeInsets.only(top: 2.0),
-                        height: 4.0,
-                        width: 60.0,
-                        color: isDarkMode ? Colors.grey[300] : Colors.black,
-                      ),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           const SizedBox(height: 15.0),
           Obx(() {
@@ -183,16 +238,28 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 25.0),
                 child: Center(
-                  child: Text(
-                    selectedType == "HOLIDAY"
-                        ? 'No Holidays been found'
-                        : selectedType == "EVENT"
-                            ? 'No Events been found'
-                            : 'No Notices been found',
-                    style: smallNStyle.copyWith(
-                      color: isDarkMode ? Colors.white : Colors.black,
-                      fontSize: 12.0,
-                    ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset(
+                        'assets/images/no_data.png',
+                        height: 100,
+                        width: 100,
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        selectedType == "HOLIDAY"
+                            ? 'No Holidays been found'
+                            : selectedType == "EVENT"
+                                ? 'No Events been found'
+                                : 'No Notices been found',
+                        style: smallNStyle.copyWith(
+                          color: isDarkMode ? Colors.white : Colors.black,
+                          fontSize: 12.0,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
                 ),
               );

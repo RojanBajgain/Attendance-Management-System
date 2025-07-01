@@ -48,54 +48,91 @@ class _TimesheetTimeoffTabViewState extends State<TimesheetTimeoffTabView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: GestureDetector(
-                onTap: selectTimesheet,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
+        // Rounded Tab Bar
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: isDarkMode ? Colors.grey[800] : Colors.grey[200],
+            borderRadius: BorderRadius.circular(25),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: selectTimesheet,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      color: isTimesheetSelected
+                          ? (isDarkMode ? Colors.white : Colors.white)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: isTimesheetSelected
+                          ? [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ]
+                          : null,
+                    ),
+                    child: Text(
                       "Timesheet",
                       style: smallStyle.copyWith(
-                        color: isDarkMode ? Colors.white : Colors.black,
-                        fontWeight: FontWeight.bold,
+                        color: isTimesheetSelected
+                            ? (isDarkMode ? Colors.black : Colors.black)
+                            : (isDarkMode ? Colors.white70 : Colors.black54),
+                        fontWeight: isTimesheetSelected
+                            ? FontWeight.bold
+                            : FontWeight.normal,
                         fontSize: 12.0,
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    if (isTimesheetSelected) _tabIndicator(isDarkMode),
-                  ],
+                  ),
                 ),
               ),
-            ),
-            Container(
-              width: 2,
-              height: 35,
-              color: isDarkMode ? Colors.white30 : Colors.black26,
-            ),
-            Expanded(
-              child: GestureDetector(
-                onTap: selectTimeOff,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
+              const SizedBox(width: 4),
+              Expanded(
+                child: GestureDetector(
+                  onTap: selectTimeOff,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      color: isTimeOffSelected
+                          ? (isDarkMode ? Colors.white : Colors.white)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: isTimeOffSelected
+                          ? [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ]
+                          : null,
+                    ),
+                    child: Text(
                       "Time Off",
                       style: smallStyle.copyWith(
-                        color: isDarkMode ? Colors.white : Colors.black,
-                        fontWeight: FontWeight.bold,
+                        color: isTimeOffSelected
+                            ? (isDarkMode ? Colors.black : Colors.black)
+                            : (isDarkMode ? Colors.white70 : Colors.black54),
+                        fontWeight: isTimeOffSelected
+                            ? FontWeight.bold
+                            : FontWeight.normal,
                         fontSize: 12.0,
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    if (isTimeOffSelected) _tabIndicator(isDarkMode),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
 
         const SizedBox(height: 18),
@@ -122,15 +159,6 @@ class _TimesheetTimeoffTabViewState extends State<TimesheetTimeoffTabView> {
           }
         }),
       ],
-    );
-  }
-
-  Widget _tabIndicator(bool isDarkMode) {
-    return Container(
-      margin: const EdgeInsets.only(top: 2),
-      height: 3,
-      width: 100,
-      color: isDarkMode ? Colors.white : Colors.black,
     );
   }
 
@@ -175,7 +203,7 @@ class _TimesheetTimeoffTabViewState extends State<TimesheetTimeoffTabView> {
 
   Widget _buildTimesheetList(
       List<dynamic> list, BuildContext context, bool isDarkMode) {
-    const maxItems = 5;
+    const maxItems = 4;
     final showViewAll = list.length > maxItems;
     final displayList = showViewAll ? list.take(maxItems).toList() : list;
 
@@ -217,7 +245,7 @@ class _TimesheetTimeoffTabViewState extends State<TimesheetTimeoffTabView> {
 
   Widget _buildTimeOffList(
       List<dynamic> list, BuildContext context, bool isDarkMode) {
-    const maxItems = 3;
+    const maxItems = 2;
     final showViewAll = list.length > maxItems;
     final displayList = showViewAll ? list.take(maxItems).toList() : list;
 

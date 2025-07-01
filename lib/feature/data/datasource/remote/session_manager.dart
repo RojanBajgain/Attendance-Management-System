@@ -11,26 +11,26 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SessionManager {
   static bool isLoggingOut = false;
 
-  // static Future<void> handleSessionExpired() async {
-  //   if (isLoggingOut) return;
-
-  //   isLoggingOut = true;
-  //   // Get.find<AuthController>().logoutmethod(true);
-  //   await const FlutterSecureStorage().deleteAll();
-  //   print('dsdsd');
-
-  //   SSnackbarUtil.showFadeSnackbar(
-  //     Get.context!,
-  //     'Your session has expired. Please login again...',
-  //     SnackbarType.warning,
-  //   );
-
-  //   Future.delayed(Duration(seconds: 3), () {
-  //     isLoggingOut = false;
-  //   });
-  // }
-
   static Future<void> handleSessionExpired() async {
+    if (isLoggingOut) return;
+
+    isLoggingOut = true;
+    Get.find<AuthController>().localLogout(true);
+    await const FlutterSecureStorage().deleteAll();
+    print('dsdsd');
+
+    SSnackbarUtil.showFadeSnackbar(
+      Get.context!,
+      'Your session has expired. Please login again...',
+      SnackbarType.warning,
+    );
+
+    Future.delayed(Duration(seconds: 3), () {
+      isLoggingOut = false;
+    });
+  }
+
+  /*  static Future<void> handleSessionExpired() async {
     if (isLoggingOut) return;
 
     isLoggingOut = true;
@@ -57,7 +57,7 @@ class SessionManager {
         isLoggingOut = false;
       });
     }
-  }
+  } */
 
   // Method to handle logout (called from AuthController)
   // static Future<void> handleLogout() async {
@@ -83,7 +83,7 @@ class SessionManager {
   //   }
   // }
 
-  // Private method to clear all user data
+  /* // Private method to clear all user data
   static Future<void> _clearAllUserData() async {
     try {
       const secureStorage = FlutterSecureStorage();
@@ -121,7 +121,7 @@ class SessionManager {
     } catch (e) {
       // log("Error clearing user data: $e");
     }
-  }
+  } */
 
   // Method to check if user should remain logged in
   // static Future<bool> shouldStayLoggedIn() async {

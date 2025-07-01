@@ -68,7 +68,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Tranquility Spa',
+                          'Ayata Incorporation',
                           style: smallStyle.copyWith(
                             fontWeight: FontWeight.bold,
                             color: isDarkMode ? Colors.white : Colors.black,
@@ -77,7 +77,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                         ),
                         const SizedBox(height: 5.0),
                         Text(
-                          'Lazimpat, Kathmandu',
+                          'Annamnagar, Kathmandu',
                           style: smallStyle.copyWith(
                             color: isDarkMode ? Colors.white : Colors.black,
                             fontSize: 12.0,
@@ -86,12 +86,13 @@ class _PaymentSlipState extends State<PaymentSlip> {
                       ],
                     ),
                     const Spacer(),
-                    Image.asset(
-                      AppImages.tranquility,
-                      height: 45.0,
-                      width: 45.0,
-                      fit: BoxFit.cover,
-                    ),
+                    Image.asset(AppImages.ayataLogoAppBar),
+                    // Image.asset(
+                    //   AppImages.tranquility,
+                    //   height: 45.0,
+                    //   width: 45.0,
+                    //   fit: BoxFit.cover,
+                    // ),
                   ],
                 ),
                 const SizedBox(height: 10.0),
@@ -429,7 +430,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                     ),
                   );
                 }),
-                const SizedBox(height: 10.0),
+                // const SizedBox(height: 5.0),
                 Obx(() {
                   final payrollTotal = payrollcontroller.payrollDetail.value;
 
@@ -497,32 +498,60 @@ class _PaymentSlipState extends State<PaymentSlip> {
                 //   thickness: 0.5,
                 //   color: Colors.grey,
                 // ),
-                const SizedBox(height: 10.0),
-                Center(
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: isDarkMode
-                          ? MaterialStateProperty.all(Colors.white)
-                          : MaterialStateProperty.all(Colors.blue),
-                      foregroundColor: isDarkMode
-                          ? MaterialStateProperty.all(Colors.black)
-                          : MaterialStateProperty.all(Colors.white),
-                    ),
-                    onPressed: () {
-                      final payrollDetail =
-                          payrollcontroller.payrollDetail.value;
-                      generateAndSavePDF(context, payrollDetail);
-                    },
-                    child: Text(
-                      'Download',
-                      style: smallStyle.copyWith(
-                        color: isDarkMode ? Colors.black : Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
+                // const SizedBox(height: 10.0),
+                // Center(
+                //   child: ElevatedButton(
+                //     style: ButtonStyle(
+                //       backgroundColor: isDarkMode
+                //           ? MaterialStateProperty.all(Colors.white)
+                //           : MaterialStateProperty.all(Colors.blue),
+                //       foregroundColor: isDarkMode
+                //           ? MaterialStateProperty.all(Colors.black)
+                //           : MaterialStateProperty.all(Colors.white),
+                //     ),
+                //     onPressed: () {
+                //       final payrollDetail =
+                //           payrollcontroller.payrollDetail.value;
+                //       generateAndSavePDF(context, payrollDetail);
+                //     },
+                //     child: Text(
+                //       'Download',
+                //       style: smallStyle.copyWith(
+                //         color: isDarkMode ? Colors.black : Colors.white,
+                //         fontWeight: FontWeight.bold,
+                //       ),
+                //     ),
+                //   ),
+                // ),
               ],
+            ),
+          ),
+        ),
+      ),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.all(16.0),
+        child: SizedBox(
+          width: double.infinity,
+          height: 45,
+          child: ElevatedButton(
+            style: ButtonStyle(
+              backgroundColor: isDarkMode
+                  ? MaterialStateProperty.all(Colors.white)
+                  : MaterialStateProperty.all(Colors.blue),
+              foregroundColor: isDarkMode
+                  ? MaterialStateProperty.all(Colors.black)
+                  : MaterialStateProperty.all(Colors.white),
+            ),
+            onPressed: () {
+              final payrollDetail = payrollcontroller.payrollDetail.value;
+              generateAndSavePDF(context, payrollDetail);
+            },
+            child: Text(
+              'Download',
+              style: smallStyle.copyWith(
+                color: isDarkMode ? Colors.black : Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ),
