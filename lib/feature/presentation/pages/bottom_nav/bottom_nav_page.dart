@@ -7,6 +7,7 @@ import 'package:ams/feature/presentation/pages/profile/pages/profile.dart';
 import 'package:ams/feature/presentation/pages/timeoff/time_off_page.dart';
 import 'package:ams/feature/presentation/pages/timesheet/time_sheet_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
@@ -23,11 +24,11 @@ class BottomNavPage extends StatelessWidget {
     final isDarkMode = theme.brightness == Brightness.dark;
 
     List<Widget> pages = [
-      DashboardPage(),
+      const DashboardPage(),
       TimeOffPage(),
       TimeSheetPage(),
       PayrollPage(),
-      ProfilePage(),
+      const ProfilePage(),
     ];
 
     return PopScope(
@@ -153,7 +154,7 @@ class BottomNavPage extends StatelessWidget {
         ),
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),
-          child: Image.asset(
+          child: SvgPicture.asset(
             iconPath,
             key: ValueKey(isSelected),
             color: isSelected

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:ams/config/routes/route_helper.dart';
 import 'package:ams/feature/presentation/pages/bottom_nav/bottom_nav_page.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/sub_view_event/event_page.dart';
 import 'package:ams/feature/presentation/pages/chat/chat.dart';
@@ -242,7 +243,7 @@ class OfflineController extends GetxController {
           // User is logged in and has selected an organization
           print(
               'Navigating to BottomNavPage - user logged in with organization');
-          Get.offAll(() => BottomNavPage(), arguments: 0);
+          Get.offAllNamed(RouteHelper.bottomnav, arguments: 0);
         } else {
           // User is logged in but hasn't selected an organization
           final userData = prefs.getString('userData');

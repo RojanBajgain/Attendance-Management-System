@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:convert';
 
+import 'package:ams/config/routes/route_helper.dart';
 import 'package:ams/feature/data/datasource/remote/api_client.dart';
 import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/repository/organization_repo.dart';
@@ -119,10 +120,12 @@ class OrganizationController extends GetxController {
         }
 
         // Navigate to BottomNavPage
-        Get.offAll(() => BottomNavPage(
+        /* Get.offAll(() => BottomNavPage(
             // profileData: profile,
             // apiKey: organization.apiKey,
-            ));
+            )); */
+
+        Get.offAllNamed(RouteHelper.bottomnav);
 
         if (organizationList.length > 1) {
           SSnackbarUtil.showFadeSnackbar(

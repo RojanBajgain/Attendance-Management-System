@@ -19,7 +19,7 @@ class App extends StatelessWidget {
     return ResponsiveSizer(
       builder: (context, orientation, screenType) {
         SystemChrome.setSystemUIOverlayStyle(
-          SystemUiOverlayStyle(
+          const SystemUiOverlayStyle(
             systemNavigationBarIconBrightness: Brightness.dark,
             systemNavigationBarColor: Colors.transparent,
             statusBarBrightness: Brightness.light,

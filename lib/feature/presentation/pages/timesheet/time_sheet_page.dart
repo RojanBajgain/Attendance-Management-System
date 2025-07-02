@@ -11,7 +11,7 @@ import 'package:intl/intl.dart';
 class TimeSheetPage extends StatefulWidget {
   final int? profileId;
   final String? apiKey;
-  TimeSheetPage({super.key, this.profileId, this.apiKey});
+  const TimeSheetPage({super.key, this.profileId, this.apiKey});
 
   @override
   State<TimeSheetPage> createState() => _TimeSheetPageState();

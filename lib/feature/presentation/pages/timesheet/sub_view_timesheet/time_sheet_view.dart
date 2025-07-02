@@ -114,50 +114,75 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
               ),
               const SizedBox(height: 15.0),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.history,
-                    color: isDarkMode ? Colors.white : Colors.black,
-                  ),
-                  const SizedBox(width: 5.0),
-                  Text(
-                    widget.timesheetdata.entryTime != null
-                        ? DateFormat('hh:mm a')
-                            .format(widget.timesheetdata.entryTime!.toLocal())
-                        : "",
-                    style: smallNStyle.copyWith(
-                      color: Colors.green,
-                      fontSize: 11.0,
+                  SizedBox(
+                    width: 95,
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.history,
+                          color: Colors.green,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          widget.timesheetdata.entryTime != null
+                              ? DateFormat('hh:mm a').format(
+                                  widget.timesheetdata.entryTime!.toLocal())
+                              : "--:--",
+                          style: smallStyle.copyWith(
+                            color: Colors.green,
+                            fontSize: 12.0,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const Spacer(),
-                  Icon(
-                    Icons.update,
-                    color: isDarkMode ? Colors.white : Colors.black,
-                  ),
-                  const SizedBox(width: 5.0),
-                  Text(
-                    widget.timesheetdata.exitTime != null
-                        ? DateFormat('hh:mm a')
-                            .format(widget.timesheetdata.exitTime!.toLocal())
-                        : "-----",
-                    style: smallNStyle.copyWith(
-                      color: Colors.red,
-                      fontSize: 11.0,
+                  const SizedBox(width: 20),
+                  SizedBox(
+                    width: 90,
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.update,
+                          color: Colors.red,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          widget.timesheetdata.exitTime != null
+                              ? DateFormat('hh:mm a').format(
+                                  widget.timesheetdata.exitTime!.toLocal())
+                              : "--:--",
+                          style: smallStyle.copyWith(
+                            color: Colors.red,
+                            fontSize: 12.0,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const Spacer(),
-                  Icon(
-                    Icons.schedule,
-                    color: isDarkMode ? Colors.white : Colors.black,
-                  ),
-                  const SizedBox(width: 5.0),
-                  Text(
-                    "${widget.timesheetdata.totalHour.toString()} hrs",
-                    style: smallNStyle.copyWith(
-                      color: Colors.grey,
-                      fontSize: 11.0,
+                  const SizedBox(width: 20),
+                  SizedBox(
+                    width: 90,
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.schedule,
+                          color:
+                              isDarkMode ? Colors.grey : Colors.grey.shade600,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          "${widget.timesheetdata.totalHour} hrs",
+                          style: smallStyle.copyWith(
+                            color: Colors.grey,
+                            fontSize: 12.0,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],

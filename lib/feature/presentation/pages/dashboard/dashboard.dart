@@ -102,7 +102,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                     const SizedBox(height: 12.0),
                     Container(
-                      height: 105.0,
+                      height: 85.0,
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 22.0, vertical: 22.0),
@@ -139,27 +139,26 @@ class _DashboardPageState extends State<DashboardPage> {
                                         ? Colors.black
                                         : Colors.white,
                                     fontSize: 12.0,
-                                    fontStyle: FontStyle.italic,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          const SizedBox(height: 5),
-                          Text(
-                            'Welcome to Ayata Attendence',
-                            style: smallStyle.copyWith(
-                              fontWeight: FontWeight.w400,
-                              color:
-                                  isDarkMode ? Colors.black87 : Colors.white70,
-                              fontSize: 12.0,
-                            ),
-                          ),
+                          // const SizedBox(height: 5),
+                          // Text(
+                          //   'Welcome to Ayata Attendence',
+                          //   style: smallStyle.copyWith(
+                          //     fontWeight: FontWeight.w400,
+                          //     color:
+                          //         isDarkMode ? Colors.black87 : Colors.white70,
+                          //     fontSize: 12.0,
+                          //   ),
+                          // ),
                           const SizedBox(height: 5),
                           Text(
                             'Department: ${profileController.profile.isNotEmpty ? profileController.profile.first.organization.title : "N/A"}',
                             style: smallStyle.copyWith(
-                              fontWeight: FontWeight.w400,
+                              fontWeight: FontWeight.bold,
                               color:
                                   isDarkMode ? Colors.black87 : Colors.white70,
                               fontSize: 12.0,
@@ -205,7 +204,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     style: smallStyle.copyWith(
                                       color: isDarkMode
                                           ? Colors.white
-                                          : Colors.black,
+                                          : Colors.green,
                                       fontSize: 12.0,
                                     ),
                                   ),
@@ -243,8 +242,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                               child: Container(
                                                 decoration: BoxDecoration(
                                                   color: isDarkMode
-                                                      ? Colors.grey.shade700
-                                                      : Colors.black,
+                                                      ? Colors.green.shade700
+                                                      : Colors.green,
                                                   borderRadius:
                                                       BorderRadius.circular(5),
                                                 ),
@@ -291,7 +290,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     style: smallStyle.copyWith(
                                       color: isDarkMode
                                           ? Colors.white
-                                          : Colors.black,
+                                          : Colors.green,
                                       fontSize: 12.0,
                                     ),
                                   ),
@@ -329,8 +328,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                               child: Container(
                                                 decoration: BoxDecoration(
                                                   color: isDarkMode
-                                                      ? Colors.grey.shade700
-                                                      : Colors.black,
+                                                      ? Colors.green.shade700
+                                                      : Colors.green,
                                                   borderRadius:
                                                       BorderRadius.circular(5),
                                                 ),

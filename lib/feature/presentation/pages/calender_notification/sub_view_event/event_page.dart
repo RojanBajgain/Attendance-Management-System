@@ -236,8 +236,8 @@ class _EventPageState extends State<EventPage>
               children: [
                 Container(
                   margin:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  padding: const EdgeInsets.all(4),
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  padding: const EdgeInsets.all(3),
                   decoration: BoxDecoration(
                     color: isDarkMode ? Colors.grey[800] : Colors.grey[200],
                     borderRadius: BorderRadius.circular(25),
@@ -270,20 +270,39 @@ class _EventPageState extends State<EventPage>
                                     ]
                                   : null,
                             ),
-                            child: Text(
-                              'Events',
-                              style: smallNStyle.copyWith(
-                                color: activeTabType == "EVENT"
-                                    ? (isDarkMode ? Colors.black : Colors.black)
-                                    : (isDarkMode
-                                        ? Colors.white70
-                                        : Colors.black54),
-                                fontWeight: activeTabType == "EVENT"
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
-                                fontSize: 12.0,
-                              ),
-                              textAlign: TextAlign.center,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.event_available_outlined,
+                                  size: 14,
+                                  color: activeTabType == "EVENT"
+                                      ? (isDarkMode
+                                          ? Colors.black
+                                          : Colors.black)
+                                      : (isDarkMode
+                                          ? Colors.white70
+                                          : Colors.black54),
+                                ),
+                                const SizedBox(width: 5),
+                                Text(
+                                  'Events',
+                                  style: smallNStyle.copyWith(
+                                    color: activeTabType == "EVENT"
+                                        ? (isDarkMode
+                                            ? Colors.black
+                                            : Colors.black)
+                                        : (isDarkMode
+                                            ? Colors.white70
+                                            : Colors.black54),
+                                    fontWeight: activeTabType == "EVENT"
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                    fontSize: 12.0,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -315,20 +334,39 @@ class _EventPageState extends State<EventPage>
                                     ]
                                   : null,
                             ),
-                            child: Text(
-                              'Notices',
-                              style: smallNStyle.copyWith(
-                                color: activeTabType == "NOTICE"
-                                    ? (isDarkMode ? Colors.black : Colors.black)
-                                    : (isDarkMode
-                                        ? Colors.white70
-                                        : Colors.black54),
-                                fontWeight: activeTabType == "NOTICE"
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
-                                fontSize: 12.0,
-                              ),
-                              textAlign: TextAlign.center,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.announcement_outlined,
+                                  size: 14,
+                                  color: activeTabType == "NOTICE"
+                                      ? (isDarkMode
+                                          ? Colors.black
+                                          : Colors.black)
+                                      : (isDarkMode
+                                          ? Colors.white70
+                                          : Colors.black54),
+                                ),
+                                const SizedBox(width: 5),
+                                Text(
+                                  'Notices',
+                                  style: smallNStyle.copyWith(
+                                    color: activeTabType == "NOTICE"
+                                        ? (isDarkMode
+                                            ? Colors.black
+                                            : Colors.black)
+                                        : (isDarkMode
+                                            ? Colors.white70
+                                            : Colors.black54),
+                                    fontWeight: activeTabType == "NOTICE"
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                    fontSize: 12.0,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -360,20 +398,39 @@ class _EventPageState extends State<EventPage>
                                     ]
                                   : null,
                             ),
-                            child: Text(
-                              'Holidays',
-                              style: smallNStyle.copyWith(
-                                color: activeTabType == "HOLIDAY"
-                                    ? (isDarkMode ? Colors.black : Colors.black)
-                                    : (isDarkMode
-                                        ? Colors.white70
-                                        : Colors.black54),
-                                fontWeight: activeTabType == "HOLIDAY"
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
-                                fontSize: 12.0,
-                              ),
-                              textAlign: TextAlign.center,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.celebration_outlined,
+                                  size: 14,
+                                  color: activeTabType == "HOLIDAY"
+                                      ? (isDarkMode
+                                          ? Colors.black
+                                          : Colors.black)
+                                      : (isDarkMode
+                                          ? Colors.white70
+                                          : Colors.black54),
+                                ),
+                                const SizedBox(width: 5),
+                                Text(
+                                  'Holidays',
+                                  style: smallNStyle.copyWith(
+                                    color: activeTabType == "HOLIDAY"
+                                        ? (isDarkMode
+                                            ? Colors.black
+                                            : Colors.black)
+                                        : (isDarkMode
+                                            ? Colors.white70
+                                            : Colors.black54),
+                                    fontWeight: activeTabType == "HOLIDAY"
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                    fontSize: 12.0,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -405,20 +462,39 @@ class _EventPageState extends State<EventPage>
                                     ]
                                   : null,
                             ),
-                            child: Text(
-                              'Reminders',
-                              style: smallNStyle.copyWith(
-                                color: activeTabType == "REMINDER"
-                                    ? (isDarkMode ? Colors.black : Colors.black)
-                                    : (isDarkMode
-                                        ? Colors.white70
-                                        : Colors.black54),
-                                fontWeight: activeTabType == "REMINDER"
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
-                                fontSize: 12.0,
-                              ),
-                              textAlign: TextAlign.center,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.alarm_outlined,
+                                  size: 14,
+                                  color: activeTabType == "REMINDER"
+                                      ? (isDarkMode
+                                          ? Colors.black
+                                          : Colors.black)
+                                      : (isDarkMode
+                                          ? Colors.white70
+                                          : Colors.black54),
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'Reminder',
+                                  style: smallNStyle.copyWith(
+                                    color: activeTabType == "REMINDER"
+                                        ? (isDarkMode
+                                            ? Colors.black
+                                            : Colors.black)
+                                        : (isDarkMode
+                                            ? Colors.white70
+                                            : Colors.black54),
+                                    fontWeight: activeTabType == "REMINDER"
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                    fontSize: 12.0,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
                             ),
                           ),
                         ),

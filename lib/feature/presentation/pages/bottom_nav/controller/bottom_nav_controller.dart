@@ -13,7 +13,7 @@ class BottomNavController extends GetxController {
   // );
   @override
   void onInit() {
-    selectedTab.value = 0;
+    // selectedTab.value = 0;
     // logger.d("heloooooooooooo");
     super.onInit();
   }

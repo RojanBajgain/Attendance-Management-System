@@ -303,7 +303,7 @@ class ClockInOutController extends GetxController {
           // 'INFO',
           Get.context!,
 
-          response.message ?? 'No break time available',
+          'No break time available',
           SnackbarType.info,
         );
       }

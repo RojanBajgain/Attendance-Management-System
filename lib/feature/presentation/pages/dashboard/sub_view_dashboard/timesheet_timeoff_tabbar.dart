@@ -3,7 +3,6 @@ import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/timeoff/controller/timeoff_controller.dart';
 import 'package:ams/feature/presentation/pages/timesheet/controller/timesheet_controller.dart';
 import 'package:ams/feature/presentation/pages/timesheet/sub_view_timesheet/time_sheet_view.dart';
-import 'package:ams/feature/presentation/pages/timeoff/time_off_page.dart';
 import 'package:ams/feature/presentation/pages/dashboard/sub_view_dashboard/timeoff_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -78,18 +77,33 @@ class _TimesheetTimeoffTabViewState extends State<TimesheetTimeoffTabView> {
                             ]
                           : null,
                     ),
-                    child: Text(
-                      "Timesheet",
-                      style: smallStyle.copyWith(
-                        color: isTimesheetSelected
-                            ? (isDarkMode ? Colors.black : Colors.black)
-                            : (isDarkMode ? Colors.white70 : Colors.black54),
-                        fontWeight: isTimesheetSelected
-                            ? FontWeight.bold
-                            : FontWeight.normal,
-                        fontSize: 12.0,
-                      ),
-                      textAlign: TextAlign.center,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/icons/timesheet.png',
+                          height: 14,
+                          width: 14,
+                          color: isTimesheetSelected
+                              ? (isDarkMode ? Colors.black : Colors.black)
+                              : (isDarkMode ? Colors.white70 : Colors.black54),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          "Timesheet",
+                          style: smallStyle.copyWith(
+                            color: isTimesheetSelected
+                                ? (isDarkMode ? Colors.black : Colors.black)
+                                : (isDarkMode
+                                    ? Colors.white70
+                                    : Colors.black54),
+                            fontWeight: isTimesheetSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            fontSize: 12.0,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -115,18 +129,33 @@ class _TimesheetTimeoffTabViewState extends State<TimesheetTimeoffTabView> {
                             ]
                           : null,
                     ),
-                    child: Text(
-                      "Time Off",
-                      style: smallStyle.copyWith(
-                        color: isTimeOffSelected
-                            ? (isDarkMode ? Colors.black : Colors.black)
-                            : (isDarkMode ? Colors.white70 : Colors.black54),
-                        fontWeight: isTimeOffSelected
-                            ? FontWeight.bold
-                            : FontWeight.normal,
-                        fontSize: 12.0,
-                      ),
-                      textAlign: TextAlign.center,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/icons/timeoff.png',
+                          height: 14,
+                          width: 14,
+                          color: isTimeOffSelected
+                              ? (isDarkMode ? Colors.black : Colors.black)
+                              : (isDarkMode ? Colors.white70 : Colors.black54),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          "Time Off",
+                          style: smallStyle.copyWith(
+                            color: isTimeOffSelected
+                                ? (isDarkMode ? Colors.black : Colors.black)
+                                : (isDarkMode
+                                    ? Colors.white70
+                                    : Colors.black54),
+                            fontWeight: isTimeOffSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            fontSize: 12.0,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

@@ -1,4 +1,3 @@
-import 'package:ams/config/resources/images.dart';
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/controller/calender_notification_controller.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/model/calender_model.dart';
@@ -93,18 +92,35 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                               ]
                             : null,
                       ),
-                      child: Text(
-                        'Holiday',
-                        style: smallNStyle.copyWith(
-                          color: selectedType == "HOLIDAY"
-                              ? (isDarkMode ? Colors.black : Colors.black)
-                              : (isDarkMode ? Colors.white70 : Colors.black54),
-                          fontWeight: selectedType == "HOLIDAY"
-                              ? FontWeight.bold
-                              : FontWeight.normal,
-                          fontSize: 12.0,
-                        ),
-                        textAlign: TextAlign.center,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.celebration_outlined,
+                            size: 14,
+                            color: selectedType == "HOLIDAY"
+                                ? (isDarkMode ? Colors.black : Colors.black)
+                                : (isDarkMode
+                                    ? Colors.white70
+                                    : Colors.black54),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            'Holiday',
+                            style: smallNStyle.copyWith(
+                              color: selectedType == "HOLIDAY"
+                                  ? (isDarkMode ? Colors.black : Colors.black)
+                                  : (isDarkMode
+                                      ? Colors.white70
+                                      : Colors.black54),
+                              fontWeight: selectedType == "HOLIDAY"
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              fontSize: 12.0,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -130,18 +146,35 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                               ]
                             : null,
                       ),
-                      child: Text(
-                        'Events',
-                        style: smallNStyle.copyWith(
-                          color: selectedType == "EVENT"
-                              ? (isDarkMode ? Colors.black : Colors.black)
-                              : (isDarkMode ? Colors.white70 : Colors.black54),
-                          fontWeight: selectedType == "EVENT"
-                              ? FontWeight.bold
-                              : FontWeight.normal,
-                          fontSize: 12.0,
-                        ),
-                        textAlign: TextAlign.center,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.event_available_outlined,
+                            size: 14,
+                            color: selectedType == "EVENT"
+                                ? (isDarkMode ? Colors.black : Colors.black)
+                                : (isDarkMode
+                                    ? Colors.white70
+                                    : Colors.black54),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            'Events',
+                            style: smallNStyle.copyWith(
+                              color: selectedType == "EVENT"
+                                  ? (isDarkMode ? Colors.black : Colors.black)
+                                  : (isDarkMode
+                                      ? Colors.white70
+                                      : Colors.black54),
+                              fontWeight: selectedType == "EVENT"
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              fontSize: 12.0,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -167,18 +200,35 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                               ]
                             : null,
                       ),
-                      child: Text(
-                        'Notice',
-                        style: smallNStyle.copyWith(
-                          color: selectedType == "NOTICE"
-                              ? (isDarkMode ? Colors.black : Colors.black)
-                              : (isDarkMode ? Colors.white70 : Colors.black54),
-                          fontWeight: selectedType == "NOTICE"
-                              ? FontWeight.bold
-                              : FontWeight.normal,
-                          fontSize: 12.0,
-                        ),
-                        textAlign: TextAlign.center,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.announcement_outlined,
+                            size: 14,
+                            color: selectedType == "NOTICE"
+                                ? (isDarkMode ? Colors.black : Colors.black)
+                                : (isDarkMode
+                                    ? Colors.white70
+                                    : Colors.black54),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            'Notice',
+                            style: smallNStyle.copyWith(
+                              color: selectedType == "NOTICE"
+                                  ? (isDarkMode ? Colors.black : Colors.black)
+                                  : (isDarkMode
+                                      ? Colors.white70
+                                      : Colors.black54),
+                              fontWeight: selectedType == "NOTICE"
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              fontSize: 12.0,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -280,35 +330,35 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                     return _buildCalendarItem(item, isDarkMode);
                   },
                 ),
-                if (filteredList.length > 3)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      InkWell(
-                        onTap: navigateToEventPage,
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 20.0, bottom: 15.0),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 8.0, horizontal: 16.0),
-                            decoration: BoxDecoration(
-                              color:
-                                  isDarkMode ? Colors.blueAccent : Colors.blue,
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            child: Text(
-                              'View All',
-                              style: smallStyle.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                // if (filteredList.length > 3)
+                //   Row(
+                //     mainAxisAlignment: MainAxisAlignment.center,
+                //     crossAxisAlignment: CrossAxisAlignment.center,
+                //     children: [
+                //       InkWell(
+                //         onTap: navigateToEventPage,
+                //         child: Padding(
+                //           padding: EdgeInsets.only(top: 20.0, bottom: 15.0),
+                //           child: Container(
+                //             padding: const EdgeInsets.symmetric(
+                //                 vertical: 8.0, horizontal: 16.0),
+                //             decoration: BoxDecoration(
+                //               color:
+                //                   isDarkMode ? Colors.blueAccent : Colors.blue,
+                //               borderRadius: BorderRadius.circular(8.0),
+                //             ),
+                //             child: Text(
+                //               'View All',
+                //               style: smallStyle.copyWith(
+                //                 color: Colors.white,
+                //                 fontWeight: FontWeight.w500,
+                //               ),
+                //             ),
+                //           ),
+                //         ),
+                //       ),
+                //     ],
+                //   ),
               ],
             );
           }),

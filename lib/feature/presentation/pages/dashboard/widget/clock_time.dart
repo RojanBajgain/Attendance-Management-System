@@ -399,7 +399,7 @@ class _ClockTimeState extends State<ClockTime> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Clock In at",
+                        "Check In At",
                         style: smallStyle.copyWith(
                           color: isDarkMode ? Colors.white : Colors.black,
                           fontWeight: FontWeight.bold,
@@ -423,7 +423,7 @@ class _ClockTimeState extends State<ClockTime> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        "Clock Out at",
+                        "Check Out At",
                         style: smallStyle.copyWith(
                           color: isDarkMode ? Colors.white : Colors.black,
                           fontWeight: FontWeight.bold,
@@ -539,7 +539,7 @@ class _ClockTimeState extends State<ClockTime> {
               value: progress,
               strokeWidth: 10.0,
               valueColor: AlwaysStoppedAnimation(
-                  isClockingOut ? Colors.blue : Colors.green[600]),
+                  isClockingOut ? Colors.green : Colors.green[600]),
               backgroundColor: Colors.grey[300],
             ),
           ),
@@ -547,7 +547,7 @@ class _ClockTimeState extends State<ClockTime> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                isOnBreak.value ? "Break Time" : "Clock In Time",
+                isOnBreak.value ? "Break Time" : "Elapsed Time",
                 style: smallStyle.copyWith(
                   color: isDarkMode ? Colors.white : Colors.black,
                   fontWeight: FontWeight.bold,
@@ -556,13 +556,9 @@ class _ClockTimeState extends State<ClockTime> {
               ),
               const SizedBox(height: 8),
               Text(
-                isOnBreak.value
-                    ? _formatStopwatchTime(
-                        timerController.stopwatchSeconds.value)
-                    : _formatStopwatchTime(
-                        timerController.elapsedSeconds.value),
+                "${isOnBreak.value ? _formatStopwatchTime(timerController.stopwatchSeconds.value) : _formatStopwatchTime(timerController.elapsedSeconds.value)} Hrs",
                 style: smallNStyle.copyWith(
-                  color: isDarkMode ? Colors.blue : Colors.blue,
+                  color: isDarkMode ? Colors.green : Colors.green,
                   fontWeight: FontWeight.bold,
                   fontSize: 12.0,
                 ),
@@ -582,7 +578,7 @@ class _ClockTimeState extends State<ClockTime> {
           "isClockedOut = ${isClockedOut.value}");
 
       return TapDebouncer(
-        cooldown: const Duration(milliseconds: 500),
+        cooldown: const Duration(milliseconds: 200),
         onTap: () async {
           log("ClockInOutButton tapped: isOnBreak = ${isOnBreak.value}");
           if (isOnBreak.value) {
@@ -596,26 +592,30 @@ class _ClockTimeState extends State<ClockTime> {
           }
         },
         builder: (BuildContext context, TapDebouncerFunc? onTap) {
-          return ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(6)),
+          return SizedBox(
+            height: 40,
+            width: 110,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(6)),
+                ),
+                backgroundColor: isOnBreak.value
+                    ? Colors.orange[700]
+                    : (isClockingOut ? Colors.red[700] : Colors.green[600]),
               ),
-              backgroundColor: isOnBreak.value
-                  ? Colors.orange[700]
-                  : (isClockingOut ? Colors.red[700] : Colors.green[600]),
-            ),
-            onPressed: onTap,
-            child: Text(
-              isOnBreak.value
-                  ? 'Resume'
-                  : (isClockedOut.value
-                      ? 'Clocked Out'
-                      : (isClockedInToday.value ? 'Clock Out' : 'Clock In')),
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 12.0,
+              onPressed: onTap,
+              child: Text(
+                isOnBreak.value
+                    ? 'Resume'
+                    : (isClockedOut.value
+                        ? 'Checked Out'
+                        : (isClockedInToday.value ? 'Check Out' : 'Check In')),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12.0,
+                ),
               ),
             ),
           );
@@ -631,20 +631,24 @@ class _ClockTimeState extends State<ClockTime> {
         _handleBreak();
       },
       builder: (BuildContext context, TapDebouncerFunc? onTap) {
-        return ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(6)),
+        return SizedBox(
+          height: 40,
+          width: 110,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(6)),
+              ),
+              backgroundColor: Colors.orange[700],
             ),
-            backgroundColor: Colors.orange[700],
-          ),
-          onPressed: onTap,
-          child: const Text(
-            'Break',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 12.0,
+            onPressed: onTap,
+            child: const Text(
+              'Break',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 12.0,
+              ),
             ),
           ),
         );

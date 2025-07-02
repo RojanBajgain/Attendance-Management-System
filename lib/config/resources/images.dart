@@ -21,9 +21,15 @@ class AppImages {
 }
 
 class AppIcons {
-  static const home = "assets/icons/home.png";
-  static const timeoff = "assets/icons/timeoff.png";
-  static const timesheet = "assets/icons/timesheet.png";
-  static const payroll = "assets/icons/payroll.png";
-  static const profile = "assets/icons/profile.png";
+  // static const home = "assets/icons/home.png";
+  // static const timeoff = "assets/icons/timeoff.png";
+  // static const timesheet = "assets/icons/timesheet.png";
+  // static const payroll = "assets/icons/payroll.png";
+  // static const profile = "assets/icons/profile.png";
+
+  static const home = "assets/icons/home.svg";
+  static const timeoff = "assets/icons/timeoff.svg";
+  static const timesheet = "assets/icons/timesheet.svg";
+  static const payroll = "assets/icons/payroll.svg";
+  static const profile = "assets/icons/profile.svg";
 }
