@@ -42,12 +42,13 @@ class _LandingPageState extends State<LandingPage> {
               const Spacer(flex: 1),
               Center(
                 child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  child: AspectRatio(
-                    aspectRatio: 1,
-                    child: Image.asset(
-                      AppImages.ayataLogoAppBar,
-                    ),
+                  height: 100, // Set your desired height
+                  width: 100, // Or leave this out for auto-width
+                  child: Image.asset(
+                    AppImages.rain,
+                    color: Colors.lightBlue,
+                    fit: BoxFit
+                        .contain, // Optional: makes image scale within box
                   ),
                 ),
               ),
@@ -55,7 +56,7 @@ class _LandingPageState extends State<LandingPage> {
               AnimatedTextKit(
                 animatedTexts: [
                   TypewriterAnimatedText(
-                    '"Welcome To AYATA"',
+                    '"Welcome To RainLocal"',
                     textStyle: normalStyle.copyWith(
                       fontWeight: FontWeight.bold,
                       color: isDarkMode

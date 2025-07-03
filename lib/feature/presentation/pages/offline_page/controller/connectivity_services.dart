@@ -8,6 +8,8 @@ import 'package:ams/feature/presentation/pages/landing/landing_page.dart';
 import 'package:ams/feature/presentation/pages/login/login_page.dart';
 import 'package:ams/feature/presentation/pages/offline_page/page/offline_page.dart';
 import 'package:ams/feature/presentation/pages/organization/pages/organization_page.dart';
+import 'package:ams/feature/presentation/pages/payroll/payroll_page.dart';
+import 'package:ams/feature/presentation/pages/payroll/sub_view_payroll/payment_slip_view.dart';
 import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
@@ -297,13 +299,15 @@ class OfflineController extends GetxController {
       if (_lastRoute == '/OrganizationPage') normalizedRoute = '/organization';
       if (_lastRoute == '/ChatsScreen') normalizedRoute = '/chat';
       if (_lastRoute == '/EventPage') normalizedRoute = '/EventPage';
+      if (_lastRoute == '/PaymentSlip') normalizedRoute = '/PaymentSlip';
 
       // Check if the last route requires authentication
       final protectedRoutes = [
         '/bottomNav',
         '/organization',
         '/chat',
-        '/EventPage'
+        '/EventPage',
+        '/PaymentSlip'
       ];
       bool isProtectedRoute = protectedRoutes.contains(normalizedRoute);
 
@@ -344,6 +348,11 @@ class OfflineController extends GetxController {
           break;
         case '/EventPage':
           Get.offAll(() => const EventPage());
+          break;
+        case '/PaymentSlip':
+          Get.offAll(() => PaymentSlip(
+                payrollId: Get.parameters['payrollId'] ?? '',
+              ));
           break;
         default:
           print(

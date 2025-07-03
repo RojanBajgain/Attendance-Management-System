@@ -82,8 +82,8 @@ class _TimesheetTimeoffTabViewState extends State<TimesheetTimeoffTabView> {
                       children: [
                         Image.asset(
                           'assets/icons/timesheet.png',
-                          height: 14,
-                          width: 14,
+                          height: 20,
+                          width: 20,
                           color: isTimesheetSelected
                               ? (isDarkMode ? Colors.black : Colors.black)
                               : (isDarkMode ? Colors.white70 : Colors.black54),
@@ -134,8 +134,8 @@ class _TimesheetTimeoffTabViewState extends State<TimesheetTimeoffTabView> {
                       children: [
                         Image.asset(
                           'assets/icons/timeoff.png',
-                          height: 14,
-                          width: 14,
+                          height: 20,
+                          width: 20,
                           color: isTimeOffSelected
                               ? (isDarkMode ? Colors.black : Colors.black)
                               : (isDarkMode ? Colors.white70 : Colors.black54),

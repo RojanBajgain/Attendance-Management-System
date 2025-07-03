@@ -176,6 +176,7 @@ class _EditProfileViewState extends State<EditProfileView> {
       },
       child: Scaffold(
         appBar: AppBar(
+          surfaceTintColor: Colors.transparent,
           titleSpacing: 0,
           title: Text(
             "Edit Profile",

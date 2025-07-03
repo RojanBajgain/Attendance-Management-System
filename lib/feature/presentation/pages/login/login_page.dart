@@ -102,7 +102,7 @@ class _LoginPageState extends State<LoginPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
               child: Text(
-                '© 2025 AMS. All Rights Reserved \nProduct of Ayata Inc.',
+                '© 2025. All Rights Reserved \nProduct of Ayata Inc.',
                 textAlign: TextAlign.center,
                 style: miniStyle.copyWith(fontSize: 10, color: Colors.grey),
               ),
@@ -134,10 +134,11 @@ class _LoginPageState extends State<LoginPage> {
                     children: [
                       const SizedBox(height: 20),
                       Image.asset(
-                        AppImages.ayataLogoAppBar,
-                        height: 100,
+                        AppImages.rainlocal,
+                        height: 50,
+                        color: Colors.lightBlue,
                       ),
-                      const SizedBox(height: 20.0),
+                      const SizedBox(height: 60.0),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -154,7 +155,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            "AYATA",
+                            "RainLocal",
                             style: mediumStyle.copyWith(
                                 color: isDarkMode ? Colors.white : Colors.black,
                                 fontWeight: FontWeight.w600),
@@ -168,7 +169,7 @@ class _LoginPageState extends State<LoginPage> {
                         children: [
                           Expanded(
                             child: Text(
-                              "Fill the credentials below to login into AYATA",
+                              "Fill the credentials below to login into RainLocal",
                               style: smallStyle.copyWith(
                                 fontSize: 13,
                                 color: isDarkMode

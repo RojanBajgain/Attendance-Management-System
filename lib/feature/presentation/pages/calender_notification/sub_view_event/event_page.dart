@@ -275,7 +275,7 @@ class _EventPageState extends State<EventPage>
                               children: [
                                 Icon(
                                   Icons.event_available_outlined,
-                                  size: 14,
+                                  size: 18,
                                   color: activeTabType == "EVENT"
                                       ? (isDarkMode
                                           ? Colors.black
@@ -339,7 +339,7 @@ class _EventPageState extends State<EventPage>
                               children: [
                                 Icon(
                                   Icons.announcement_outlined,
-                                  size: 14,
+                                  size: 18,
                                   color: activeTabType == "NOTICE"
                                       ? (isDarkMode
                                           ? Colors.black
@@ -403,7 +403,7 @@ class _EventPageState extends State<EventPage>
                               children: [
                                 Icon(
                                   Icons.celebration_outlined,
-                                  size: 14,
+                                  size: 18,
                                   color: activeTabType == "HOLIDAY"
                                       ? (isDarkMode
                                           ? Colors.black
@@ -467,7 +467,7 @@ class _EventPageState extends State<EventPage>
                               children: [
                                 Icon(
                                   Icons.alarm_outlined,
-                                  size: 14,
+                                  size: 18,
                                   color: activeTabType == "REMINDER"
                                       ? (isDarkMode
                                           ? Colors.black

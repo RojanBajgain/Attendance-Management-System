@@ -722,6 +722,7 @@ class _EditUserAddressState extends State<EditUserAddress> {
 
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
         automaticallyImplyLeading: false,
         titleSpacing: 20.0,
         title: Text(

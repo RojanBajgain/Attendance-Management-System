@@ -41,7 +41,8 @@ class _ConstantAppBarState extends State<ConstantAppBar> {
         child: Padding(
           padding: const EdgeInsets.all(2.0),
           child: Image.asset(
-            AppImages.logo,
+            color: Colors.lightBlue,
+            AppImages.rainlocal,
             height: 90,
             width: 90,
           ),

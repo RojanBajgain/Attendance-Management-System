@@ -4,6 +4,7 @@ import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/repository/payroll_repo.dart';
 import 'package:ams/feature/presentation/pages/payroll/model/payroll_detail_model.dart';
 import 'package:ams/feature/presentation/pages/payroll/model/payroll_model.dart';
+import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -65,7 +66,11 @@ class PayrollController extends GetxController {
         if (kDebugMode) {
           print('its error is ${response.status}');
         }
-        Get.snackbar('Error', 'Failed to fetch Payroll details.');
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
+          'An error occurred. Please try again.',
+          SnackbarType.error,
+        );
       }
     } catch (e) {
       if (kDebugMode) {

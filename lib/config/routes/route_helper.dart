@@ -5,6 +5,7 @@ import 'package:ams/feature/presentation/pages/landing/landing_page.dart';
 import 'package:ams/feature/presentation/pages/login/login_page.dart';
 import 'package:ams/feature/presentation/pages/offline_page/page/offline_page.dart';
 import 'package:ams/feature/presentation/pages/organization/pages/organization_page.dart';
+import 'package:ams/feature/presentation/pages/payroll/sub_view_payroll/payment_slip_view.dart';
 import 'package:get/get.dart';
 
 class RouteHelper {
@@ -17,6 +18,7 @@ class RouteHelper {
   static const String organization = '/organization';
   static const String chat = '/chat';
   static const String event = '/EventPage';
+  static const String paymentslip = '/PaymentSlip';
 
   // static String getHome() => home;
   static String getlandingpage() => landingpage;
@@ -26,6 +28,7 @@ class RouteHelper {
   static String getorganization() => organization;
   static String getchat() => chat;
   static String getevent() => event;
+  static String getpaymentslip() => paymentslip;
 
   static List<GetPage> routes = [
     GetPage(
@@ -53,6 +56,12 @@ class RouteHelper {
     GetPage(
       name: event,
       page: () => const EventPage(),
+    ),
+    GetPage(
+      name: paymentslip,
+      page: () => PaymentSlip(
+        payrollId: Get.parameters['payemntId'] ?? '',
+      ),
     ),
     GetPage(
       name: nointernet,

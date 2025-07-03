@@ -143,7 +143,7 @@ class _ProfilePicState extends State<ProfilePic> {
                           ),
                           const SizedBox(width: 5.0),
                           Container(
-                            width: 40.0,
+                            width: 55.0,
                             decoration: BoxDecoration(
                               color: profiledata.isActive
                                   ? Colors.green
@@ -153,7 +153,7 @@ class _ProfilePicState extends State<ProfilePic> {
                               ),
                             ),
                             child: Text(
-                              profiledata.isActive ? 'IN' : 'OUT',
+                              profiledata.isActive ? 'Online' : 'Offline',
                               textAlign: TextAlign.center,
                               style: smallStyle.copyWith(
                                 fontWeight: FontWeight.bold,

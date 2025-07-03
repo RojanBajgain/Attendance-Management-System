@@ -840,6 +840,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
 
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
         titleSpacing: 0,
         title: Text(
           "Edit User Detail",

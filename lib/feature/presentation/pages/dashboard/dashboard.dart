@@ -204,7 +204,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     style: smallStyle.copyWith(
                                       color: isDarkMode
                                           ? Colors.white
-                                          : Colors.green,
+                                          : Colors.black,
                                       fontSize: 12.0,
                                     ),
                                   ),
@@ -290,7 +290,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     style: smallStyle.copyWith(
                                       color: isDarkMode
                                           ? Colors.white
-                                          : Colors.green,
+                                          : Colors.black,
                                       fontSize: 12.0,
                                     ),
                                   ),

@@ -18,6 +18,8 @@ class AppImages {
   static const profileImage = "assets/images/profile_image.png";
   static const EditprofileImage = "assets/images/profile.png";
   static const tranquility = "assets/images/tranquility_logo.png";
+  static const rainlocal = "assets/images/rain.png";
+  static const rain = "assets/images/raincloud.png";
 }
 
 class AppIcons {

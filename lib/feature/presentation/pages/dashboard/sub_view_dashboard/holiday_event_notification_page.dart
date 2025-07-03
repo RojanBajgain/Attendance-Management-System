@@ -97,7 +97,7 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                         children: [
                           Icon(
                             Icons.celebration_outlined,
-                            size: 14,
+                            size: 18,
                             color: selectedType == "HOLIDAY"
                                 ? (isDarkMode ? Colors.black : Colors.black)
                                 : (isDarkMode
@@ -151,7 +151,7 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                         children: [
                           Icon(
                             Icons.event_available_outlined,
-                            size: 14,
+                            size: 18,
                             color: selectedType == "EVENT"
                                 ? (isDarkMode ? Colors.black : Colors.black)
                                 : (isDarkMode
@@ -205,7 +205,7 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                         children: [
                           Icon(
                             Icons.announcement_outlined,
-                            size: 14,
+                            size: 18,
                             color: selectedType == "NOTICE"
                                 ? (isDarkMode ? Colors.black : Colors.black)
                                 : (isDarkMode
