@@ -134,9 +134,9 @@ class _LoginPageState extends State<LoginPage> {
                     children: [
                       const SizedBox(height: 20),
                       Image.asset(
-                        AppImages.rainlocal,
+                        AppImages.logo,
                         height: 50,
-                        color: Colors.lightBlue,
+                        // color: Colors.lightBlue,
                       ),
                       const SizedBox(height: 60.0),
                       Row(
@@ -155,7 +155,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            "RainLocal",
+                            "AYATA",
                             style: mediumStyle.copyWith(
                                 color: isDarkMode ? Colors.white : Colors.black,
                                 fontWeight: FontWeight.w600),
@@ -169,7 +169,7 @@ class _LoginPageState extends State<LoginPage> {
                         children: [
                           Expanded(
                             child: Text(
-                              "Fill the credentials below to login into RainLocal",
+                              "Fill the credentials below to login into AYATA",
                               style: smallStyle.copyWith(
                                 fontSize: 13,
                                 color: isDarkMode

@@ -73,7 +73,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Rain Local',
+                            'Ayata Incorporation',
                             style: smallStyle.copyWith(
                               fontWeight: FontWeight.bold,
                               color: isDarkMode ? Colors.white : Colors.black,
@@ -82,7 +82,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                           ),
                           const SizedBox(height: 5.0),
                           Text(
-                            'Kathmandu, Nepal',
+                            'Annamnagar, Kathmandu',
                             style: smallStyle.copyWith(
                               color: isDarkMode ? Colors.white : Colors.black,
                               fontSize: 12.0,
@@ -92,8 +92,8 @@ class _PaymentSlipState extends State<PaymentSlip> {
                       ),
                       const Spacer(),
                       Image.asset(
-                        color: Colors.lightBlue,
-                        AppImages.rain,
+                        // color: Colors.lightBlue,
+                        AppImages.logo,
                         height: 40,
                         width: 100,
                       ),

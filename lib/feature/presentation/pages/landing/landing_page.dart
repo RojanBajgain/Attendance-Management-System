@@ -42,21 +42,23 @@ class _LandingPageState extends State<LandingPage> {
               const Spacer(flex: 1),
               Center(
                 child: SizedBox(
-                  height: 100, // Set your desired height
-                  width: 100, // Or leave this out for auto-width
-                  child: Image.asset(
-                    AppImages.rain,
-                    color: Colors.lightBlue,
-                    fit: BoxFit
-                        .contain, // Optional: makes image scale within box
+                  width: 100,
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child: Image.asset(
+                      AppImages.logo,
+                      // color: isDarkMode ? Colors.white : Colors.black,
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
               ),
+
               const Spacer(flex: 1),
               AnimatedTextKit(
                 animatedTexts: [
                   TypewriterAnimatedText(
-                    '"Welcome To RainLocal"',
+                    '"Welcome To AYATA"',
                     textStyle: normalStyle.copyWith(
                       fontWeight: FontWeight.bold,
                       color: isDarkMode
