@@ -68,7 +68,7 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
               color: isDarkMode ? Colors.grey[800] : Colors.grey[200],
-              borderRadius: BorderRadius.circular(25),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
               children: [
@@ -81,7 +81,7 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                         color: selectedType == "HOLIDAY"
                             ? (isDarkMode ? Colors.white : Colors.white)
                             : Colors.transparent,
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(12),
                         boxShadow: selectedType == "HOLIDAY"
                             ? [
                                 BoxShadow(
@@ -135,7 +135,7 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                         color: selectedType == "EVENT"
                             ? (isDarkMode ? Colors.white : Colors.white)
                             : Colors.transparent,
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(12),
                         boxShadow: selectedType == "EVENT"
                             ? [
                                 BoxShadow(
@@ -189,7 +189,7 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
                         color: selectedType == "NOTICE"
                             ? (isDarkMode ? Colors.white : Colors.white)
                             : Colors.transparent,
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(12),
                         boxShadow: selectedType == "NOTICE"
                             ? [
                                 BoxShadow(

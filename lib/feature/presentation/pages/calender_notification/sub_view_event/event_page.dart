@@ -240,7 +240,7 @@ class _EventPageState extends State<EventPage>
                   padding: const EdgeInsets.all(3),
                   decoration: BoxDecoration(
                     color: isDarkMode ? Colors.grey[800] : Colors.grey[200],
-                    borderRadius: BorderRadius.circular(25),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
                     children: [
@@ -259,7 +259,7 @@ class _EventPageState extends State<EventPage>
                               color: activeTabType == "EVENT"
                                   ? (isDarkMode ? Colors.white : Colors.white)
                                   : Colors.transparent,
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(12),
                               boxShadow: activeTabType == "EVENT"
                                   ? [
                                       BoxShadow(
@@ -323,7 +323,7 @@ class _EventPageState extends State<EventPage>
                               color: activeTabType == "NOTICE"
                                   ? (isDarkMode ? Colors.white : Colors.white)
                                   : Colors.transparent,
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(12),
                               boxShadow: activeTabType == "NOTICE"
                                   ? [
                                       BoxShadow(
@@ -387,7 +387,7 @@ class _EventPageState extends State<EventPage>
                               color: activeTabType == "HOLIDAY"
                                   ? (isDarkMode ? Colors.white : Colors.white)
                                   : Colors.transparent,
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(12),
                               boxShadow: activeTabType == "HOLIDAY"
                                   ? [
                                       BoxShadow(
@@ -451,7 +451,7 @@ class _EventPageState extends State<EventPage>
                               color: activeTabType == "REMINDER"
                                   ? (isDarkMode ? Colors.white : Colors.white)
                                   : Colors.transparent,
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(12),
                               boxShadow: activeTabType == "REMINDER"
                                   ? [
                                       BoxShadow(

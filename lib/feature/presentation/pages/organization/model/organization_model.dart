@@ -43,11 +43,13 @@ class OrganizationModel {
 
 class Datum {
   String title;
-  String? apiKey; // Added apiKey field
+  String? apiKey;
+  bool? mobileEnabled;
 
   Datum({
     this.title = '',
     this.apiKey,
+    this.mobileEnabled,
   });
 
   factory Datum.fromRawJson(String str) => Datum.fromJson(json.decode(str));
@@ -56,11 +58,13 @@ class Datum {
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
         title: json["title"],
-        apiKey: json["api_key"], // Map api_key to apiKey
+        apiKey: json["api_key"],
+        mobileEnabled: json["mobile_enabled"],
       );
 
   Map<String, dynamic> toJson() => {
         "title": title,
         "api_key": apiKey,
+        "mobile_enabled": mobileEnabled,
       };
 }

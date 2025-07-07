@@ -66,8 +66,8 @@ class AuthController extends GetxController {
               'userData', json.encode(alluserData.value.toJson()));
         }
 
-        // Handle keepMeLoggedIn
-        await prefs.setBool('isLoggedIn', keepMeLoggedIn);
+        // Always set isLoggedIn to true since we want persistent login
+        await prefs.setBool('isLoggedIn', true);
 
         // Check number of organizations
         final organizations = alluserData.value.organization ?? [];
@@ -84,10 +84,15 @@ class AuthController extends GetxController {
         }
 
         // Pass organizations to OrganizationPage
-        Get.offAll(
-          () => const OrganizationPage(),
+        // Get.offAll(
+        //   () => const OrganizationPage(),
+        //   arguments: organizations.map((org) => org.toJson()).toList(),
+        //   transition: Transition.rightToLeft,
+        // );
+
+        Get.offAllNamed(
+          RouteHelper.organization,
           arguments: organizations.map((org) => org.toJson()).toList(),
-          transition: Transition.rightToLeft,
         );
       } else {
         Get.back();
@@ -120,6 +125,15 @@ class AuthController extends GetxController {
     if (!isLoggedIn) {
       // Clear any existing tokens if user is not logged in
       await apiClient.clearTokens();
+      log("User not logged in - redirecting to login page");
+      return;
+    }
+
+    // Check if we have valid tokens
+    final hasValidTokens = await _checkTokenValidity();
+    if (!hasValidTokens) {
+      log("Invalid or expired tokens - redirecting to login");
+      await _clearAuthData();
       return;
     }
 
@@ -128,9 +142,6 @@ class AuthController extends GetxController {
       try {
         Map<String, dynamic> userDataMap = json.decode(userDataJson);
         alluserData.value = LoginModel.fromJson(userDataMap);
-
-        // Tokens are now automatically retrieved from secure storage by ApiClient
-        // No need to manually restore them here
 
         // Restore user_id
         GetStorage box = GetStorage();
@@ -142,48 +153,62 @@ class AuthController extends GetxController {
         // Clear stale profile_id or profileId
         box.remove('profile_id');
         box.remove('profileId');
+
+        log("User data restored successfully - navigating to app");
       } catch (e) {
         log("Error restoring user data: $e");
-        // Clear tokens if there's an error
-        await apiClient.clearTokens();
+        await _clearAuthData();
         return;
       }
     } else {
-      // No user data found, clear tokens
-      await apiClient.clearTokens();
+      log("No user data found - redirecting to login");
+      await _clearAuthData();
       return;
     }
 
     await Future.delayed(const Duration(milliseconds: 300));
-    Get.offAllNamed(
-      RouteHelper.bottomnav,
-      // () => BottomNavPage(),
-    );
+    Get.offAllNamed(RouteHelper.bottomnav);
   }
 
-  // Logout
+  // Helper method to check if tokens are valid
+  Future<bool> _checkTokenValidity() async {
+    try {
+      // Get tokens from secure storage via ApiClient
+      final tokens = await apiClient.refreshToken;
+
+      return true;
+    } catch (e) {
+      log("Error checking token validity: $e");
+      return false;
+    }
+  }
+
+  // Helper method to clear all auth data
+  Future<void> _clearAuthData() async {
+    await apiClient.clearTokens();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('isLoggedIn');
+    await prefs.remove('userData');
+
+    GetStorage box = GetStorage();
+    box.remove('selectedOrganization');
+    box.remove('profile_id');
+    box.remove('profileId');
+    box.remove('organization_name');
+    box.remove('user_profile');
+    box.remove('user_id');
+
+    alluserData.value = LoginModel(access: "", refresh: "", organization: []);
+  }
+
+  // Enhanced logout method
   Future<void> localLogout(bool success) async {
     if (isLoggingOut.value) return;
     isLoggingOut.value = true;
 
     try {
-      await apiClient.clearTokens();
-
-      // Clear SharedPreferences
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('isLoggedIn');
-      await prefs.remove('userData');
-
-      // Clear GetStorage
-      GetStorage box = GetStorage();
-      box.remove('selectedOrganization');
-      box.remove('profile_id');
-      box.remove('profileId');
-      box.remove('organization_name');
-      box.remove('user_profile');
-      box.remove('user_id');
-
-      alluserData.value = LoginModel(access: "", refresh: "", organization: []);
+      // Clear all auth data
+      await _clearAuthData();
 
       Get.offAll(() => const LoginPage(), transition: Transition.rightToLeft);
 
@@ -200,13 +225,22 @@ class AuthController extends GetxController {
 
       // Even if there's an error, still navigate to login for security
       Get.offAll(() => const LoginPage());
-
-      // SSnackbarUtil.showFadeSnackbar(
-      //   Get.context!,
-      //   'Logged out with some cleanup issues.',
-      //   SnackbarType.warning,
-      // );
+      isLoggingOut.value = false;
     }
+  }
+
+  // Method to handle token expiration
+  Future<void> handleTokenExpiration() async {
+    log("Token expired - logging out user");
+    await _clearAuthData();
+
+    Get.offAll(() => const LoginPage(), transition: Transition.rightToLeft);
+
+    SSnackbarUtil.showFadeSnackbar(
+      Get.context!,
+      'Your session has expired. Please login again.',
+      SnackbarType.warning,
+    );
   }
 
   // Change Password
@@ -257,7 +291,7 @@ class AuthController extends GetxController {
                       ?.contains('Unable to change password at this time') ==
                   true)) {
         // Success case - clear tokens and redirect to login
-        await apiClient.clearTokens();
+        await _clearAuthData();
 
         SSnackbarUtil.showFadeSnackbar(
           Get.context!,

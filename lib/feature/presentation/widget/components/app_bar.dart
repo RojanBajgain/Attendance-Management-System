@@ -71,8 +71,8 @@ class _ConstantAppBarState extends State<ConstantAppBar> {
               // );
               Get.to(
                 () => const NotificationsPage(),
-                transition: Transition.downToUp,
-                duration: const Duration(milliseconds: 150),
+                transition: Transition.rightToLeft,
+                duration: const Duration(milliseconds: 100),
               );
             });
           },
@@ -150,8 +150,8 @@ class _ConstantAppBarState extends State<ConstantAppBar> {
                           Future.delayed(const Duration(milliseconds: 100), () {
                             Get.to(
                               () => const EventPage(),
-                              transition: Transition.downToUp,
-                              duration: const Duration(milliseconds: 150),
+                              transition: Transition.rightToLeft,
+                              duration: const Duration(milliseconds: 100),
                             );
                           });
                         },

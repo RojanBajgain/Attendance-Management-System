@@ -18,8 +18,9 @@ class OrganizationController extends GetxController {
   var organizationList = <Datum>[].obs;
   var isLoading = false.obs;
   var errorMessage = ''.obs;
-  WebSocketChannel? _webSocketChannel;
+  // WebSocketChannel? _webSocketChannel;
   var isWebSocketConnected = false.obs;
+  final Rx<Datum?> selectedOrganization = Rx<Datum?>(null);
 
   final OrganizationRepo organizationRepo =
       OrganizationRepo(apiClient: Get.find<ApiClient>());
@@ -63,10 +64,14 @@ class OrganizationController extends GetxController {
   Future<void> selectOrganization(Datum organization) async {
     isLoading(true);
     try {
+      // Store the selected organization
+      selectedOrganization.value = organization;
+
       // Save organization details
       box.write('selectedOrganization', {
         'title': organization.title,
         'api_key': organization.apiKey,
+        'mobile_enabled': organization.mobileEnabled,
       });
 
       // Update API client with organization API key

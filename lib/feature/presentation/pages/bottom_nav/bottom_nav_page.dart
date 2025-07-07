@@ -142,7 +142,7 @@ class BottomNavPage extends StatelessWidget {
     return GestureDetector(
       onTap: () => bottomNavController.changeTab(index),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 100),
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: isSelected
@@ -153,7 +153,7 @@ class BottomNavPage extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
         ),
         child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 300),
           child: SvgPicture.asset(
             iconPath,
             key: ValueKey(isSelected),

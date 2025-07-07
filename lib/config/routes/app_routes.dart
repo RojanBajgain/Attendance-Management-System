@@ -13,6 +13,7 @@ abstract class Routes {
   static const chat = _Paths.chat;
   static const event = _Paths.event;
   static const paymentslip = _Paths.paymentslip;
+  static const timesheet = _Paths.timesheet;
 }
 
 abstract class _Paths {
@@ -24,6 +25,7 @@ abstract class _Paths {
   static const chat = '/chat';
   static const event = '/EventPage';
   static const paymentslip = '/PayemntSlip';
+  static const timesheet = '/Timesheet';
 
   static const nointernet = '/nointernet';
 }

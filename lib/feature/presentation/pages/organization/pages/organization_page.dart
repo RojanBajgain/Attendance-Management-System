@@ -20,11 +20,12 @@ class OrganizationPage extends StatefulWidget {
 
 class _OrganizationPageState extends State<OrganizationPage> {
   final controller = Get.put(OrganizationController());
-  final ScrollController scrollController = ScrollController();
+  final scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
+    controller.handleOrganizations();
   }
 
   @override
@@ -44,8 +45,9 @@ class _OrganizationPageState extends State<OrganizationPage> {
         title: Text(
           'Departments',
           style: normalStyle.copyWith(
-              fontWeight: FontWeight.bold,
-              color: isDarkMode ? Colors.white : Colors.black),
+            fontWeight: FontWeight.bold,
+            color: isDarkMode ? Colors.white : Colors.black,
+          ),
         ),
       ),
       body: Padding(
@@ -74,18 +76,15 @@ class _OrganizationPageState extends State<OrganizationPage> {
                 if (controller.isLoading.value &&
                     controller.organizationList.isEmpty) {
                   return ListView.builder(
-                    itemCount: controller.organizationList.length,
-                    itemBuilder: (context, index) {
-                      return const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: ShrimmerEffect.rectangular(height: 100),
-                      );
-                    },
+                    itemCount: 3, // Show 3 shimmer items
+                    itemBuilder: (context, index) => const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: ShrimmerEffect.rectangular(height: 100),
+                    ),
                   );
                 } else if (controller.organizationList.isEmpty) {
                   return Center(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
@@ -105,10 +104,8 @@ class _OrganizationPageState extends State<OrganizationPage> {
                         padding: const EdgeInsets.only(bottom: 5.0),
                         child: InkWell(
                           borderRadius: BorderRadius.circular(12),
-                          onTap: () {
-                            // Save selected organization and navigate
-                            selectOrganization(organization);
-                          },
+                          onTap: () =>
+                              controller.selectOrganization(organization),
                           child: OrganizationContainer(
                             title: organization.title,
                           ),
@@ -125,36 +122,37 @@ class _OrganizationPageState extends State<OrganizationPage> {
     );
   }
 
-  void selectOrganization(Datum organization) async {
-    // Save selected organization
-    GetStorage box = GetStorage();
-    box.write('selectedOrganization', {
-      'title': organization.title,
-      'api_key': organization.apiKey,
-    });
+  // void selectOrganization(Datum organization) async {
+  //   // Save selected organization
+  //   GetStorage box = GetStorage();
+  //   box.write('selectedOrganization', {
+  //     'title': organization.title,
+  //     'api_key': organization.apiKey,
+  //     'mobile_enabled': organization.mobileEnabled,
+  //   });
 
-    // Update ApiClient with selected organization's apiKey
-    final apiClient = Get.find<ApiClient>();
-    // Await the asynchronous token and refreshToken
-    final accessToken = await apiClient.token;
-    final refreshToken = await apiClient.refreshToken;
+  //   // Update ApiClient with selected organization's apiKey
+  //   final apiClient = Get.find<ApiClient>();
+  //   // Await the asynchronous token and refreshToken
+  //   final accessToken = await apiClient.token;
+  //   final refreshToken = await apiClient.refreshToken;
 
-    await apiClient.saveTokens(
-      accessToken,
-      refreshToken,
-      organization.apiKey ?? '',
-    );
+  //   await apiClient.saveTokens(
+  //     accessToken,
+  //     refreshToken,
+  //     organization.apiKey ?? '',
+  //   );
 
-    Get.offAllNamed(
-      RouteHelper.bottomnav,
-      // () => BottomNavPage(),
-      // transition: Transition.rightToLeft,
-    );
+  //   Get.offAllNamed(
+  //     RouteHelper.bottomnav,
+  //     // () => BottomNavPage(),
+  //     // transition: Transition.rightToLeft,
+  //   );
 
-    SSnackbarUtil.showFadeSnackbar(
-      Get.context!,
-      'You have selected ${organization.title}',
-      SnackbarType.success,
-    );
-  }
+  //   SSnackbarUtil.showFadeSnackbar(
+  //     Get.context!,
+  //     'You have selected ${organization.title}',
+  //     SnackbarType.success,
+  //   );
+  // }
 }

@@ -10,6 +10,7 @@ import 'package:ams/feature/presentation/pages/offline_page/page/offline_page.da
 import 'package:ams/feature/presentation/pages/organization/pages/organization_page.dart';
 import 'package:ams/feature/presentation/pages/payroll/payroll_page.dart';
 import 'package:ams/feature/presentation/pages/payroll/sub_view_payroll/payment_slip_view.dart';
+import 'package:ams/feature/presentation/pages/timesheet/time_sheet_page.dart';
 import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
@@ -300,6 +301,19 @@ class OfflineController extends GetxController {
       if (_lastRoute == '/ChatsScreen') normalizedRoute = '/chat';
       if (_lastRoute == '/EventPage') normalizedRoute = '/EventPage';
       if (_lastRoute == '/PaymentSlip') normalizedRoute = '/PaymentSlip';
+      if (_lastRoute == '/TimeSheetDetail') {
+        normalizedRoute = '/TimeSheetDetail';
+      }
+      if (_lastRoute == '/EditUserInfo') normalizedRoute = '/EditUserInfo';
+      if (_lastRoute == '/EditUserAddress') {
+        normalizedRoute = '/EditUserAddress';
+      }
+      if (_lastRoute == '/EditUserDocument') {
+        normalizedRoute = '/EditUserDocument';
+      }
+      if (_lastRoute == '/EditUserBank') {
+        normalizedRoute = '/EditUserBank';
+      }
 
       // Check if the last route requires authentication
       final protectedRoutes = [
@@ -307,7 +321,12 @@ class OfflineController extends GetxController {
         '/organization',
         '/chat',
         '/EventPage',
-        '/PaymentSlip'
+        '/PaymentSlip',
+        '/TimeSheetDetail',
+        '/EditUserInfo',
+        '/EditUserAddress',
+        '/EditUserDocument',
+        '/EditUserBank',
       ];
       bool isProtectedRoute = protectedRoutes.contains(normalizedRoute);
 
@@ -344,15 +363,28 @@ class OfflineController extends GetxController {
           Get.offAll(() => const OrganizationPage());
           break;
         case '/chat':
-          Get.offAll(() => const ChatsScreen());
+          Get.offAll(() => BottomNavPage());
           break;
         case '/EventPage':
           Get.offAll(() => const EventPage());
           break;
+        case '/TimeSheetDetail':
+          Get.offAll(() => BottomNavPage());
+          break;
         case '/PaymentSlip':
-          Get.offAll(() => PaymentSlip(
-                payrollId: Get.parameters['payrollId'] ?? '',
-              ));
+          Get.offAll(() => BottomNavPage());
+          break;
+        case '/EditUserInfo':
+          Get.offAll(() => BottomNavPage());
+          break;
+        case '/EditUserAddress':
+          Get.offAll(() => BottomNavPage());
+          break;
+        case '/EditUserDocument':
+          Get.offAll(() => BottomNavPage());
+          break;
+        case '/EditUserBank':
+          Get.offAll(() => BottomNavPage());
           break;
         default:
           print(

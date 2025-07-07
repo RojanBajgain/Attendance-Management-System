@@ -118,7 +118,7 @@ class HasClockedinController extends GetxController {
           }
         }
 
-        // Handle clock out time
+        // Handle clock out time - FIX: Move this inside the SUCCESS block
         if (clockData.clockedOutData != null) {
           DateTime utcTime =
               DateTime.parse(clockData.clockedOutData!.toString());
@@ -130,16 +130,23 @@ class HasClockedinController extends GetxController {
           // Store clock out time
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('clockOutTime', localTime.toIso8601String());
+          log("Saved clock out time: $localTime");
+        } else {
+          clockedOutTime.value = null;
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.remove('clockOutTime');
+          log("No clock out data available from API");
         }
       } else {
+        // FIX: Only clear data if API call failed, not if clock-out is null
+        clockedInTime.value = null;
         clockedOutTime.value = null;
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.remove('clockOutTime');
         log("Error: ${response.message}");
       }
     } catch (e) {
       log("Error fetching clock data: $e");
       clockedInTime.value = null;
+      clockedOutTime.value = null;
     } finally {
       isLoading(false);
     }

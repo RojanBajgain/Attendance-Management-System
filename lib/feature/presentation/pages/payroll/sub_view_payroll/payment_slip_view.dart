@@ -57,9 +57,11 @@ class _PaymentSlipState extends State<PaymentSlip> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       InkWell(
-                        onTap: () => Get.offAllNamed(
-                          RouteHelper.bottomnav,
-                        ),
+                        onTap: () => Get.back(),
+
+                        // Get.offAllNamed(
+                        //   RouteHelper.bottomnav,
+                        // ),
                         child: Icon(
                           Icons.arrow_back_sharp,
                           color: isDarkMode ? Colors.white : Colors.black,
@@ -227,7 +229,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                         Padding(
                           padding: const EdgeInsets.all(12.0),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
                                 'Earning',

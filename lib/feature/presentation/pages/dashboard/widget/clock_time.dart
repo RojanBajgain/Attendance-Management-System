@@ -1,6 +1,7 @@
 import 'package:ams/feature/presentation/pages/dashboard/widget/skeleton_box.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,6 +40,8 @@ class _ClockTimeState extends State<ClockTime> {
   DateTime? clockInTime;
   DateTime? clockOutTime;
   bool isLoading = true;
+  RxBool isLoadingAction = false.obs;
+  bool isMobileEnabled = true;
 
   @override
   void initState() {
@@ -48,11 +51,11 @@ class _ClockTimeState extends State<ClockTime> {
 
   Future<void> _initializeData() async {
     await _fetchOfficeLocation();
+    await _checkMobileEnabled();
 
     // Check if user has changed
     if (profileController.profile.isNotEmpty &&
         profileController.profile.first.userRecords.first.employeeNo != null) {
-      // Make sure the HasClockedinController knows about any user changes
       await hasClockedinController.handleUserChanged();
     }
 
@@ -64,6 +67,20 @@ class _ClockTimeState extends State<ClockTime> {
       setState(() {
         isLoading = false;
       });
+    }
+  }
+
+  Future<void> _checkMobileEnabled() async {
+    try {
+      final GetStorage box = GetStorage();
+      final selectedOrganization = box.read('selectedOrganization');
+      if (selectedOrganization != null) {
+        isMobileEnabled = selectedOrganization['mobile_enabled'] ?? true;
+        log("Mobile enabled status: $isMobileEnabled");
+      }
+    } catch (e) {
+      log("Error checking mobile enabled status: $e");
+      isMobileEnabled = true;
     }
   }
 
@@ -193,89 +210,106 @@ class _ClockTimeState extends State<ClockTime> {
   Future<void> _handleClockInOut() async {
     if (!await _checkLocationPermission()) return;
 
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.best);
-    int? deviceId =
-        profileController.profile.first.userRecords.first.employeeNo;
-    if (deviceId == null) {
-      SSnackbarUtil.showFadeSnackbar(
-        Get.context!,
-        "Device info not found. Please log in again.",
-        SnackbarType.error,
-      );
-      return;
-    }
+    await Get.showOverlay(
+      asyncFunction: () async {
+        try {
+          Position position = await Geolocator.getCurrentPosition(
+              desiredAccuracy: LocationAccuracy.best);
+          int? deviceId =
+              profileController.profile.first.userRecords.first.employeeNo;
+          if (deviceId == null) {
+            SSnackbarUtil.showFadeSnackbar(
+              Get.context!,
+              "Device info not found. Please log in again.",
+              SnackbarType.error,
+            );
+            return;
+          }
 
-    final prefs = await SharedPreferences.getInstance();
+          final prefs = await SharedPreferences.getInstance();
+          DateTime now = DateTime.now();
+          String todayDate = DateFormat('yyyy-MM-dd').format(now);
+          String? lastActiveDate = prefs.getString('lastActiveDate');
 
-    // Check if the day has changed since last activity
-    DateTime now = DateTime.now();
-    String todayDate = DateFormat('yyyy-MM-dd').format(now);
-    String? lastActiveDate = prefs.getString('lastActiveDate');
+          if (lastActiveDate != null && lastActiveDate != todayDate) {
+            _resetClockData(prefs);
+            await prefs.setString('lastActiveDate', todayDate);
+          }
 
-    if (lastActiveDate != null && lastActiveDate != todayDate) {
-      // Day has changed, reset all clock state
-      _resetClockData(prefs);
-      await prefs.setString('lastActiveDate', todayDate);
-    }
+          if (!isClockedInToday.value) {
+            // Clocking in
+            await clockInOutController.postClockin(
+              deviceId: deviceId,
+              latitude: position.latitude.toString(),
+              longitude: position.longitude.toString(),
+            );
 
-    if (!isClockedInToday.value) {
-      // Clocking in
-      await clockInOutController.postClockin(
-        deviceId: deviceId,
-        latitude: position.latitude.toString(),
-        longitude: position.longitude.toString(),
-      );
+            DateTime clockInMinute = DateTime(
+              now.year,
+              now.month,
+              now.day,
+              now.hour,
+              now.minute,
+            );
 
-      DateTime now = DateTime.now();
-      DateTime clockInMinute = DateTime(
-        now.year,
-        now.month,
-        now.day,
-        now.hour,
-        now.minute,
-      );
+            setState(() {
+              clockInTime = now;
+              clockOutTime = null;
+            });
 
-      setState(() {
-        clockInTime = now;
-        clockOutTime = null;
-      });
+            isClockedInToday.value = true;
+            isClockedOut.value = false;
 
-      isClockedInToday.value = true;
-      isClockedOut.value = false;
+            await prefs.setString(
+                'clockInTime', clockInMinute.toIso8601String());
+            await prefs.remove('clockOutTime');
+            await prefs.setString('lastActiveDate', todayDate);
 
-      await prefs.setString('clockInTime', clockInMinute.toIso8601String());
-      await prefs.remove('clockOutTime');
-      await prefs.setString('lastActiveDate', todayDate);
+            timerController.clockInTime = clockInMinute.toIso8601String();
+            timerController.resetTimer();
+            timerController.startTimer(initialSeconds: 0);
+          } else {
+            // Clocking out
+            await clockInOutController.postClockout(
+              deviceId: deviceId,
+              latitude: position.latitude.toString(),
+              longitude: position.longitude.toString(),
+            );
 
-      timerController.clockInTime = clockInMinute.toIso8601String();
-      timerController.resetTimer();
-      timerController.startTimer(initialSeconds: 0);
-    } else {
-      // Clocking out
-      await clockInOutController.postClockout(
-        deviceId: deviceId,
-        latitude: position.latitude.toString(),
-        longitude: position.longitude.toString(),
-      );
+            setState(() {
+              clockOutTime = DateTime.now();
+            });
 
-      setState(() {
-        clockOutTime = DateTime.now();
-      });
+            isClockedInToday.value = false;
+            isClockedOut.value = true;
 
-      isClockedInToday.value = false;
-      isClockedOut.value = true;
+            await prefs.setString(
+                'clockOutTime', clockOutTime!.toIso8601String());
+            await prefs.remove('clockInTime');
 
-      await prefs.setString('clockOutTime', clockOutTime!.toIso8601String());
-      await prefs.remove('clockInTime');
+            timerController.stopTimer();
+            timerController.resetTimer();
+          }
 
-      timerController.stopTimer();
-      timerController.resetTimer();
-    }
-
-    // Refresh data from API
-    await hasClockedinController.getClockData();
-    await _loadClockInState();
+          await hasClockedinController.getClockData();
+          await _loadClockInState();
+        } catch (e) {
+          SSnackbarUtil.showFadeSnackbar(
+            Get.context!,
+            "Failed to complete action: ${e.toString()}",
+            SnackbarType.error,
+          );
+          rethrow; // Important to let the overlay know there was an error
+        }
+      },
+      loadingWidget: const Center(
+        child: CircularProgressIndicator(
+          color: Colors.white,
+        ),
+      ),
+      opacity: 0.5,
+      opacityColor: Colors.black,
+    );
   }
 
   Future<void> _loadBreakState() async {
@@ -300,82 +334,91 @@ class _ClockTimeState extends State<ClockTime> {
   }
 
   Future<void> _handleBreak() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (!await _checkLocationPermission()) return;
+    await Get.showOverlay(
+      asyncFunction: () async {
+        try {
+          final prefs = await SharedPreferences.getInstance();
+          if (!await _checkLocationPermission()) return;
 
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.best);
-    int? employeeId =
-        profileController.profile.first.userRecords.first.employeeNo;
-    if (employeeId == null) {
-      SSnackbarUtil.showFadeSnackbar(
-        Get.context!,
-        "Employee info not found. Please log in again.",
-        SnackbarType.error,
-      );
-      return;
-    }
+          Position position = await Geolocator.getCurrentPosition(
+              desiredAccuracy: LocationAccuracy.best);
+          int? employeeId =
+              profileController.profile.first.userRecords.first.employeeNo;
+          if (employeeId == null) {
+            SSnackbarUtil.showFadeSnackbar(
+              Get.context!,
+              "Employee info not found. Please log in again.",
+              SnackbarType.error,
+            );
+            return;
+          }
 
-    // Check if the day has changed since last activity
-    DateTime now = DateTime.now();
-    String todayDate = DateFormat('yyyy-MM-dd').format(now);
-    String? lastActiveDate = prefs.getString('lastActiveDate');
+          DateTime now = DateTime.now();
+          String todayDate = DateFormat('yyyy-MM-dd').format(now);
+          String? lastActiveDate = prefs.getString('lastActiveDate');
 
-    if (lastActiveDate != null && lastActiveDate != todayDate) {
-      // Day has changed, reset break state
-      isOnBreak.value = false;
-      await prefs.setBool('isOnBreak', false);
-      await prefs.remove('breakStartTime');
-      await prefs.remove('stopwatchElapsedSeconds');
-      await prefs.setString('lastActiveDate', todayDate);
+          if (lastActiveDate != null && lastActiveDate != todayDate) {
+            isOnBreak.value = false;
+            await prefs.setBool('isOnBreak', false);
+            await prefs.remove('breakStartTime');
+            await prefs.remove('stopwatchElapsedSeconds');
+            await prefs.setString('lastActiveDate', todayDate);
+            await _loadClockInState();
+            if (mounted) {
+              setState(() {});
+            }
+            return;
+          }
 
-      // Also make sure to reset clock in state since it's a new day
-      await _loadClockInState();
-      if (mounted) {
-        setState(() {}); // Force UI update
-      }
-      return;
-    }
+          if (!isOnBreak.value) {
+            await clockInOutController.postOnBreak(employeeId: employeeId);
+            await prefs.setString(
+                'breakStartTime', DateTime.now().toIso8601String());
+            await prefs.setInt('stopwatchElapsedSeconds', 0);
+            await prefs.setBool('isOnBreak', true);
+            await prefs.setString('lastActiveDate', todayDate);
+            timerController.pauseTimer();
+            timerController.startStopwatch();
+            isOnBreak.value = true;
+          } else {
+            await clockInOutController.postResume(
+              employeeId: employeeId,
+              latitude: position.latitude.toString(),
+              longitude: position.longitude.toString(),
+            );
+            int elapsedTime = timerController.stopwatchSeconds.value;
+            await prefs.setInt('stopwatchElapsedSeconds', elapsedTime);
+            await prefs.remove('breakStartTime');
+            await prefs.remove('stopwatchElapsedSeconds');
+            await prefs.setBool('isOnBreak', false);
+            timerController.stopStopwatch();
+            timerController.resumeTimer();
+            isOnBreak.value = false;
+          }
 
-    log("Before break action: isOnBreak = ${isOnBreak.value}");
+          if (mounted) {
+            setState(() {});
+          }
 
-    if (!isOnBreak.value) {
-      // Starting break
-      await clockInOutController.postOnBreak(employeeId: employeeId);
-      await prefs.setString('breakStartTime', DateTime.now().toIso8601String());
-      await prefs.setInt('stopwatchElapsedSeconds', 0);
-      await prefs.setBool('isOnBreak', true);
-      await prefs.setString('lastActiveDate', todayDate);
-      timerController.pauseTimer();
-      timerController.startStopwatch();
-      isOnBreak.value = true;
-    } else {
-      // Ending break
-      await clockInOutController.postResume(
-        employeeId: employeeId,
-        latitude: position.latitude.toString(),
-        longitude: position.longitude.toString(),
-      );
-      int elapsedTime = timerController.stopwatchSeconds.value;
-      await prefs.setInt('stopwatchElapsedSeconds', elapsedTime);
-      await prefs.remove('breakStartTime');
-      await prefs.remove('stopwatchElapsedSeconds');
-      await prefs.setBool('isOnBreak', false);
-      timerController.stopStopwatch();
-      timerController.resumeTimer();
-      isOnBreak.value = false;
-    }
-
-    log("After break action: isOnBreak = ${isOnBreak.value}");
-
-    // Force UI update
-    if (mounted) {
-      setState(() {});
-    }
-
-    // Refresh data from API
-    await hasClockedinController.getClockData();
-    await _loadClockInState();
+          await hasClockedinController.getClockData();
+          await _loadClockInState();
+        } catch (e) {
+          SSnackbarUtil.showFadeSnackbar(
+            Get.context!,
+            "Failed to complete break action: ${e.toString()}",
+            SnackbarType.error,
+          );
+          rethrow; // Important to let the overlay know there was an error
+        }
+      },
+      loadingWidget: const Center(
+        child: CircularProgressIndicator(
+          color: Colors.white,
+        ),
+      ),
+      opacity: 0.5,
+      opacityColor: Colors.black,
+    );
   }
 
   @override
@@ -390,80 +433,171 @@ class _ClockTimeState extends State<ClockTime> {
       ),
       child: isLoading
           ? _buildSkeletonUI(isDarkMode)
-          : Stack(
-              children: [
-                Positioned(
-                  top: 10.0,
-                  left: 26.0,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Check In At",
-                        style: smallStyle.copyWith(
-                          color: isDarkMode ? Colors.white : Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12.0,
-                        ),
-                      ),
-                      Text(
-                        _formatTime(clockInTime),
-                        style: smallStyle.copyWith(
-                          color: isDarkMode ? Colors.white70 : Colors.black87,
-                          fontSize: 12.0,
-                        ),
-                      ),
-                    ],
+          : isMobileEnabled
+              ? _buildNormalUI(isDarkMode)
+              : _buildDisabledUI(isDarkMode),
+    );
+  }
+
+  Widget _buildNormalUI(bool isDarkMode) {
+    return Column(
+      children: [
+        // Check In/Out header row
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+          decoration: BoxDecoration(
+            color: Colors.blue.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Clock In Time
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Check In At",
+                    style: smallStyle.copyWith(
+                      color: isDarkMode ? Colors.white : Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12.0,
+                    ),
                   ),
-                ),
-                Positioned(
-                  top: 10.0,
-                  right: 26.0,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        "Check Out At",
-                        style: smallStyle.copyWith(
-                          color: isDarkMode ? Colors.white : Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12.0,
-                        ),
-                      ),
-                      Text(
-                        _formatTime(clockOutTime),
-                        style: smallStyle.copyWith(
-                          color: isDarkMode ? Colors.white70 : Colors.black87,
-                          fontSize: 12.0,
-                        ),
-                      ),
-                    ],
+                  Text(
+                    _formatTime(clockInTime),
+                    style: smallStyle.copyWith(
+                      color: isDarkMode ? Colors.white70 : Colors.black87,
+                      fontSize: 12.0,
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(26.0, 70.0, 26.0, 0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      _buildClockInTimeDisplay(isDarkMode),
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          _buildClockInOutButton(isDarkMode),
-                          const SizedBox(height: 6.0),
-                          Obx(() => isClockedInToday.value &&
-                                  !isClockedOut.value &&
-                                  !isOnBreak.value
-                              ? _buildBreakButton(isDarkMode)
-                              : const SizedBox.shrink()),
-                        ],
-                      ),
-                    ],
+                ],
+              ),
+
+              // Clock Out Time
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    "Check Out At",
+                    style: smallStyle.copyWith(
+                      color: isDarkMode ? Colors.white : Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12.0,
+                    ),
                   ),
+                  Text(
+                    _formatTime(clockOutTime),
+                    style: smallStyle.copyWith(
+                      color: isDarkMode ? Colors.white70 : Colors.black87,
+                      fontSize: 12.0,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+
+        // Main content
+        Padding(
+          padding: const EdgeInsets.fromLTRB(26.0, 20.0, 26.0, 0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _buildClockInTimeDisplay(isDarkMode),
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * 0.5),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildClockInOutButton(isDarkMode),
+                    const SizedBox(width: 10.0),
+                    Obx(() => isClockedInToday.value &&
+                            !isClockedOut.value &&
+                            !isOnBreak.value
+                        ? _buildBreakButton(isDarkMode)
+                        : const SizedBox.shrink()),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDisabledUI(bool isDarkMode) {
+    return Column(
+      children: [
+        // Clock In Time
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+          decoration: BoxDecoration(
+            color: Colors.blue.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Clock In Time
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Check In At",
+                    style: smallStyle.copyWith(
+                      color: isDarkMode ? Colors.white : Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12.0,
+                    ),
+                  ),
+                  Text(
+                    _formatTime(clockInTime),
+                    style: smallStyle.copyWith(
+                      color: isDarkMode ? Colors.white70 : Colors.black87,
+                      fontSize: 12.0,
+                    ),
+                  ),
+                ],
+              ),
+
+              // Clock Out Time
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    "Check Out At",
+                    style: smallStyle.copyWith(
+                      color: isDarkMode ? Colors.white : Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12.0,
+                    ),
+                  ),
+                  Text(
+                    _formatTime(clockOutTime),
+                    style: smallStyle.copyWith(
+                      color: isDarkMode ? Colors.white70 : Colors.black87,
+                      fontSize: 12.0,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+
+        // Centered Clock-time circular indicator (no buttons)
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 22.0),
+            child: _buildClockInTimeDisplay(isDarkMode),
+          ),
+        ),
+      ],
     );
   }
 
@@ -573,48 +707,79 @@ class _ClockTimeState extends State<ClockTime> {
   Widget _buildClockInOutButton(bool isDarkMode) {
     return Obx(() {
       bool isClockingOut = isClockedInToday.value && !isClockedOut.value;
-      log("Building ClockInOutButton: isOnBreak = ${isOnBreak.value}, "
-          "isClockedInToday = ${isClockedInToday.value}, "
-          "isClockedOut = ${isClockedOut.value}");
+
+      // Define icon, text, and color based on state
+      IconData buttonIcon;
+      String buttonText;
+      Color buttonColor;
+
+      if (isOnBreak.value) {
+        buttonIcon = Icons.play_arrow;
+        buttonText = 'Resume';
+        buttonColor = Colors.orange[700]!;
+      } else if (isClockedOut.value) {
+        buttonIcon = Icons.check_circle;
+        buttonText = 'Checked';
+        buttonColor = Colors.grey[600]!;
+      } else if (isClockedInToday.value) {
+        buttonIcon = Icons.logout;
+        buttonText = 'Check Out';
+        buttonColor = Colors.red[700]!;
+      } else {
+        buttonIcon = Icons.login;
+        buttonText = 'Check In';
+        buttonColor = Colors.green[600]!;
+      }
 
       return TapDebouncer(
         cooldown: const Duration(milliseconds: 200),
         onTap: () async {
-          log("ClockInOutButton tapped: isOnBreak = ${isOnBreak.value}");
           if (isOnBreak.value) {
             await _handleBreak();
           } else {
             await _handleClockInOut();
           }
-          // Force a UI refresh after the operation completes
           if (mounted) {
             setState(() {});
           }
         },
         builder: (BuildContext context, TapDebouncerFunc? onTap) {
-          return SizedBox(
-            height: 40,
-            width: 110,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(6)),
+          return Material(
+            color: Colors.transparent,
+            child: InkWell(
+              splashColor: Colors.grey.withOpacity(0.6),
+              highlightColor: Colors.grey.withOpacity(0.6),
+              borderRadius: BorderRadius.circular(20),
+              onTap: onTap,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: buttonColor,
                 ),
-                backgroundColor: isOnBreak.value
-                    ? Colors.orange[700]
-                    : (isClockingOut ? Colors.red[700] : Colors.green[600]),
-              ),
-              onPressed: onTap,
-              child: Text(
-                isOnBreak.value
-                    ? 'Resume'
-                    : (isClockedOut.value
-                        ? 'Checked Out'
-                        : (isClockedInToday.value ? 'Check Out' : 'Check In')),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12.0,
+                constraints: const BoxConstraints(
+                  minWidth: 100,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      buttonIcon,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      buttonText,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -631,24 +796,19 @@ class _ClockTimeState extends State<ClockTime> {
         _handleBreak();
       },
       builder: (BuildContext context, TapDebouncerFunc? onTap) {
-        return SizedBox(
+        return Container(
           height: 40,
-          width: 110,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(6)),
-              ),
-              backgroundColor: Colors.orange[700],
-            ),
+          width: 40,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.orange[700],
+          ),
+          child: IconButton(
             onPressed: onTap,
-            child: const Text(
-              'Break',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 12.0,
-              ),
+            icon: const Icon(
+              Icons.coffee,
+              color: Colors.white,
+              size: 24,
             ),
           ),
         );

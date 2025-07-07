@@ -76,6 +76,7 @@ class _ProfilePicState extends State<ProfilePic> {
               final profileData = profilecontroller.profile;
               return ListView.builder(
                 shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
                 itemCount: profileData.length,
                 itemBuilder: (BuildContext context, int index) {
                   final profiledata = profileData[index];

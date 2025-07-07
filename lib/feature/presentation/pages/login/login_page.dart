@@ -9,6 +9,7 @@ import 'package:ams/feature/presentation/widget/custom_textfield.dart';
 import 'package:ams/feature/presentation/widget/loading_animation_widget.dart';
 import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:ams/feature/utils/validator.dart';
+import 'package:ams/services/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,8 +22,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  bool keepMeLoggedIn = false;
-  bool _showBiometricOption = false;
+  bool rememberMe = false;
+  // bool _showBiometricOption = false;
 
   final email = TextEditingController();
   final pw = TextEditingController();
@@ -34,7 +35,6 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     _loadSavedEmail();
-    // _checkBiometricAvailability();
   }
 
   Future<void> _loadSavedEmail() async {
@@ -43,6 +43,7 @@ class _LoginPageState extends State<LoginPage> {
     if (savedEmail.isNotEmpty) {
       setState(() {
         email.text = savedEmail;
+        rememberMe = true;
       });
     }
   }
@@ -52,35 +53,10 @@ class _LoginPageState extends State<LoginPage> {
     await prefs.setString('user_email', email);
   }
 
-  // Future<void> _checkBiometricAvailability() async {
-  //   try {
-  //     bool deviceSupported = await authController.canUseBiometrics();
-  //     if (!deviceSupported) {
-  //       setState(() {
-  //         _showBiometricOption = false;
-  //       });
-  //       return;
-  //     }
-
-  //     final prefs = await SharedPreferences.getInstance();
-  //     final isBiometricsEnabled = prefs.getBool('biometrics_enabled') ?? false;
-  //     final secureBiometrics =
-  //         await authController.secureStorage.read(key: 'biometrics_enabled');
-  //     final isSecureBiometricsEnabled = secureBiometrics == 'true';
-
-  //     final hasCredentials = await authController.hasSavedCredentials();
-
-  //     setState(() {
-  //       _showBiometricOption =
-  //           (isBiometricsEnabled || isSecureBiometricsEnabled) &&
-  //               hasCredentials;
-  //     });
-  //   } catch (e) {
-  //     setState(() {
-  //       _showBiometricOption = false;
-  //     });
-  //   }
-  // }
+  Future<void> _removeEmail() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('user_email');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,17 +72,45 @@ class _LoginPageState extends State<LoginPage> {
           alignment: const FractionalOffset(.5, 1.0),
           children: [
             Container(
-              height: 10,
+              height: 50,
               // color: lightcolor,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-              child: Text(
-                '© 2025. All Rights Reserved \nProduct of Ayata Inc.',
-                textAlign: TextAlign.center,
-                style: miniStyle.copyWith(fontSize: 10, color: Colors.grey),
+              child: Column(
+                children: [
+                  Text(
+                    '© 2025 AMS. All Rights Reserved',
+                    style: miniStyle.copyWith(fontSize: 12, color: Colors.grey),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Product of ",
+                        style: miniStyle.copyWith(
+                            fontSize: 12, color: Colors.grey),
+                      ),
+                      Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
+                            Helpers.launchWebsite();
+                          },
+                          splashColor: Colors.grey,
+                          borderRadius: BorderRadius.circular(12),
+                          child: Text(
+                            "Ayata Inc.",
+                            style: miniStyle.copyWith(
+                              // decoration: TextDecoration.underline,
+                              fontSize: 12,
+                              color: Colors.blueAccent,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
               ),
-            )
+            ),
           ],
         ),
         body: SafeArea(
@@ -203,23 +207,24 @@ class _LoginPageState extends State<LoginPage> {
                             children: [
                               SizedBox(
                                 height: 24.0,
-                                width: 24.0,
+                                width: 28.0,
                                 child: Checkbox(
-                                  value: keepMeLoggedIn,
+                                  activeColor: Colors.lightBlue,
+                                  value: rememberMe,
                                   onChanged: (bool? value) {
                                     setState(() {
-                                      keepMeLoggedIn = value ?? false;
+                                      rememberMe = value ?? false;
                                     });
                                   },
                                 ),
                               ),
                               const SizedBox(width: 5.0),
                               Text(
-                                "Keep me logged in",
+                                "Remember me",
                                 style: smallStyle.copyWith(
                                   color: isDarkMode
-                                      ? Colors.blue
-                                      : AppColors.primary,
+                                      ? Colors.white70
+                                      : Colors.black54,
                                 ),
                               ),
                             ],
@@ -270,8 +275,12 @@ class _LoginPageState extends State<LoginPage> {
                                             return;
                                           }
 
-                                          if (email.text.isNotEmpty) {
+                                          // Handle remember me functionality
+                                          if (rememberMe &&
+                                              email.text.isNotEmpty) {
                                             _saveEmail(email.text);
+                                          } else {
+                                            _removeEmail();
                                           }
 
                                           showDialog(
@@ -285,7 +294,7 @@ class _LoginPageState extends State<LoginPage> {
                                             email.text,
                                             pw.text,
                                             _defaultRole,
-                                            keepMeLoggedIn,
+                                            false, // Pass false since we're not keeping user logged in
                                           );
                                         },
                                   child: const LargeButton(title: "Log in"),

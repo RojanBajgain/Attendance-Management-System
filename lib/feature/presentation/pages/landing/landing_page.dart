@@ -1,3 +1,4 @@
+import 'package:ams/config/resources/colors.dart';
 import 'package:ams/config/resources/images.dart';
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/login/login_page.dart';
@@ -32,65 +33,32 @@ class _LandingPageState extends State<LandingPage> {
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              const Spacer(flex: 1),
-              Center(
-                child: SizedBox(
-                  width: 100,
-                  child: AspectRatio(
-                    aspectRatio: 1,
-                    child: Image.asset(
-                      AppImages.logo,
-                      // color: isDarkMode ? Colors.white : Colors.black,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
+    return SafeArea(
+      top: false,
+      child: Scaffold(
+        backgroundColor: isDarkMode ? Colors.black : Colors.white,
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Center(
+                child: Image.asset(
+                  AppImages.logo,
+                  height: 200,
+                  width: 200,
                 ),
               ),
-
-              const Spacer(flex: 1),
-              AnimatedTextKit(
-                animatedTexts: [
-                  TypewriterAnimatedText(
-                    '"Welcome To AYATA"',
-                    textStyle: normalStyle.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: isDarkMode
-                          ? Colors.grey.shade400
-                          : Colors.grey.shade500,
-                    ),
-                  ),
-                ],
-                totalRepeatCount: 10,
-                pause: const Duration(milliseconds: 2000),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20.0),
+              child: Text(
+                textAlign: TextAlign.center,
+                '© 2025 Avyaas. All Rights Reserved \nProduct of Ayata Inc.',
+                style: miniStyle.copyWith(fontSize: 10, color: Colors.grey),
               ),
-              const Spacer(flex: 2),
-              // CircularProgressIndicator(),
-              SpinKitFoldingCube(
-                itemBuilder: (BuildContext context, int index) {
-                  return DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: index.isEven ? Colors.red : Colors.green,
-                    ),
-                  );
-                },
-              ),
-              const Spacer(flex: 2),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 20.0),
-                child: Text(
-                  'Powered by Ayata Inc',
-                  style: smallStyle.copyWith(fontSize: 14, color: Colors.grey),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

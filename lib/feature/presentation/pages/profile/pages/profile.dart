@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:ams/config/resources/shimmer.dart';
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/Privacy/pages/privacy_page.dart';
@@ -10,6 +12,7 @@ import 'package:ams/feature/presentation/pages/profile/pages/profile_container.d
 import 'package:ams/feature/presentation/pages/profile/pages/profile_menu.dart';
 import 'package:ams/feature/presentation/pages/theme/change_theme.dart';
 import 'package:ams/feature/utils/ssnackbar_utils.dart';
+import 'package:ams/services/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:get/get.dart';
@@ -74,6 +77,48 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               _buildHeader(isDarkMode),
               _buildProfileContent(isDarkMode),
+              const SizedBox(height: 20.0),
+              SizedBox(
+                height: 50,
+                // color: lightcolor,
+                child: Column(
+                  children: [
+                    Text(
+                      '© 2025 AMS. All Rights Reserved',
+                      style:
+                          miniStyle.copyWith(fontSize: 11, color: Colors.grey),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Product of ",
+                          style: miniStyle.copyWith(
+                              fontSize: 11, color: Colors.grey),
+                        ),
+                        Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () {
+                              Helpers.launchWebsite();
+                            },
+                            splashColor: Colors.grey,
+                            borderRadius: BorderRadius.circular(12),
+                            child: Text(
+                              "Ayata Inc.",
+                              style: miniStyle.copyWith(
+                                // decoration: TextDecoration.underline,
+                                fontSize: 11,
+                                color: Colors.blueAccent,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -497,356 +542,176 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  /*  Widget _buildPrivacyPolicies() {
-    return ProfileMenu(
-      text: "Privacy Policies",
-      icon: Icons.privacy_tip,
-      press: () {
-        Get.to(
-          () => PrivacyPage(),
-          transition: Transition.rightToLeft,
-          duration: const Duration(milliseconds: 100),
-        );
-      },
-      showIcon: false,
-    );
-  } */
-
-//   Widget _buildBiometrics(bool isDarkMode) {
-//     return Obx(() => ProfileMenu(
-//           text: authcontroller.biometricsEnabled.value
-//               ? "Disable Biometrics"
-//               : "Enable Biometrics",
-//           icon: Icons.fingerprint,
-//           showIcon: false,
-//           trailing: FlutterSwitch(
-//             width: 55.0,
-//             height: 30.0,
-//             valueFontSize: 12.0,
-//             toggleSize: 25.0,
-//             value: authcontroller.biometricsEnabled.value,
-//             borderRadius: 30.0,
-//             padding: 4.0,
-//             activeColor: Colors.green,
-//             inactiveColor: Colors.grey.shade300,
-//             toggleColor: Colors.white,
-//             activeToggleColor: Colors.white,
-//             onToggle: (value) async {
-//               try {
-//                 if (!value) {
-//                   bool confirmed = await _showDisableConfirmation(
-//                     context: Get.context!,
-//                   );
-//                   if (!confirmed) {
-//                     return;
-//                   }
-//                   await authcontroller.toggleBiometrics(false);
-//                   return;
-//                 }
-
-//                 bool canUseBiometrics = await authcontroller.canUseBiometrics();
-//                 if (!canUseBiometrics) {
-//                   SSnackbarUtil.showSnackbar(
-//                     'Biometrics Unavailable',
-//                     'Your device does not support biometrics or it is not enabled.',
-//                     SnackbarType.error,
-//                   );
-//                   return;
-//                 }
-
-//                 String? storedEmail =
-//                     await authcontroller.secureStorage.read(key: 'user_email');
-//                 String? storedPassword = await authcontroller.secureStorage
-//                     .read(key: 'user_password');
-
-//                 if (storedEmail == null ||
-//                     storedEmail.isEmpty ||
-//                     storedPassword == null ||
-//                     storedPassword.isEmpty) {
-//                   SSnackbarUtil.showSnackbar(
-//                     'Login Required',
-//                     'Please log in with email and password first to enable biometric login.',
-//                     SnackbarType.info,
-//                   );
-//                   return;
-//                 }
-
-//                 bool? isPasswordCorrect = await _showPasswordPrompt(
-//                   context: Get.context!,
-//                   storedPassword: storedPassword,
-//                 );
-
-//                 if (isPasswordCorrect == null) {
-//                   return;
-//                 }
-
-//                 if (!isPasswordCorrect) {
-//                   SSnackbarUtil.showSnackbar(
-//                     'Incorrect Password',
-//                     'The entered password is incorrect.',
-//                     SnackbarType.error,
-//                   );
-//                   return;
-//                 }
-
-//                 await authcontroller.toggleBiometrics(true);
-//               } catch (e) {
-//                 SSnackbarUtil.showSnackbar(
-//                   'Error',
-//                   'Failed to toggle biometric settings.',
-//                   SnackbarType.error,
-//                 );
-//               }
-//             },
-//           ),
-//         ));
-//   }
-
-//   Future<bool?> _showPasswordPrompt({
-//     required BuildContext context,
-//     required String storedPassword,
-//   }) async {
-//     TextEditingController passwordController = TextEditingController();
-//     bool obscureText = true;
-//     bool? isPasswordCorrect;
-
-//     await showDialog(
-//       context: context,
-//       barrierDismissible: false,
-//       builder: (BuildContext context) {
-//         final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
-//         return AlertDialog(
-//           title: Center(
-//             child: Text(
-//               'Enter Password',
-//               style: smallNStyle.copyWith(
-//                 fontWeight: FontWeight.bold,
-//                 color: isDarkMode ? Colors.grey.shade300 : Colors.black87,
-//               ),
-//             ),
-//           ),
-//           content: ConstrainedBox(
-//             constraints: const BoxConstraints(
-//               minWidth: 280,
-//               maxWidth: 320,
-//             ),
-//             child: StatefulBuilder(
-//               builder: (context, setState) {
-//                 return Column(
-//                   mainAxisSize: MainAxisSize.min,
-//                   children: [
-//                     SizedBox(
-//                       height: 50,
-//                       width: double.infinity,
-//                       child: TextField(
-//                         controller: passwordController,
-//                         obscureText: obscureText,
-//                         style: TextStyle(
-//                           fontSize: 16,
-//                           color: isDarkMode
-//                               ? Colors.grey.shade300
-//                               : Colors.black87,
-//                         ),
-//                         decoration: InputDecoration(
-//                           labelText: 'Password',
-//                           labelStyle: smallStyle.copyWith(
-//                             fontWeight: FontWeight.w500,
-//                             color: isDarkMode
-//                                 ? Colors.grey.shade300
-//                                 : Colors.black87,
-//                           ),
-//                           filled: true,
-//                           fillColor: isDarkMode
-//                               ? Colors.grey.shade800
-//                               : Colors.grey.shade100,
-//                           border: OutlineInputBorder(
-//                             borderRadius: BorderRadius.circular(10),
-//                             borderSide: BorderSide(
-//                               color: isDarkMode
-//                                   ? Colors.grey.shade600
-//                                   : Colors.grey.shade400,
-//                             ),
-//                           ),
-//                           suffixIcon: IconButton(
-//                             icon: Icon(
-//                               obscureText
-//                                   ? Icons.visibility
-//                                   : Icons.visibility_off,
-//                               color: isDarkMode
-//                                   ? Colors.grey.shade300
-//                                   : Colors.black87,
-//                             ),
-//                             onPressed: () {
-//                               setState(() {
-//                                 obscureText = !obscureText;
-//                               });
-//                             },
-//                           ),
-//                         ),
-//                       ),
-//                     ),
-//                   ],
-//                 );
-//               },
-//             ),
-//           ),
-//           actions: [
-//             TextButton(
-//               onPressed: () {
-//                 isPasswordCorrect = null;
-//                 Navigator.of(context).pop();
-//               },
-//               child: Text(
-//                 'Cancel',
-//                 style: smallStyle.copyWith(
-//                   color: isDarkMode ? Colors.grey.shade300 : Colors.black87,
-//                 ),
-//               ),
-//             ),
-//             TextButton(
-//               onPressed: () {
-//                 isPasswordCorrect = passwordController.text == storedPassword;
-//                 Navigator.of(context).pop();
-//               },
-//               child: Text(
-//                 'Confirm',
-//                 style: smallStyle.copyWith(
-//                   color: Colors.blue,
-//                 ),
-//               ),
-//             ),
-//           ],
-//           shape: RoundedRectangleBorder(
-//             borderRadius: BorderRadius.circular(15),
-//           ),
-//           backgroundColor: isDarkMode ? Colors.grey.shade900 : Colors.white,
-//         );
-//       },
-//     );
-
-//     return isPasswordCorrect;
-//   }
-
-//   Future<bool> _showDisableConfirmation({
-//     required BuildContext context,
-//   }) async {
-//     bool? confirmed;
-
-//     await showDialog(
-//       context: context,
-//       barrierDismissible: false,
-//       builder: (BuildContext context) {
-//         final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
-//         return AlertDialog(
-//           title: Center(
-//             child: Text(
-//               'Disable Biometrics',
-//               style: smallNStyle.copyWith(
-//                 fontWeight: FontWeight.bold,
-//                 color: isDarkMode ? Colors.grey.shade300 : Colors.black87,
-//               ),
-//             ),
-//           ),
-//           content: ConstrainedBox(
-//             constraints: const BoxConstraints(
-//               minWidth: 280,
-//               maxWidth: 320,
-//             ),
-//             child: Text(
-//               'Are you sure you want to disable biometric authentication?',
-//               style: smallStyle.copyWith(
-//                 fontWeight: FontWeight.w500,
-//                 color: isDarkMode ? Colors.grey.shade300 : Colors.black87,
-//               ),
-//             ),
-//           ),
-//           actions: [
-//             TextButton(
-//               onPressed: () {
-//                 Navigator.of(context).pop();
-//                 confirmed = false;
-//               },
-//               child: Text(
-//                 'No',
-//                 style: smallStyle.copyWith(
-//                   color: isDarkMode ? Colors.grey.shade300 : Colors.black87,
-//                 ),
-//               ),
-//             ),
-//             TextButton(
-//               onPressed: () {
-// //  SAY NO TO PIRACY
-//                 Navigator.of(context).pop();
-//                 confirmed = true;
-//               },
-//               child: Text(
-//                 'Yes',
-//                 style: smallStyle.copyWith(
-//                   color: Colors.red,
-//                 ),
-//               ),
-//             ),
-//           ],
-//           shape: RoundedRectangleBorder(
-//             borderRadius: BorderRadius.circular(15),
-//           ),
-//           backgroundColor: isDarkMode ? Colors.grey.shade900 : Colors.white,
-//         );
-//       },
-//     );
-
-//     return confirmed ?? false;
-//   }
-
   Widget _buildLogout(bool isDarkMode) {
     return ProfileMenu(
       text: "Logout",
       icon: Icons.logout,
       press: () {
-        Dialogs.bottomMaterialDialog(
-          color: isDarkMode ? Colors.grey.shade800 : Colors.grey.shade200,
-          msg: 'Are You Sure? You want to Logout.',
-          title: 'LOGOUT',
+        showDialog(
           context: context,
-          msgStyle: TextStyle(
-            color: isDarkMode ? Colors.white : Colors.grey,
-            fontSize: 15,
+          // barrierColor: Colors.black.withOpacity(0.7),
+          builder: (context) => Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    isDarkMode ? Colors.grey[850]! : Colors.white,
+                    isDarkMode ? Colors.grey[800]! : Colors.grey[50]!,
+                  ],
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Icon(
+                      Icons.power_settings_new_rounded,
+                      color: Colors.red,
+                      size: 28,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Logout',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Are you sure you want to logout?',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: isDarkMode ? Colors.white : Colors.grey[600],
+                      fontSize: 12,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey[300]!),
+                          ),
+                          child: TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.cancel_outlined,
+                                  color:
+                                      isDarkMode ? Colors.white : Colors.black,
+                                ),
+                                const SizedBox(width: 5.0),
+                                Text(
+                                  'No',
+                                  style: TextStyle(
+                                    color: isDarkMode
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            gradient: const LinearGradient(
+                              colors: [Colors.red, Colors.redAccent],
+                            ),
+                          ),
+                          child: TextButton(
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              _showLoadingAndLogout();
+                            },
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.check_outlined,
+                                  color: Colors.white,
+                                ),
+                                SizedBox(width: 5.0),
+                                Text(
+                                  'Yes',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ),
-          actions: [
-            IconsButton(
-              onPressed: () => Navigator.pop(context),
-              text: 'Cancel',
-              iconData: Icons.cancel_outlined,
-              color: Colors.grey[300],
-              textStyle: TextStyle(color: Colors.grey.shade800),
-              iconColor: Colors.grey.shade800,
-            ),
-            IconsButton(
-              onPressed: () async {
-                Navigator.pop(context); // Close dialog first
-
-                // Show loading indicator
-                Get.dialog(
-                  const Center(child: CircularProgressIndicator()),
-                  barrierDismissible: false,
-                );
-
-                // Call local logout method
-                await authcontroller.localLogout(true);
-              },
-              text: 'Logout',
-              iconData: Icons.delete,
-              color: Colors.red,
-              textStyle: const TextStyle(color: Colors.white),
-              iconColor: Colors.white,
-            ),
-          ],
         );
       },
       showIcon: false,
     );
+  }
+
+  void _showLoadingAndLogout() {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    Get.dialog(
+      Center(
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(
+                color: isDarkMode ? Colors.white : Colors.black,
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: false,
+    );
+
+    authcontroller.localLogout(true);
   }
 
   Widget _buildExpandedContent(bool isDarkMode, {required Widget child}) {

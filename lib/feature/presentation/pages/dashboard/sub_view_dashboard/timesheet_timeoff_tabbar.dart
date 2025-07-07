@@ -53,7 +53,7 @@ class _TimesheetTimeoffTabViewState extends State<TimesheetTimeoffTabView> {
           padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
             color: isDarkMode ? Colors.grey[800] : Colors.grey[200],
-            borderRadius: BorderRadius.circular(25),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
             children: [
@@ -66,7 +66,7 @@ class _TimesheetTimeoffTabViewState extends State<TimesheetTimeoffTabView> {
                       color: isTimesheetSelected
                           ? (isDarkMode ? Colors.white : Colors.white)
                           : Colors.transparent,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(12),
                       boxShadow: isTimesheetSelected
                           ? [
                               BoxShadow(
@@ -118,7 +118,7 @@ class _TimesheetTimeoffTabViewState extends State<TimesheetTimeoffTabView> {
                       color: isTimeOffSelected
                           ? (isDarkMode ? Colors.white : Colors.white)
                           : Colors.transparent,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(12),
                       boxShadow: isTimeOffSelected
                           ? [
                               BoxShadow(

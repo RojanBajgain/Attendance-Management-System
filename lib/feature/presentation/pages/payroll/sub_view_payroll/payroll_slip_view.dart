@@ -31,11 +31,11 @@ class PayRollSlip extends StatelessWidget {
     return InkWell(
       onTap: () {
         Get.to(
-          () => PaymentSlip(
-            payrollId: payrolldata.id.toString(),
-          ),
-          transition: Transition.rightToLeft,
-        );
+            () => PaymentSlip(
+                  payrollId: payrolldata.id.toString(),
+                ),
+            transition: Transition.rightToLeft,
+            duration: Duration(milliseconds: 100));
       },
       child: Container(
         height: 130.0,

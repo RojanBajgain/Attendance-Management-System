@@ -6,6 +6,7 @@ import 'package:ams/feature/presentation/pages/login/login_page.dart';
 import 'package:ams/feature/presentation/pages/offline_page/page/offline_page.dart';
 import 'package:ams/feature/presentation/pages/organization/pages/organization_page.dart';
 import 'package:ams/feature/presentation/pages/payroll/sub_view_payroll/payment_slip_view.dart';
+import 'package:ams/feature/presentation/pages/timesheet/time_sheet_page.dart';
 import 'package:get/get.dart';
 
 class RouteHelper {
@@ -19,6 +20,7 @@ class RouteHelper {
   static const String chat = '/chat';
   static const String event = '/EventPage';
   static const String paymentslip = '/PaymentSlip';
+  static const String timesheet = '/Timesheet';
 
   // static String getHome() => home;
   static String getlandingpage() => landingpage;
@@ -29,6 +31,7 @@ class RouteHelper {
   static String getchat() => chat;
   static String getevent() => event;
   static String getpaymentslip() => paymentslip;
+  static String gettimesheet() => timesheet;
 
   static List<GetPage> routes = [
     GetPage(
@@ -56,6 +59,10 @@ class RouteHelper {
     GetPage(
       name: event,
       page: () => const EventPage(),
+    ),
+    GetPage(
+      name: timesheet,
+      page: () => const TimeSheetPage(),
     ),
     GetPage(
       name: paymentslip,
