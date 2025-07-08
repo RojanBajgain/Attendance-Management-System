@@ -7,9 +7,8 @@ class ApiUrls {
 
   static const String logout = "api/logout/";
 
-  static const String wsUrl = "ws://tranquility.backend.ams.ayata.com.np/ws/";
-  static const String chatmessage =
-      "ws://tranquility.backend.ams.ayata.com.np/ws/chat/";
+  static const String wsUrl = "ws://backend.ams.ayata.com.np/ws/";
+  static const String chatmessage = "ws://backend.ams.ayata.com.np/ws/chat/";
 
   // static const String wsUrl = "ws://tranquility.backend.ams.ayata.com.np/ws/";
   // static const String chatmessage =
