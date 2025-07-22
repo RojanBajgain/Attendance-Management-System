@@ -202,7 +202,7 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
           }
         },
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 6),
           height: 35,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
@@ -212,6 +212,7 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
+              const SizedBox(width: 6),
               const Icon(Icons.date_range_outlined, size: 18),
               const SizedBox(width: 6),
               if (timesheetcontroller.dateRange.value != null)

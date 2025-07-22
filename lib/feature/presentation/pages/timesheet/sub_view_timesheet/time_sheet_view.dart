@@ -73,7 +73,7 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
         //   ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
-          color: Colors.black,
+          color: isDarkMode ? Colors.white : Colors.black,
 
           boxShadow: const <BoxShadow>[
             BoxShadow(
@@ -111,7 +111,7 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
-            color: Colors.white,
+            color: isDarkMode ? Colors.grey.shade800 : Colors.white,
             boxShadow: const <BoxShadow>[
               BoxShadow(
                 color: Color.fromRGBO(0, 0, 0, 0.08),
@@ -172,7 +172,7 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
                         ],
                       ),
                     ),
-                    const SizedBox(width: 20),
+                    const SizedBox(width: 15),
                     SizedBox(
                       width: 90,
                       child: Row(
@@ -196,7 +196,7 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
                         ],
                       ),
                     ),
-                    const SizedBox(width: 20),
+                    const SizedBox(width: 15),
                     SizedBox(
                       width: 90,
                       child: Row(

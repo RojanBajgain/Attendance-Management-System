@@ -167,8 +167,10 @@ class _TimeSheetDetailState extends State<TimeSheetDetail> {
   }
 
   Widget _buildRow(String label, String value) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Builder(builder: (context) {
-      final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+      // final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 5.0),
