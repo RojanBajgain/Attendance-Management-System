@@ -28,7 +28,7 @@ class TimeoffController extends GetxController {
 
   // Get Time offs
   Future<void> getTimeoff({bool forceRefresh = false}) async {
-    if (_hasLoadedOnce && !forceRefresh) return;
+    // if (_hasLoadedOnce && !forceRefresh) return;
 
     isLoading(true);
     try {

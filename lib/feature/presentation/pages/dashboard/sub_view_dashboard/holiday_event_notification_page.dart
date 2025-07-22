@@ -384,22 +384,48 @@ class _HolidayEventNotificationState extends State<HolidayEventNotification> {
         color: isDarkMode ? Colors.grey.shade800 : Colors.grey.shade200,
       ),
       child: Row(
+        // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            height: 40.0,
-            width: 40.0,
+            height: 60.0,
+            width: 60.0,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10.0),
-              color: _getEventTypeColor(item.type),
+              borderRadius: BorderRadius.circular(15.0),
+              color: Colors.white,
             ),
             child: Center(
-              child: Text(
-                item.startDate != null ? "${item.startDate!.day}" : "N/A",
-                style: smallNStyle.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-                textAlign: TextAlign.center,
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 5),
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(15),
+                          topRight: Radius.circular(15)),
+                      color: _getEventTypeColor(item.type),
+                    ),
+                    width: double.infinity,
+                    child: Text(
+                      item.startDate != null
+                          ? DateFormat('MMM').format(item.startDate!)
+                          : "N/A",
+                      style: smallNStyle.copyWith(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Text(
+                    item.startDate != null ? "${item.startDate!.day}" : "N/A",
+                    style: smallNStyle.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
             ),
           ),

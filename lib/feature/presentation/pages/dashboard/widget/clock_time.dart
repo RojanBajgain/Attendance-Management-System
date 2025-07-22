@@ -425,7 +425,8 @@ class _ClockTimeState extends State<ClockTime> {
   Widget build(BuildContext context) {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      height: 225.0,
+      padding: EdgeInsets.symmetric(vertical: 12),
+      // height: 225.0,
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12.0),
@@ -444,9 +445,9 @@ class _ClockTimeState extends State<ClockTime> {
       children: [
         // Check In/Out header row
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.1),
+            color: Colors.blueGrey.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12.0),
           ),
           child: Row(
@@ -497,16 +498,17 @@ class _ClockTimeState extends State<ClockTime> {
               ),
             ],
           ),
-        ),
+        ).paddingOnly(left: 16, right: 16, bottom: 12),
 
         // Main content
         Padding(
-          padding: const EdgeInsets.fromLTRB(26.0, 20.0, 26.0, 0),
-          child: Row(
+          padding: const EdgeInsets.fromLTRB(26.0, 12.0, 26.0, 0),
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               _buildClockInTimeDisplay(isDarkMode),
+              const SizedBox(height: 20.0),
               ConstrainedBox(
                 constraints: BoxConstraints(
                     maxWidth: MediaQuery.of(context).size.width * 0.5),
@@ -514,7 +516,7 @@ class _ClockTimeState extends State<ClockTime> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     _buildClockInOutButton(isDarkMode),
-                    const SizedBox(width: 10.0),
+                    const SizedBox(width: 20.0),
                     Obx(() => isClockedInToday.value &&
                             !isClockedOut.value &&
                             !isOnBreak.value
@@ -535,7 +537,7 @@ class _ClockTimeState extends State<ClockTime> {
       children: [
         // Clock In Time
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           decoration: BoxDecoration(
             color: Colors.blue.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12.0),

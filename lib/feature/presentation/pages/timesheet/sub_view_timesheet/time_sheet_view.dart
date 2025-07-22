@@ -46,31 +46,47 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
       child: Container(
         height: 80.0,
         width: double.infinity,
+        // decoration: BoxDecoration(
+        //   borderRadius: BorderRadius.circular(8.0),
+        //   color: Colors.grey[200],
+        //   boxShadow: [
+        //     BoxShadow(
+        //       color: Colors.grey.withOpacity(0.2),
+        //       blurRadius: 2,
+        //       spreadRadius: 1,
+        //       offset: const Offset(0, 1),
+        //     ),
+        //   ],
+        //   gradient: LinearGradient(
+        //     begin: Alignment.centerLeft,
+        //     end: Alignment.centerRight,
+        //     colors: [
+        //       isDarkMode ? Colors.grey.shade400 : Colors.black,
+        //       isDarkMode ? Colors.grey.shade400 : Colors.black,
+        //       isDarkMode ? Colors.grey.shade800 : Colors.grey.shade200,
+        //     ],
+        //     stops: const [
+        //       0.0,
+        //       0.02,
+        //       0.0,
+        //     ],
+        //   ),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          color: Colors.grey[200],
-          boxShadow: [
+          borderRadius: BorderRadius.circular(8),
+          color: Colors.black,
+
+          boxShadow: const <BoxShadow>[
             BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              blurRadius: 2,
-              spreadRadius: 1,
-              offset: const Offset(0, 1),
+              color: Color.fromRGBO(0, 0, 0, 0.08),
+              blurRadius: 4,
+              offset: Offset(0, 2),
             ),
+            BoxShadow(
+              color: Color.fromRGBO(0, 0, 0, 0.02),
+              blurRadius: 6,
+              offset: Offset(0, 0),
+            ), //blur radius of shadow
           ],
-          gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: [
-              isDarkMode ? Colors.grey.shade400 : Colors.black,
-              isDarkMode ? Colors.grey.shade400 : Colors.black,
-              isDarkMode ? Colors.grey.shade800 : Colors.grey.shade200,
-            ],
-            stops: const [
-              0.0,
-              0.02,
-              0.0,
-            ],
-          ),
 
           // gradient: LinearGradient(
           //   begin: Alignment.centerLeft,
@@ -92,104 +108,122 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
           //   stops: const [0.0, 0.02, 0.02],
           // ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.only(
-            left: 25.0,
-            top: 15.0,
-            right: 20.0,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                widget.timesheetdata.date != null
-                    ? DateFormat.yMMMMEEEEd('en_US')
-                        .format(widget.timesheetdata.date!)
-                    : "N/A",
-                style: smallStyle.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: isDarkMode ? Colors.white : Colors.black,
-                  fontSize: 12.0,
-                ),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color: Colors.white,
+            boxShadow: const <BoxShadow>[
+              BoxShadow(
+                color: Color.fromRGBO(0, 0, 0, 0.08),
+                blurRadius: 4,
+                offset: Offset(0, 2),
               ),
-              const SizedBox(height: 15.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 95,
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.history,
-                          color: Colors.green,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          widget.timesheetdata.entryTime != null
-                              ? DateFormat('hh:mm a').format(
-                                  widget.timesheetdata.entryTime!.toLocal())
-                              : "--:--",
-                          style: smallStyle.copyWith(
-                            color: Colors.green,
-                            fontSize: 12.0,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 20),
-                  SizedBox(
-                    width: 90,
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.update,
-                          color: Colors.red,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          widget.timesheetdata.exitTime != null
-                              ? DateFormat('hh:mm a').format(
-                                  widget.timesheetdata.exitTime!.toLocal())
-                              : "--:--",
-                          style: smallStyle.copyWith(
-                            color: Colors.red,
-                            fontSize: 12.0,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 20),
-                  SizedBox(
-                    width: 90,
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.schedule,
-                          color:
-                              isDarkMode ? Colors.grey : Colors.grey.shade600,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          "${widget.timesheetdata.totalHour} hrs",
-                          style: smallStyle.copyWith(
-                            color: Colors.grey,
-                            fontSize: 12.0,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+              BoxShadow(
+                color: Color.fromRGBO(0, 0, 0, 0.02),
+                blurRadius: 6,
+                offset: Offset(0, 0),
+              ), //blur radius of shadow
             ],
           ),
-        ),
+          child: Padding(
+            padding: const EdgeInsets.only(
+              left: 25.0,
+              top: 15.0,
+              right: 20.0,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.timesheetdata.date != null
+                      ? DateFormat.yMMMMEEEEd('en_US')
+                          .format(widget.timesheetdata.date!)
+                      : "N/A",
+                  style: smallStyle.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: isDarkMode ? Colors.white : Colors.black,
+                    fontSize: 12.0,
+                  ),
+                ),
+                const SizedBox(height: 15.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 95,
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.history,
+                            color: Colors.green,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            widget.timesheetdata.entryTime != null
+                                ? DateFormat('hh:mm a').format(
+                                    widget.timesheetdata.entryTime!.toLocal())
+                                : "--:--",
+                            style: smallStyle.copyWith(
+                              color: Colors.green,
+                              fontSize: 12.0,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    SizedBox(
+                      width: 90,
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.update,
+                            color: Colors.red,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            widget.timesheetdata.exitTime != null
+                                ? DateFormat('hh:mm a').format(
+                                    widget.timesheetdata.exitTime!.toLocal())
+                                : "--:--",
+                            style: smallStyle.copyWith(
+                              color: Colors.red,
+                              fontSize: 12.0,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    SizedBox(
+                      width: 90,
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.schedule,
+                            color:
+                                isDarkMode ? Colors.grey : Colors.grey.shade600,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            "${widget.timesheetdata.totalHour} hrs",
+                            style: smallStyle.copyWith(
+                              color: Colors.grey,
+                              fontSize: 12.0,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ).marginOnly(left: 10),
       ),
     );
   }

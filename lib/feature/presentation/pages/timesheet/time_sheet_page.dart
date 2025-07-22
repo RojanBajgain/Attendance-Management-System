@@ -19,7 +19,6 @@ class TimeSheetPage extends StatefulWidget {
 
 class _TimeSheetPageState extends State<TimeSheetPage> {
   final authcontroller = Get.find<AuthController>();
-
   final TimesheetController timesheetcontroller =
       Get.put(TimesheetController());
   final ScrollController _scrollController = ScrollController();
@@ -50,7 +49,6 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
 
     return SafeArea(
       child: Scaffold(
-        // appBar: const ConstantAppBar(),
         body: RefreshIndicator(
           color: isDarkMode ? Colors.white : Colors.black,
           onRefresh: () async {
@@ -61,204 +59,82 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
               controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
-                SliverPadding(
-                  padding: const EdgeInsets.all(8.0),
-                  sliver: SliverList(
-                    delegate: SliverChildListDelegate([
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10.0),
-                        child: Row(
-                          children: [
-                            Text(
-                              "Timesheets",
-                              style: smallNStyle.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: isDarkMode ? Colors.white : Colors.black,
-                              ),
-                            ),
-                            const Spacer(),
-                            GestureDetector(
-                              onTap: () async {
-                                final ThemeData datePickerTheme = isDarkMode
-                                    ? ThemeData.dark().copyWith(
-                                        textTheme: TextTheme(
-                                          bodyLarge: TextStyle(
-                                            fontSize: 11.0,
-                                            color: isDarkMode
-                                                ? Colors.white
-                                                : Colors.black,
-                                          ),
-                                          bodyMedium: TextStyle(
-                                            fontSize: 11.0,
-                                            color: isDarkMode
-                                                ? Colors.white
-                                                : Colors.black,
-                                          ),
-                                        ),
-                                        dialogBackgroundColor: Colors.grey[900],
-                                        colorScheme: const ColorScheme.dark(
-                                          primary: Colors.blueAccent,
-                                          onPrimary: Colors.white,
-                                          onSurface: Colors.white,
-                                          background: Colors.black,
-                                        ),
-                                      )
-                                    : ThemeData.light().copyWith(
-                                        textTheme: TextTheme(
-                                          bodyLarge: TextStyle(
-                                            fontSize: 11.0,
-                                            color: isDarkMode
-                                                ? Colors.white
-                                                : Colors.black,
-                                          ),
-                                          bodyMedium: TextStyle(
-                                            fontSize: 11.0,
-                                            color: isDarkMode
-                                                ? Colors.white
-                                                : Colors.black,
-                                          ),
-                                        ),
-                                        dialogBackgroundColor: Colors.white,
-                                        colorScheme: const ColorScheme.light(
-                                          primary: Colors.black,
-                                          onPrimary: Colors.white,
-                                          onSurface: Colors.black,
-                                          background: Colors.white,
-                                        ),
-                                      );
-
-                                DateTimeRange? dateRange =
-                                    await showDateRangePicker(
-                                  context: context,
-                                  initialDateRange: timesheetcontroller
-                                          .dateRange.value ??
-                                      DateTimeRange(
-                                        start: DateTime.now()
-                                            .subtract(const Duration(days: 7)),
-                                        end: DateTime.now(),
-                                      ),
-                                  firstDate: DateTime(2000),
-                                  lastDate: DateTime(2100),
-                                  builder:
-                                      (BuildContext context, Widget? child) {
-                                    return Theme(
-                                      data: datePickerTheme,
-                                      child: child!,
-                                    );
-                                  },
-                                );
-
-                                if (dateRange != null) {
-                                  timesheetcontroller.dateRange.value =
-                                      dateRange;
-                                  timesheetcontroller.filterByDateRange(
-                                      dateRange.start, dateRange.end);
-                                }
-                              },
-                              child: Obx(() {
-                                return Container(
-                                  height: 35.0,
-                                  width: timesheetcontroller.dateRange.value !=
-                                          null
-                                      ? 200.0
-                                      : (timesheetcontroller
-                                                  .selectedDate.value !=
-                                              null
-                                          ? 165.0
-                                          : 48.0),
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.black),
-                                    borderRadius: BorderRadius.circular(70.0),
-                                    color: isDarkMode
-                                        ? Colors.grey.shade500
-                                        : Colors.white,
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Icon(
-                                        Icons.date_range_outlined,
-                                        color: Colors.black,
-                                      ),
-                                      if (timesheetcontroller.dateRange.value !=
-                                          null) ...[
-                                        const SizedBox(width: 5),
-                                        Expanded(
-                                          child: Text(
-                                            "${DateFormat('MMM d').format(timesheetcontroller.dateRange.value!.start)} - ${DateFormat('MMM d').format(timesheetcontroller.dateRange.value!.end)}",
-                                            style: smallStyle.copyWith(
-                                                color: Colors.black),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 5),
-                                        GestureDetector(
-                                          onTap: () {
-                                            timesheetcontroller
-                                                .clearDateRange();
-                                          },
-                                          child: const Icon(
-                                            Icons.clear,
-                                            size: 20.0,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                      ] else if (timesheetcontroller
-                                              .selectedDate.value !=
-                                          null) ...[
-                                        const SizedBox(width: 5),
-                                        Text(
-                                          DateFormat('MMM d, yyyy').format(
-                                              timesheetcontroller
-                                                  .selectedDate.value!),
-                                          style: smallStyle.copyWith(
-                                              color: Colors.black),
-                                        ),
-                                        const SizedBox(width: 5),
-                                        GestureDetector(
-                                          onTap: () {
-                                            timesheetcontroller
-                                                .clearSelectedDate();
-                                          },
-                                          child: const Icon(
-                                            Icons.clear,
-                                            size: 20.0,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                      ],
-                                    ],
-                                  ),
-                                );
-                              }),
-                            ),
-                          ],
+                // Header
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
+                    child: Row(
+                      children: [
+                        Text(
+                          "Timesheets",
+                          style: smallNStyle.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: isDarkMode ? Colors.white : Colors.black,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 15.0),
-                    ]),
+                        const Spacer(),
+                        _buildDateFilter(isDarkMode),
+                      ],
+                    ),
                   ),
                 ),
+                const SliverToBoxAdapter(child: SizedBox(height: 10)),
+
+                // Content
                 if (timesheetcontroller.isLoading.value &&
                     timesheetcontroller.currentPage.value == 1)
-                  SliverFillRemaining(
-                    child: _buildLoadingIndicator(),
-                  )
+                  SliverFillRemaining(child: _buildLoadingIndicator())
                 else if (timesheetcontroller.filteredTimesheet.isEmpty)
-                  SliverFillRemaining(
-                    child: _buildEmptyState(isDarkMode),
-                  )
+                  SliverFillRemaining(child: _buildEmptyState(isDarkMode))
                 else
                   SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
                         final timesheet =
                             timesheetcontroller.filteredTimesheet[index];
+
+                        bool showWeekLabel = false;
+                        String weekLabel = "";
+
+                        if (timesheet.date != null) {
+                          weekLabel = getWeekLabel(timesheet.date!);
+
+                          if (index == 0 ||
+                              (timesheetcontroller
+                                          .filteredTimesheet[index - 1].date !=
+                                      null &&
+                                  getWeekLabel(timesheet.date!) !=
+                                      getWeekLabel(timesheetcontroller
+                                          .filteredTimesheet[index - 1]
+                                          .date!))) {
+                            showWeekLabel = true;
+                          }
+                        }
+
                         return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TimeSheetWidget(timesheetdata: timesheet),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10.0, vertical: 4.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (showWeekLabel)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 6.0),
+                                  child: Text(
+                                    weekLabel,
+                                    style: smallStyle.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13.0,
+                                      color: isDarkMode
+                                          ? Colors.white
+                                          : Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              TimeSheetWidget(timesheetdata: timesheet),
+                            ],
+                          ),
                         );
                       },
                       childCount: timesheetcontroller.filteredTimesheet.length,
@@ -267,13 +143,12 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
 
                 // Load more indicator
                 if (timesheetcontroller.isLoadMore.value)
-                  const SliverPadding(
-                    padding: EdgeInsets.all(12.0),
-                    sliver: SliverToBoxAdapter(
+                  const SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16.0),
                       child: Center(
-                          child: CircularProgressIndicator(
-                        color: Colors.cyan,
-                      )),
+                        child: CircularProgressIndicator(color: Colors.cyan),
+                      ),
                     ),
                   ),
               ],
@@ -283,23 +158,97 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
       ),
     );
   }
-}
 
-Widget _buildLoadingIndicator() {
-  return ListView.builder(
-    shrinkWrap: true,
-    physics: const NeverScrollableScrollPhysics(),
-    itemCount: 8,
-    itemBuilder: (context, index) {
-      return const TimesheetSkeleton();
-    },
-  );
-}
+  /// Date Filter Widget
+  Widget _buildDateFilter(bool isDarkMode) {
+    return Obx(() {
+      return GestureDetector(
+        onTap: () async {
+          final ThemeData datePickerTheme = isDarkMode
+              ? ThemeData.dark().copyWith(
+                  dialogBackgroundColor: Colors.grey[900],
+                  colorScheme: const ColorScheme.dark(
+                    primary: Colors.blueAccent,
+                    onPrimary: Colors.white,
+                    onSurface: Colors.white,
+                  ),
+                )
+              : ThemeData.light().copyWith(
+                  colorScheme: const ColorScheme.light(
+                    primary: Colors.black,
+                    onPrimary: Colors.white,
+                    onSurface: Colors.black,
+                  ),
+                );
 
-Widget _buildEmptyState(bool isDarkMode) {
-  return SizedBox(
-    height: 600,
-    child: Center(
+          DateTimeRange? dateRange = await showDateRangePicker(
+            context: context,
+            initialDateRange: timesheetcontroller.dateRange.value ??
+                DateTimeRange(
+                  start: DateTime.now().subtract(const Duration(days: 7)),
+                  end: DateTime.now(),
+                ),
+            firstDate: DateTime(2000),
+            lastDate: DateTime(2100),
+            builder: (context, child) {
+              return Theme(data: datePickerTheme, child: child!);
+            },
+          );
+
+          if (dateRange != null) {
+            timesheetcontroller.dateRange.value = dateRange;
+            timesheetcontroller.filterByDateRange(
+                dateRange.start, dateRange.end);
+          }
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          height: 35,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: isDarkMode ? Colors.grey.shade600 : Colors.white,
+            border: Border.all(color: Colors.black),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.date_range_outlined, size: 18),
+              const SizedBox(width: 6),
+              if (timesheetcontroller.dateRange.value != null)
+                Row(
+                  children: [
+                    Text(
+                      "${DateFormat('MMM d').format(timesheetcontroller.dateRange.value!.start)} - ${DateFormat('MMM d').format(timesheetcontroller.dateRange.value!.end)}",
+                      style: smallStyle.copyWith(color: Colors.black),
+                    ),
+                    const SizedBox(width: 5),
+                    GestureDetector(
+                      onTap: () => timesheetcontroller.clearDateRange(),
+                      child: const Icon(Icons.clear, size: 18),
+                    ),
+                  ],
+                )
+            ],
+          ),
+        ),
+      );
+    });
+  }
+
+  /// Loading placeholder
+  Widget _buildLoadingIndicator() {
+    return ListView.builder(
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: 6,
+      itemBuilder: (context, index) {
+        return const TimesheetSkeleton();
+      },
+    );
+  }
+
+  /// Empty State
+  Widget _buildEmptyState(bool isDarkMode) {
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -307,7 +256,6 @@ Widget _buildEmptyState(bool isDarkMode) {
             'assets/images/pay.png',
             height: 150,
             width: 250,
-            fit: BoxFit.cover,
           ),
           const SizedBox(height: 20),
           Text(
@@ -318,23 +266,43 @@ Widget _buildEmptyState(bool isDarkMode) {
           ),
         ],
       ),
-    ),
-  );
+    );
+  }
+
+  /// Week Label Helper
+  String getWeekLabel(DateTime date) {
+    DateTime now = DateTime.now();
+    DateTime today = DateTime(now.year, now.month, now.day);
+    DateTime given = DateTime(date.year, date.month, date.day);
+
+    DateTime startOfCurrentWeek =
+        today.subtract(Duration(days: today.weekday - 1));
+    DateTime startOfGivenWeek =
+        given.subtract(Duration(days: given.weekday - 1));
+
+    int differenceInDays =
+        startOfCurrentWeek.difference(startOfGivenWeek).inDays;
+    int weekDifference = (differenceInDays / 7).floor();
+
+    if (weekDifference == 0) {
+      return "This Week";
+    } else if (weekDifference == 1) {
+      return "Last Week";
+    } else {
+      return "$weekDifference weeks ago";
+    }
+  }
 }
 
+/// Skeleton for loading
 class TimesheetSkeleton extends StatelessWidget {
   const TimesheetSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const Padding(
-      padding: EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SkeletonBox(height: 80, width: double.infinity, borderRadius: 8),
-        ],
-      ),
+      padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+      child: SkeletonBox(height: 80, width: double.infinity, borderRadius: 8),
     );
   }
 }

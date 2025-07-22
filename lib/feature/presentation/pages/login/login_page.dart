@@ -66,299 +66,313 @@ class _LoginPageState extends State<LoginPage> {
       onTap: () {
         FocusScope.of(context).unfocus();
       },
-      child: Scaffold(
-        bottomNavigationBar: Stack(
-          // overflow: Overflow.visible,
-          alignment: const FractionalOffset(.5, 1.0),
-          children: [
-            Container(
-              height: 50,
-              // color: lightcolor,
-              child: Column(
-                children: [
-                  Text(
-                    '© 2025 AMS. All Rights Reserved',
-                    style: miniStyle.copyWith(fontSize: 12, color: Colors.grey),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Product of ",
-                        style: miniStyle.copyWith(
-                            fontSize: 12, color: Colors.grey),
-                      ),
-                      Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () {
-                            Helpers.launchWebsite();
-                          },
-                          splashColor: Colors.grey,
-                          borderRadius: BorderRadius.circular(12),
-                          child: Text(
-                            "Ayata Inc.",
-                            style: miniStyle.copyWith(
-                              // decoration: TextDecoration.underline,
-                              fontSize: 12,
-                              color: Colors.blueAccent,
+      child: SafeArea(
+        top: false,
+        child: Scaffold(
+          bottomNavigationBar: Stack(
+            // overflow: Overflow.visible,
+            alignment: const FractionalOffset(.5, 1.0),
+            children: [
+              Container(
+                height: 50,
+                // color: lightcolor,
+                child: Column(
+                  children: [
+                    Text(
+                      '© 2025 AMS. All Rights Reserved',
+                      style:
+                          miniStyle.copyWith(fontSize: 12, color: Colors.grey),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Product of ",
+                          style: miniStyle.copyWith(
+                              fontSize: 12, color: Colors.grey),
+                        ),
+                        Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () {
+                              Helpers.launchWebsite();
+                            },
+                            splashColor: Colors.grey,
+                            borderRadius: BorderRadius.circular(12),
+                            child: Row(
+                              children: [
+                                Text(
+                                  "Ayata Inc",
+                                  style: miniStyle.copyWith(
+                                    // decoration: TextDecoration.underline,
+                                    fontSize: 12,
+                                    color: Colors.blueAccent,
+                                  ),
+                                ),
+                                const Icon(
+                                  Icons.arrow_outward_rounded,
+                                  size: 12,
+                                  color: Colors.blueAccent,
+                                ),
+                              ],
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  )
-                ],
+                      ],
+                    )
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-        body: SafeArea(
-          child: Stack(
-            children: [
-              // Positioned(
-              //   right: 366,
-              //   child: Container(
-              //     height: 275,
-              //     width: 275,
-              //     decoration: BoxDecoration(
-              //       shape: BoxShape.circle,
-              //       color: isDarkMode
-              //           ? Colors.grey.shade700
-              //           : Colors.grey.shade300,
-              //     ),
-              //   ),
-              // ),
-              SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 20),
-                      Image.asset(
-                        AppImages.logo,
-                        height: 50,
-                        // color: Colors.lightBlue,
-                      ),
-                      const SizedBox(height: 60.0),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Welcome to",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey,
-                                ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            "AYATA",
-                            style: mediumStyle.copyWith(
-                                color: isDarkMode ? Colors.white : Colors.black,
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8.0),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              "Fill the credentials below to login into AYATA",
-                              style: smallStyle.copyWith(
-                                fontSize: 13,
-                                color: isDarkMode
-                                    ? Colors.white70
-                                    : Colors.black54,
-                              ),
+            ],
+          ),
+          body: SafeArea(
+            child: Stack(
+              children: [
+                // Positioned(
+                //   right: 366,
+                //   child: Container(
+                //     height: 275,
+                //     width: 275,
+                //     decoration: BoxDecoration(
+                //       shape: BoxShape.circle,
+                //       color: isDarkMode
+                //           ? Colors.grey.shade700
+                //           : Colors.grey.shade300,
+                //     ),
+                //   ),
+                // ),
+                SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 20),
+                        Image.asset(
+                          AppImages.logo,
+                          height: 50,
+                          // color: Colors.lightBlue,
+                        ),
+                        const SizedBox(height: 60.0),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Welcome to",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.grey,
+                                  ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 50.0),
-                      CustomTextField(
-                        hint: "Email",
-                        textEditingController: email,
-                        validator: (string) =>
-                            Validator.validateEmail(string: string ?? ""),
-                      ),
-                      const SizedBox(height: 12.0),
-                      CustomTextField(
-                        hint: "Password",
-                        textEditingController: pw,
-                        validator: (string) =>
-                            Validator.validateIsEmpty(string: string ?? ""),
-                        isPassword: true,
-                      ),
-                      const SizedBox(height: 16.0),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              SizedBox(
-                                height: 24.0,
-                                width: 28.0,
-                                child: Checkbox(
-                                  activeColor: Colors.lightBlue,
-                                  value: rememberMe,
-                                  onChanged: (bool? value) {
-                                    setState(() {
-                                      rememberMe = value ?? false;
-                                    });
-                                  },
-                                ),
-                              ),
-                              const SizedBox(width: 5.0),
-                              Text(
-                                "Remember me",
+                            const SizedBox(width: 8),
+                            Text(
+                              "AYATA",
+                              style: mediumStyle.copyWith(
+                                  color:
+                                      isDarkMode ? Colors.white : Colors.black,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8.0),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                "Fill the credentials below to login into AYATA",
                                 style: smallStyle.copyWith(
+                                  fontSize: 13,
                                   color: isDarkMode
                                       ? Colors.white70
                                       : Colors.black54,
                                 ),
                               ),
-                            ],
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Get.off(() => const ForgetPassword());
-                            },
-                            child: Text(
-                              "Forget your password?",
-                              style: smallStyle.copyWith(
-                                color: Colors.redAccent,
-                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 24.0),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Obx(
-                              () => Material(
-                                borderRadius: BorderRadius.circular(12.0),
-                                color: isDarkMode
-                                    ? Colors.grey.shade700
-                                    : Colors.black,
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  onTap: authController.authIsLoading.value
-                                      ? null
-                                      : () {
-                                          FocusScope.of(context).unfocus();
-
-                                          final emailError =
-                                              Validator.validateEmail(
-                                                  string: email.text);
-                                          final passwordError =
-                                              Validator.validateIsEmpty(
-                                                  string: pw.text);
-                                          if (emailError != null ||
-                                              passwordError != null) {
-                                            SSnackbarUtil.showFadeSnackbar(
-                                              Get.context!,
-                                              emailError ?? passwordError!,
-                                              SnackbarType.error,
-                                            );
-                                            return;
-                                          }
-
-                                          // Handle remember me functionality
-                                          if (rememberMe &&
-                                              email.text.isNotEmpty) {
-                                            _saveEmail(email.text);
-                                          } else {
-                                            _removeEmail();
-                                          }
-
-                                          showDialog(
-                                            context: context,
-                                            barrierDismissible: false,
-                                            builder: (_) =>
-                                                const CombinedAnimatedDialog(),
-                                          );
-
-                                          authController.loginMethod(
-                                            email.text,
-                                            pw.text,
-                                            _defaultRole,
-                                            false, // Pass false since we're not keeping user logged in
-                                          );
-                                        },
-                                  child: const LargeButton(title: "Log in"),
+                          ],
+                        ),
+                        const SizedBox(height: 50.0),
+                        CustomTextField(
+                          hint: "Email",
+                          textEditingController: email,
+                          validator: (string) =>
+                              Validator.validateEmail(string: string ?? ""),
+                        ),
+                        const SizedBox(height: 12.0),
+                        CustomTextField(
+                          hint: "Password",
+                          textEditingController: pw,
+                          validator: (string) =>
+                              Validator.validateIsEmpty(string: string ?? ""),
+                          isPassword: true,
+                        ),
+                        const SizedBox(height: 16.0),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                SizedBox(
+                                  height: 24.0,
+                                  width: 28.0,
+                                  child: Checkbox(
+                                    activeColor: Colors.lightBlue,
+                                    value: rememberMe,
+                                    onChanged: (bool? value) {
+                                      setState(() {
+                                        rememberMe = value ?? false;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 5.0),
+                                Text(
+                                  "Remember me",
+                                  style: smallStyle.copyWith(
+                                    color: isDarkMode
+                                        ? Colors.white70
+                                        : Colors.black54,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Get.off(() => const ForgetPassword());
+                              },
+                              child: Text(
+                                "Forget your password?",
+                                style: smallStyle.copyWith(
+                                  color: Colors.redAccent,
                                 ),
                               ),
                             ),
-                          ),
-                          // const SizedBox(width: 16.0),
-                          // Container(
-                          //   height: 55,
-                          //   width: 55,
-                          //   decoration: BoxDecoration(
-                          //     borderRadius: BorderRadius.circular(12.0),
-                          //     color: isDarkMode
-                          //         ? Colors.grey.shade700
-                          //         : Colors.black,
-                          //   ),
-                          //   child: Obx(
-                          //     () => authController.authIsLoading.value
-                          //         ? const Center(
-                          //             child: SizedBox(
-                          //               width: 24,
-                          //               height: 24,
-                          //               child: CircularProgressIndicator(
-                          //                 valueColor:
-                          //                     AlwaysStoppedAnimation<Color>(
-                          //                         Colors.white),
-                          //                 strokeWidth: 2.0,
-                          //               ),
-                          //             ),
-                          //           )
-                          //         : IconButton(
-                          //             icon: const Icon(
-                          //               Icons.fingerprint,
-                          //               size: 30,
-                          //               color: Colors.white,
-                          //             ),
-                          //             onPressed: () {
-                          //               authController.loginWithBiometrics();
-                          //             },
-                          //           ),
-                          //   ),
-                          // ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                        const SizedBox(height: 24.0),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Obx(
+                                () => Material(
+                                  borderRadius: BorderRadius.circular(12.0),
+                                  color: isDarkMode
+                                      ? Colors.grey.shade700
+                                      : Colors.black,
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    onTap: authController.authIsLoading.value
+                                        ? null
+                                        : () {
+                                            FocusScope.of(context).unfocus();
+
+                                            final emailError =
+                                                Validator.validateEmail(
+                                                    string: email.text);
+                                            final passwordError =
+                                                Validator.validateIsEmpty(
+                                                    string: pw.text);
+                                            if (emailError != null ||
+                                                passwordError != null) {
+                                              SSnackbarUtil.showFadeSnackbar(
+                                                Get.context!,
+                                                emailError ?? passwordError!,
+                                                SnackbarType.error,
+                                              );
+                                              return;
+                                            }
+
+                                            // Handle remember me functionality
+                                            if (rememberMe &&
+                                                email.text.isNotEmpty) {
+                                              _saveEmail(email.text);
+                                            } else {
+                                              _removeEmail();
+                                            }
+
+                                            showDialog(
+                                              context: context,
+                                              barrierDismissible: false,
+                                              builder: (_) =>
+                                                  const CombinedAnimatedDialog(),
+                                            );
+
+                                            authController.loginMethod(
+                                              email.text,
+                                              pw.text,
+                                              _defaultRole,
+                                              false, // Pass false since we're not keeping user logged in
+                                            );
+                                          },
+                                    child: const LargeButton(title: "Log in"),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            // const SizedBox(width: 16.0),
+                            // Container(
+                            //   height: 55,
+                            //   width: 55,
+                            //   decoration: BoxDecoration(
+                            //     borderRadius: BorderRadius.circular(12.0),
+                            //     color: isDarkMode
+                            //         ? Colors.grey.shade700
+                            //         : Colors.black,
+                            //   ),
+                            //   child: Obx(
+                            //     () => authController.authIsLoading.value
+                            //         ? const Center(
+                            //             child: SizedBox(
+                            //               width: 24,
+                            //               height: 24,
+                            //               child: CircularProgressIndicator(
+                            //                 valueColor:
+                            //                     AlwaysStoppedAnimation<Color>(
+                            //                         Colors.white),
+                            //                 strokeWidth: 2.0,
+                            //               ),
+                            //             ),
+                            //           )
+                            //         : IconButton(
+                            //             icon: const Icon(
+                            //               Icons.fingerprint,
+                            //               size: 30,
+                            //               color: Colors.white,
+                            //             ),
+                            //             onPressed: () {
+                            //               authController.loginWithBiometrics();
+                            //             },
+                            //           ),
+                            //   ),
+                            // ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              // Positioned(
-              //   left: 370.0,
-              //   bottom: 20.0,
-              //   child: Container(
-              //     height: 275,
-              //     width: 275,
-              //     decoration: BoxDecoration(
-              //       shape: BoxShape.circle,
-              //       color: isDarkMode
-              //           ? Colors.grey.shade700
-              //           : Colors.grey.shade300,
-              //     ),
-              //   ),
-              // ),
-            ],
+                // Positioned(
+                //   left: 370.0,
+                //   bottom: 20.0,
+                //   child: Container(
+                //     height: 275,
+                //     width: 275,
+                //     decoration: BoxDecoration(
+                //       shape: BoxShape.circle,
+                //       color: isDarkMode
+                //           ? Colors.grey.shade700
+                //           : Colors.grey.shade300,
+                //     ),
+                //   ),
+                // ),
+              ],
+            ),
           ),
         ),
       ),

@@ -63,14 +63,16 @@ class TimesheetController extends GetxController {
         currentPage.value = timesheetdata.currentPage;
         hasMoreData.value = currentPage.value < totalPages.value;
 
-        // Add new data to existing list if loadMore
+        // Add new data to list
         if (loadMore) {
           timesheet.addAll(timesheetdata.data);
         } else {
           timesheet.value = timesheetdata.data;
         }
 
+        // Update filteredTimesheet with sorted data
         filteredTimesheet.value = timesheet;
+        _sortFilteredTimesheetDescending();
 
         // Increment page for next load
         if (hasMoreData.value) {
@@ -105,7 +107,6 @@ class TimesheetController extends GetxController {
         }
 
         log("fetched Timesheet detail Data: ${response.response}");
-
         timesheetDetail.value = response.response;
       } else {
         if (kDebugMode) {
@@ -120,7 +121,7 @@ class TimesheetController extends GetxController {
     }
   }
 
-  // Function to filter by selected single date
+  // Filter by selected single date
   void filterByDate(DateTime date) {
     selectedDate.value = date;
     dateRange.value = null;
@@ -134,9 +135,11 @@ class TimesheetController extends GetxController {
           DateFormat('yyyy-MM-dd').format(timesheetdate.date!);
       return formattedEntryDate == formattedSelectedDate;
     }).toList();
+
+    _sortFilteredTimesheetDescending();
   }
 
-  // New function to filter by date range
+  // Filter by date range
   void filterByDateRange(DateTime startDate, DateTime endDate) {
     selectedDate.value = null;
     currentPage.value = 1;
@@ -152,18 +155,29 @@ class TimesheetController extends GetxController {
           (timesheetdate.date!.isBefore(end) ||
               timesheetdate.date!.isAtSameMomentAs(end));
     }).toList();
+
+    _sortFilteredTimesheetDescending();
   }
 
-  // Clear the selected date range and show all timesheet items
+  // Clear selected date range
   void clearDateRange() {
     selectedDate.value = null;
     dateRange.value = null;
     currentPage.value = 1;
     hasMoreData.value = true;
     filteredTimesheet.assignAll(timesheet);
+    _sortFilteredTimesheetDescending();
   }
 
   void clearSelectedDate() {
     clearDateRange();
+  }
+
+  // Utility to sort filtered list descending by date
+  void _sortFilteredTimesheetDescending() {
+    filteredTimesheet.sort((a, b) {
+      if (a.date == null || b.date == null) return 0;
+      return b.date!.compareTo(a.date!);
+    });
   }
 }
