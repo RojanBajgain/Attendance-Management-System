@@ -314,6 +314,7 @@ class OfflineController extends GetxController {
       if (_lastRoute == '/EditUserBank') {
         normalizedRoute = '/EditUserBank';
       }
+      if (_lastRoute == '/HRDetails') normalizedRoute = '/HRDetails';
 
       // Check if the last route requires authentication
       final protectedRoutes = [
@@ -327,6 +328,7 @@ class OfflineController extends GetxController {
         '/EditUserAddress',
         '/EditUserDocument',
         '/EditUserBank',
+        '/HRDetails',
       ];
       bool isProtectedRoute = protectedRoutes.contains(normalizedRoute);
 
@@ -384,6 +386,9 @@ class OfflineController extends GetxController {
           Get.offAll(() => BottomNavPage());
           break;
         case '/EditUserBank':
+          Get.offAll(() => BottomNavPage());
+          break;
+        case '/HRDetails':
           Get.offAll(() => BottomNavPage());
           break;
         default:
