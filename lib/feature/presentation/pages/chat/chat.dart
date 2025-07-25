@@ -80,14 +80,14 @@ class ChatsScreen extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Start a conversation to see your messages here',
-                    style: TextStyle(
-                      color: Colors.grey.shade500,
-                      fontSize: 14,
-                    ),
-                  ),
+                  // const SizedBox(height: 8),
+                  // Text(
+                  //   'Start a conversation to see your messages here',
+                  //   style: TextStyle(
+                  //     color: Colors.grey.shade500,
+                  //     fontSize: 14,
+                  //   ),
+                  // ),
                 ],
               ),
             );

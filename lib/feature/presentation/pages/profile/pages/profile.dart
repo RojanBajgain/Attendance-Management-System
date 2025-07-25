@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:ams/config/resources/shimmer.dart';
 import 'package:ams/config/resources/styles.dart';
+import 'package:ams/feature/presentation/pages/HR_Details/hr_details.dart';
 import 'package:ams/feature/presentation/pages/Privacy/pages/privacy_page.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/organization/model/organization_profile_model.dart';
@@ -104,13 +105,22 @@ class _ProfilePageState extends State<ProfilePage> {
                             },
                             splashColor: Colors.grey,
                             borderRadius: BorderRadius.circular(12),
-                            child: Text(
-                              "Ayata Inc.",
-                              style: miniStyle.copyWith(
-                                // decoration: TextDecoration.underline,
-                                fontSize: 11,
-                                color: Colors.blueAccent,
-                              ),
+                            child: Row(
+                              children: [
+                                Text(
+                                  "Ayata Inc",
+                                  style: miniStyle.copyWith(
+                                    // decoration: TextDecoration.underline,
+                                    fontSize: 12,
+                                    color: Colors.blueAccent,
+                                  ),
+                                ),
+                                const Icon(
+                                  Icons.arrow_outward_rounded,
+                                  size: 12,
+                                  color: Colors.blueAccent,
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -166,6 +176,7 @@ class _ProfilePageState extends State<ProfilePage> {
               _buildDocuments(isDarkMode, 2),
               _buildBankDetails(isDarkMode, 3),
               // _buildDeviceDetails(isDarkMode, 3),
+              _buildHRDetails(),
               _buildChangePassword(),
               _buildTheme(),
               // _buildPrivacyPolicies(),
@@ -509,6 +520,21 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         );
       }).toList(),
+    );
+  }
+
+  Widget _buildHRDetails() {
+    return ProfileMenu(
+      text: "HR Details",
+      icon: Icons.business_center_outlined,
+      press: () {
+        Get.to(
+          () => const HRDetails(),
+          transition: Transition.rightToLeft,
+          duration: const Duration(milliseconds: 100),
+        );
+      },
+      showIcon: false,
     );
   }
 
