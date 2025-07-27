@@ -1,4 +1,5 @@
 import 'package:ams/config/resources/images.dart';
+import 'package:ams/feature/presentation/pages/app_image_brand/controller/app_image_brand_controller.dart';
 import 'package:ams/feature/presentation/pages/bottom_nav/bottom_nav_page.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/controller/calender_notification_controller.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/event_tooltip_page.dart';
@@ -6,10 +7,12 @@ import 'package:ams/feature/presentation/pages/calender_notification/sub_view_ev
 import 'package:ams/feature/presentation/pages/chat/chat.dart';
 import 'package:ams/feature/presentation/pages/notification/controller/notification_controller.dart';
 import 'package:ams/feature/presentation/pages/notification/notifications.dart';
+import 'package:ams/services/theme_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:shimmer/shimmer.dart';
 
 class ConstantAppBar extends StatefulWidget implements PreferredSizeWidget {
   const ConstantAppBar({super.key});
@@ -24,6 +27,10 @@ class ConstantAppBar extends StatefulWidget implements PreferredSizeWidget {
 class _ConstantAppBarState extends State<ConstantAppBar> {
   final notificationcontroller = Get.find<NotificationController>();
 
+  final AppBrandController brandController = Get.find<AppBrandController>();
+
+  final ThemeService themeService = Get.find<ThemeService>();
+
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -34,30 +41,76 @@ class _ConstantAppBarState extends State<ConstantAppBar> {
       // shadowColor: Colors.black,
       backgroundColor: isDarkMode ? Colors.black : Colors.white,
       automaticallyImplyLeading: false,
-      title: GestureDetector(
-        onTap: () {
-          // Get.off(() => const BottomNavPage());
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(2.0),
-          child: Image.asset(
-            // color: Colors.lightBlue,
-            AppImages.logo,
+      title: Obx(() {
+        if (brandController.isLoading.value) {
+          // Show shimmer while loading
+          return SizedBox(
             height: 90,
             width: 90,
-          ),
-        ),
-        // child: Padding(
-        //   padding: const EdgeInsets.all(2.0),
-        //   // child: SvgPicture.asset(AppImages.ayata_ayata),
-        //   child: Image.asset(
-        //     AppImages.tranquility,
-        //     height: 45,
-        //     width: 45,
-        //     fit: BoxFit.cover,
-        //   ),
-        // ),
-      ),
+            child: Shimmer.fromColors(
+              baseColor: isDarkMode ? Colors.grey[800]! : Colors.grey[300]!,
+              highlightColor:
+                  isDarkMode ? Colors.grey[600]! : Colors.grey[100]!,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+          );
+        } else if (themeService.logoUrl.isNotEmpty) {
+          // Show network image if available
+          return Column(
+            children: [
+              Image.network(
+                themeService.logoUrl,
+                height: 90,
+                width: 90,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return SizedBox(
+                    height: 90,
+                    width: 90,
+                    child: Shimmer.fromColors(
+                      baseColor:
+                          isDarkMode ? Colors.grey[800]! : Colors.grey[300]!,
+                      highlightColor:
+                          isDarkMode ? Colors.grey[600]! : Colors.grey[100]!,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+                errorBuilder: (context, error, stackTrace) {
+                  return Image.asset(
+                    AppImages.logo,
+                    height: 90,
+                    width: 90,
+                    color: isDarkMode ? Colors.white : Colors.black,
+                  );
+                },
+              ),
+            ],
+          );
+        } else {
+          // Fallback to local asset
+          return Column(
+            children: [
+              Image.asset(
+                AppImages.logo,
+                height: 90,
+                width: 90,
+                color: isDarkMode ? Colors.white : Colors.black,
+              ),
+            ],
+          );
+        }
+      }),
       actions: <Widget>[
         IconButton(
           onPressed: () async {

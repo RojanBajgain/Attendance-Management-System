@@ -1,4 +1,5 @@
 import 'package:ams/config/resources/styles.dart';
+import 'package:ams/feature/presentation/pages/app_image_brand/controller/app_image_brand_controller.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/controller/calender_notification_controller.dart';
 import 'package:ams/feature/presentation/pages/dashboard/controller/clock_in_out_controller.dart';
 import 'package:ams/feature/presentation/pages/dashboard/controller/dashboard_timesheet_controller.dart';
@@ -12,6 +13,7 @@ import 'package:ams/feature/presentation/pages/timeoff/controller/timeoff_contro
 import 'package:ams/feature/presentation/pages/timesheet/controller/timesheet_controller.dart';
 import 'package:ams/feature/presentation/widget/components/app_bar.dart';
 import 'package:ams/feature/presentation/pages/dashboard/sub_view_dashboard/holiday_event_notification_page.dart';
+import 'package:ams/services/theme_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../profile/controller/profile_controller.dart';

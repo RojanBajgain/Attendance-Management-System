@@ -4,12 +4,14 @@ class SkeletonBox extends StatelessWidget {
   final double height;
   final double width;
   final double borderRadius;
+  final Color? color;
 
   const SkeletonBox({
     Key? key,
     required this.height,
     this.width = double.infinity,
     this.borderRadius = 8.0,
+    this.color,
   }) : super(key: key);
 
   @override

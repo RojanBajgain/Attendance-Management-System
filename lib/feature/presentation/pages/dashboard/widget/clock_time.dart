@@ -11,6 +11,7 @@ import 'package:ams/feature/presentation/pages/dashboard/controller/clock_in_out
 import 'package:ams/feature/presentation/pages/dashboard/controller/has_clockedIn_controller.dart';
 import 'package:ams/feature/presentation/pages/dashboard/controller/timer_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
+import 'package:shimmer/shimmer.dart';
 import 'dart:developer';
 
 import 'package:tap_debouncer/tap_debouncer.dart';
@@ -604,52 +605,141 @@ class _ClockTimeState extends State<ClockTime> {
   }
 
   Widget _buildSkeletonUI(bool isDarkMode) {
-    return const Stack(
+    return Column(
       children: [
-        // Clock In Text
-        Positioned(
-          top: 10.0,
-          left: 26.0,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SkeletonBox(height: 16, width: 80, borderRadius: 4),
-              SizedBox(height: 8),
-              SkeletonBox(height: 14, width: 60, borderRadius: 4),
-            ],
+        // Header row skeleton
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+          margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          decoration: BoxDecoration(
+            color: isDarkMode ? Colors.grey.shade700 : Colors.grey.shade200,
+            borderRadius: BorderRadius.circular(12.0),
           ),
-        ),
-        // Clock Out Text
-        Positioned(
-          top: 10.0,
-          right: 26.0,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              SkeletonBox(height: 16, width: 80, borderRadius: 4),
-              SizedBox(height: 8),
-              SkeletonBox(height: 14, width: 60, borderRadius: 4),
-            ],
-          ),
-        ),
-        // Clock In Time Display and Buttons
-        Padding(
-          padding: EdgeInsets.fromLTRB(26.0, 70.0, 26.0, 0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Circular Progress Indicator
-              SkeletonBox(height: 130, width: 130, borderRadius: 65),
-              // Buttons
+              // Clock In skeleton
               Column(
-                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SkeletonBox(height: 40, width: 100, borderRadius: 6),
-                  SizedBox(height: 6),
-                  SkeletonBox(height: 40, width: 100, borderRadius: 6),
+                  SkeletonBox(
+                    height: 16,
+                    width: 80,
+                    borderRadius: 4,
+                    color: isDarkMode
+                        ? Colors.grey.shade600
+                        : Colors.grey.shade300,
+                  ),
+                  const SizedBox(height: 8),
+                  SkeletonBox(
+                    height: 14,
+                    width: 60,
+                    borderRadius: 4,
+                    color: isDarkMode
+                        ? Colors.grey.shade600
+                        : Colors.grey.shade300,
+                  ),
                 ],
               ),
+              // Clock Out skeleton
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  SkeletonBox(
+                    height: 16,
+                    width: 80,
+                    borderRadius: 4,
+                    color: isDarkMode
+                        ? Colors.grey.shade600
+                        : Colors.grey.shade300,
+                  ),
+                  const SizedBox(height: 8),
+                  SkeletonBox(
+                    height: 14,
+                    width: 60,
+                    borderRadius: 4,
+                    color: isDarkMode
+                        ? Colors.grey.shade600
+                        : Colors.grey.shade300,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+
+        // Main content skeleton
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 26.0, vertical: 20.0),
+          child: Column(
+            children: [
+              // Circular progress skeleton
+              Center(
+                child: Shimmer.fromColors(
+                  baseColor:
+                      isDarkMode ? Colors.grey.shade700 : Colors.grey.shade300,
+                  highlightColor:
+                      isDarkMode ? Colors.grey.shade600 : Colors.grey.shade100,
+                  child: Container(
+                    width: 130,
+                    height: 130,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isDarkMode ? Colors.grey.shade800 : Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Buttons row skeleton
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SkeletonBox(
+                    height: 40,
+                    width: 100,
+                    borderRadius: 8,
+                    color: isDarkMode
+                        ? Colors.grey.shade600
+                        : Colors.grey.shade300,
+                  ),
+                  const SizedBox(width: 20),
+                  SkeletonBox(
+                    height: 40,
+                    width: 40,
+                    borderRadius: 20,
+                    color: isDarkMode
+                        ? Colors.grey.shade600
+                        : Colors.grey.shade300,
+                  ),
+                ],
+              ),
+
+              // Time text skeleton
+              // const SizedBox(height: 20),
+              // Column(
+              //   children: [
+              //     SkeletonBox(
+              //       height: 16,
+              //       width: 100,
+              //       borderRadius: 4,
+              //       color: isDarkMode
+              //           ? Colors.grey.shade600
+              //           : Colors.grey.shade300,
+              //     ),
+              //     const SizedBox(height: 8),
+              //     SkeletonBox(
+              //       height: 20,
+              //       width: 80,
+              //       borderRadius: 4,
+              //       color: isDarkMode
+              //           ? Colors.grey.shade600
+              //           : Colors.grey.shade300,
+              //     ),
+              //   ],
+              // ),
             ],
           ),
         ),

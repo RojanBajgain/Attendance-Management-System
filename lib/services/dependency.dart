@@ -1,4 +1,5 @@
 import 'package:ams/feature/data/datasource/remote/api_client.dart';
+import 'package:ams/feature/data/repository/app_image_brand.dart';
 import 'package:ams/feature/data/repository/auth_repository_impl.dart';
 import 'package:ams/feature/data/repository/calender_notification.dart';
 import 'package:ams/feature/data/repository/chat_repo.dart';
@@ -9,6 +10,7 @@ import 'package:ams/feature/data/repository/payroll_repo.dart';
 import 'package:ams/feature/data/repository/policy_repo.dart';
 import 'package:ams/feature/data/repository/profile_repo.dart';
 import 'package:ams/feature/data/repository/reset_password_repo.dart';
+import 'package:ams/feature/presentation/pages/app_image_brand/controller/app_image_brand_controller.dart';
 import 'package:ams/feature/presentation/pages/chat/controller/chat_controller.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/controller/calender_notification_controller.dart';
 import 'package:ams/feature/presentation/pages/dashboard/controller/clock_in_out_controller.dart';
@@ -19,17 +21,13 @@ import 'package:ams/feature/presentation/pages/notification/controller/notificat
 import 'package:ams/feature/presentation/pages/payroll/controller/payroll_controller.dart';
 import 'package:ams/feature/presentation/pages/policy/controller/policy_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
+import 'package:ams/services/theme_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> init() async {
-  // // Initialize SharedPreferences
-  // final sharedPreferences = await SharedPreferences.getInstance();
-  // Get.put<SharedPreferences>(sharedPreferences);
-
   Get.put(ApiClient(secureStorage: FlutterSecureStorage()));
-
   Get.put<AuthRepositoryImpl>(
       AuthRepositoryImpl(apiClient: Get.find<ApiClient>()));
   Get.put<AuthController>(
@@ -46,6 +44,7 @@ Future<void> init() async {
   Get.lazyPut(() => ResetPasswordRepo(apiClient: Get.find<ApiClient>()));
   Get.lazyPut(() => EventCalenderRepo(apiClient: Get.find<ApiClient>()));
   Get.lazyPut(() => ChatRepo(apiClient: Get.find<ApiClient>()));
+  Get.lazyPut(() => AppBrandRepo(apiClient: Get.find<ApiClient>()));
 
   Get.put(ProfileController(profileRepo: Get.find()));
   Get.put(PayrollController(payrollRepo: Get.find()));
@@ -56,4 +55,7 @@ Future<void> init() async {
   Get.put(ResetPasswordController(resetpasswordrepo: Get.find()));
   Get.put(CalenderNotificationController(eventCalenderrepo: Get.find()));
   Get.put(ChatController(chatRepo: Get.find()));
+
+  Get.put(AppBrandController(appBrandRepo: Get.find()));
+  Get.put(ThemeService());
 }

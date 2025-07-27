@@ -2,9 +2,13 @@ import 'dart:typed_data';
 
 import 'package:ams/config/resources/images.dart';
 import 'package:ams/feature/presentation/pages/payroll/sub_view_payroll/payment_slip_view.dart';
+import 'package:ams/services/theme_service.dart';
 import 'package:double_to_words/double_to_words.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -54,14 +58,34 @@ Future<void> generateAndSavePDF(
     BuildContext context, dynamic payrollDetail) async {
   final pdf = pw.Document();
 
+  final themeService = Get.find<ThemeService>();
+
   // Add a standard font
   final font = await PdfGoogleFonts.nunitoRegular();
   final fontBold = await PdfGoogleFonts.nunitoBold();
 
-  // Create company logo image
-  final ByteData logoData = await rootBundle.load(AppImages.logo);
-  final Uint8List logoBytes = logoData.buffer.asUint8List();
-  final logo = pw.MemoryImage(logoBytes);
+  // // Create company logo image
+  // final ByteData logoData = await rootBundle.load(AppImages.logo);
+  // final Uint8List logoBytes = logoData.buffer.asUint8List();
+  // final logo = pw.MemoryImage(logoBytes);
+
+  pw.ImageProvider logoProvider;
+
+  try {
+    if (themeService.logoUrl.isNotEmpty) {
+      // Load network image
+      final response = await get(Uri.parse(themeService.logoUrl));
+      logoProvider = pw.MemoryImage(response.bodyBytes);
+    } else {
+      // Fallback to asset image
+      final ByteData logoData = await rootBundle.load(AppImages.logo);
+      logoProvider = pw.MemoryImage(logoData.buffer.asUint8List());
+    }
+  } catch (e) {
+    // If any error occurs, use the asset image
+    final ByteData logoData = await rootBundle.load(AppImages.logo);
+    logoProvider = pw.MemoryImage(logoData.buffer.asUint8List());
+  }
 
   pdf.addPage(
     pw.Page(
@@ -91,7 +115,7 @@ Future<void> generateAndSavePDF(
                     ],
                   ),
                   pw.Spacer(),
-                  pw.Image(logo, width: 80, height: 80),
+                  pw.Image(logoProvider, width: 80, height: 80),
                 ],
               ),
 

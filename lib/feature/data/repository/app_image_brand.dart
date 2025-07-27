@@ -1,22 +1,23 @@
-// import 'package:ams/feature/data/datasource/remote/api_client.dart';
-// import 'package:ams/feature/data/datasource/remote/api_response.dart';
-// import 'package:ams/feature/data/datasource/remote/api_urls.dart';
+import 'package:ams/feature/data/datasource/remote/api_client.dart';
+import 'package:ams/feature/data/datasource/remote/api_response.dart';
+import 'package:ams/feature/data/datasource/remote/api_urls.dart';
+import 'package:ams/feature/presentation/pages/app_image_brand/model/app_image_brand.dart';
 
-// class AppImageBrandRepo {
-//   final ApiClient apiClient;
+class AppBrandRepo {
+  final ApiClient apiClient;
 
-//   AppImageBrandRepo({required this.apiClient});
+  AppBrandRepo({required this.apiClient});
 
-//   // Get list of all image brands
-//   Future<ApiResponse> getImageBrands() async {
-//     final token = apiClient.token;
+  Future<ApiResponse> getAppBrand() async {
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
-//     final response = await ApiClient.getApi(
-//       ApiUrls.imageBrand,
-//       token: token,
-//       apiKey: apiClient.organization,
-//       fromJson: (json) => json,
-//     );
-//     return response;
-//   }
-// }
+    final response = await apiClient.getApi(
+      ApiUrls.imageBrand,
+      token: token,
+      apiKey: organization,
+      fromJson: (json) => AppBrand.fromJson(json),
+    );
+    return response;
+  }
+}

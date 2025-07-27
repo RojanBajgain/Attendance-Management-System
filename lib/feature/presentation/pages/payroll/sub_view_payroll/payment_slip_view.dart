@@ -5,11 +5,13 @@ import 'package:ams/config/routes/route_helper.dart';
 import 'package:ams/feature/presentation/pages/payroll/controller/payroll_controller.dart';
 import 'package:ams/feature/presentation/pages/payroll/widget/generate_pdf.dart';
 import 'package:ams/feature/presentation/widget/components/app_bar.dart';
+import 'package:ams/services/theme_service.dart';
 import 'package:double_to_words/double_to_words.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 
 class PaymentSlip extends StatefulWidget {
   final String payrollId;
@@ -31,6 +33,8 @@ String capitalizeFirstLetter(String text) {
 class _PaymentSlipState extends State<PaymentSlip> {
   final PayrollController payrollcontroller =
       Get.put(PayrollController(payrollRepo: Get.find()));
+
+  final ThemeService themeService = Get.find<ThemeService>();
 
   @override
   void initState() {
@@ -93,18 +97,62 @@ class _PaymentSlipState extends State<PaymentSlip> {
                         ],
                       ),
                       const Spacer(),
-                      Image.asset(
-                        // color: Colors.lightBlue,
-                        AppImages.logo,
-                        height: 40,
-                        width: 100,
-                      ),
+                      // Image.asset(
+                      //   // color: Colors.lightBlue,
+                      //   AppImages.logo,
+                      //   height: 40,
+                      //   width: 100,
+                      // ),
                       // Image.asset(
                       //   AppImages.tranquility,
                       //   height: 45.0,
                       //   width: 45.0,
                       //   fit: BoxFit.cover,
                       // ),
+
+                      Obx(() {
+                        if (themeService.logoUrl.isEmpty) {
+                          return Image.asset(
+                            AppImages.logo,
+                            height: 40,
+                            width: 100,
+                            color: isDarkMode ? Colors.white : Colors.black,
+                          );
+                        }
+
+                        return SizedBox(
+                          height: 40,
+                          width: 100,
+                          child: Image.network(
+                            themeService.logoUrl,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Shimmer.fromColors(
+                                baseColor: isDarkMode
+                                    ? Colors.grey[800]!
+                                    : Colors.grey[300]!,
+                                highlightColor: isDarkMode
+                                    ? Colors.grey[600]!
+                                    : Colors.grey[100]!,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                ),
+                              );
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                AppImages.logo,
+                                height: 40,
+                                width: 100,
+                                color: isDarkMode ? Colors.white : Colors.black,
+                              );
+                            },
+                          ),
+                        );
+                      }),
                     ],
                   ),
                   const SizedBox(height: 10.0),
