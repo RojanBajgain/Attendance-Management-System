@@ -143,11 +143,12 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
 
                 // Load more indicator
                 if (timesheetcontroller.isLoadMore.value)
-                  const SliverToBoxAdapter(
+                  SliverToBoxAdapter(
                     child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16.0),
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
                       child: Center(
-                        child: CircularProgressIndicator(color: Colors.cyan),
+                        child: CircularProgressIndicator(
+                            color: isDarkMode ? Colors.white : Colors.black),
                       ),
                     ),
                   ),
@@ -272,23 +273,25 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
 
   /// Week Label Helper
   String getWeekLabel(DateTime date) {
-    DateTime now = DateTime.now();
-    DateTime today = DateTime(now.year, now.month, now.day);
-    DateTime given = DateTime(date.year, date.month, date.day);
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final givenDate = DateTime(date.year, date.month, date.day);
 
-    DateTime startOfCurrentWeek =
-        today.subtract(Duration(days: today.weekday - 1));
-    DateTime startOfGivenWeek =
-        given.subtract(Duration(days: given.weekday - 1));
+    // Calculate start of current week (Sunday)
+    final currentWeekStart = today.subtract(Duration(days: today.weekday % 7));
 
-    int differenceInDays =
-        startOfCurrentWeek.difference(startOfGivenWeek).inDays;
-    int weekDifference = (differenceInDays / 7).floor();
+    // Calculate start of the given date's week (Sunday)
+    final givenWeekStart =
+        givenDate.subtract(Duration(days: givenDate.weekday % 7));
+
+    // Calculate week difference
+    final weekDifference =
+        currentWeekStart.difference(givenWeekStart).inDays ~/ 7;
 
     if (weekDifference == 0) {
       return "This Week";
     } else if (weekDifference == 1) {
-      return "Last Week";
+      return "1 week ago";
     } else {
       return "$weekDifference weeks ago";
     }
