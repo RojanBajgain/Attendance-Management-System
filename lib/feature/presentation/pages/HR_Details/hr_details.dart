@@ -79,11 +79,11 @@ class HRDetails extends StatelessWidget {
                     ),
                     TeamMemberCard(
                       initials: 'JM',
-                      name: 'Joel Magar',
+                      name: 'Pawan Magar',
                       role: 'Backend Developer',
                       workType: 'Part Time',
                       level: 'Junior',
-                      email: 'joel.magar@gmail.com',
+                      email: 'pawan.magar@gmail.com',
                       phone: '9876543212',
                       location: 'Baneshwor, Kathmandu',
                       joinDate: 'Joined June, 2024',
@@ -216,7 +216,7 @@ class TeamMemberCard extends StatelessWidget {
                   Text(
                     workType,
                     style: const TextStyle(
-                      fontSize: 12,
+                      fontSize: 13,
                       fontWeight: FontWeight.w500,
                       color: Colors.black87,
                     ),
@@ -224,9 +224,10 @@ class TeamMemberCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     level,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
-                      color: Colors.grey[600],
+                      color: Colors.black,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],
@@ -255,12 +256,12 @@ class TeamMemberCard extends StatelessWidget {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () => _launchEmail(email),
-                  icon: const Icon(Icons.email, size: 18),
+                  icon: const Icon(Icons.email_outlined, size: 15),
                   label: const Text('Email'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.teal,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    padding: const EdgeInsets.symmetric(vertical: 6),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -271,14 +272,14 @@ class TeamMemberCard extends StatelessWidget {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () => _launchPhone(phone),
-                  icon: const Icon(Icons.phone, size: 18),
+                  icon: const Icon(Icons.local_phone_outlined, size: 15),
                   label: const Text('Call'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.teal,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    padding: const EdgeInsets.symmetric(vertical: 6),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(4),
                     ),
                   ),
                 ),
