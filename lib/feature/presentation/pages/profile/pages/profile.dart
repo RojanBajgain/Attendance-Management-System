@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:ams/config/resources/shimmer.dart';
 import 'package:ams/config/resources/styles.dart';
-import 'package:ams/feature/presentation/pages/HR_Details/hr_details.dart';
+import 'package:ams/feature/presentation/pages/HR_Details/pages/hr_details.dart';
 import 'package:ams/feature/presentation/pages/Privacy/pages/privacy_page.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/organization/model/organization_profile_model.dart';
@@ -529,7 +529,7 @@ class _ProfilePageState extends State<ProfilePage> {
       icon: Icons.business_center_outlined,
       press: () {
         Get.to(
-          () => const HRDetails(),
+          () => const HRDetailsPage(),
           transition: Transition.rightToLeft,
           duration: const Duration(milliseconds: 100),
         );

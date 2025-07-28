@@ -6,10 +6,12 @@ import 'package:ams/feature/data/repository/chat_repo.dart';
 import 'package:ams/feature/data/repository/clock_in_out_repo.dart';
 import 'package:ams/feature/data/repository/has_clockedIn_repo.dart';
 import 'package:ams/feature/data/repository/notification_repo.dart';
+import 'package:ams/feature/data/repository/organizationStaff_repo.dart';
 import 'package:ams/feature/data/repository/payroll_repo.dart';
 import 'package:ams/feature/data/repository/policy_repo.dart';
 import 'package:ams/feature/data/repository/profile_repo.dart';
 import 'package:ams/feature/data/repository/reset_password_repo.dart';
+import 'package:ams/feature/presentation/pages/HR_Details/controller/hr_detail_controller.dart';
 import 'package:ams/feature/presentation/pages/app_image_brand/controller/app_image_brand_controller.dart';
 import 'package:ams/feature/presentation/pages/chat/controller/chat_controller.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/controller/calender_notification_controller.dart';
@@ -45,6 +47,7 @@ Future<void> init() async {
   Get.lazyPut(() => EventCalenderRepo(apiClient: Get.find<ApiClient>()));
   Get.lazyPut(() => ChatRepo(apiClient: Get.find<ApiClient>()));
   Get.lazyPut(() => AppBrandRepo(apiClient: Get.find<ApiClient>()));
+  Get.lazyPut(() => OrganizationStaffRepo(apiClient: Get.find<ApiClient>()));
 
   Get.put(ProfileController(profileRepo: Get.find()));
   Get.put(PayrollController(payrollRepo: Get.find()));
@@ -55,6 +58,7 @@ Future<void> init() async {
   Get.put(ResetPasswordController(resetpasswordrepo: Get.find()));
   Get.put(CalenderNotificationController(eventCalenderrepo: Get.find()));
   Get.put(ChatController(chatRepo: Get.find()));
+  Get.put(OrganizationStaffController(organizationStaffRepo: Get.find()));
 
   Get.put(AppBrandController(appBrandRepo: Get.find()));
   Get.put(ThemeService());

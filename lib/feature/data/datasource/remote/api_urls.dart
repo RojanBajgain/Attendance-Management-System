@@ -60,6 +60,8 @@ class ApiUrls {
 
   static const String addremainder = "api/policies/reminder/";
 
+  static const String organizationStaff = "api/get_organization_staff/";
+
   static const String dashboardtimesheet = "api/dashboard/timesheet/user";
 
   static const String officelocation = "api/geolocation/office/";
