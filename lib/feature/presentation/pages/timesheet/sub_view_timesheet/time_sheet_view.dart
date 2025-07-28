@@ -20,14 +20,35 @@ class TimeSheetWidget extends StatefulWidget {
 }
 
 class _TimeSheetWidgetState extends State<TimeSheetWidget> {
-  // final TimesheetController timesheetcontroller =
-  //     Get.put(TimesheetController(timesheetRepo: Get.find()));
+  // Helper method to determine if entry is on time or late
+  String getEntryStatus() {
+    if (widget.timesheetdata.entryRemarks == null ||
+        widget.timesheetdata.entryRemarks == "null" ||
+        widget.timesheetdata.entryRemarks!.isEmpty) {
+      return "N/A";
+    }
 
-  // @override
-  // void initState() {
-  //   timesheetcontroller.timesheet();
-  //   super.initState();
-  // }
+    String remarks = widget.timesheetdata.entryRemarks!.toLowerCase();
+    if (remarks.contains('on time') || remarks.contains('ontime')) {
+      return "On Time";
+    } else if (remarks.contains('late')) {
+      return "Late";
+    } else {
+      return widget.timesheetdata.entryRemarks!;
+    }
+  }
+
+  // Helper method to get color for entry status
+  Color getEntryStatusColor() {
+    String status = getEntryStatus().toLowerCase();
+    if (status.contains('on time') || status.contains('ontime')) {
+      return Colors.green;
+    } else if (status.contains('late')) {
+      return Colors.red;
+    } else {
+      return Colors.orange;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,37 +65,11 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
         );
       },
       child: Container(
-        height: 80.0,
+        height: 85.0,
         width: double.infinity,
-        // decoration: BoxDecoration(
-        //   borderRadius: BorderRadius.circular(8.0),
-        //   color: Colors.grey[200],
-        //   boxShadow: [
-        //     BoxShadow(
-        //       color: Colors.grey.withOpacity(0.2),
-        //       blurRadius: 2,
-        //       spreadRadius: 1,
-        //       offset: const Offset(0, 1),
-        //     ),
-        //   ],
-        //   gradient: LinearGradient(
-        //     begin: Alignment.centerLeft,
-        //     end: Alignment.centerRight,
-        //     colors: [
-        //       isDarkMode ? Colors.grey.shade400 : Colors.black,
-        //       isDarkMode ? Colors.grey.shade400 : Colors.black,
-        //       isDarkMode ? Colors.grey.shade800 : Colors.grey.shade200,
-        //     ],
-        //     stops: const [
-        //       0.0,
-        //       0.02,
-        //       0.0,
-        //     ],
-        //   ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           color: isDarkMode ? Colors.white : Colors.black,
-
           boxShadow: const <BoxShadow>[
             BoxShadow(
               color: Color.fromRGBO(0, 0, 0, 0.08),
@@ -85,28 +80,8 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
               color: Color.fromRGBO(0, 0, 0, 0.02),
               blurRadius: 6,
               offset: Offset(0, 0),
-            ), //blur radius of shadow
+            ),
           ],
-
-          // gradient: LinearGradient(
-          //   begin: Alignment.centerLeft,
-          //   end: Alignment.centerRight,
-          //   colors: [
-          //     // Green if both entry and exit time exist, orange if only entry, red if neither
-          //     widget.timesheetdata.exitTime != null
-          //         ? Colors.green.shade600
-          //         : widget.timesheetdata.entryTime != null
-          //             ? Colors.orange.shade600
-          //             : Colors.red.shade600,
-          //     widget.timesheetdata.exitTime != null
-          //         ? Colors.green.shade600
-          //         : widget.timesheetdata.entryTime != null
-          //             ? Colors.orange.shade600
-          //             : Colors.red.shade600,
-          //     isDarkMode ? Colors.grey.shade800 : Colors.white,
-          //   ],
-          //   stops: const [0.0, 0.02, 0.02],
-          // ),
         ),
         child: Container(
           decoration: BoxDecoration(
@@ -122,7 +97,7 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
                 color: Color.fromRGBO(0, 0, 0, 0.02),
                 blurRadius: 6,
                 offset: Offset(0, 0),
-              ), //blur radius of shadow
+              ),
             ],
           ),
           child: Padding(
@@ -134,23 +109,56 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  widget.timesheetdata.date != null
-                      ? DateFormat.yMMMMEEEEd('en_US')
-                          .format(widget.timesheetdata.date!)
-                      : "N/A",
-                  style: smallStyle.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: isDarkMode ? Colors.white : Colors.black,
-                    fontSize: 12.0,
-                  ),
+                // Date and Entry Status Row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        widget.timesheetdata.date != null
+                            ? DateFormat.yMMMMEEEEd('en_US')
+                                .format(widget.timesheetdata.date!)
+                            : "N/A",
+                        style: smallStyle.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: isDarkMode ? Colors.white : Colors.black,
+                          fontSize: 12.0,
+                        ),
+                      ),
+                    ),
+                    // Entry Status Container
+                    if (getEntryStatus() != "N/A")
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0,
+                          vertical: 4.0,
+                        ),
+                        decoration: BoxDecoration(
+                          color: getEntryStatusColor().withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(6.0),
+                          border: Border.all(
+                            color: Colors.transparent,
+                            width: 1.0,
+                          ),
+                        ),
+                        child: Text(
+                          getEntryStatus(),
+                          style: smallStyle.copyWith(
+                            color: getEntryStatusColor(),
+                            fontSize: 8.0,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
                 const SizedBox(height: 15.0),
+                // Time and Hours Row
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
-                      width: 95,
+                      width: 80,
                       child: Row(
                         children: [
                           const Icon(
@@ -172,9 +180,17 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
                         ],
                       ),
                     ),
-                    const SizedBox(width: 15),
+                    Container(
+                      height: 25,
+                      width: 1,
+                      color: isDarkMode
+                          ? Colors.grey.shade600
+                          : Colors.grey.shade300,
+                      margin: const EdgeInsets.symmetric(horizontal: 10),
+                    ),
+                    const SizedBox(width: 20),
                     SizedBox(
-                      width: 90,
+                      width: 80,
                       child: Row(
                         children: [
                           const Icon(
@@ -196,9 +212,17 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
                         ],
                       ),
                     ),
+                    Container(
+                      height: 25,
+                      width: 1,
+                      color: isDarkMode
+                          ? Colors.grey.shade600
+                          : Colors.grey.shade300,
+                      margin: const EdgeInsets.symmetric(horizontal: 10),
+                    ),
                     const SizedBox(width: 15),
                     SizedBox(
-                      width: 90,
+                      width: 80,
                       child: Row(
                         children: [
                           Icon(

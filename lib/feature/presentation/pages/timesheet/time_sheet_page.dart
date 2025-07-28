@@ -3,7 +3,7 @@ import 'package:ams/feature/presentation/pages/dashboard/widget/skeleton_box.dar
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/timesheet/controller/timesheet_controller.dart';
 import 'package:ams/feature/presentation/pages/timesheet/sub_view_timesheet/time_sheet_view.dart';
-import 'package:ams/feature/presentation/widget/components/app_bar.dart';
+import 'package:ams/feature/presentation/pages/timesheet/widget/absentday_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -23,6 +23,8 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
       Get.put(TimesheetController());
   final ScrollController _scrollController = ScrollController();
 
+  bool _showScrollToTop = false;
+
   @override
   void initState() {
     super.initState();
@@ -37,10 +39,129 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
   }
 
   void _scrollListener() {
+    // Load more content when reaching bottom
     if (_scrollController.position.pixels ==
         _scrollController.position.maxScrollExtent) {
       timesheetcontroller.loadMoreTimesheet();
     }
+
+    // Show/hide scroll to top button based on scroll position
+    const double showButtonOffset = 225.0;
+    if (_scrollController.offset > showButtonOffset && !_showScrollToTop) {
+      setState(() {
+        _showScrollToTop = true;
+      });
+    } else if (_scrollController.offset <= showButtonOffset &&
+        _showScrollToTop) {
+      setState(() {
+        _showScrollToTop = false;
+      });
+    }
+  }
+
+  // Method to scroll to top
+  void _scrollToTop() {
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  List<DateTime> getAbsentDays() {
+    List<DateTime> absentDays = [];
+
+    // Get date range - if no range selected, use a more conservative approach
+    DateTimeRange? dateRange = timesheetcontroller.dateRange.value;
+
+    DateTime startDate;
+    DateTime endDate;
+
+    if (dateRange != null) {
+      startDate = dateRange.start;
+      endDate = dateRange.end;
+    } else {
+      if (timesheetcontroller.filteredTimesheet.isEmpty) {
+        return absentDays;
+      }
+
+      List<DateTime> allDates = timesheetcontroller.filteredTimesheet
+          .where((ts) => ts.date != null)
+          .map((ts) => ts.date!)
+          .toList();
+
+      if (allDates.isEmpty) return absentDays;
+
+      allDates.sort();
+      startDate = allDates.first;
+      endDate = allDates.last;
+
+      DateTime now = DateTime.now();
+      DateTime maxStartDate = DateTime(
+        now.subtract(const Duration(days: 60)).year,
+        now.subtract(const Duration(days: 60)).month,
+        now.subtract(const Duration(days: 60)).day,
+      );
+
+      if (startDate.isBefore(maxStartDate)) {
+        startDate = maxStartDate;
+      }
+
+      endDate = DateTime(now.year, now.month, now.day);
+    }
+
+    Set<DateTime> timesheetDates = timesheetcontroller.filteredTimesheet
+        .where((ts) => ts.date != null)
+        .map((ts) => DateTime(ts.date!.year, ts.date!.month, ts.date!.day))
+        .toSet();
+
+    DateTime currentDate =
+        DateTime(startDate.year, startDate.month, startDate.day);
+    DateTime endDateNormalized =
+        DateTime(endDate.year, endDate.month, endDate.day);
+    DateTime today =
+        DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+
+    while (
+        currentDate.isBefore(endDateNormalized.add(const Duration(days: 1)))) {
+      bool isWorkingDay = currentDate.weekday != DateTime.saturday;
+
+      // If you want to exclude both Saturday and Sunday, use this instead:
+      // bool isWorkingDay = currentDate.weekday >= DateTime.monday && currentDate.weekday <= DateTime.friday;
+
+      if (isWorkingDay) {
+        // If this date is not in timesheet data and is not today or future, it's absent
+        if (!timesheetDates.contains(currentDate) &&
+            currentDate.isBefore(today)) {
+          absentDays.add(currentDate);
+        }
+      }
+
+      currentDate = currentDate.add(const Duration(days: 1));
+    }
+
+    return absentDays;
+  }
+
+  // Combined list of timesheet entries and absent days
+  List<dynamic> getCombinedEntries() {
+    List<dynamic> combined = [];
+
+    // Add existing timesheet entries
+    combined.addAll(timesheetcontroller.filteredTimesheet);
+
+    // Add absent days
+    List<DateTime> absentDays = getAbsentDays();
+    combined.addAll(absentDays);
+
+    // Sort by date
+    combined.sort((a, b) {
+      DateTime dateA = a is DateTime ? a : (a.date ?? DateTime.now());
+      DateTime dateB = b is DateTime ? b : (b.date ?? DateTime.now());
+      return dateB.compareTo(dateA);
+    });
+
+    return combined;
   }
 
   @override
@@ -55,6 +176,8 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
             await timesheetcontroller.getTimesheet();
           },
           child: Obx(() {
+            final combinedEntries = getCombinedEntries();
+
             return CustomScrollView(
               controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
@@ -68,7 +191,8 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
                       children: [
                         Text(
                           "Timesheets",
-                          style: smallNStyle.copyWith(
+                          style: TextStyle(
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: isDarkMode ? Colors.white : Colors.black,
                           ),
@@ -85,31 +209,30 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
                 if (timesheetcontroller.isLoading.value &&
                     timesheetcontroller.currentPage.value == 1)
                   SliverFillRemaining(child: _buildLoadingIndicator())
-                else if (timesheetcontroller.filteredTimesheet.isEmpty)
+                else if (combinedEntries.isEmpty)
                   SliverFillRemaining(child: _buildEmptyState(isDarkMode))
                 else
                   SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
-                        final timesheet =
-                            timesheetcontroller.filteredTimesheet[index];
+                        final entry = combinedEntries[index];
+                        bool isAbsent = entry is DateTime;
 
+                        DateTime entryDate =
+                            isAbsent ? entry : entry.date ?? DateTime.now();
                         bool showWeekLabel = false;
                         String weekLabel = "";
 
-                        if (timesheet.date != null) {
-                          weekLabel = getWeekLabel(timesheet.date!);
+                        weekLabel = getWeekLabel(entryDate);
 
-                          if (index == 0 ||
-                              (timesheetcontroller
-                                          .filteredTimesheet[index - 1].date !=
-                                      null &&
-                                  getWeekLabel(timesheet.date!) !=
-                                      getWeekLabel(timesheetcontroller
-                                          .filteredTimesheet[index - 1]
-                                          .date!))) {
-                            showWeekLabel = true;
-                          }
+                        if (index == 0 ||
+                            getWeekLabel(entryDate) !=
+                                getWeekLabel(
+                                    combinedEntries[index - 1] is DateTime
+                                        ? combinedEntries[index - 1]
+                                        : (combinedEntries[index - 1].date ??
+                                            DateTime.now()))) {
+                          showWeekLabel = true;
                         }
 
                         return Padding(
@@ -123,7 +246,7 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
                                   padding: const EdgeInsets.only(bottom: 6.0),
                                   child: Text(
                                     weekLabel,
-                                    style: smallStyle.copyWith(
+                                    style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 13.0,
                                       color: isDarkMode
@@ -132,12 +255,15 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
                                     ),
                                   ),
                                 ),
-                              TimeSheetWidget(timesheetdata: timesheet),
+                              // Show either absent day widget or regular timesheet widget
+                              isAbsent
+                                  ? AbsentDayWidget(absentDate: entry)
+                                  : TimeSheetWidget(timesheetdata: entry),
                             ],
                           ),
                         );
                       },
-                      childCount: timesheetcontroller.filteredTimesheet.length,
+                      childCount: combinedEntries.length,
                     ),
                   ),
 
@@ -148,7 +274,8 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       child: Center(
                         child: CircularProgressIndicator(
-                            color: isDarkMode ? Colors.white : Colors.black),
+                          color: isDarkMode ? Colors.white : Colors.black,
+                        ),
                       ),
                     ),
                   ),
@@ -156,6 +283,29 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
             );
           }),
         ),
+        // Floating Action Button for Scroll to Top
+        floatingActionButton: AnimatedOpacity(
+          opacity: _showScrollToTop ? 1.0 : 0.0,
+          duration: const Duration(milliseconds: 100),
+          child: _showScrollToTop
+              ? SizedBox(
+                  width: 50.0,
+                  height: 50.0,
+                  child: FloatingActionButton(
+                    onPressed: _scrollToTop,
+                    backgroundColor:
+                        isDarkMode ? Colors.grey.shade700 : Colors.white,
+                    elevation: 4,
+                    child: Icon(
+                      Icons.keyboard_arrow_up,
+                      color: isDarkMode ? Colors.white : Colors.black,
+                      size: 30.0,
+                    ),
+                  ),
+                )
+              : null,
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       ),
     );
   }
@@ -241,7 +391,7 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
   Widget _buildLoadingIndicator() {
     return ListView.builder(
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: 6,
+      itemCount: 8,
       itemBuilder: (context, index) {
         return const TimesheetSkeleton();
       },
@@ -277,14 +427,15 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
     final today = DateTime(now.year, now.month, now.day);
     final givenDate = DateTime(date.year, date.month, date.day);
 
-    // Calculate start of current week (Sunday)
-    final currentWeekStart = today.subtract(Duration(days: today.weekday % 7));
+    // Calculate start of current week (Sunday = 0, Monday = 1, etc.)
+    // For Sunday-based weeks: Sunday weekday is 7, so,
+    int todayWeekday =
+        today.weekday == 7 ? 0 : today.weekday; // Convert Sunday from 7 to 0
+    int givenWeekday = givenDate.weekday == 7 ? 0 : givenDate.weekday;
 
-    // Calculate start of the given date's week (Sunday)
-    final givenWeekStart =
-        givenDate.subtract(Duration(days: givenDate.weekday % 7));
+    final currentWeekStart = today.subtract(Duration(days: todayWeekday));
+    final givenWeekStart = givenDate.subtract(Duration(days: givenWeekday));
 
-    // Calculate week difference
     final weekDifference =
         currentWeekStart.difference(givenWeekStart).inDays ~/ 7;
 

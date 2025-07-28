@@ -52,7 +52,7 @@ class _TimeOffPageState extends State<TimeOffPage> {
                   children: [
                     Text(
                       "Time offs",
-                      style: smallNStyle.copyWith(
+                      style: normalStyle.copyWith(
                         fontWeight: FontWeight.bold,
                         color: isDarkMode ? Colors.white : Colors.black,
                       ),

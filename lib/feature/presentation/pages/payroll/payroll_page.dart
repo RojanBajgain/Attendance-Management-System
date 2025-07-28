@@ -52,7 +52,7 @@ class _PayrollPageState extends State<PayrollPage> {
                   children: [
                     Text(
                       "Pay Roll",
-                      style: smallNStyle.copyWith(
+                      style: normalStyle.copyWith(
                         fontWeight: FontWeight.bold,
                         color: isDarkMode ? Colors.white : Colors.black,
                       ),
