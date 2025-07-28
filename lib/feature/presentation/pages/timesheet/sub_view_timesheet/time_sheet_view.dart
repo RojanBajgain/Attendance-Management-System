@@ -158,7 +158,7 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
-                      width: 80,
+                      width: 85,
                       child: Row(
                         children: [
                           const Icon(
@@ -188,9 +188,9 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
                           : Colors.grey.shade300,
                       margin: const EdgeInsets.symmetric(horizontal: 10),
                     ),
-                    const SizedBox(width: 20),
+                    const SizedBox(width: 5),
                     SizedBox(
-                      width: 80,
+                      width: 85,
                       child: Row(
                         children: [
                           const Icon(
@@ -220,7 +220,7 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
                           : Colors.grey.shade300,
                       margin: const EdgeInsets.symmetric(horizontal: 10),
                     ),
-                    const SizedBox(width: 15),
+                    const SizedBox(width: 8),
                     SizedBox(
                       width: 80,
                       child: Row(
