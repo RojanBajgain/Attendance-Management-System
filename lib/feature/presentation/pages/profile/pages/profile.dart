@@ -3,24 +3,17 @@ import 'dart:ui';
 import 'package:ams/config/resources/shimmer.dart';
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/HR_Details/pages/hr_details.dart';
-import 'package:ams/feature/presentation/pages/Privacy/pages/privacy_page.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/organization/model/organization_profile_model.dart';
 import 'package:ams/feature/presentation/pages/password/change_password.dart';
 import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/model/profile_model.dart';
 import 'package:ams/feature/presentation/pages/profile/pages/profile_container.dart';
-import 'package:ams/feature/presentation/pages/profile/pages/profile_menu.dart';
 import 'package:ams/feature/presentation/pages/theme/change_theme.dart';
-import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:ams/services/helpers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_switch/flutter_switch.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:material_dialogs/dialogs.dart';
-import 'package:material_dialogs/widgets/buttons/icon_button.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
   final Profile? profileData;
@@ -34,20 +27,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final authcontroller = Get.find<AuthController>();
-
   final profilecontroller = Get.put(ProfileController(profileRepo: Get.find()));
-
-  int? _currentlyExpandedIndex;
-
-  void _handleTileExpansion(int index) {
-    setState(() {
-      if (_currentlyExpandedIndex == index) {
-        _currentlyExpandedIndex = null;
-      } else {
-        _currentlyExpandedIndex = index;
-      }
-    });
-  }
 
   @override
   void initState() {
@@ -81,7 +61,6 @@ class _ProfilePageState extends State<ProfilePage> {
               const SizedBox(height: 20.0),
               SizedBox(
                 height: 50,
-                // color: lightcolor,
                 child: Column(
                   children: [
                     Text(
@@ -110,7 +89,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                 Text(
                                   "Ayata Inc",
                                   style: miniStyle.copyWith(
-                                    // decoration: TextDecoration.underline,
                                     fontSize: 12,
                                     color: Colors.blueAccent,
                                   ),
@@ -171,16 +149,13 @@ class _ProfilePageState extends State<ProfilePage> {
           child: Column(
             children: [
               const SizedBox(height: 80.0),
-              _buildPersonalInfo(isDarkMode, 0),
-              _buildEmployeeDetail(isDarkMode, 1),
-              _buildDocuments(isDarkMode, 2),
-              _buildBankDetails(isDarkMode, 3),
-              // _buildDeviceDetails(isDarkMode, 3),
-              _buildHRDetails(),
-              _buildChangePassword(),
-              _buildTheme(),
-              // _buildPrivacyPolicies(),
-              // _buildBiometrics(isDarkMode),
+              _buildPersonalInfo(isDarkMode),
+              _buildEmployeeDetail(isDarkMode),
+              _buildDocuments(isDarkMode),
+              _buildBankDetails(isDarkMode),
+              _buildHRDetails(isDarkMode),
+              _buildChangePassword(isDarkMode),
+              _buildTheme(isDarkMode),
               _buildLogout(isDarkMode),
             ],
           ),
@@ -189,42 +164,646 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildPersonalInfo(bool isDarkMode, int index) {
-    return ProfileMenu(
-      text: "Personal Info",
-      icon: Icons.account_circle_outlined,
-      showIcon: true,
-      isExpanded: _currentlyExpandedIndex == index,
-      onExpandToggle: () => _handleTileExpansion(index),
-      expandedContent: _buildExpandedContent(
-        isDarkMode,
-        child: Obx(() {
-          if (profilecontroller.isLoading.value) {
-            return const ShrimmerEffect.rectangular(height: 230);
-          }
+  Widget _buildPersonalInfo(bool isDarkMode) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.0),
+        color: isDarkMode ? Colors.grey.shade800 : Colors.white,
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent,
+          // listTileTheme: ListTileTheme.of(context).copyWith(
+          //   dense: true,
+          // ),
+        ),
+        child: ExpansionTile(
+          expansionAnimationStyle: const AnimationStyle(
+            curve: Curves.easeInOut,
+            duration: Duration(milliseconds: 100),
+          ),
+          leading: Icon(
+            Icons.account_circle_outlined,
+            color: isDarkMode ? Colors.white : Colors.black,
+          ),
+          title: Text(
+            "Personal Info",
+            style: smallStyle.copyWith(
+              fontWeight: FontWeight.w600,
+              color: isDarkMode ? Colors.white : Colors.black,
+              overflow: TextOverflow.ellipsis,
+              fontSize: 12.0,
+            ),
+          ),
+          iconColor: isDarkMode ? Colors.white : Colors.black,
+          collapsedIconColor: isDarkMode ? Colors.white : Colors.black,
+          children: [
+            Divider(
+              height: 1,
+              thickness: 1,
+              color: isDarkMode ? Colors.grey.shade700 : Colors.grey.shade300,
+              indent: 14,
+              endIndent: 14,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Obx(() {
+                if (profilecontroller.isLoading.value) {
+                  return const ShrimmerEffect.rectangular(height: 230);
+                }
 
-          final profileData = profilecontroller.profile;
+                final profileData = profilecontroller.profile;
 
-          if (profileData.isEmpty) {
-            return Center(
-              child: Text(
-                "No profile data available. Please try login again.",
-                style: smallStyle.copyWith(
-                  color: isDarkMode ? Colors.white : Colors.black,
+                if (profileData.isEmpty) {
+                  return Center(
+                    child: Text(
+                      "No profile data available. Please try login again.",
+                      style: smallStyle.copyWith(
+                        color: isDarkMode ? Colors.white : Colors.black,
+                      ),
+                    ),
+                  );
+                }
+
+                return Column(
+                  children: profileData
+                      .map((profileData) =>
+                          _buildProfileDetails(profileData, isDarkMode))
+                      .toList(),
+                );
+              }),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmployeeDetail(bool isDarkMode) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.0),
+        color: isDarkMode ? Colors.grey.shade800 : Colors.white,
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent,
+          // listTileTheme: ListTileTheme.of(context).copyWith(
+          //   dense: true,
+          // ),
+        ),
+        child: ExpansionTile(
+          expansionAnimationStyle: const AnimationStyle(
+            curve: Curves.easeInOut,
+            duration: Duration(milliseconds: 100),
+          ),
+          leading: Icon(
+            Icons.account_box_outlined,
+            color: isDarkMode ? Colors.white : Colors.black,
+          ),
+          title: Text(
+            "Employee Detail",
+            style: smallStyle.copyWith(
+              fontWeight: FontWeight.w600,
+              color: isDarkMode ? Colors.white : Colors.black,
+              overflow: TextOverflow.ellipsis,
+              fontSize: 12.0,
+            ),
+          ),
+          iconColor: isDarkMode ? Colors.white : Colors.black,
+          collapsedIconColor: isDarkMode ? Colors.white : Colors.black,
+          children: [
+            Divider(
+              height: 1,
+              thickness: 1,
+              color: isDarkMode ? Colors.grey.shade700 : Colors.grey.shade300,
+              indent: 14,
+              endIndent: 14,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Obx(() {
+                if (profilecontroller.isLoading.value) {
+                  return const ShrimmerEffect.rectangular(height: 230);
+                }
+
+                final profileData = profilecontroller.profile;
+
+                if (profileData.isEmpty) {
+                  return Center(
+                    child: Text(
+                      "No profile data available. Please try login again.",
+                      style: smallStyle.copyWith(
+                        color: isDarkMode ? Colors.white : Colors.black,
+                      ),
+                    ),
+                  );
+                }
+
+                return Column(
+                  children: profileData
+                      .map((profileData) =>
+                          _buildEmployeeDetails(profileData, isDarkMode))
+                      .toList(),
+                );
+              }),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDocuments(bool isDarkMode) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.0),
+        color: isDarkMode ? Colors.grey.shade800 : Colors.white,
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent,
+          // listTileTheme: ListTileTheme.of(context).copyWith(
+          //   dense: true,
+          // ),
+        ),
+        child: ExpansionTile(
+          expansionAnimationStyle: const AnimationStyle(
+            curve: Curves.easeInOut,
+            duration: Duration(milliseconds: 100),
+          ),
+          leading: Icon(
+            Icons.card_travel_outlined,
+            color: isDarkMode ? Colors.white : Colors.black,
+          ),
+          title: Text(
+            "Documents",
+            style: smallStyle.copyWith(
+              fontWeight: FontWeight.w600,
+              color: isDarkMode ? Colors.white : Colors.black,
+              overflow: TextOverflow.ellipsis,
+              fontSize: 12.0,
+            ),
+          ),
+          iconColor: isDarkMode ? Colors.white : Colors.black,
+          collapsedIconColor: isDarkMode ? Colors.white : Colors.black,
+          children: [
+            Divider(
+              height: 1,
+              thickness: 1,
+              color: isDarkMode ? Colors.grey.shade700 : Colors.grey.shade300,
+              indent: 14,
+              endIndent: 14,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Obx(() {
+                if (profilecontroller.isLoading.value) {
+                  return const ShrimmerEffect.rectangular(height: 230);
+                }
+
+                final profileData = profilecontroller.profile;
+
+                if (profileData.isEmpty) {
+                  return Center(
+                    child: Text(
+                      "No documents available.",
+                      style: smallStyle.copyWith(
+                        color: isDarkMode ? Colors.white : Colors.black,
+                      ),
+                    ),
+                  );
+                }
+
+                return ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  padding: EdgeInsets.zero,
+                  itemCount: profileData.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final profiledata = profileData[index];
+                    return _buildDocumentDetails(profiledata, isDarkMode);
+                  },
+                );
+              }),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBankDetails(bool isDarkMode) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.0),
+        color: isDarkMode ? Colors.grey.shade800 : Colors.white,
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent,
+          // listTileTheme: ListTileTheme.of(context).copyWith(
+          //   dense: true,
+          // ),
+        ),
+        child: ExpansionTile(
+          expansionAnimationStyle: const AnimationStyle(
+            curve: Curves.easeInOut,
+            duration: Duration(milliseconds: 100),
+          ),
+          leading: Icon(
+            Icons.account_balance_outlined,
+            color: isDarkMode ? Colors.white : Colors.black,
+          ),
+          title: Text(
+            "Banking Details",
+            style: smallStyle.copyWith(
+              fontWeight: FontWeight.w600,
+              color: isDarkMode ? Colors.white : Colors.black,
+              overflow: TextOverflow.ellipsis,
+              fontSize: 12.0,
+            ),
+          ),
+          iconColor: isDarkMode ? Colors.white : Colors.black,
+          collapsedIconColor: isDarkMode ? Colors.white : Colors.black,
+          children: [
+            Divider(
+              height: 1,
+              thickness: 1,
+              color: isDarkMode ? Colors.grey.shade700 : Colors.grey.shade300,
+              indent: 14,
+              endIndent: 14,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Obx(() {
+                if (profilecontroller.isLoading.value) {
+                  return const ShrimmerEffect.rectangular(height: 200);
+                }
+
+                final profileData = profilecontroller.profile;
+
+                if (profileData.isEmpty) {
+                  return Center(
+                    child: Text(
+                      "No bank details available.",
+                      style: smallStyle.copyWith(
+                        color: isDarkMode ? Colors.white : Colors.black,
+                      ),
+                    ),
+                  );
+                }
+
+                return Column(
+                  children: profileData
+                      .map((datum) =>
+                          _buildBankDetailList(datum.bankDetails, isDarkMode))
+                      .toList(),
+                );
+              }),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHRDetails(bool isDarkMode) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.0),
+        color: isDarkMode ? Colors.grey.shade800 : Colors.white,
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent,
+          // listTileTheme: ListTileTheme.of(context).copyWith(
+          //   dense: true,
+          // ),
+        ),
+        child: ListTile(
+          leading: Icon(
+            Icons.business_center_outlined,
+            color: isDarkMode ? Colors.white : Colors.black,
+          ),
+          title: Text(
+            "HR Details",
+            style: smallStyle.copyWith(
+              fontWeight: FontWeight.w600,
+              color: isDarkMode ? Colors.white : Colors.black,
+              overflow: TextOverflow.ellipsis,
+              fontSize: 12.0,
+            ),
+          ),
+          trailing: Icon(
+            Icons.arrow_forward_ios,
+            color: isDarkMode ? Colors.white : Colors.black,
+            size: 16,
+          ),
+          onTap: () {
+            Get.to(
+              () => const HRDetailsPage(),
+              transition: Transition.rightToLeft,
+              duration: const Duration(milliseconds: 100),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildChangePassword(bool isDarkMode) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.0),
+        color: isDarkMode ? Colors.grey.shade800 : Colors.white,
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent,
+          // listTileTheme: ListTileTheme.of(context).copyWith(
+          //   dense: true,
+          // ),
+        ),
+        child: ListTile(
+          leading: Icon(
+            Icons.key_outlined,
+            color: isDarkMode ? Colors.white : Colors.black,
+          ),
+          title: Text(
+            "Change Password",
+            style: smallStyle.copyWith(
+              fontWeight: FontWeight.w600,
+              color: isDarkMode ? Colors.white : Colors.black,
+              overflow: TextOverflow.ellipsis,
+              fontSize: 12.0,
+            ),
+          ),
+          trailing: Icon(
+            Icons.arrow_forward_ios,
+            color: isDarkMode ? Colors.white : Colors.black,
+            size: 16,
+          ),
+          onTap: () {
+            Get.to(
+              () => const ChangePassword(),
+              transition: Transition.rightToLeft,
+              duration: const Duration(milliseconds: 100),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTheme(bool isDarkMode) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.0),
+        color: isDarkMode ? Colors.grey.shade800 : Colors.white,
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent,
+          // listTileTheme: ListTileTheme.of(context).copyWith(
+          //   dense: true,
+          // ),
+        ),
+        child: ListTile(
+          leading: Icon(
+            Icons.color_lens,
+            color: isDarkMode ? Colors.white : Colors.black,
+          ),
+          title: Text(
+            "Change Theme",
+            style: smallStyle.copyWith(
+              fontWeight: FontWeight.w600,
+              color: isDarkMode ? Colors.white : Colors.black,
+              overflow: TextOverflow.ellipsis,
+              fontSize: 12.0,
+            ),
+          ),
+          trailing: Icon(
+            Icons.arrow_forward_ios,
+            color: isDarkMode ? Colors.white : Colors.black,
+            size: 16,
+          ),
+          onTap: () {
+            Get.to(
+              () => const ChangeTheme(),
+              transition: Transition.rightToLeft,
+              duration: const Duration(milliseconds: 100),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLogout(bool isDarkMode) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.0),
+        color: isDarkMode ? Colors.grey.shade800 : Colors.white,
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent,
+          // listTileTheme: ListTileTheme.of(context).copyWith(
+          //   dense: true,
+          // ),
+        ),
+        child: ListTile(
+          leading: const Icon(
+            Icons.logout,
+            // color: Colors.red,
+          ),
+          title: Text(
+            "Logout",
+            style: smallStyle.copyWith(
+              fontWeight: FontWeight.w600,
+              color: isDarkMode ? Colors.white : Colors.black,
+              overflow: TextOverflow.ellipsis,
+              fontSize: 12.0,
+            ),
+          ),
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (context) => Dialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        isDarkMode ? Colors.grey[850]! : Colors.white,
+                        isDarkMode ? Colors.grey[800]! : Colors.grey[50]!,
+                      ],
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: const Icon(
+                          Icons.power_settings_new_rounded,
+                          color: Colors.red,
+                          size: 28,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Logout',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Are you sure you want to logout?',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: isDarkMode ? Colors.white : Colors.grey[600],
+                          fontSize: 12,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.grey[300]!),
+                              ),
+                              child: TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                style: TextButton.styleFrom(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 14),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.cancel_outlined,
+                                      color: isDarkMode
+                                          ? Colors.white
+                                          : Colors.black,
+                                    ),
+                                    const SizedBox(width: 5.0),
+                                    Text(
+                                      'No',
+                                      style: TextStyle(
+                                        color: isDarkMode
+                                            ? Colors.white
+                                            : Colors.black,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                gradient: const LinearGradient(
+                                  colors: [Colors.red, Colors.redAccent],
+                                ),
+                              ),
+                              child: TextButton(
+                                onPressed: () async {
+                                  Navigator.pop(context);
+                                  _showLoadingAndLogout();
+                                },
+                                style: TextButton.styleFrom(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 14),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.check_outlined,
+                                      color: Colors.white,
+                                    ),
+                                    SizedBox(width: 5.0),
+                                    Text(
+                                      'Yes',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );
-          }
-
-          return Column(
-            children: profileData
-                .map((profileData) =>
-                    _buildProfileDetails(profileData, isDarkMode))
-                .toList(),
-          );
-        }),
+          },
+        ),
       ),
     );
+  }
+
+  void _showLoadingAndLogout() {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    Get.dialog(
+      Center(
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(
+                color: isDarkMode ? Colors.white : Colors.black,
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: false,
+    );
+
+    authcontroller.localLogout(true);
   }
 
   Widget _buildProfileDetails(Datum profiledata, bool isDarkMode) {
@@ -285,54 +864,7 @@ class _ProfilePageState extends State<ProfilePage> {
           _buildRow('Permanent Address:', permanentAddress),
           _buildRow('Email:',
               profiledata.email.isNotEmpty ? profiledata.email : 'N/A'),
-          // _buildRow('Gender:',
-          //     profiledata.gender.isNotEmpty ? profiledata.gender : 'N/A'),
-          // _buildRow(
-          //     'Role:', profiledata.role.isNotEmpty ? profiledata.role : 'N/A'),
-          // _buildRow(
-          //     'Employee Type:',
-          //     profiledata.employeeType.isNotEmpty
-          //         ? profiledata.employeeType
-          //         : 'N/A'),
         ],
-      ),
-    );
-  }
-
-  Widget _buildEmployeeDetail(bool isDarkMode, int index) {
-    return ProfileMenu(
-      text: "Employee Detail",
-      icon: Icons.account_box_outlined,
-      showIcon: true,
-      isExpanded: _currentlyExpandedIndex == index,
-      onExpandToggle: () => _handleTileExpansion(index),
-      expandedContent: _buildExpandedContent(
-        isDarkMode,
-        child: Obx(() {
-          if (profilecontroller.isLoading.value) {
-            return const ShrimmerEffect.rectangular(height: 230);
-          }
-
-          final profileData = profilecontroller.profile;
-
-          if (profileData.isEmpty) {
-            return Center(
-              child: Text(
-                "No profile data available. Please try login again.",
-                style: smallStyle.copyWith(
-                  color: isDarkMode ? Colors.white : Colors.black,
-                ),
-              ),
-            );
-          }
-
-          return Column(
-            children: profileData
-                .map((profileData) =>
-                    _buildEmployeeDetails(profileData, isDarkMode))
-                .toList(),
-          );
-        }),
       ),
     );
   }
@@ -357,51 +889,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ? "Rs. ${profiledata.grossSalary.toString()}"
                 : "Rs. -",
           ),
-          // _buildRow(
-          //   'Gross Salary:',
-          //   "Rs. ${profiledata.grossSalary.toString()}",
-          // ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildDocuments(bool isDarkMode, int index) {
-    return ProfileMenu(
-      text: "Documents",
-      icon: Icons.card_travel_outlined,
-      isExpanded: _currentlyExpandedIndex == index,
-      onExpandToggle: () => _handleTileExpansion(index),
-      expandedContent: _buildExpandedContent(
-        isDarkMode,
-        child: Obx(() {
-          if (profilecontroller.isLoading.value) {
-            return const ShrimmerEffect.rectangular(height: 230);
-          }
-
-          final profileData = profilecontroller.profile;
-
-          if (profileData.isEmpty) {
-            return Center(
-                child: Text(
-              "No documents available.",
-              style: smallStyle.copyWith(
-                color: isDarkMode ? Colors.black : Colors.white,
-              ),
-            ));
-          }
-
-          return ListView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            padding: EdgeInsets.zero,
-            itemCount: profileData.length,
-            itemBuilder: (BuildContext context, int index) {
-              final profiledata = profileData[index];
-              return _buildDocumentDetails(profiledata, isDarkMode);
-            },
-          );
-        }),
       ),
     );
   }
@@ -443,42 +931,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildBankDetails(bool isDarkMode, int index) {
-    return ProfileMenu(
-      text: "Banking Details",
-      icon: Icons.account_balance_outlined,
-      isExpanded: _currentlyExpandedIndex == index,
-      onExpandToggle: () => _handleTileExpansion(index),
-      expandedContent: _buildExpandedContent(
-        isDarkMode,
-        child: Obx(() {
-          if (profilecontroller.isLoading.value) {
-            return const ShrimmerEffect.rectangular(height: 200);
-          }
-
-          final profileData = profilecontroller.profile;
-
-          if (profileData.isEmpty) {
-            return Center(
-                child: Text(
-              "No bank details available.",
-              style: smallStyle.copyWith(
-                color: isDarkMode ? Colors.black : Colors.white,
-              ),
-            ));
-          }
-
-          return Column(
-            children: profileData
-                .map((datum) =>
-                    _buildBankDetailList(datum.bankDetails, isDarkMode))
-                .toList(),
-          );
-        }),
-      ),
-    );
-  }
-
   Widget _buildBankDetailList(List<BankDetail> bankDetails, bool isDarkMode) {
     if (bankDetails.isEmpty) {
       return Text(
@@ -515,241 +967,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   bankDetail.bankAccount.isNotEmpty
                       ? bankDetail.bankAccount
                       : 'N/A'),
-              // _buildRow('Payroll:', bankDetail.isPayroll ? 'Yes' : 'No'),
             ],
           ),
         );
       }).toList(),
-    );
-  }
-
-  Widget _buildHRDetails() {
-    return ProfileMenu(
-      text: "HR Details",
-      icon: Icons.business_center_outlined,
-      press: () {
-        Get.to(
-          () => const HRDetailsPage(),
-          transition: Transition.rightToLeft,
-          duration: const Duration(milliseconds: 100),
-        );
-      },
-      showIcon: false,
-    );
-  }
-
-  Widget _buildChangePassword() {
-    return ProfileMenu(
-      text: "Change Password",
-      icon: Icons.key_outlined,
-      press: () {
-        Get.to(
-          () => const ChangePassword(),
-          transition: Transition.rightToLeft,
-          duration: const Duration(milliseconds: 100),
-        );
-      },
-      showIcon: false,
-    );
-  }
-
-  Widget _buildTheme() {
-    return ProfileMenu(
-      text: "Change Theme",
-      icon: Icons.color_lens,
-      press: () {
-        Get.to(
-          () => const ChangeTheme(),
-          transition: Transition.rightToLeft,
-          duration: const Duration(milliseconds: 100),
-        );
-      },
-      showIcon: false,
-    );
-  }
-
-  Widget _buildLogout(bool isDarkMode) {
-    return ProfileMenu(
-      text: "Logout",
-      icon: Icons.logout,
-      press: () {
-        showDialog(
-          context: context,
-          // barrierColor: Colors.black.withOpacity(0.7),
-          builder: (context) => Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(24),
-            ),
-            child: Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(24),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    isDarkMode ? Colors.grey[850]! : Colors.white,
-                    isDarkMode ? Colors.grey[800]! : Colors.grey[50]!,
-                  ],
-                ),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.red.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: const Icon(
-                      Icons.power_settings_new_rounded,
-                      color: Colors.red,
-                      size: 28,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Logout',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Are you sure you want to logout?',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: isDarkMode ? Colors.white : Colors.grey[600],
-                      fontSize: 12,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.grey[300]!),
-                          ),
-                          child: TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.cancel_outlined,
-                                  color:
-                                      isDarkMode ? Colors.white : Colors.black,
-                                ),
-                                const SizedBox(width: 5.0),
-                                Text(
-                                  'No',
-                                  style: TextStyle(
-                                    color: isDarkMode
-                                        ? Colors.white
-                                        : Colors.black,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            gradient: const LinearGradient(
-                              colors: [Colors.red, Colors.redAccent],
-                            ),
-                          ),
-                          child: TextButton(
-                            onPressed: () async {
-                              Navigator.pop(context);
-                              _showLoadingAndLogout();
-                            },
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.check_outlined,
-                                  color: Colors.white,
-                                ),
-                                SizedBox(width: 5.0),
-                                Text(
-                                  'Yes',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-      showIcon: false,
-    );
-  }
-
-  void _showLoadingAndLogout() {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
-    Get.dialog(
-      Center(
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CircularProgressIndicator(
-                color: isDarkMode ? Colors.white : Colors.black,
-              ),
-            ],
-          ),
-        ),
-      ),
-      barrierDismissible: false,
-    );
-
-    authcontroller.localLogout(true);
-  }
-
-  Widget _buildExpandedContent(bool isDarkMode, {required Widget child}) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(13.0),
-        color: isDarkMode ? Colors.grey.shade800 : Colors.white,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: child,
-      ),
     );
   }
 

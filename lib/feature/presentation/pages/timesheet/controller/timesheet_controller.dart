@@ -50,9 +50,23 @@ class TimesheetController extends GetxController {
     }
 
     try {
+      // Get current filter dates
+      String? startDate;
+      String? endDate;
+
+      if (dateRange.value != null) {
+        startDate = DateFormat('yyyy-MM-dd').format(dateRange.value!.start);
+        endDate = DateFormat('yyyy-MM-dd').format(dateRange.value!.end);
+      } else if (selectedDate.value != null) {
+        startDate = DateFormat('yyyy-MM-dd').format(selectedDate.value!);
+        endDate = DateFormat('yyyy-MM-dd').format(selectedDate.value!);
+      }
+
       ApiResponse response = await timesheetRepo.getTimesheet(
         page: currentPage.value,
         pageSize: pageSize.value,
+        startDate: startDate,
+        endDate: endDate,
       );
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
@@ -66,12 +80,13 @@ class TimesheetController extends GetxController {
         // Add new data to list
         if (loadMore) {
           timesheet.addAll(timesheetdata.data);
+          filteredTimesheet.addAll(timesheetdata.data);
         } else {
           timesheet.value = timesheetdata.data;
+          filteredTimesheet.value = timesheetdata.data;
         }
 
-        // Update filteredTimesheet with sorted data
-        filteredTimesheet.value = timesheet;
+        // Sort the data
         _sortFilteredTimesheetDescending();
 
         // Increment page for next load
@@ -125,38 +140,25 @@ class TimesheetController extends GetxController {
   void filterByDate(DateTime date) {
     selectedDate.value = date;
     dateRange.value = null;
+
+    // Reset pagination and reload data with filter
     currentPage.value = 1;
     hasMoreData.value = true;
 
-    String formattedSelectedDate = DateFormat('yyyy-MM-dd').format(date);
-    filteredTimesheet.value = timesheet.where((timesheetdate) {
-      if (timesheetdate.date == null) return false;
-      String formattedEntryDate =
-          DateFormat('yyyy-MM-dd').format(timesheetdate.date!);
-      return formattedEntryDate == formattedSelectedDate;
-    }).toList();
-
-    _sortFilteredTimesheetDescending();
+    // Reload data from API with filter
+    getTimesheet();
   }
 
   // Filter by date range
   void filterByDateRange(DateTime startDate, DateTime endDate) {
     selectedDate.value = null;
+
+    // Reset pagination and reload data with filter
     currentPage.value = 1;
     hasMoreData.value = true;
 
-    final start = DateTime(startDate.year, startDate.month, startDate.day);
-    final end = DateTime(endDate.year, endDate.month, endDate.day, 23, 59, 59);
-
-    filteredTimesheet.value = timesheet.where((timesheetdate) {
-      if (timesheetdate.date == null) return false;
-      return (timesheetdate.date!.isAfter(start) ||
-              timesheetdate.date!.isAtSameMomentAs(start)) &&
-          (timesheetdate.date!.isBefore(end) ||
-              timesheetdate.date!.isAtSameMomentAs(end));
-    }).toList();
-
-    _sortFilteredTimesheetDescending();
+    // Reload data from API with filter
+    getTimesheet();
   }
 
   // Clear selected date range
@@ -165,8 +167,9 @@ class TimesheetController extends GetxController {
     dateRange.value = null;
     currentPage.value = 1;
     hasMoreData.value = true;
-    filteredTimesheet.assignAll(timesheet);
-    _sortFilteredTimesheetDescending();
+
+    // Reload all data without filter
+    getTimesheet();
   }
 
   void clearSelectedDate() {

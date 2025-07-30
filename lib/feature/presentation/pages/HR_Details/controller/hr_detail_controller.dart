@@ -40,11 +40,11 @@ class OrganizationStaffController extends GetxController {
         log("Parsed ${organizationStaff.length} staff members: ${organizationStaff.map((e) => e.toJson())}");
       } else {
         log("Error: ${response.message}");
-        errorMessage.value = response.message ?? "Failed to load staff data";
+        // errorMessage.value = response.message ?? "Failed to load staff data";
       }
     } catch (e, stackTrace) {
       log("Error fetching organization staff: $e", stackTrace: stackTrace);
-      errorMessage.value = "An error occurred: $e";
+      // errorMessage.value = "An error occurred: $e";
     } finally {
       isLoading.value = false;
     }

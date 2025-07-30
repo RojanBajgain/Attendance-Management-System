@@ -16,7 +16,7 @@ class AbsentDayWidget extends StatelessWidget {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      height: 85.0,
+      height: 90.0,
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
@@ -53,9 +53,9 @@ class AbsentDayWidget extends StatelessWidget {
         ),
         child: Padding(
           padding: const EdgeInsets.only(
-            left: 25.0,
-            top: 15.0,
-            right: 20.0,
+            left: 15.0,
+            top: 10.0,
+            right: 15.0,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,22 +104,53 @@ class AbsentDayWidget extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  // SizedBox(
+                  //   width: 80,
+                  //   child: Row(
+                  //     children: [
+                  //       const Icon(
+                  //         Icons.history,
+                  //         color: Colors.grey,
+                  //         size: 20,
+                  //       ),
+                  //       const SizedBox(width: 4),
+                  //       Text(
+                  //         "---",
+                  //         style: smallStyle.copyWith(
+                  //           color: Colors.grey,
+                  //           fontSize: 12.0,
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                   SizedBox(
-                    width: 80,
-                    child: Row(
+                    width: 85,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const Icon(
-                          Icons.history,
-                          color: Colors.grey,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 4),
                         Text(
-                          "---",
+                          "Entry Time",
                           style: smallStyle.copyWith(
-                            color: Colors.grey,
-                            fontSize: 12.0,
+                            color: isDarkMode
+                                ? Colors.white70
+                                : Colors.grey.shade700,
+                            fontSize: 10.0,
+                            fontWeight: FontWeight.w500,
                           ),
+                        ),
+                        const SizedBox(height: 2),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "---",
+                              style: smallStyle.copyWith(
+                                color: Colors.grey,
+                                fontSize: 12.0,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -134,21 +165,32 @@ class AbsentDayWidget extends StatelessWidget {
                   ),
                   const SizedBox(width: 20),
                   SizedBox(
-                    width: 80,
-                    child: Row(
+                    width: 85,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const Icon(
-                          Icons.update,
-                          color: Colors.grey,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 4),
                         Text(
-                          "---",
+                          "Exit Time",
                           style: smallStyle.copyWith(
-                            color: Colors.grey,
-                            fontSize: 12.0,
+                            color: isDarkMode
+                                ? Colors.white70
+                                : Colors.grey.shade700,
+                            fontSize: 10.0,
+                            fontWeight: FontWeight.w500,
                           ),
+                        ),
+                        const SizedBox(height: 2),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "---",
+                              style: smallStyle.copyWith(
+                                color: Colors.grey,
+                                fontSize: 12.0,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -163,21 +205,32 @@ class AbsentDayWidget extends StatelessWidget {
                   ),
                   const SizedBox(width: 15),
                   SizedBox(
-                    width: 80,
-                    child: Row(
+                    width: 85,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.schedule,
-                          color: Colors.grey,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 4),
                         Text(
-                          "--- hrs",
+                          "Total Hours",
                           style: smallStyle.copyWith(
-                            color: Colors.grey,
-                            fontSize: 12.0,
+                            color: isDarkMode
+                                ? Colors.white70
+                                : Colors.grey.shade700,
+                            fontSize: 10.0,
+                            fontWeight: FontWeight.w500,
                           ),
+                        ),
+                        const SizedBox(height: 2),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "---",
+                              style: smallStyle.copyWith(
+                                color: Colors.grey,
+                                fontSize: 12.0,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),

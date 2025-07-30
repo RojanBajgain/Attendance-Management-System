@@ -1,3 +1,4 @@
+import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/HR_Details/controller/hr_detail_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,6 +12,7 @@ class HRDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
+
     final controller = Get.put(OrganizationStaffController(
       organizationStaffRepo: Get.find(),
     ));
@@ -76,20 +78,30 @@ class HRDetailsPage extends StatelessWidget {
                       );
                     }
 
-                    if (controller.errorMessage.isNotEmpty) {
-                      return Center(
-                        child: Text(
-                          controller.errorMessage.value,
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                      );
-                    }
-
                     if (controller.organizationStaff.isEmpty) {
+                      // return Center(
+                      //   child: Text(
+                      //     'No staff members found',
+                      //     style: theme.textTheme.bodyMedium,
+                      //   ),
+                      // );
                       return Center(
-                        child: Text(
-                          'No staff members found',
-                          style: theme.textTheme.bodyMedium,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/images/no_data.png',
+                              height: 150,
+                              width: 250,
+                            ),
+                            const SizedBox(height: 20),
+                            Text(
+                              "No Staffs Data Available",
+                              style: smallStyle.copyWith(
+                                color: isDarkMode ? Colors.white : Colors.black,
+                              ),
+                            ),
+                          ],
                         ),
                       );
                     }
@@ -154,6 +166,9 @@ class TeamMemberCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDarkMode = theme.brightness == Brightness.dark;
+
+    // final isDarkmode = Theme.of(context).brightness == Brightness.dark;
+
     final cardColor = isDarkMode ? Colors.grey[800]! : Colors.white;
     final textColor = isDarkMode ? Colors.white : Colors.black87;
     final secondaryTextColor =
@@ -278,7 +293,7 @@ class TeamMemberCard extends StatelessWidget {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () => _launchEmail(staff.email),
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.email_outlined,
                     size: 15,
                     color: Colors.white,
@@ -289,6 +304,7 @@ class TeamMemberCard extends StatelessWidget {
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: theme.colorScheme.secondary,
+                    // backgroundColor: Colors.teal,
                     padding: const EdgeInsets.symmetric(vertical: 6),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -300,7 +316,7 @@ class TeamMemberCard extends StatelessWidget {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () => _launchPhone(staff.phoneNumber),
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.local_phone_outlined,
                     size: 15,
                     color: Colors.white,

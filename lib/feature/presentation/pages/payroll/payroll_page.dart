@@ -39,11 +39,14 @@ class _PayrollPageState extends State<PayrollPage> {
         // appBar: const ConstantAppBar(),
         body: RefreshIndicator(
           color: isDarkMode ? Colors.white : Colors.black,
+          backgroundColor: isDarkMode ? Colors.grey.shade800 : Colors.white,
           onRefresh: () async {
             await payrollcontroller.getPayroll();
           },
           child: ListView(
-            physics: const AlwaysScrollableScrollPhysics(),
+            physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics(),
+            ),
             padding: const EdgeInsets.all(16.0),
             children: [
               Padding(

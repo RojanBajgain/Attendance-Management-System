@@ -65,96 +65,95 @@ class _TimeSheetDetailState extends State<TimeSheetDetail> {
                   Obx(() {
                     if (timesheetcontroller.isLoading.value) {
                       return const Center(
-                          child: ShrimmerEffect.rectangular(
-                        height: 250,
-                      ));
+                        child: ShrimmerEffect.rectangular(height: 300),
+                      );
                     }
                     final timesheet = timesheetcontroller.timesheetDetail.value;
-                    // if (timesheet == null) {
-                    //   return const Center(child: Text("No data found!"));
-                    // }
 
-                    return Container(
-                      height: 280.0,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
-                            spreadRadius: 2,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
+                    return Card(
+                      color: isDarkMode ? Colors.grey[900] : Colors.white,
+                      elevation: 2,
+                      clipBehavior: Clip.antiAlias,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0)),
                       child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: 25.0, top: 15.0, right: 20.0),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20.0, vertical: 20.0),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             _buildRow(
-                              "Date",
-                              timesheet.date != null
-                                  ? DateFormat.yMMMd('en_US')
-                                      .format(timesheet.date!)
-                                  : "N/A",
-                            ),
+                                Icons.date_range,
+                                "Date",
+                                timesheet.date != null
+                                    ? DateFormat.yMMMd('en_US')
+                                        .format(timesheet.date!)
+                                    : "N/A"),
+                            // _buildDivider(),
                             _buildRow(
-                              "Entry Time:",
-                              timesheet.entryTime != null
-                                  ? DateFormat('hh:mm:ss a')
-                                      .format(timesheet.entryTime!.toLocal())
-                                  : "",
-                            ),
+                                Icons.login,
+                                "Entry Time",
+                                timesheet.entryTime != null
+                                    ? DateFormat('hh:mm:ss a')
+                                        .format(timesheet.entryTime!.toLocal())
+                                    : "N/A"),
+                            // _buildDivider(),
                             _buildRow(
-                              "Entry Remarks:",
-                              timesheet.entryRemarks == null ||
-                                      timesheet.entryRemarks == "null"
-                                  ? "---"
-                                  : timesheet.entryRemarks.toString(),
-                            ),
+                                Icons.edit_note,
+                                "Entry Remarks",
+                                timesheet.entryRemarks == null ||
+                                        timesheet.entryRemarks == "null"
+                                    ? "---"
+                                    : timesheet.entryRemarks.toString()),
+                            // _buildDivider(),
                             _buildRow(
-                              "Exit Time:",
-                              timesheet.exitTime != null
-                                  ? DateFormat('hh:mm:ss a')
-                                      .format(timesheet.exitTime!.toLocal())
-                                  : "N/A",
-                            ),
+                                Icons.logout,
+                                "Exit Time",
+                                timesheet.exitTime != null
+                                    ? DateFormat('hh:mm:ss a')
+                                        .format(timesheet.exitTime!.toLocal())
+                                    : "---"),
+                            // _buildDivider(),
                             _buildRow(
-                                "Exit Remarks:",
-                                (timesheet.exitRemarks == null ||
-                                        timesheet.exitRemarks == "null")
+                                Icons.comment,
+                                "Exit Remarks",
+                                timesheet.exitRemarks == null ||
+                                        timesheet.exitRemarks == "null"
                                     ? "---"
                                     : timesheet.exitRemarks.toString()),
+                            // _buildDivider(),
                             _buildRow(
+                                Icons.timer_off,
                                 "Break Time",
                                 timesheet.breakTime != null
                                     ? _formatDuration(Duration(
                                         seconds: timesheet.breakTime!.toInt()))
                                     : "N/A"),
+                            // _buildDivider(),
                             _buildRow(
-                              "Overtime",
-                              timesheet.overTime != null
-                                  ? _formatHoursOnly(
-                                      double.tryParse(timesheet.overTime!) ?? 0)
-                                  : "N/A",
-                            ),
+                                Icons.alarm,
+                                "Overtime",
+                                timesheet.overTime != null
+                                    ? _formatHoursOnly(
+                                        double.tryParse(timesheet.overTime!) ??
+                                            0)
+                                    : "N/A"),
+                            // _buildDivider(),
                             _buildRow(
-                              "Total Hours",
-                              timesheet.totalHour != null
-                                  ? _formatHourMinute(
-                                      double.tryParse(timesheet.totalHour!) ??
-                                          0)
-                                  : "N/A",
-                            ),
-                            _buildRow(
-                                "Designation:", timesheet.designation ?? "N/A"),
+                                Icons.access_time_filled,
+                                "Total Hours",
+                                timesheet.totalHour != null
+                                    ? _formatHourMinute(
+                                        double.tryParse(timesheet.totalHour!) ??
+                                            0)
+                                    : "N/A"),
+                            // _buildDivider(),
+                            _buildRow(Icons.badge, "Designation",
+                                timesheet.designation ?? "N/A"),
                           ],
                         ),
                       ),
                     );
-                  }),
+                  })
                 ],
               ),
             ),
@@ -164,30 +163,48 @@ class _TimeSheetDetailState extends State<TimeSheetDetail> {
     );
   }
 
-  Widget _buildRow(String label, String value) {
+  // Widget _buildDivider() {
+  //   return Divider(
+  //     color: Colors.grey.withOpacity(0.3),
+  //     thickness: 1,
+  //     height: 16,
+  //   );
+  // }
+
+  Widget _buildRow(IconData icon, String label, String value) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    return Builder(builder: (context) {
-      // final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(label,
-                style: smallStyle.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: isDarkMode ? Colors.white : Colors.black,
-                )),
-            Text(value,
-                style: smallStyle.copyWith(
-                  color: isDarkMode ? Colors.white : Colors.black,
-                )),
-          ],
-        ),
-      );
-    });
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            size: 16,
+            color: isDarkMode ? Colors.white70 : Colors.grey[700],
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              label,
+              style: smallStyle.copyWith(
+                fontWeight: FontWeight.w600,
+                color: isDarkMode ? Colors.white : Colors.black,
+                fontSize: 12,
+              ),
+            ),
+          ),
+          Text(
+            value,
+            textAlign: TextAlign.end,
+            style: smallStyle.copyWith(
+              color: isDarkMode ? Colors.white70 : Colors.grey[800],
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   String _formatHourMinute(double hours) {

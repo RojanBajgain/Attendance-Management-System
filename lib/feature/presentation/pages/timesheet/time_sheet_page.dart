@@ -172,6 +172,7 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
       child: Scaffold(
         body: RefreshIndicator(
           color: isDarkMode ? Colors.white : Colors.black,
+          backgroundColor: isDarkMode ? Colors.grey.shade800 : Colors.white,
           onRefresh: () async {
             await timesheetcontroller.getTimesheet();
           },
@@ -180,7 +181,10 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
 
             return CustomScrollView(
               controller: _scrollController,
-              physics: const AlwaysScrollableScrollPhysics(),
+              // BOUNCY SCROLL PHYSICS
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
               slivers: [
                 // Header
                 SliverToBoxAdapter(

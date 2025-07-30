@@ -68,6 +68,7 @@ class _DashboardPageState extends State<DashboardPage> {
       appBar: const ConstantAppBar(),
       body: RefreshIndicator(
         color: isDarkMode ? Colors.white : Colors.black,
+        backgroundColor: isDarkMode ? Colors.grey.shade800 : Colors.white,
         onRefresh: () async {
           await Future.wait([
             dashboardTimesheetController.getDashboardTimesheet(),
