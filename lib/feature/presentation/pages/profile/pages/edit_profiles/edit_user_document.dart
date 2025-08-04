@@ -1049,7 +1049,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
               Get.to(() => EditUserInfo());
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: isDarkMode ? Colors.blueAccent : Colors.black,
+              backgroundColor: Theme.of(context).colorScheme.surface,
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -1085,7 +1085,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: isDarkMode ? Colors.blueAccent : Colors.black,
+                backgroundColor: Theme.of(context).colorScheme.surface,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                 shape: RoundedRectangleBorder(
@@ -1114,7 +1114,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: isDarkMode ? Colors.blueAccent : Colors.black,
+              backgroundColor: Theme.of(context).colorScheme.surface,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),

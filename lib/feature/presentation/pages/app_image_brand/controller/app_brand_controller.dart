@@ -4,10 +4,16 @@ import 'package:ams/feature/presentation/pages/app_image_brand/model/app_brand.d
 import 'package:get/get.dart';
 
 class AppBrandController extends GetxController {
+  static AppBrandController get instance => Get.find();
+
   final AppBrandRepo appBrandRepo;
   var appBrand = Rx<AppBrand?>(null);
   var isLoading = false.obs;
   var errorMessage = ''.obs;
+  var appLogo = ''.obs;
+  var appColor = '';
+  var authappLogo = ''.obs;
+  var authappColor = ''.obs;
 
   Datum? get currentBrand => appBrand.value?.data.isNotEmpty ?? false
       ? appBrand.value!.data.first

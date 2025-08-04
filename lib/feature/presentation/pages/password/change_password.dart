@@ -30,6 +30,8 @@ class _ChangePasswordState extends State<ChangePassword> {
       },
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          foregroundColor: isDarkMode ? Colors.white : Colors.black,
           titleSpacing: 0,
           title: Text(
             'Change Password',

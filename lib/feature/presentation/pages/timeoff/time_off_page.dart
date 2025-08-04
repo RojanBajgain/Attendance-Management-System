@@ -74,11 +74,9 @@ class _TimeOffPageState extends State<TimeOffPage> {
                         height: 35.0,
                         width: 35.0,
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          borderRadius: BorderRadius.circular(70.0),
-                          color:
-                              isDarkMode ? Colors.grey.shade400 : Colors.black,
-                        ),
+                            border: Border.all(color: Colors.transparent),
+                            borderRadius: BorderRadius.circular(70.0),
+                            color: Theme.of(context).colorScheme.surface),
                         child: Icon(
                           Icons.add,
                           color: isDarkMode ? Colors.black : Colors.white,
@@ -93,9 +91,7 @@ class _TimeOffPageState extends State<TimeOffPage> {
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.black),
                             borderRadius: BorderRadius.circular(10.0),
-                            color: isDarkMode
-                                ? Colors.grey.shade400
-                                : Colors.black,
+                            color: Theme.of(context).colorScheme.surface,
                           ),
                           child: DropdownButton<String>(
                             value: timeoffcontroller.selectedFilter.value,
@@ -108,9 +104,8 @@ class _TimeOffPageState extends State<TimeOffPage> {
                               Icons.arrow_drop_down,
                               color: isDarkMode ? Colors.black : Colors.white,
                             ),
-                            dropdownColor: isDarkMode
-                                ? Colors.grey.shade400
-                                : Colors.black,
+                            dropdownColor:
+                                Theme.of(context).colorScheme.surface,
                             underline: const SizedBox(),
                             style: TextStyle(
                               color: isDarkMode ? Colors.black : Colors.white,

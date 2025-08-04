@@ -72,16 +72,15 @@ class _PayrollPageState extends State<PayrollPage> {
                         width: 50.0,
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
+                          border: Border.all(color: Colors.transparent),
                           borderRadius: BorderRadius.circular(70.0),
-                          color:
-                              isDarkMode ? Colors.grey.shade500 : Colors.white,
+                          color: Theme.of(context).colorScheme.surface,
                         ),
                         child: Icon(
                           _isPayrollVisible
                               ? Icons.visibility
                               : Icons.visibility_off,
-                          color: Colors.black,
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -161,18 +160,16 @@ class _PayrollPageState extends State<PayrollPage> {
                               : 50.0,
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black),
+                            border: Border.all(color: Colors.transparent),
                             borderRadius: BorderRadius.circular(70.0),
-                            color: isDarkMode
-                                ? Colors.grey.shade500
-                                : Colors.white,
+                            color: Theme.of(context).colorScheme.surface,
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const Icon(
                                 Icons.date_range_outlined,
-                                color: Colors.black,
+                                color: Colors.white,
                               ),
                               if (payrollcontroller.selectedDate.value !=
                                   null) ...[

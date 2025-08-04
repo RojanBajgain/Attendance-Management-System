@@ -161,13 +161,10 @@ class _LoginPageState extends State<LoginPage> {
                           children: [
                             Text(
                               "Welcome to",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.grey,
-                                  ),
+                              style: mediumStyle.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey,
+                              ),
                             ),
                             const SizedBox(width: 8),
                             Text(

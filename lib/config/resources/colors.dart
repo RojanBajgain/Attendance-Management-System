@@ -1,15 +1,23 @@
+import 'package:ams/feature/presentation/pages/app_image_brand/controller/app_brand_controller.dart';
+import 'package:ams/feature/utils/helpers.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 mixin AppColors {
-  //null value means color not decided yet
-  static const primary = Color(0xFF4365A7);
+  // Use a getter to dynamically fetch the primary color from AppBrandController
+  static Color get primary {
+    final controller = Get.find<AppBrandController>();
+    return controller.currentBrand != null
+        ? hexToColor(controller.currentBrand!.themeColor)
+        : Colors.blue; // Fallback color
+  }
 
   static const onPrimary = Colors.white;
   static const primaryContainer = null;
   static const onPrimaryContainer = null;
   static const secondary = Color(0xFFFDD159);
   static const lightYellow = Color(0xFFFBEB59);
-  static const cardBlue = Color(0xFFE8EDF7);
+  static const cardRed = Color(0xFFFEE7E7);
   static const cardGrey = Color(0xFFF5F5F5);
   static const onSecondary = Colors.white;
   static const secondaryContainer = null;
@@ -18,6 +26,8 @@ mixin AppColors {
   static const onTertiary = Colors.white;
   static const tertiaryContainer = null;
   static const onTertiaryContainer = null;
+  static const bookmark = Color(0xFFFFC534);
+  static const price = Color(0xFF008024);
 
   static const error = Color.fromRGBO(195, 3, 2, 1);
   static const onError = Colors.white;
@@ -40,7 +50,6 @@ mixin AppColors {
   static const orange = Colors.deepOrange;
   static const redAccent = Colors.redAccent;
   static const red = Color.fromRGBO(195, 3, 2, 1);
-  static const cardRed = Color(0xFFFEE7E7);
   static const green = Colors.green;
   static const black = Colors.black;
   static const grey = Colors.grey;
@@ -55,4 +64,5 @@ mixin AppColors {
 
   static const lightblue = Color.fromRGBO(239, 242, 252, 1);
   static const lightgreen = Color.fromRGBO(228, 246, 235, 1);
+  static const darkgrey = Color(0xff5A5A5A);
 }

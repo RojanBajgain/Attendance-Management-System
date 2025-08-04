@@ -896,7 +896,7 @@ class _EditUserBankState extends State<EditUserBank> {
               Get.back();
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: isDarkMode ? Colors.blueAccent : Colors.black,
+              backgroundColor: Theme.of(context).colorScheme.surface,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -929,7 +929,7 @@ class _EditUserBankState extends State<EditUserBank> {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: isDarkMode ? Colors.blueAccent : Colors.black,
+              backgroundColor: Theme.of(context).colorScheme.surface,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),

@@ -779,8 +779,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
                       ? null
                       : () => _submitUserInfo(navigateToAddress: false),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        isDarkMode ? Colors.blueAccent : Colors.black,
+                    backgroundColor: Theme.of(context).colorScheme.surface,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 10),
                     shape: RoundedRectangleBorder(
@@ -801,7 +800,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
                   ? null
                   : () => _submitUserInfo(navigateToAddress: true),
               style: ElevatedButton.styleFrom(
-                backgroundColor: isDarkMode ? Colors.blueAccent : Colors.black,
+                backgroundColor: Theme.of(context).colorScheme.surface,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 shape: RoundedRectangleBorder(
@@ -840,6 +839,8 @@ class _EditUserInfoState extends State<EditUserInfo> {
     return Scaffold(
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
+        backgroundColor: Colors.transparent,
+        foregroundColor: isDarkMode ? Colors.white : Colors.black,
         titleSpacing: 0,
         title: Text(
           "Edit User Detail",

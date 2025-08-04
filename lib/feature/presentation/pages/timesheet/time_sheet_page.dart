@@ -316,6 +316,7 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
 
   /// Date Filter Widget
   Widget _buildDateFilter(bool isDarkMode) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Obx(() {
       return GestureDetector(
         onTap: () async {
@@ -361,14 +362,18 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
           height: 35,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            color: isDarkMode ? Colors.grey.shade600 : Colors.white,
-            border: Border.all(color: Colors.black),
+            color: Theme.of(context).colorScheme.surface,
+            border: Border.all(color: Colors.transparent),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               const SizedBox(width: 6),
-              const Icon(Icons.date_range_outlined, size: 18),
+              const Icon(
+                Icons.date_range_outlined,
+                size: 18,
+                color: Colors.white,
+              ),
               const SizedBox(width: 6),
               if (timesheetcontroller.dateRange.value != null)
                 Row(

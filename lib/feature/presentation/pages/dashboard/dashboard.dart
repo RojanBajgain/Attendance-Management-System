@@ -12,6 +12,7 @@ import 'package:ams/feature/presentation/pages/timeoff/controller/timeoff_contro
 import 'package:ams/feature/presentation/pages/timesheet/controller/timesheet_controller.dart';
 import 'package:ams/feature/presentation/widget/components/app_bar.dart';
 import 'package:ams/feature/presentation/pages/dashboard/sub_view_dashboard/holiday_event_notification_page.dart';
+import 'package:ams/config/resources/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../profile/controller/profile_controller.dart';
@@ -39,7 +40,6 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Rx<Profile?> profile = Rx<Profile?>(null);
 
-  // Add error state management
   RxBool hasError = false.obs;
   RxString errorMessage = ''.obs;
 
@@ -60,12 +60,10 @@ class _DashboardPageState extends State<DashboardPage> {
     _initializeDashboard();
   }
 
-  // Enhanced initialization with error handling
   Future<void> _initializeDashboard() async {
     try {
       hasError.value = false;
       await profileController.getProfile();
-      // Add other initialization calls as needed
     } catch (e) {
       print('Dashboard initialization error: $e');
       hasError.value = true;
@@ -73,7 +71,6 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
-  // Safe refresh method
   Future<void> _safeRefresh() async {
     try {
       hasError.value = false;
@@ -93,7 +90,6 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
-  // Safe widget builder that handles nulls gracefully
   Widget _buildDashboardContent(bool isDarkMode) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,7 +101,9 @@ class _DashboardPageState extends State<DashboardPage> {
             style: normalStyle.copyWith(
               fontWeight: FontWeight.bold,
               fontSize: 16.0,
-              color: isDarkMode ? Colors.white : Colors.black,
+              color: isDarkMode
+                  ? Colors.white
+                  : Theme.of(context).colorScheme.onBackground,
             ),
           ),
         ),
@@ -126,15 +124,27 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // Welcome card with null safety
   Widget _buildWelcomeCard(bool isDarkMode) {
+    // Determine text color based on background luminance for contrast
+    final surfaceColor = Theme.of(context).colorScheme.surface;
+    final textColor = surfaceColor.computeLuminance() > 0.5
+        ? AppColors.black // Use black for light backgrounds like yellow
+        : AppColors.white; // Use white for darker backgrounds
+
     return Container(
       height: 85.0,
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 22.0, vertical: 22.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10.0),
-        color: isDarkMode ? Colors.grey[300] : Colors.grey[900],
+        color: Theme.of(context).colorScheme.surface,
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,7 +154,7 @@ class _DashboardPageState extends State<DashboardPage> {
               text: "${_getGreeting()} ",
               style: smallStyle.copyWith(
                 fontWeight: FontWeight.bold,
-                color: isDarkMode ? Colors.black : Colors.white,
+                color: textColor,
                 fontSize: 12.0,
               ),
               children: [
@@ -152,7 +162,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   text: _getUserName(),
                   style: smallStyle.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: isDarkMode ? Colors.black : Colors.white,
+                    color: textColor,
                     fontSize: 12.0,
                   ),
                 ),
@@ -164,7 +174,7 @@ class _DashboardPageState extends State<DashboardPage> {
             'Department: ${_getDepartmentName()}',
             style: smallStyle.copyWith(
               fontWeight: FontWeight.bold,
-              color: isDarkMode ? Colors.black87 : Colors.white70,
+              color: textColor.withOpacity(0.7),
               fontSize: 12.0,
             ),
           ),
@@ -173,7 +183,6 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // Safe username getter
   String _getUserName() {
     try {
       return profileController.profile.value!.username ?? "Dear User";
@@ -182,7 +191,6 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
-  // Safe department name getter
   String _getDepartmentName() {
     try {
       return profileController.profile.value!.organization?.title ?? "N/A";
@@ -191,7 +199,6 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
-  // Statistics cards with null safety
   Widget _buildStatisticsCards(bool isDarkMode) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -291,7 +298,6 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // Safe data getters with fallbacks
   String _getWeeklyHours() {
     try {
       final totalHour = dashboardTimesheetController
@@ -332,7 +338,6 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
-  // Holidays section
   Widget _buildHolidaysSection(bool isDarkMode) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -343,7 +348,9 @@ class _DashboardPageState extends State<DashboardPage> {
           child: Text(
             "Holidays & Events",
             style: normalStyle.copyWith(
-              color: isDarkMode ? Colors.white : Colors.black,
+              color: isDarkMode
+                  ? Colors.white
+                  : Theme.of(context).colorScheme.onBackground,
               fontWeight: FontWeight.bold,
               fontSize: 14.0,
             ),
@@ -355,7 +362,6 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // Error state widget
   Widget _buildErrorState(bool isDarkMode) {
     return Center(
       child: Column(
@@ -364,7 +370,9 @@ class _DashboardPageState extends State<DashboardPage> {
           Icon(
             Icons.error_outline,
             size: 64,
-            color: isDarkMode ? Colors.white54 : Colors.black54,
+            color: isDarkMode
+                ? Colors.white54
+                : Theme.of(context).colorScheme.onSurface.withOpacity(0.54),
           ),
           const SizedBox(height: 16),
           Text(
@@ -372,7 +380,9 @@ class _DashboardPageState extends State<DashboardPage> {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: isDarkMode ? Colors.white : Colors.black,
+              color: isDarkMode
+                  ? Colors.white
+                  : Theme.of(context).colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 8),
@@ -383,7 +393,9 @@ class _DashboardPageState extends State<DashboardPage> {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
-              color: isDarkMode ? Colors.white54 : Colors.black54,
+              color: isDarkMode
+                  ? Colors.white54
+                  : Theme.of(context).colorScheme.onSurface.withOpacity(0.54),
             ),
           ),
           const SizedBox(height: 24),
@@ -395,6 +407,8 @@ class _DashboardPageState extends State<DashboardPage> {
             label: const Text('Try Again'),
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
             ),
           ),
         ],
@@ -409,17 +423,15 @@ class _DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       appBar: const ConstantAppBar(),
       body: RefreshIndicator(
-        color: isDarkMode ? Colors.white : Colors.black,
-        backgroundColor: isDarkMode ? Colors.grey.shade800 : Colors.white,
+        color: Theme.of(context).colorScheme.primary,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         onRefresh: _safeRefresh,
         child: SingleChildScrollView(
-          physics:
-              const AlwaysScrollableScrollPhysics(), // Ensures pull-to-refresh works
+          physics: const AlwaysScrollableScrollPhysics(),
           child: SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(10),
               child: Obx(() {
-                // Handle error state
                 if (hasError.value) {
                   return SizedBox(
                     height: MediaQuery.of(context).size.height - 200,
@@ -427,12 +439,10 @@ class _DashboardPageState extends State<DashboardPage> {
                   );
                 }
 
-                // Handle loading state
                 if (dashboardTimesheetController.isLoading.value) {
                   return const DashboardSkeletonLoading();
                 }
 
-                // Handle success state
                 return _buildDashboardContent(isDarkMode);
               }),
             ),
@@ -444,13 +454,15 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Color getProgressColor(double percentage, bool isDarkMode) {
     if (percentage < 25) {
-      return Colors.red;
+      return AppColors.red;
     } else if (percentage < 50) {
-      return Colors.orange;
+      return AppColors.orange;
     } else if (percentage < 75) {
-      return Colors.yellow.shade700;
+      return AppColors.lightYellow;
     } else {
-      return isDarkMode ? Colors.green.shade700 : Colors.green;
+      return isDarkMode
+          ? AppColors.green.shade700
+          : Theme.of(context).colorScheme.primary;
     }
   }
 }
@@ -463,34 +475,57 @@ class DashboardSkeletonLoading extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.only(left: 10.0),
-          child: SkeletonBox(height: 20, width: 100, borderRadius: 4),
+        Padding(
+          padding: const EdgeInsets.only(left: 10.0),
+          child: SkeletonBox(
+              height: 20,
+              width: 100,
+              borderRadius: 4,
+              color: Theme.of(context).colorScheme.surface),
         ),
         const SizedBox(height: 15.0),
-        const SkeletonBox(height: 90, width: double.infinity, borderRadius: 10),
+        SkeletonBox(
+            height: 90,
+            width: double.infinity,
+            borderRadius: 10,
+            color: Theme.of(context).colorScheme.surface),
         const SizedBox(height: 10.0),
-        const SkeletonBox(
-            height: 225, width: double.infinity, borderRadius: 12),
+        SkeletonBox(
+            height: 225,
+            width: double.infinity,
+            borderRadius: 12,
+            color: Theme.of(context).colorScheme.surface),
         const SizedBox(height: 20.0),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
             children: [
               SkeletonBox(
-                  height: 110, width: context.width * 0.5, borderRadius: 10),
+                  height: 110,
+                  width: context.width * 0.5,
+                  borderRadius: 10,
+                  color: Theme.of(context).colorScheme.surface),
               const SizedBox(width: 15),
               SkeletonBox(
-                  height: 110, width: context.width * 0.5, borderRadius: 10),
+                  height: 110,
+                  width: context.width * 0.5,
+                  borderRadius: 10,
+                  color: Theme.of(context).colorScheme.surface),
             ],
           ),
         ),
         const SizedBox(height: 30.0),
-        const SkeletonBox(
-            height: 200, width: double.infinity, borderRadius: 10),
+        SkeletonBox(
+            height: 200,
+            width: double.infinity,
+            borderRadius: 10,
+            color: Theme.of(context).colorScheme.surface),
         const SizedBox(height: 30.0),
-        const SkeletonBox(
-            height: 100, width: double.infinity, borderRadius: 10),
+        SkeletonBox(
+            height: 100,
+            width: double.infinity,
+            borderRadius: 10,
+            color: Theme.of(context).colorScheme.surface),
       ],
     );
   }

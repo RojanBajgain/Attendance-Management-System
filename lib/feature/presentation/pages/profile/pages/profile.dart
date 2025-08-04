@@ -155,7 +155,7 @@ class _ProfilePageState extends State<ProfilePage> {
               _buildBankDetails(isDarkMode),
               _buildHRDetails(isDarkMode),
               _buildChangePassword(isDarkMode),
-              _buildTheme(isDarkMode),
+              // _buildTheme(isDarkMode),
               _buildLogout(isDarkMode),
             ],
           ),

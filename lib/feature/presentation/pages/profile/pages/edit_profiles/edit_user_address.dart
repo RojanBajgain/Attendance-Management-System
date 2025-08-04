@@ -560,7 +560,7 @@ class _EditUserAddressState extends State<EditUserAddress> {
           ElevatedButton(
             onPressed: _onPreviousPressed,
             style: ElevatedButton.styleFrom(
-              backgroundColor: isDarkMode ? Colors.blueAccent : Colors.black,
+              backgroundColor: Theme.of(context).colorScheme.surface,
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -590,7 +590,7 @@ class _EditUserAddressState extends State<EditUserAddress> {
                   ? null
                   : () => _submitUserAddress(navigateToNext: false),
               style: ElevatedButton.styleFrom(
-                backgroundColor: isDarkMode ? Colors.blueAccent : Colors.black,
+                backgroundColor: Theme.of(context).colorScheme.surface,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                 shape: RoundedRectangleBorder(
@@ -611,7 +611,7 @@ class _EditUserAddressState extends State<EditUserAddress> {
           ElevatedButton(
             onPressed: _isLoading ? null : _onNextPressed,
             style: ElevatedButton.styleFrom(
-              backgroundColor: isDarkMode ? Colors.blueAccent : Colors.black,
+              backgroundColor: Theme.of(context).colorScheme.surface,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),

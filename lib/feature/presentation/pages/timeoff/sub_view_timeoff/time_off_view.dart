@@ -534,7 +534,7 @@ class TimeOffSheet extends StatelessWidget {
                       child: Text(
                         _getButtonText(timeoffdata.status),
                         style: smallStyle.copyWith(
-                          color: Colors.white,
+                          color: _getStatusTextColor(timeoffdata.status),
                           fontSize: 12.0,
                         ),
                       ),
@@ -684,21 +684,39 @@ class TimeOffSheet extends StatelessWidget {
   }
 }
 
+// Update the _getContainerColor function to return light colors
 Color _getContainerColor(String? status) {
   switch (status?.toLowerCase()) {
     case 'approved':
-      return Colors.green;
+      return Colors.green.shade100; // Light green
     case 'pending':
-      return Colors.orange;
+      return Colors.orange.shade100; // Light orange
     case 'rejected':
-      return Colors.red;
+      return Colors.red.shade100; // Light red
     case 're-apply':
-      return Colors.blue;
+      return Colors.blue.shade100; // Light blue
     default:
-      return Colors.grey;
+      return Colors.grey.shade100; // Light grey
   }
 }
 
+// Update the _getStatusTextColor function to return dark versions of the same color
+Color _getStatusTextColor(String? status) {
+  switch (status?.toLowerCase()) {
+    case 'approved':
+      return Colors.green.shade800;
+    case 'pending':
+      return Colors.orange.shade800;
+    case 'rejected':
+      return Colors.red.shade800;
+    case 're-apply':
+      return Colors.blue.shade800;
+    default:
+      return Colors.grey.shade800;
+  }
+}
+
+// Update the _getButtonText function (optional - just for consistency)
 String _getButtonText(String? status) {
   switch (status?.toLowerCase()) {
     case 'approved':

@@ -1,5 +1,8 @@
 import 'package:ams/app.dart';
+import 'package:ams/feature/data/datasource/remote/api_client.dart';
+import 'package:ams/feature/data/repository/app_brand.dart';
 import 'package:ams/feature/domain/model/environment.dart';
+import 'package:ams/feature/presentation/pages/app_image_brand/controller/app_brand_controller.dart';
 import 'package:ams/feature/presentation/pages/offline_page/controller/connectivity_services.dart';
 import 'package:ams/services/theme_service.dart';
 import 'package:file_picker/file_picker.dart';
@@ -25,6 +28,9 @@ Future<void> main() async {
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+
+  Get.lazyPut(() => AppBrandController(
+      appBrandRepo: AppBrandRepo(apiClient: Get.find<ApiClient>())));
 
   runApp(
     App(isLoggedIn: isLoggedIn),
