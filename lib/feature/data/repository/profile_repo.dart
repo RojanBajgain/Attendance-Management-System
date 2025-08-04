@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:ams/feature/data/datasource/remote/api_client.dart';
@@ -21,8 +22,18 @@ class ProfileRepo {
     final token = await apiClient.token;
     final organization = await apiClient.organization;
 
+    // Get the current user's profile ID from storage
+    final GetStorage box = GetStorage();
+    final userId = box.read('user_id');
+
+    if (userId == null) {
+      throw Exception('User ID not found');
+    }
+
+    final url = "${ApiUrls.profile}$userId/";
+
     final response = await apiClient.getApi(
-      ApiUrls.profile,
+      url,
       token: token,
       apiKey: organization,
       fromJson: (json) => ProfileModel.fromJson(json),
@@ -49,8 +60,10 @@ class ProfileRepo {
     final token = await apiClient.token;
     final organization = await apiClient.organization;
 
+    final url = "${ApiUrls.profiledetail}$id/";
+
     final response = await apiClient.getApi(
-      ApiUrls.profiledetail,
+      url,
       token: token,
       apiKey: organization,
       fromJson: (json) => ProfileDetailModel.fromJson(json),

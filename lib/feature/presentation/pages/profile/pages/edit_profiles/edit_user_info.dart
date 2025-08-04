@@ -95,24 +95,23 @@ class _EditUserInfoState extends State<EditUserInfo> {
   }
 
   void _initializeControllers() {
-    final profile = profilecontroller.profile.isNotEmpty
-        ? profilecontroller.profile.first
+    final profile = profilecontroller.profile.value != null
+        ? profilecontroller.profile.value
         : null;
 
     if (profile != null) {
       log('Raw profile gender from backend: ${profile.gender}');
-      fullNameController.text = profile.user.fullName;
-      emailController.text = profile.email;
+      fullNameController.text = profile.user!.fullName;
+      emailController.text = profile.email!;
       genderController.text = _mapGender(profile.gender);
-      phoneController.text = profile.phoneNumber;
-      designationController.text =
-          profile.designation.name.isNotEmpty ? profile.designation.name : "";
+      phoneController.text = profile.phoneNumber!;
+      designationController.text = profile.designation!.name ?? "";
       skillsController.text = profile.skills.join(", ");
       dobController.text = profile.dob != null
-          ? DateFormat('yyyy-MM-dd').format(profile.dob)
+          ? DateFormat('yyyy-MM-dd').format(profile.dob!)
           : "";
       joinedDateController.text = profile.joinedDate != null
-          ? DateFormat('yyyy-MM-dd').format(profile.joinedDate)
+          ? DateFormat('yyyy-MM-dd').format(profile.joinedDate!)
           : "";
       grossSalary.text = profile.grossSalary.toString();
     }
@@ -208,11 +207,11 @@ class _EditUserInfoState extends State<EditUserInfo> {
     });
 
     try {
-      final profile = profilecontroller.profile.first;
+      final profile = profilecontroller.profile.value;
       final genderToSend = _mapGenderToBackend(genderController.text);
       log('Sending gender to backend: $genderToSend');
       final response = await profilecontroller.postProfileUpdate(
-        id: profile.id,
+        id: profile!.id,
         profileID: authcontroller.alluserData.value.user ?? profile.id,
         profileImage: _profileImage,
         username: fullNameController.text,
@@ -229,7 +228,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
       );
 
       if (navigateToAddress) {
-        Get.to(() => const EditUserAddress());
+        // Get.to(() => const EditUserAddress());
       } else {
         Get.offAll(() => BottomNavPage());
         SSnackbarUtil.showFadeSnackbar(
@@ -609,8 +608,8 @@ class _EditUserInfoState extends State<EditUserInfo> {
   }
 
   Widget _buildProfileHeader(bool isDarkMode) {
-    final profile = profilecontroller.profile.isNotEmpty
-        ? profilecontroller.profile.first
+    final profile = profilecontroller.profile != null
+        ? profilecontroller.profile.value
         : null;
 
     return Row(
@@ -627,8 +626,8 @@ class _EditUserInfoState extends State<EditUserInfo> {
             image: DecorationImage(
               image: _profileImage != null
                   ? FileImage(_profileImage!)
-                  : (profile != null && profile.profileImage.isNotEmpty
-                      ? NetworkImage(profile.profileImage) as ImageProvider
+                  : (profile != null && profile.profileImage != null
+                      ? NetworkImage(profile.profileImage!) as ImageProvider
                       : const AssetImage(AppImages.EditprofileImage)),
               fit: BoxFit.cover,
             ),
@@ -670,8 +669,8 @@ class _EditUserInfoState extends State<EditUserInfo> {
   }
 
   Widget _buildResumeSection(bool isDarkMode) {
-    final profile = profilecontroller.profile.isNotEmpty
-        ? profilecontroller.profile.first
+    final profile = profilecontroller.profile != null
+        ? profilecontroller.profile.value
         : null;
 
     if (profile != null &&
@@ -858,7 +857,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Obx(() {
-                  if (profilecontroller.profile.isEmpty) {
+                  if (profilecontroller.profile.value == null) {
                     return const Center(child: CircularProgressIndicator());
                   }
                   return Column(

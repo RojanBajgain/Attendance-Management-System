@@ -16,7 +16,7 @@ class ProfileController extends GetxController {
 
   ProfileController({required this.profileRepo});
 
-  var profile = <Datum>[].obs;
+  var profile = Rxn<ProfileModel>();
   var countrylist = <Datumm>[].obs;
   var isLoading = false.obs;
   var errorMessage = ''.obs;
@@ -49,10 +49,22 @@ class ProfileController extends GetxController {
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
         log("Fetch profile data: ${response.response}");
-        ProfileModel profiledata = response.response;
-        profile.value = profiledata.data;
+
+        // Add type checking and debugging
+        log("Response type: ${response.response.runtimeType}");
+
+        // Ensure we're getting the correct type
+        if (response.response is ProfileModel) {
+          ProfileModel profiledata = response.response as ProfileModel;
+          profile.value = profiledata;
+          log("Profile assigned successfully");
+        } else {
+          log("ERROR: Expected ProfileModel but got ${response.response.runtimeType}");
+          errorMessage.value = 'Invalid profile data format received';
+        }
       } else {
         log("Error: ${response.message}");
+        errorMessage.value = response.message ?? 'Failed to fetch profile';
       }
     } catch (e) {
       log('Error fetching profile: $e');
@@ -355,7 +367,7 @@ class ProfileController extends GetxController {
   }) async {
     try {
       // First verify we have a valid profile
-      if (profile.isEmpty) {
+      if (profile == null) {
         SSnackbarUtil.showFadeSnackbar(
           Get.context!,
           'Please complete your profile before adding bank details',
@@ -365,7 +377,7 @@ class ProfileController extends GetxController {
       }
 
       ApiResponse response = await profileRepo.postnewBankDetails(
-        profile.first.id,
+        profile.value!.id,
         bankName,
         bankAccount,
         bankaccountName,

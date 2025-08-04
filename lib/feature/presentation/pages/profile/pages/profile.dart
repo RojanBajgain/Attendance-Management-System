@@ -174,12 +174,9 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Theme(
         data: Theme.of(context).copyWith(
           dividerColor: Colors.transparent,
-          // listTileTheme: ListTileTheme.of(context).copyWith(
-          //   dense: true,
-          // ),
         ),
         child: ExpansionTile(
-          expansionAnimationStyle: const AnimationStyle(
+          expansionAnimationStyle: AnimationStyle(
             curve: Curves.easeInOut,
             duration: Duration(milliseconds: 100),
           ),
@@ -213,9 +210,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   return const ShrimmerEffect.rectangular(height: 230);
                 }
 
-                final profileData = profilecontroller.profile;
+                final profileData = profilecontroller.profile.value;
 
-                if (profileData.isEmpty) {
+                if (profileData == null) {
                   return Center(
                     child: Text(
                       "No profile data available. Please try login again.",
@@ -226,12 +223,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   );
                 }
 
-                return Column(
-                  children: profileData
-                      .map((profileData) =>
-                          _buildProfileDetails(profileData, isDarkMode))
-                      .toList(),
-                );
+                return _buildProfileDetails(profileData, isDarkMode);
               }),
             ),
           ],
@@ -250,12 +242,9 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Theme(
         data: Theme.of(context).copyWith(
           dividerColor: Colors.transparent,
-          // listTileTheme: ListTileTheme.of(context).copyWith(
-          //   dense: true,
-          // ),
         ),
         child: ExpansionTile(
-          expansionAnimationStyle: const AnimationStyle(
+          expansionAnimationStyle: AnimationStyle(
             curve: Curves.easeInOut,
             duration: Duration(milliseconds: 100),
           ),
@@ -289,9 +278,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   return const ShrimmerEffect.rectangular(height: 230);
                 }
 
-                final profileData = profilecontroller.profile;
+                final profileData = profilecontroller.profile.value;
 
-                if (profileData.isEmpty) {
+                if (profileData == null) {
                   return Center(
                     child: Text(
                       "No profile data available. Please try login again.",
@@ -302,12 +291,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   );
                 }
 
-                return Column(
-                  children: profileData
-                      .map((profileData) =>
-                          _buildEmployeeDetails(profileData, isDarkMode))
-                      .toList(),
-                );
+                return _buildEmployeeDetails(profileData, isDarkMode);
               }),
             ),
           ],
@@ -326,12 +310,9 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Theme(
         data: Theme.of(context).copyWith(
           dividerColor: Colors.transparent,
-          // listTileTheme: ListTileTheme.of(context).copyWith(
-          //   dense: true,
-          // ),
         ),
         child: ExpansionTile(
-          expansionAnimationStyle: const AnimationStyle(
+          expansionAnimationStyle: AnimationStyle(
             curve: Curves.easeInOut,
             duration: Duration(milliseconds: 100),
           ),
@@ -365,9 +346,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   return const ShrimmerEffect.rectangular(height: 230);
                 }
 
-                final profileData = profilecontroller.profile;
+                final profileData = profilecontroller.profile.value;
 
-                if (profileData.isEmpty) {
+                if (profileData == null) {
                   return Center(
                     child: Text(
                       "No documents available.",
@@ -378,16 +359,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   );
                 }
 
-                return ListView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  padding: EdgeInsets.zero,
-                  itemCount: profileData.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final profiledata = profileData[index];
-                    return _buildDocumentDetails(profiledata, isDarkMode);
-                  },
-                );
+                return _buildDocumentDetails(profileData, isDarkMode);
               }),
             ),
           ],
@@ -406,12 +378,9 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Theme(
         data: Theme.of(context).copyWith(
           dividerColor: Colors.transparent,
-          // listTileTheme: ListTileTheme.of(context).copyWith(
-          //   dense: true,
-          // ),
         ),
         child: ExpansionTile(
-          expansionAnimationStyle: const AnimationStyle(
+          expansionAnimationStyle: AnimationStyle(
             curve: Curves.easeInOut,
             duration: Duration(milliseconds: 100),
           ),
@@ -445,9 +414,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   return const ShrimmerEffect.rectangular(height: 200);
                 }
 
-                final profileData = profilecontroller.profile;
+                final profileData = profilecontroller.profile.value;
 
-                if (profileData.isEmpty) {
+                if (profileData == null) {
                   return Center(
                     child: Text(
                       "No bank details available.",
@@ -458,12 +427,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   );
                 }
 
-                return Column(
-                  children: profileData
-                      .map((datum) =>
-                          _buildBankDetailList(datum.bankDetails, isDarkMode))
-                      .toList(),
-                );
+                return _buildBankDetailList(
+                    profileData.bankDetails, isDarkMode);
               }),
             ),
           ],
@@ -806,7 +771,7 @@ class _ProfilePageState extends State<ProfilePage> {
     authcontroller.localLogout(true);
   }
 
-  Widget _buildProfileDetails(Datum profiledata, bool isDarkMode) {
+  Widget _buildProfileDetails(ProfileModel profiledata, bool isDarkMode) {
     String currentAddress = 'N/A';
     String permanentAddress = 'N/A';
 
@@ -815,7 +780,7 @@ class _ProfilePageState extends State<ProfilePage> {
         final addressType = address.addressType.toLowerCase();
         final city = address.city.isNotEmpty ? address.city : '';
         final country =
-            address.country.name.isNotEmpty ? address.country.name : '';
+            address.country!.name.isNotEmpty ? address.country!.name : '';
 
         if (addressType == 'current') {
           currentAddress = '$city, $country'.trim();
@@ -837,56 +802,47 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildRow(
-              'Full Name:',
-              profiledata.user.fullName.isNotEmpty
-                  ? profiledata.user.fullName
-                  : 'N/A'),
-          _buildRow(
-              'Designation:',
-              profiledata.designation.name.isNotEmpty
-                  ? profiledata.designation.name
-                  : 'N/A'),
+          _buildRow('Full Name:', profiledata.user?.fullName ?? 'N/A'),
+          _buildRow('Designation:', profiledata.designation?.name ?? 'N/A'),
           _buildRow(
             'Date of Birth:',
-            DateFormat('yyyy-MM-dd').format(profiledata.dob),
+            profiledata.dob != null
+                ? DateFormat('yyyy-MM-dd').format(profiledata.dob!)
+                : 'N/A',
           ),
           _buildRow(
             'Joined Date:',
-            DateFormat('yyyy-MM-dd').format(profiledata.joinedDate),
+            profiledata.joinedDate != null
+                ? DateFormat('yyyy-MM-dd').format(profiledata.joinedDate!)
+                : 'N/A',
           ),
-          _buildRow(
-              'Contact:',
-              profiledata.phoneNumber.isNotEmpty
-                  ? profiledata.phoneNumber
-                  : 'N/A'),
+          _buildRow('Contact:', profiledata.phoneNumber ?? 'N/A'),
           _buildRow('Current Address:', currentAddress),
           _buildRow('Permanent Address:', permanentAddress),
-          _buildRow('Email:',
-              profiledata.email.isNotEmpty ? profiledata.email : 'N/A'),
+          _buildRow('Email:', profiledata.email ?? 'N/A'),
         ],
       ),
     );
   }
 
-  Widget _buildEmployeeDetails(Datum profiledata, bool isDarkMode) {
+  Widget _buildEmployeeDetails(ProfileModel profiledata, bool isDarkMode) {
     return Container(
       width: MediaQuery.of(context).size.width,
       padding: const EdgeInsets.symmetric(vertical: 1.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildRow('Employee ID:',
-              profiledata.userRecords.first.employeeNo.toString()),
           _buildRow(
-              'Department:',
-              profiledata.organization.title.isNotEmpty
-                  ? profiledata.organization.title
+              'Employee ID:',
+              profiledata.userRecords.isNotEmpty
+                  ? profiledata.userRecords.first.employeeNo.toString()
                   : 'N/A'),
+          _buildRow('Department:', profiledata.organization?.title ?? 'N/A'),
           _buildRow(
             'Gross Salary:',
-            profiledata.grossSalary.isNotEmpty
-                ? "Rs. ${profiledata.grossSalary.toString()}"
+            profiledata.grossSalary != null &&
+                    profiledata.grossSalary!.isNotEmpty
+                ? "Rs. ${profiledata.grossSalary}"
                 : "Rs. -",
           ),
         ],
@@ -894,7 +850,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildDocumentDetails(Datum profiledata, bool isDarkMode) {
+  Widget _buildDocumentDetails(ProfileModel profiledata, bool isDarkMode) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 1.0),
@@ -914,7 +870,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     if (doc.issuedDate != null)
                       _buildRow(
                         'Issued Date (${doc.type}):',
-                        DateFormat('yyyy-MM-dd').format(doc.issuedDate),
+                        DateFormat('yyyy-MM-dd').format(doc.issuedDate!),
                       ),
                   ],
                 ),

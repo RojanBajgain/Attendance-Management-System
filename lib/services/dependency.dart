@@ -1,5 +1,5 @@
 import 'package:ams/feature/data/datasource/remote/api_client.dart';
-import 'package:ams/feature/data/repository/app_image_brand.dart';
+import 'package:ams/feature/data/repository/app_brand.dart';
 import 'package:ams/feature/data/repository/auth_repository_impl.dart';
 import 'package:ams/feature/data/repository/calender_notification.dart';
 import 'package:ams/feature/data/repository/chat_repo.dart';
@@ -12,7 +12,7 @@ import 'package:ams/feature/data/repository/policy_repo.dart';
 import 'package:ams/feature/data/repository/profile_repo.dart';
 import 'package:ams/feature/data/repository/reset_password_repo.dart';
 import 'package:ams/feature/presentation/pages/HR_Details/controller/hr_detail_controller.dart';
-import 'package:ams/feature/presentation/pages/app_image_brand/controller/app_image_brand_controller.dart';
+import 'package:ams/feature/presentation/pages/app_image_brand/controller/app_brand_controller.dart';
 import 'package:ams/feature/presentation/pages/chat/controller/chat_controller.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/controller/calender_notification_controller.dart';
 import 'package:ams/feature/presentation/pages/dashboard/controller/clock_in_out_controller.dart';

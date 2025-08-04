@@ -1,147 +1,163 @@
-import 'dart:convert';
-
 class ProfileModel {
-  int totalPages;
-  int currentPage;
-  int count;
-  int pageSize;
-  List<Datum> data;
+  int id;
+  User? user;
+  DateTime? dob;
+  String? phoneNumber;
+  Designation? designation;
+  Designation? shift;
+  Rank? rank;
+  String? gender;
+  String? profileImage;
+  List<Document> documents;
+  List<BankDetail> bankDetails;
+  DateTime? joinedDate;
+  bool isActive;
+  String? role;
+  String? resume;
+  List<String> skills;
+  String? employeeType;
+  List<Address> addresses;
+  Organization? organization;
+  String? status;
+  String? grossSalary;
+  List<UserRecord> userRecords;
+  String? username;
+  String? email;
 
   ProfileModel({
-    this.totalPages = 1,
-    this.currentPage = 1,
-    this.count = 0,
-    this.pageSize = 0,
-    this.data = const [],
+    this.id = 0,
+    this.user,
+    this.dob,
+    this.phoneNumber,
+    this.designation,
+    this.shift,
+    this.rank,
+    this.gender,
+    this.profileImage,
+    this.documents = const [],
+    this.bankDetails = const [],
+    this.joinedDate,
+    this.isActive = false,
+    this.role,
+    this.resume,
+    this.skills = const [],
+    this.employeeType,
+    this.addresses = const [],
+    this.organization,
+    this.status,
+    this.grossSalary,
+    this.userRecords = const [],
+    this.username,
+    this.email,
   });
 
   factory ProfileModel.fromJson(Map<String, dynamic> json) => ProfileModel(
-        totalPages: json["total_pages"] ?? 1,
-        currentPage: json["current_page"] ?? 1,
-        count: json["count"] ?? 0,
-        pageSize: json["page_size"] ?? 0,
-        data: List<Datum>.from(
-            (json["data"] ?? []).map((x) => Datum.fromJson(x))),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "total_pages": totalPages,
-        "current_page": currentPage,
-        "count": count,
-        "page_size": pageSize,
-        "data": List<dynamic>.from(data.map((x) => x.toJson())),
-      };
-}
-
-class Datum {
-  int id;
-  User user;
-  DateTime dob;
-  String phoneNumber;
-  Designation designation;
-  Designation shift;
-  Rank rank;
-  String gender;
-  String profileImage;
-  List<Document> documents;
-  List<BankDetail> bankDetails;
-  DateTime joinedDate;
-  bool isActive;
-  String role;
-  String? resume;
-  List<String> skills;
-  String employeeType;
-  List<Address> addresses;
-  Organization organization;
-  String status;
-  String grossSalary;
-  List<UserRecord> userRecords;
-  String username;
-  String email;
-
-  Datum({
-    this.id = 0,
-    required this.user,
-    required this.dob,
-    this.phoneNumber = '',
-    required this.designation,
-    required this.shift,
-    required this.rank,
-    this.gender = '',
-    this.profileImage = '',
-    this.documents = const [],
-    this.bankDetails = const [],
-    required this.joinedDate,
-    this.isActive = false,
-    this.role = '',
-    this.resume,
-    this.skills = const [],
-    this.employeeType = '',
-    this.addresses = const [],
-    required this.organization,
-    this.status = '',
-    this.grossSalary = '',
-    this.userRecords = const [],
-    this.username = '',
-    this.email = '',
-  });
-
-  factory Datum.fromJson(Map<String, dynamic> json) => Datum(
         id: json["id"] ?? 0,
-        user: User.fromJson(json["user"]),
-        dob: DateTime.parse(json["dob"]),
-        phoneNumber: json["phone_number"] ?? '',
-        designation: Designation.fromJson(json["designation"]),
-        shift: Designation.fromJson(json["shift"]),
-        rank: Rank.fromJson(json["rank"]),
-        gender: json["gender"] ?? '',
-        profileImage: json["profile_image"] ?? '',
-        documents: List<Document>.from(
-            (json["documents"] ?? []).map((x) => Document.fromJson(x))),
-        bankDetails: List<BankDetail>.from(
-            (json["bank_details"] ?? []).map((x) => BankDetail.fromJson(x))),
-        joinedDate: DateTime.parse(json["joined_date"]),
+        user: json["user"] != null ? User.fromJson(json["user"]) : null,
+        dob: json["dob"] != null ? DateTime.tryParse(json["dob"]) : null,
+        phoneNumber: json["phone_number"],
+        designation: json["designation"] != null
+            ? Designation.fromJson(json["designation"])
+            : null,
+        shift:
+            json["shift"] != null ? Designation.fromJson(json["shift"]) : null,
+        rank: json["rank"] != null ? Rank.fromJson(json["rank"]) : null,
+        gender: json["gender"],
+        profileImage: json["profile_image"],
+        documents: json["documents"] != null
+            ? List<Document>.from(
+                json["documents"].map((x) => Document.fromJson(x)))
+            : [],
+        bankDetails: json["bank_details"] != null
+            ? List<BankDetail>.from(
+                json["bank_details"].map((x) => BankDetail.fromJson(x)))
+            : [],
+        joinedDate: json["joined_date"] != null
+            ? DateTime.tryParse(json["joined_date"])
+            : null,
         isActive: json["is_active"] ?? false,
-        role: json["role"] ?? '',
+        role: json["role"],
         resume: json["resume"],
-        skills: List<String>.from((json["skills"] ?? [])),
-        employeeType: json["employee_type"] ?? '',
-        addresses: List<Address>.from(
-            (json["addresses"] ?? []).map((x) => Address.fromJson(x))),
-        organization: Organization.fromJson(json["organization"]),
-        status: json["status"] ?? '',
-        grossSalary: json["gross_salary"] ?? '',
-        userRecords: List<UserRecord>.from(
-            (json["user_records"] ?? []).map((x) => UserRecord.fromJson(x))),
-        username: json["username"] ?? '',
-        email: json["email"] ?? '',
+        skills: json["skills"] != null ? List<String>.from(json["skills"]) : [],
+        employeeType: json["employee_type"],
+        addresses: json["addresses"] != null
+            ? List<Address>.from(
+                json["addresses"].map((x) => Address.fromJson(x)))
+            : [],
+        organization: json["organization"] != null
+            ? Organization.fromJson(json["organization"])
+            : null,
+        status: json["status"],
+        grossSalary: json["gross_salary"],
+        userRecords: json["user_records"] != null
+            ? List<UserRecord>.from(
+                json["user_records"].map((x) => UserRecord.fromJson(x)))
+            : [],
+        username: json["username"],
+        email: json["email"],
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "user": user.toJson(),
-        "dob": dob.toIso8601String(),
+        "user": user?.toJson(),
+        "dob": dob?.toIso8601String(),
         "phone_number": phoneNumber,
-        "designation": designation.toJson(),
-        "shift": shift.toJson(),
-        "rank": rank.toJson(),
+        "designation": designation?.toJson(),
+        "shift": shift?.toJson(),
+        "rank": rank?.toJson(),
         "gender": gender,
         "profile_image": profileImage,
         "documents": documents.map((x) => x.toJson()).toList(),
         "bank_details": bankDetails.map((x) => x.toJson()).toList(),
-        "joined_date": joinedDate.toIso8601String(),
+        "joined_date": joinedDate?.toIso8601String(),
         "is_active": isActive,
         "role": role,
         "resume": resume,
         "skills": skills,
         "employee_type": employeeType,
         "addresses": addresses.map((x) => x.toJson()).toList(),
-        "organization": organization.toJson(),
+        "organization": organization?.toJson(),
         "status": status,
         "gross_salary": grossSalary,
-        "user_records": List<dynamic>.from(userRecords.map((x) => x.toJson())),
+        "user_records": userRecords.map((x) => x.toJson()).toList(),
         "username": username,
         "email": email,
+      };
+}
+
+class Organization {
+  int id;
+  String title;
+  String description;
+  String location;
+  bool webEnabled;
+  bool mobileEnabled;
+
+  Organization({
+    this.id = 0,
+    this.title = '',
+    this.description = '',
+    this.location = '',
+    this.webEnabled = false,
+    this.mobileEnabled = false,
+  });
+
+  factory Organization.fromJson(Map<String, dynamic> json) => Organization(
+        id: json["id"],
+        title: json["title"],
+        description: json["description"],
+        location: json["location"],
+        webEnabled: json["web_enabled"],
+        mobileEnabled: json["mobile_enabled"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "title": title,
+        "description": description,
+        "location": location,
+        "web_enabled": webEnabled,
+        "mobile_enabled": mobileEnabled,
       };
 }
 
@@ -217,38 +233,14 @@ class Rank {
       };
 }
 
-class Organization {
-  int id;
-  String title;
-  String description;
-
-  Organization({
-    this.id = 0,
-    this.title = '',
-    this.description = '',
-  });
-
-  factory Organization.fromJson(Map<String, dynamic> json) => Organization(
-        id: json["id"] ?? 0,
-        title: json["title"] ?? '',
-        description: json["description"] ?? '',
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "title": title,
-        "description": description,
-      };
-}
-
 class Document {
   int id;
   int profile;
   String type;
   String title;
-  DateTime issuedDate;
+  DateTime? issuedDate;
   String identifier;
-  List<FileElement> files;
+  List<dynamic> files;
   String organization;
 
   Document({
@@ -256,7 +248,7 @@ class Document {
     this.profile = 0,
     this.type = '',
     this.title = '',
-    required this.issuedDate,
+    this.issuedDate,
     this.identifier = '',
     this.files = const [],
     this.organization = '',
@@ -267,10 +259,11 @@ class Document {
         profile: json["profile"] ?? 0,
         type: json["type"] ?? '',
         title: json["title"] ?? '',
-        issuedDate: DateTime.parse(json["issued_date"]),
+        issuedDate: json["issued_date"] != null
+            ? DateTime.tryParse(json["issued_date"])
+            : null,
         identifier: json["identifier"] ?? '',
-        files: List<FileElement>.from(
-            (json["files"] ?? []).map((x) => FileElement.fromJson(x))),
+        files: json["files"] ?? [],
         organization: json["organization"] ?? '',
       );
 
@@ -279,34 +272,10 @@ class Document {
         "profile": profile,
         "type": type,
         "title": title,
-        "issued_date": issuedDate.toIso8601String(),
+        "issued_date": issuedDate?.toIso8601String(),
         "identifier": identifier,
-        "files": files.map((x) => x.toJson()).toList(),
+        "files": files,
         "organization": organization,
-      };
-}
-
-class FileElement {
-  int id;
-  int document;
-  String file;
-
-  FileElement({
-    this.id = 0,
-    this.document = 0,
-    this.file = '',
-  });
-
-  factory FileElement.fromJson(Map<String, dynamic> json) => FileElement(
-        id: json["id"] ?? 0,
-        document: json["document"] ?? 0,
-        file: json["file"] ?? '',
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "document": document,
-        "file": file,
       };
 }
 
@@ -354,46 +323,6 @@ class BankDetail {
       };
 }
 
-class Device {
-  int id;
-  int profile;
-  int deviceUserId;
-  String fingerprintId;
-  String portalPin;
-  String appPin;
-  String organization;
-
-  Device({
-    this.id = 0,
-    this.profile = 0,
-    this.deviceUserId = 0,
-    this.fingerprintId = '',
-    this.portalPin = '',
-    this.appPin = '',
-    this.organization = '',
-  });
-
-  factory Device.fromJson(Map<String, dynamic> json) => Device(
-        id: json["id"] ?? 0,
-        profile: json["profile"] ?? 0,
-        deviceUserId: json["device_user_id"] ?? 0,
-        fingerprintId: json["fingerprint_id"] ?? '',
-        portalPin: json["portal_pin"] ?? '',
-        appPin: json["app_pin"] ?? '',
-        organization: json["organization"] ?? '',
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "profile": profile,
-        "device_user_id": deviceUserId,
-        "fingerprint_id": fingerprintId,
-        "portal_pin": portalPin,
-        "app_pin": appPin,
-        "organization": organization,
-      };
-}
-
 class Address {
   int id;
   String addressType;
@@ -402,7 +331,7 @@ class Address {
   String addressLineOne;
   String addressLineTwo;
   String postalCode;
-  Country country;
+  Country? country;
 
   Address({
     this.id = 0,
@@ -412,7 +341,7 @@ class Address {
     this.addressLineOne = '',
     this.addressLineTwo = '',
     this.postalCode = '',
-    required this.country,
+    this.country,
   });
 
   factory Address.fromJson(Map<String, dynamic> json) => Address(
@@ -423,7 +352,8 @@ class Address {
         addressLineOne: json["address_line_one"] ?? '',
         addressLineTwo: json["address_line_two"] ?? '',
         postalCode: json["postal_code"] ?? '',
-        country: Country.fromJson(json["country"]),
+        country:
+            json["country"] != null ? Country.fromJson(json["country"]) : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -434,7 +364,7 @@ class Address {
         "address_line_one": addressLineOne,
         "address_line_two": addressLineTwo,
         "postal_code": postalCode,
-        "country": country.toJson(),
+        "country": country?.toJson(),
       };
 }
 

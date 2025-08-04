@@ -14,7 +14,7 @@ import 'package:get/get.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter/foundation.dart'; // For mapEquals
+import 'package:flutter/foundation.dart';
 
 class EditUserDocument extends StatefulWidget {
   final String? profileId;
@@ -64,14 +64,14 @@ class _EditUserDocumentState extends State<EditUserDocument> {
   void _storeInitialValues() {
     final profileData = profileController.profile;
     Map<String, dynamic> initialDocs = {};
-    if (profileData.isNotEmpty && profileData.first.documents.isNotEmpty) {
-      for (var document in profileData.first.documents) {
+    if (profileData.value!.documents.isNotEmpty) {
+      for (var document in profileData.value!.documents) {
         final documentId = document.id;
         initialDocs[documentId.toString()] = {
           'type': document.type.isNotEmpty ? document.type : "N/A",
           'title': document.title,
           'issuedDate': document.issuedDate != null
-              ? DateFormat('yyyy-MM-dd').format(document.issuedDate)
+              ? DateFormat('yyyy-MM-dd').format(document.issuedDate!)
               : "",
           'identifier': document.identifier,
           'filesToKeep': document.files.map((file) => file.id).toList(),
@@ -97,7 +97,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
   void _checkForChanges() {
     final profileData = profileController.profile;
     Map<String, dynamic> currentDocs = {};
-    for (var document in profileData.first.documents) {
+    for (var document in profileData.value!.documents) {
       final documentId = document.id;
       if (_deletedDocumentIds.contains(documentId)) continue;
       currentDocs[documentId.toString()] = {
@@ -131,14 +131,14 @@ class _EditUserDocumentState extends State<EditUserDocument> {
 
   void _initializeDocuments() {
     final profileData = profileController.profile;
-    if (profileData.isNotEmpty && profileData.first.documents.isNotEmpty) {
-      for (var document in profileData.first.documents) {
+    if (profileData.value!.documents.isNotEmpty) {
+      for (var document in profileData.value!.documents) {
         final documentId = document.id;
         documentControllers[documentId] = {
           'title': TextEditingController(text: document.title),
           'issuedDate': TextEditingController(
             text: document.issuedDate != null
-                ? DateFormat('yyyy-MM-dd').format(document.issuedDate)
+                ? DateFormat('yyyy-MM-dd').format(document.issuedDate!)
                 : "",
           ),
           'identifier': TextEditingController(text: document.identifier),
@@ -147,7 +147,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
         selectedDocumentTypes[documentId] =
             document.type.isNotEmpty ? document.type : "N/A";
         _filesToKeep[documentId] =
-            document.files.map((file) => file.id).toList();
+            List<int>.from(document.files.map((file) => file.id));
 
         // Add listeners to text controllers
         documentControllers[documentId]!['title']!
@@ -166,11 +166,11 @@ class _EditUserDocumentState extends State<EditUserDocument> {
 
   int get activeDocumentCount {
     final profileData = profileController.profile;
-    if (profileData.isEmpty || profileData.first.documents.isEmpty) {
+    if (profileData != null && profileData.value!.documents.isEmpty) {
       return 0;
     }
 
-    return profileData.first.documents
+    return profileData.value!.documents
         .where((doc) => !_deletedDocumentIds.contains(doc.id))
         .length;
   }
@@ -282,7 +282,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
     );
 
     try {
-      final userId = profileController.profile.first.id;
+      final userId = profileController.profile.value!.id;
       bool hasError = false;
       String errorMessage = '';
 
@@ -677,13 +677,12 @@ class _EditUserDocumentState extends State<EditUserDocument> {
             "Other",
           ];
 
-          final documentTypes =
-              profileData.isNotEmpty && profileData.first.documents.isNotEmpty
-                  ? profileData.first.documents
-                      .map((doc) => doc.type)
-                      .toSet()
-                      .toList()
-                  : <String>[];
+          final documentTypes = profileData.value!.documents.isNotEmpty
+              ? profileData.value!.documents
+                  .map((doc) => doc.type)
+                  .toSet()
+                  .toList()
+              : <String>[];
 
           final finalDocumentTypes = <String>{
             ...predefinedDocumentTypes,
@@ -692,9 +691,8 @@ class _EditUserDocumentState extends State<EditUserDocument> {
 
           return Column(
             children: [
-              if (profileData.isNotEmpty &&
-                  profileData.first.documents.isNotEmpty)
-                ...profileData.first.documents
+              if (profileData.value!.documents.isNotEmpty)
+                ...profileData.value!.documents
                     .where((doc) => !_deletedDocumentIds.contains(doc.id))
                     .map((document) {
                   return _buildDocumentSection(
@@ -703,8 +701,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
                     document,
                   );
                 }).toList(),
-              if (profileData.isNotEmpty &&
-                  profileData.first.documents.isNotEmpty)
+              if (profileData.value!.documents.isNotEmpty)
                 const SizedBox(height: 20),
               _buildAddNewDocumentCheckbox(isDarkMode, profileController),
               if (profileController.isAddNewDocumentChecked.value)

@@ -54,9 +54,10 @@ class _ClockTimeState extends State<ClockTime> {
     await _fetchOfficeLocation();
     await _checkMobileEnabled();
 
-    // Check if user has changed
-    if (profileController.profile.isNotEmpty &&
-        profileController.profile.first.userRecords.first.employeeNo != null) {
+    // FIXED: Check if profile exists and has valid user records
+    if (profileController.profile.value != null &&
+        profileController.profile.value!.userRecords.isNotEmpty &&
+        profileController.profile.value!.userRecords.first.employeeNo != null) {
       await hasClockedinController.handleUserChanged();
     }
 
@@ -217,7 +218,7 @@ class _ClockTimeState extends State<ClockTime> {
           Position position = await Geolocator.getCurrentPosition(
               desiredAccuracy: LocationAccuracy.best);
           int? deviceId =
-              profileController.profile.first.userRecords.first.employeeNo;
+              profileController.profile.value?.userRecords.first.employeeNo;
           if (deviceId == null) {
             SSnackbarUtil.showFadeSnackbar(
               Get.context!,
@@ -344,7 +345,7 @@ class _ClockTimeState extends State<ClockTime> {
           Position position = await Geolocator.getCurrentPosition(
               desiredAccuracy: LocationAccuracy.best);
           int? employeeId =
-              profileController.profile.first.userRecords.first.employeeNo;
+              profileController.profile.value?.userRecords.first.employeeNo;
           if (employeeId == null) {
             SSnackbarUtil.showFadeSnackbar(
               Get.context!,

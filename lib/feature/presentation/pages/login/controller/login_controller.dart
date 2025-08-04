@@ -83,19 +83,18 @@ class AuthController extends GetxController {
           return;
         }
 
-        // Pass organizations to OrganizationPage
-        // Get.offAll(
-        //   () => const OrganizationPage(),
-        //   arguments: organizations.map((org) => org.toJson()).toList(),
-        //   transition: Transition.rightToLeft,
-        // );
-
         Get.offAllNamed(
           RouteHelper.organization,
           arguments: organizations.map((org) => org.toJson()).toList(),
         );
       } else {
         Get.back();
+
+        // Check if the error is related to network connectivity
+        if (response.message?.contains('No internet connection') == true) {
+          return;
+        }
+
         SSnackbarUtil.showFadeSnackbar(
           Get.context!,
           'Invalid Email or Password.',
@@ -105,11 +104,14 @@ class AuthController extends GetxController {
     } catch (e) {
       Get.back();
       log("Exception occurred: $e");
-      SSnackbarUtil.showFadeSnackbar(
-        Get.context!,
-        'An error occurred. Please try again.',
-        SnackbarType.error,
-      );
+
+      if (!e.toString().contains('No internet connection')) {
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
+          'An error occurred. Please try again.',
+          SnackbarType.error,
+        );
+      }
     } finally {
       if (Get.isDialogOpen == true) {
         Get.back(); // Ensure the dialog is closed
@@ -130,11 +132,23 @@ class AuthController extends GetxController {
     }
 
     // Check if we have valid tokens
-    final hasValidTokens = await _checkTokenValidity();
-    if (!hasValidTokens) {
-      log("Invalid or expired tokens - redirecting to login");
-      await _clearAuthData();
-      return;
+    try {
+      final hasValidTokens = await _checkTokenValidity();
+      if (!hasValidTokens) {
+        log("Invalid or expired tokens - redirecting to login");
+        await _clearAuthData();
+        return;
+      }
+    } catch (e) {
+      // If token validation fails due to network issues, allow offline access
+      if (e.toString().contains('No internet connection')) {
+        log("Network error during token validation - allowing offline access");
+        // Continue with offline mode, don't redirect to login
+      } else {
+        log("Token validation failed - redirecting to login");
+        await _clearAuthData();
+        return;
+      }
     }
 
     String? userDataJson = prefs.getString('userData');
@@ -175,11 +189,11 @@ class AuthController extends GetxController {
     try {
       // Get tokens from secure storage via ApiClient
       final tokens = await apiClient.refreshToken;
-
       return true;
     } catch (e) {
       log("Error checking token validity: $e");
-      return false;
+      // Re-throw the error so the calling method can handle network errors appropriately
+      rethrow;
     }
   }
 
@@ -243,7 +257,7 @@ class AuthController extends GetxController {
     );
   }
 
-  // Change Password
+  // Change Password - network errors handled by ApiClient
   Future<void> changePasswordMethod(
     String oldPassword,
     String newPassword,
@@ -301,6 +315,12 @@ class AuthController extends GetxController {
 
         Get.offAll(() => const LoginPage());
       } else {
+        // Check if it's a network error (already handled by ApiClient)
+        if (response.message?.contains('No internet connection') == true) {
+          // Network error already shown by ApiClient
+          return;
+        }
+
         // Handle different error cases
         String errorMessage = response.message ?? 'Failed to change password';
 
@@ -320,11 +340,16 @@ class AuthController extends GetxController {
       }
     } catch (e) {
       Get.back();
-      SSnackbarUtil.showFadeSnackbar(
-        Get.context!,
-        'An unexpected error occurred: ${e.toString()}',
-        SnackbarType.error,
-      );
+      log("Change password error: $e");
+
+      // Only show error if it's not a network error (which is handled by ApiClient)
+      if (!e.toString().contains('No internet connection')) {
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
+          'An unexpected error occurred: ${e.toString()}',
+          SnackbarType.error,
+        );
+      }
     }
   }
 
@@ -346,4 +371,9 @@ class AuthController extends GetxController {
     }
     return null;
   }
+
+  // Method to retry login with network retry logic
+  // Future<void> retryLogin(String email, String password, String role, bool keepMeLoggedIn) async {
+  //   await apiClient.retryRequest(() => loginMethod(email, password, role, keepMeLoggedIn));
+  // }
 }

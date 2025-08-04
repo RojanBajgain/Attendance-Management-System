@@ -1,5 +1,5 @@
 import 'package:ams/config/resources/images.dart';
-import 'package:ams/feature/presentation/pages/app_image_brand/controller/app_image_brand_controller.dart';
+import 'package:ams/feature/presentation/pages/app_image_brand/controller/app_brand_controller.dart';
 import 'package:ams/feature/presentation/pages/bottom_nav/bottom_nav_page.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/controller/calender_notification_controller.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/event_tooltip_page.dart';

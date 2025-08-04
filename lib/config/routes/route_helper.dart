@@ -70,11 +70,11 @@ class RouteHelper {
         payrollId: Get.parameters['payemntId'] ?? '',
       ),
     ),
-    GetPage(
-      name: nointernet,
-      popGesture: false,
-      preventDuplicates: true,
-      page: () => OfflineView(),
-    ),
+    // GetPage(
+    //   name: nointernet,
+    //   popGesture: false,
+    //   preventDuplicates: true,
+    //   page: () => OfflineView(),
+    // ),
   ];
 }

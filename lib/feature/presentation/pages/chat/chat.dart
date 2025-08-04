@@ -98,7 +98,7 @@ class ChatsScreen extends StatelessWidget {
 
           for (var chat in chatController.chats) {
             final profileController = Get.find<ProfileController>();
-            final currentUserId = profileController.profile.first.id ?? 0;
+            final currentUserId = profileController.profile.value!.id ?? 0;
 
             String key;
             if (chat.department != null) {

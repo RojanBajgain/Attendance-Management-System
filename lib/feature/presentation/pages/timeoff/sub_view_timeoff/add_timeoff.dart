@@ -200,8 +200,8 @@ class _AddTimeoffState extends State<AddTimeoff> {
         return;
       }
 
-      final profileId = profilecontroller.profile.first.id != 0
-          ? profilecontroller.profile.first.id
+      final profileId = profilecontroller.profile.value!.id != 0
+          ? profilecontroller.profile.value!.id
           : box.read('profile_id');
       if (profileId == null || profileId == 0) {
         SSnackbarUtil.showFadeSnackbar(

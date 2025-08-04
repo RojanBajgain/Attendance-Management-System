@@ -21,6 +21,9 @@ class SSnackbarUtil {
       case SnackbarType.success:
         color = Colors.green.shade300;
         break;
+      case SnackbarType.internetConnection:
+        color = Colors.black;
+        break;
     }
     var newMessage = message.replaceAll(RegExp(r"^Exception:"), "");
 
@@ -77,6 +80,9 @@ class SSnackbarUtil {
       case SnackbarType.success:
         color = Colors.green.shade300;
         break;
+      case SnackbarType.internetConnection:
+        color = Colors.black;
+        break;
     }
     final overlay = Overlay.of(Get.overlayContext!);
     final overlayEntry = OverlayEntry(
@@ -102,7 +108,7 @@ class SSnackbarUtil {
   }
 }
 
-enum SnackbarType { info, warning, error, success }
+enum SnackbarType { info, warning, error, success, internetConnection }
 
 class FadeInSnackbar extends StatefulWidget {
   final String message;
@@ -155,6 +161,9 @@ class _FadeInSnackbarState extends State<FadeInSnackbar>
         break;
       case SnackbarType.info:
         icon = Icons.info;
+        break;
+      case SnackbarType.internetConnection:
+        icon = Icons.wifi_off;
         break;
     }
 

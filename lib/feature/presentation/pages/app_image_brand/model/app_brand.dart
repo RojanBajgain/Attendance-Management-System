@@ -40,14 +40,14 @@ class AppBrand {
 class Datum {
   int id;
   String logo;
-  String? favicon; // Make this nullable
+  String? favicon;
   String themeColor;
   Organization? organization;
 
   Datum({
     this.id = 0,
     this.logo = '',
-    this.favicon, // Remove default empty string
+    this.favicon,
     this.themeColor = '',
     this.organization,
   });
@@ -55,7 +55,7 @@ class Datum {
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
         id: json["id"] ?? 0,
         logo: json["logo"] ?? '',
-        favicon: json["favicon"], // Don't provide default - let it be null
+        favicon: json["favicon"],
         themeColor: json["theme_color"] ?? '',
         organization: json["organization"] != null
             ? Organization.fromJson(json["organization"])
@@ -65,7 +65,7 @@ class Datum {
   Map<String, dynamic> toJson() => {
         "id": id,
         "logo": logo,
-        "favicon": favicon, // Can be null
+        "favicon": favicon,
         "theme_color": themeColor,
         "organization": organization?.toJson(),
       };

@@ -18,10 +18,10 @@ Future<void> main() async {
   await GetStorage.init();
   await depp.init();
 
-  final offlineController = Get.put(OfflineController());
+  // final offlineController = Get.put(OfflineController());
 
-  // Wait for initial connectivity check to complete
-  await offlineController.initConnectivity();
+  // // Wait for initial connectivity check to complete
+  // await offlineController.initConnectivity();
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
@@ -31,9 +31,9 @@ Future<void> main() async {
   );
 
   // Handle initial navigation after app starts
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    offlineController.handleInitialNavigation();
-  });
+  // WidgetsBinding.instance.addPostFrameCallback((_) {
+  //   offlineController.handleInitialNavigation();
+  // });
 
   await FilePicker.platform.clearTemporaryFiles();
 }

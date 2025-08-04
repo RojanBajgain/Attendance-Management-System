@@ -1,7 +1,7 @@
 import 'package:ams/feature/data/datasource/remote/api_client.dart';
 import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/datasource/remote/api_urls.dart';
-import 'package:ams/feature/presentation/pages/app_image_brand/model/app_image_brand.dart';
+import 'package:ams/feature/presentation/pages/app_image_brand/model/app_brand.dart';
 
 class AppBrandRepo {
   final ApiClient apiClient;

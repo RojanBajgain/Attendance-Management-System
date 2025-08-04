@@ -71,19 +71,20 @@ class _EditUserAddressState extends State<EditUserAddress> {
     profileController.getcountryList();
 
     final profileData = profileController.profile;
-    if (profileData.isNotEmpty) {
-      final currentAddr = profileData.first.addresses!
+    if (profileData != null) {
+      final currentAddr = profileData.value!.addresses!
           .firstWhereOrNull((a) => a.addressType == "current");
-      final permanentAddr = profileData.first.addresses!
+      final permanentAddr = profileData.value!.addresses!
           .firstWhereOrNull((a) => a.addressType == "permanent");
 
       if (currentAddr != null && permanentAddr != null) {
-        bool sameAddress = currentAddr.country.id == permanentAddr.country.id &&
-            currentAddr.province == permanentAddr.province &&
-            currentAddr.city == permanentAddr.city &&
-            currentAddr.addressLineOne == permanentAddr.addressLineOne &&
-            currentAddr.addressLineTwo == permanentAddr.addressLineTwo &&
-            currentAddr.postalCode == permanentAddr.postalCode;
+        bool sameAddress =
+            currentAddr.country!.id == permanentAddr.country!.id &&
+                currentAddr.province == permanentAddr.province &&
+                currentAddr.city == permanentAddr.city &&
+                currentAddr.addressLineOne == permanentAddr.addressLineOne &&
+                currentAddr.addressLineTwo == permanentAddr.addressLineTwo &&
+                currentAddr.postalCode == permanentAddr.postalCode;
 
         profileController.isSameAsPermanent.value = sameAddress;
       } else {
@@ -140,15 +141,15 @@ class _EditUserAddressState extends State<EditUserAddress> {
 
   void _initializeAddress() {
     final profileData = profileController.profile;
-    if (profileData.isNotEmpty && profileData.first.addresses != null) {
+    if (profileData.value!.addresses != null) {
       // Handle permanent address
-      final permanentAddress = profileData.first.addresses!
+      final permanentAddress = profileData.value!.addresses!
           .firstWhereOrNull((a) => a.addressType == "permanent");
 
       if (permanentAddress != null) {
         permanentAddressId = permanentAddress.id;
-        countryNameController.text = permanentAddress.country.name;
-        countryIdController.text = permanentAddress.country.id.toString();
+        countryNameController.text = permanentAddress.country!.name;
+        countryIdController.text = permanentAddress.country!.id.toString();
         provinceController.text = permanentAddress.province;
         cityController.text = permanentAddress.city;
         addressLineOneController.text = permanentAddress.addressLineOne;
@@ -157,13 +158,13 @@ class _EditUserAddressState extends State<EditUserAddress> {
       }
 
       // Handle current address
-      final currentAddress = profileData.first.addresses!
+      final currentAddress = profileData.value!.addresses!
           .firstWhereOrNull((a) => a.addressType == "current");
 
       if (currentAddress != null) {
         currentAddressId = currentAddress.id;
-        currentCountryNameController.text = currentAddress.country.name;
-        currentCountryIdController.text = currentAddress.country.id.toString();
+        currentCountryNameController.text = currentAddress.country!.name;
+        currentCountryIdController.text = currentAddress.country!.id.toString();
         currentProvinceController.text = currentAddress.province;
         currentCityController.text = currentAddress.city;
         currentAddressLineOneController.text = currentAddress.addressLineOne;
@@ -287,7 +288,7 @@ class _EditUserAddressState extends State<EditUserAddress> {
     });
 
     try {
-      final userId = profileController.profile.first.id;
+      final userId = profileController.profile.value!.id;
       int permanentCountryId = int.tryParse(countryIdController.text) ?? 1;
 
       // Update or create permanent address

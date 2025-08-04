@@ -1325,7 +1325,7 @@ class _EventPageState extends State<EventPage>
                             );
                             return;
                           }
-                          final profileId = profileController.profile.first.id;
+                          final profileId = profileController.profile.value!.id;
 
                           /* final profileId =
                               profileController.profile.isNotEmpty &&

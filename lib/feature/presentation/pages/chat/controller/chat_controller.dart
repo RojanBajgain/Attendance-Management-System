@@ -225,7 +225,7 @@ class ChatController extends GetxController {
         }
         // For user messages
         else if (newMessage.receiver != null) {
-          final currentUserId = profilecontroller.profile.first.id;
+          final currentUserId = profilecontroller.profile.value!.id;
           return (chat.sender?.id == newMessage.sender?.id &&
                   chat.receiver?.id == currentUserId) ||
               (chat.sender?.id == currentUserId &&
@@ -293,7 +293,7 @@ class ChatController extends GetxController {
       return false;
     }
 
-    final currentUserId = profilecontroller.profile.first.id;
+    final currentUserId = profilecontroller.profile.value!.id;
     final isFromCurrentUser = message.sender?.id == currentUserId;
     final isToCurrentUser = message.receiver?.id == currentUserId;
     final isFromCurrentChatUser = message.sender?.id == currentChatUserId.value;
@@ -320,7 +320,7 @@ class ChatController extends GetxController {
       // This is a workaround method since your backend sends department: null
       // You need to implement logic based on your business requirements
 
-      final currentUserId = profilecontroller.profile.first.id;
+      final currentUserId = profilecontroller.profile.value!.id;
       final departmentID = currentChatDepartmentId.value;
 
       log('🔍 Inferring department message:');

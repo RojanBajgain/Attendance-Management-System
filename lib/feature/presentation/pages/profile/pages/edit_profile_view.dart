@@ -32,15 +32,11 @@ class _EditProfileViewState extends State<EditProfileView> {
   final profilecontroller = Get.put(ProfileController(profileRepo: Get.find()));
 
   bool _isAddNewDocumentChecked = false;
-
   bool _isAddNewBankDetail = false;
-
   bool _isPayRoll = false;
-
   bool _isNewBankPayRoll = false;
 
   File? _profileImage;
-
   File? _resume;
 
   final PageController _pageController = PageController();
@@ -89,26 +85,30 @@ class _EditProfileViewState extends State<EditProfileView> {
           barrierDismissible: false,
         );
 
-        // Call the update method and just assume it works unless an error occurs
+        // FIXED: Access profile.value instead of profile.first
+        final profile = profilecontroller.profile.value;
+        if (profile == null) {
+          Get.back();
+          _showError("Profile data not available");
+          return;
+        }
+
+        // Call the update method
         await profilecontroller.postProfileUpdate(
-          dob: profilecontroller.profile.first.dob != null
-              ? DateFormat('yyyy-MM-dd')
-                  .format(profilecontroller.profile.first.dob!)
+          dob: profile.dob != null
+              ? DateFormat('yyyy-MM-dd').format(profile.dob!)
               : "",
-          gender: profilecontroller.profile.first.gender ?? "",
-          phonenumber: profilecontroller.profile.first.phoneNumber ?? "",
-          joinedDate: profilecontroller.profile.first.joinedDate != null
-              ? DateFormat('yyyy-MM-dd')
-                  .format(profilecontroller.profile.first.joinedDate!)
+          gender: profile.gender ?? "",
+          phonenumber: profile.phoneNumber ?? "",
+          joinedDate: profile.joinedDate != null
+              ? DateFormat('yyyy-MM-dd').format(profile.joinedDate!)
               : "",
-          profileImage: _profileImage, // Pass the File object
-          resume: _resume, // Pass the File object
-          skills: List.from(profilecontroller.profile.first.skills ?? []),
-          username: profilecontroller.profile.first.username ?? "",
-          id: profilecontroller.profile.first.id,
-          // profileID: authcontroller.alluserData.value.user!.profileId,
-          profileID: authcontroller.alluserData.value.user ??
-              profilecontroller.profile.first.id,
+          profileImage: _profileImage,
+          resume: _resume,
+          skills: List.from(profile.skills ?? []),
+          username: profile.username ?? "",
+          id: profile.id,
+          profileID: authcontroller.alluserData.value.user ?? profile.id,
         );
 
         // Hide loading indicator
@@ -204,128 +204,129 @@ class _EditProfileViewState extends State<EditProfileView> {
   Widget _buildUserInfoPage(bool isDarkMode) {
     return SingleChildScrollView(
       child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Obx(() {
-            final profile = profilecontroller.profile;
+        padding: const EdgeInsets.all(16.0),
+        child: Obx(() {
+          // FIXED: Access profile.value instead of profile as list
+          final profile = profilecontroller.profile.value;
 
-            return Column(
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      height: 80,
-                      width: 80,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
+          // Handle loading or null state
+          if (profile == null) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          return Column(
+            children: [
+              Row(
+                children: [
+                  Container(
+                    height: 80,
+                    width: 80,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                          color: isDarkMode ? AppColors.white : AppColors.black,
+                          width: 2),
+                      image: DecorationImage(
+                        image: _profileImage != null
+                            ? FileImage(_profileImage!)
+                            : (profile.profileImage != null &&
+                                    profile.profileImage!.isNotEmpty
+                                ? NetworkImage(profile.profileImage!)
+                                    as ImageProvider
+                                : const AssetImage(AppImages.profileImage)),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 24),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: _pickImage,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
                             color:
                                 isDarkMode ? AppColors.white : AppColors.black,
-                            width: 2),
-                        image: DecorationImage(
-                          image: _profileImage != null
-                              ? FileImage(_profileImage!) // Selected image
-                              : (profile.isNotEmpty &&
-                                      profile.first.profileImage.isNotEmpty
-                                  ? NetworkImage(profile.first.profileImage)
-                                      as ImageProvider
-                                  : const AssetImage(AppImages.profileImage)),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 24),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: _pickImage,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: isDarkMode
-                                  ? AppColors.white
-                                  : AppColors.black,
-                            ),
                           ),
-                          width: double.infinity,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 6.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "Edit Profile Picture",
-                                  style: smallStyle.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                    color: isDarkMode
-                                        ? AppColors.white
-                                        : AppColors.black,
-                                  ),
+                        ),
+                        width: double.infinity,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 6.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Edit Profile Picture",
+                                style: smallStyle.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: isDarkMode
+                                      ? AppColors.white
+                                      : AppColors.black,
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                inputTextField(
-                    title: "Full Name", subTitle: profile.first.username),
-                const SizedBox(height: 16),
-                inputTextField(
-                  title: "Email",
-                  subTitle: profile.first.email,
-                  enabled: false,
-                ),
-                const SizedBox(height: 16),
-                inputTextField(
-                  title: "Gender",
-                  subTitle: _mapGender(profile
-                      .first.gender), // Map the backend value to display value
-                ),
-                const SizedBox(height: 16),
-                inputTextField(
-                    title: "Contact Number",
-                    subTitle: profile.first.phoneNumber),
-                const SizedBox(height: 16),
-                inputTextField(
-                    title: "Designation",
-                    subTitle: profile.first.designation!.name.toString(),
-                    enabled: false),
-                const SizedBox(height: 16),
-                inputTextField(
-                    title: "Skills",
-                    subTitle: profile.first.skills?.join(", ") ?? ""),
-                const SizedBox(height: 16),
-                inputTextField(
-                    title: "Date of Birth",
-                    subTitle: profile.first.dob != null
-                        ? DateFormat('yyyy-MM-dd').format(profile.first.dob!)
-                        : ""),
-                const SizedBox(height: 16),
-                inputTextField(
-                    title: "Joined Date",
-                    subTitle: profile.first.joinedDate != null
-                        ? DateFormat('yyyy-MM-dd')
-                            .format(profile.first.joinedDate!)
-                        : "",
-                    enabled: false),
-                const SizedBox(height: 16),
-                FileUploadField(
-                  title: "Add Resume",
-                  hintText: "---",
-                  onFilePicked: (FilePickerResult? result) {
-                    if (result != null) {
-                      log("Picked file: ${result.files.single.name}");
-                    } else {
-                      log("No file picked");
-                    }
-                  },
-                ),
-              ],
-            );
-          })),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              inputTextField(
+                  title: "Full Name", subTitle: profile.username ?? ""),
+              const SizedBox(height: 16),
+              inputTextField(
+                title: "Email",
+                subTitle: profile.email ?? "",
+                enabled: false,
+              ),
+              const SizedBox(height: 16),
+              inputTextField(
+                title: "Gender",
+                subTitle: _mapGender(profile.gender),
+              ),
+              const SizedBox(height: 16),
+              inputTextField(
+                  title: "Contact Number", subTitle: profile.phoneNumber ?? ""),
+              const SizedBox(height: 16),
+              inputTextField(
+                  title: "Designation",
+                  subTitle: profile.designation?.name ?? "",
+                  enabled: false),
+              const SizedBox(height: 16),
+              inputTextField(
+                  title: "Skills", subTitle: profile.skills?.join(", ") ?? ""),
+              const SizedBox(height: 16),
+              inputTextField(
+                  title: "Date of Birth",
+                  subTitle: profile.dob != null
+                      ? DateFormat('yyyy-MM-dd').format(profile.dob!)
+                      : ""),
+              const SizedBox(height: 16),
+              inputTextField(
+                  title: "Joined Date",
+                  subTitle: profile.joinedDate != null
+                      ? DateFormat('yyyy-MM-dd').format(profile.joinedDate!)
+                      : "",
+                  enabled: false),
+              const SizedBox(height: 16),
+              FileUploadField(
+                title: "Add Resume",
+                hintText: "---",
+                onFilePicked: (FilePickerResult? result) {
+                  if (result != null) {
+                    log("Picked file: ${result.files.single.name}");
+                  } else {
+                    log("No file picked");
+                  }
+                },
+              ),
+            ],
+          );
+        }),
+      ),
     );
   }
 
@@ -334,12 +335,29 @@ class _EditProfileViewState extends State<EditProfileView> {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Obx(() {
-          final profileData = profilecontroller.profile;
+          // FIXED: Access profile.value instead of profile as list
+          final profileData = profilecontroller.profile.value;
 
-          final permanentAddress = profileData.first.addresses!
-              .firstWhere((address) => address.addressType == "permanent");
-          final currentAddress = profileData.first.addresses!
-              .firstWhere((address) => address.addressType == "current");
+          if (profileData == null || profileData.addresses.isEmpty) {
+            return const Center(
+              child: Text("No address data available"),
+            );
+          }
+
+          // Find addresses safely
+          final permanentAddress = profileData.addresses
+                  .where((address) => address.addressType == "permanent")
+                  .isNotEmpty
+              ? profileData.addresses
+                  .firstWhere((address) => address.addressType == "permanent")
+              : null;
+
+          final currentAddress = profileData.addresses
+                  .where((address) => address.addressType == "current")
+                  .isNotEmpty
+              ? profileData.addresses
+                  .firstWhere((address) => address.addressType == "current")
+              : null;
 
           return Column(
             children: [
@@ -358,32 +376,32 @@ class _EditProfileViewState extends State<EditProfileView> {
               const SizedBox(height: 24),
               inputTextField(
                 title: "Country",
-                subTitle: permanentAddress.country!.name.toString(),
+                subTitle: permanentAddress?.country?.name ?? "",
               ),
               const SizedBox(height: 16),
               inputTextField(
                 title: "Province",
-                subTitle: permanentAddress.province.toString(),
+                subTitle: permanentAddress?.province ?? "",
               ),
               const SizedBox(height: 16),
               inputTextField(
                 title: "City",
-                subTitle: permanentAddress.city.toString(),
+                subTitle: permanentAddress?.city ?? "",
               ),
               const SizedBox(height: 16),
               inputTextField(
                 title: "Address Line 1",
-                subTitle: permanentAddress.addressLineOne.toString(),
+                subTitle: permanentAddress?.addressLineOne ?? "",
               ),
               const SizedBox(height: 16),
               inputTextField(
                 title: "Address Line 2",
-                subTitle: permanentAddress.addressLineTwo.toString(),
+                subTitle: permanentAddress?.addressLineTwo ?? "",
               ),
               const SizedBox(height: 16),
               inputTextField(
                 title: "Zip Code",
-                subTitle: permanentAddress.postalCode.toString(),
+                subTitle: permanentAddress?.postalCode ?? "",
               ),
               const SizedBox(height: 16),
               Row(
@@ -403,7 +421,8 @@ class _EditProfileViewState extends State<EditProfileView> {
                 ],
               ),
               const SizedBox(height: 16),
-              if (!profilecontroller.isSameAsPermanent.value) ...[
+              if (!profilecontroller.isSameAsPermanent.value &&
+                  currentAddress != null) ...[
                 Row(
                   children: [
                     Icon(Icons.location_on),
@@ -419,37 +438,37 @@ class _EditProfileViewState extends State<EditProfileView> {
                 const SizedBox(height: 24),
                 inputTextField(
                   title: "Country",
-                  subTitle: currentAddress.country!.name.toString(),
+                  subTitle: currentAddress.country?.name ?? "",
                   enabled: true,
                 ),
                 const SizedBox(height: 16),
                 inputTextField(
                   title: "Province",
-                  subTitle: currentAddress.province.toString(),
+                  subTitle: currentAddress.province,
                   enabled: true,
                 ),
                 const SizedBox(height: 16),
                 inputTextField(
                   title: "City",
-                  subTitle: currentAddress.city.toString(),
+                  subTitle: currentAddress.city,
                   enabled: true,
                 ),
                 const SizedBox(height: 16),
                 inputTextField(
                   title: "Address Line 1",
-                  subTitle: currentAddress.addressLineOne.toString(),
+                  subTitle: currentAddress.addressLineOne,
                   enabled: true,
                 ),
                 const SizedBox(height: 16),
                 inputTextField(
                   title: "Address Line 2",
-                  subTitle: currentAddress.addressLineTwo.toString(),
+                  subTitle: currentAddress.addressLineTwo,
                   enabled: true,
                 ),
                 const SizedBox(height: 16),
                 inputTextField(
                   title: "Zip Code",
-                  subTitle: currentAddress.postalCode.toString(),
+                  subTitle: currentAddress.postalCode,
                   enabled: true,
                 ),
                 const SizedBox(height: 24),
@@ -466,7 +485,8 @@ class _EditProfileViewState extends State<EditProfileView> {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Obx(() {
-          final profileData = profilecontroller.profile;
+          // FIXED: Access profile.value instead of profile as list
+          final profileData = profilecontroller.profile.value;
 
           // Predefined document types
           final predefinedDocumentTypes = [
@@ -478,15 +498,19 @@ class _EditProfileViewState extends State<EditProfileView> {
           ];
 
           // Extract user document types if available
-          final documentTypes =
-              profileData.isNotEmpty && profileData.first.documents != null
-                  ? profileData.first.documents!
-                      .map((document) => document.type ?? "N/A")
-                      .toList()
-                  : [];
+          final documentTypes = profileData != null &&
+                  profileData.documents.isNotEmpty
+              ? profileData.documents.map((document) => document.type).toList()
+              : <String>[];
+
           final finalDocumentTypes = documentTypes.isNotEmpty
               ? {...predefinedDocumentTypes, ...documentTypes}.toList()
               : predefinedDocumentTypes;
+
+          // Get first document if available
+          final firstDocument = profileData?.documents.isNotEmpty == true
+              ? profileData!.documents.first
+              : null;
 
           return Column(
             children: [
@@ -562,22 +586,18 @@ class _EditProfileViewState extends State<EditProfileView> {
               ),
               const SizedBox(height: 16),
               inputTextField(
-                  title: "Title",
-                  subTitle:
-                      profileData.first.documents!.first.title.toString()),
+                  title: "Title", subTitle: firstDocument?.title ?? ""),
               const SizedBox(height: 16),
               inputTextField(
                   title: "Issued Date",
-                  subTitle:
-                      profileData.first.documents!.first.issuedDate != null
-                          ? DateFormat('yyyy-MM-dd').format(
-                              profileData.first.documents!.first.issuedDate!)
-                          : ""),
+                  subTitle: firstDocument?.issuedDate != null
+                      ? DateFormat('yyyy-MM-dd')
+                          .format(firstDocument!.issuedDate!)
+                      : ""),
               const SizedBox(height: 16),
               ImageUploadField(
                 title: "Upload Document Image",
                 hintText: "Choose an image to upload",
-                // currentImagePath: _currentImagePath, // If there's an existing image path
                 onFilePicked: (FilePickerResult? result) {
                   if (result != null) {
                     setState(() {});
@@ -592,9 +612,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                 hintText: "Choose a Document to Upload",
                 onFilePicked: (FilePickerResult? result) {
                   if (result != null) {
-                    setState(() {
-// Store the picked file
-                    });
+                    setState(() {});
                     log("Picked file: ${result.files.single.name}");
                   } else {
                     log("No file picked");
@@ -645,7 +663,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                       child: Padding(
                         padding: const EdgeInsets.only(left: 10.0),
                         child: FormBuilderDropdown<String>(
-                          name: 'document_type',
+                          name: 'new_document_type',
                           onChanged: (value) {
                             setState(() {});
                           },
@@ -687,7 +705,6 @@ class _EditProfileViewState extends State<EditProfileView> {
                 ImageUploadField(
                   title: "Upload Document Image",
                   hintText: "Choose an image to upload",
-                  // currentImagePath: _currentImagePath, // If there's an existing image path
                   onFilePicked: (FilePickerResult? result) {
                     if (result != null) {
                       print("Picked file: ${result.files.single.name}");
@@ -721,53 +738,98 @@ class _EditProfileViewState extends State<EditProfileView> {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Obx(
-          () {
-            final profiledata = profilecontroller.profile;
+        child: Obx(() {
+          // FIXED: Access profile.value instead of profile as list
+          final profiledata = profilecontroller.profile.value;
 
-            return Column(
-              children: [
-                Row(
-                  children: [
-                    Icon(Icons.edit_calendar_outlined),
-                    SizedBox(width: 10.0),
-                    Text(
-                      "Edit Bank Details",
-                      style: normalStyle.copyWith(
-                        color: isDarkMode ? Colors.white : Colors.black,
-                      ),
-                    )
-                  ],
-                ),
-                const SizedBox(height: 24),
-                inputTextField(
-                    title: "Bank Name",
-                    subTitle: profiledata.first.bankDetails!.first.bankName
-                        .toString()),
+          // Get first bank detail if available
+          final firstBankDetail = profiledata?.bankDetails.isNotEmpty == true
+              ? profiledata!.bankDetails.first
+              : null;
+
+          return Column(
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.edit_calendar_outlined),
+                  SizedBox(width: 10.0),
+                  Text(
+                    "Edit Bank Details",
+                    style: normalStyle.copyWith(
+                      color: isDarkMode ? Colors.white : Colors.black,
+                    ),
+                  )
+                ],
+              ),
+              const SizedBox(height: 24),
+              inputTextField(
+                  title: "Bank Name",
+                  subTitle: firstBankDetail?.bankName ?? ""),
+              const SizedBox(height: 16),
+              inputTextField(
+                  title: "Branch Name",
+                  subTitle: firstBankDetail?.bankBranch ?? ""),
+              const SizedBox(height: 16),
+              inputTextField(
+                  title: "Account Name",
+                  subTitle: firstBankDetail?.bankAccountName ?? ""),
+              const SizedBox(height: 16),
+              inputTextField(
+                  title: "Bank Account Number",
+                  subTitle: firstBankDetail?.bankAccount ?? ""),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Checkbox(
+                    value: _isPayRoll,
+                    onChanged: (value) {
+                      setState(() {
+                        _isPayRoll = value ?? false;
+                      });
+                    },
+                  ),
+                  Text(
+                    "Is payroll",
+                    style: smallStyle.copyWith(
+                      color: isDarkMode ? Colors.white : Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Checkbox(
+                    value: _isAddNewBankDetail,
+                    onChanged: (value) {
+                      setState(() {
+                        _isAddNewBankDetail = value ?? false;
+                      });
+                    },
+                  ),
+                  Text(
+                    "Add new Bank Account",
+                    style: smallStyle.copyWith(
+                      color: isDarkMode ? Colors.white : Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+              if (_isAddNewBankDetail) ...[
+                inputTextField(title: "Bank Name", subTitle: ""),
                 const SizedBox(height: 16),
-                inputTextField(
-                    title: "Branch Name",
-                    subTitle: profiledata.first.bankDetails!.first.bankBranch
-                        .toString()),
+                inputTextField(title: "Branch Name", subTitle: ""),
                 const SizedBox(height: 16),
-                inputTextField(
-                    title: "Account Name",
-                    subTitle: profiledata
-                        .first.bankDetails!.first.bankAccountName
-                        .toString()),
+                inputTextField(title: "Account Name", subTitle: ""),
                 const SizedBox(height: 16),
-                inputTextField(
-                    title: "Bank Account Number",
-                    subTitle: profiledata.first.bankDetails!.first.bankAccount
-                        .toString()),
+                inputTextField(title: "Bank Account Number", subTitle: ""),
                 const SizedBox(height: 16),
                 Row(
                   children: [
                     Checkbox(
-                      value: _isPayRoll,
+                      value: _isNewBankPayRoll,
                       onChanged: (value) {
                         setState(() {
-                          _isPayRoll = value ?? false;
+                          _isNewBankPayRoll = value ?? false;
                         });
                       },
                     ),
@@ -779,56 +841,10 @@ class _EditProfileViewState extends State<EditProfileView> {
                     ),
                   ],
                 ),
-                Row(
-                  children: [
-                    Checkbox(
-                      value: _isAddNewBankDetail,
-                      onChanged: (value) {
-                        setState(() {
-                          _isAddNewBankDetail = value ?? false;
-                        });
-                      },
-                    ),
-                    Text(
-                      "Add new Bank Account",
-                      style: smallStyle.copyWith(
-                        color: isDarkMode ? Colors.white : Colors.black,
-                      ),
-                    ),
-                  ],
-                ),
-                if (_isAddNewBankDetail) ...[
-                  inputTextField(title: "Bank Name", subTitle: ""),
-                  const SizedBox(height: 16),
-                  inputTextField(title: "Branch Name", subTitle: ""),
-                  const SizedBox(height: 16),
-                  inputTextField(title: "Account Name", subTitle: ""),
-                  const SizedBox(height: 16),
-                  inputTextField(title: "Bank Account Number", subTitle: ""),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: _isNewBankPayRoll,
-                        onChanged: (value) {
-                          setState(() {
-                            _isNewBankPayRoll = value ?? false;
-                          });
-                        },
-                      ),
-                      Text(
-                        "Is payroll",
-                        style: smallStyle.copyWith(
-                          color: isDarkMode ? Colors.white : Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
               ],
-            );
-          },
-        ),
+            ],
+          );
+        }),
       ),
     );
   }

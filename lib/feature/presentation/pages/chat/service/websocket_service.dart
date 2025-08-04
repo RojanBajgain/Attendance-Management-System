@@ -53,7 +53,7 @@ class WebSocketService {
       final baseUrl = ApiUrls.wsUrl
           .replaceAll('http://', 'ws://')
           .replaceAll('https://', 'wss://');
-      final userId = profilecontroller.profile.first.id;
+      final userId = profilecontroller.profile.value!.id;
       final wsUrl = '${baseUrl}chat/${userId}_$organization/';
 
       // log('Attempting WebSocket connection to: $wsUrl');
@@ -82,7 +82,7 @@ class WebSocketService {
         'token': token,
         'organization': organization,
         'user_id': userId,
-        'department': profilecontroller.profile.first.organization.id,
+        'department': profilecontroller.profile.value!.organization!.id,
       });
       _channel?.sink.add(authMessage);
 

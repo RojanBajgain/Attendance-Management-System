@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ProfilePic extends StatefulWidget {
-  final Datum? profiledata;
+  final ProfileModel? profiledata;
   const ProfilePic({
     super.key,
     this.profiledata,
@@ -34,7 +34,7 @@ class _ProfilePicState extends State<ProfilePic> {
   }
 
   Future<void> _loadProfileData() async {
-    if (profilecontroller.profile.isEmpty) {
+    if (profilecontroller.profile.value == null) {
       setState(() {
         isLoading = true;
       });
@@ -56,10 +56,10 @@ class _ProfilePicState extends State<ProfilePic> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20.0),
@@ -69,110 +69,128 @@ class _ProfilePicState extends State<ProfilePic> {
                 ),
               ],
             ),
-            padding: const EdgeInsets.only(left: 10.0),
+            // padding: const EdgeInsets.only(left: 10.0),
+            padding: const EdgeInsets.fromLTRB(10.0, 30.0, 10.0, 10.0),
             height: MediaQuery.of(context).size.height * 0.3,
             width: MediaQuery.of(context).size.width * 0.85,
             child: Obx(() {
-              final profileData = profilecontroller.profile;
-              return ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: profileData.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final profiledata = profileData[index];
-                  return Column(
+              final profiledata = profilecontroller.profile.value;
+              if (profiledata == null) return const SizedBox.shrink();
+
+              return Column(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Get.to(() => EditUserInfo(
+                            profileId: profiledata.id.toString(),
+                          ));
+                    },
+                    child: Stack(
+                      alignment: Alignment.bottomRight,
+                      children: [
+                        CircleAvatar(
+                          radius: 75,
+                          backgroundColor:
+                              isDarkMode ? Colors.black : Colors.grey[300],
+                          child: ClipOval(
+                            child: _profileImage != null
+                                ? Image.file(
+                                    _profileImage!,
+                                    width: 150,
+                                    height: 150,
+                                    fit: BoxFit.cover,
+                                  )
+                                : (profiledata.profileImage?.isNotEmpty ??
+                                        false)
+                                    ? Image.network(
+                                        profiledata.profileImage!,
+                                        width: 150,
+                                        height: 150,
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
+                                          debugPrint(
+                                              "Image load failed: $error");
+                                          return Image.asset(
+                                            'assets/images/profile_image.png',
+                                            width: 150,
+                                            height: 150,
+                                            fit: BoxFit.cover,
+                                          );
+                                        },
+                                      )
+                                    : Image.asset(
+                                        'assets/images/profile_image.png',
+                                        width: 150,
+                                        height: 150,
+                                        fit: BoxFit.cover,
+                                      ),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: isDarkMode ? Colors.black : Colors.grey,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.edit,
+                            size: 24,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    profiledata.username ?? '',
+                    style: normalStyle.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: isDarkMode ? Colors.white : Colors.black,
+                      fontSize: 14.0,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          Get.to(() => EditUserInfo(
-                                profileId: profiledata.id.toString(),
-                              ));
-                        },
-                        child: Stack(
-                          alignment: Alignment.bottomRight,
-                          children: [
-                            CircleAvatar(
-                              radius: 75,
-                              backgroundColor:
-                                  isDarkMode ? Colors.black : Colors.grey[300],
-                              backgroundImage: (_profileImage != null)
-                                  ? FileImage(_profileImage!)
-                                  : (profiledata.profileImage.isNotEmpty)
-                                      ? NetworkImage(profiledata.profileImage)
-                                      : const AssetImage(
-                                          "assets/images/profile.png",
-                                        ) as ImageProvider,
-                            ),
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color:
-                                      isDarkMode ? Colors.black : Colors.grey,
-                                ),
-                              ),
-                              child: const Icon(
-                                Icons.edit,
-                                size: 24,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 10),
                       Text(
-                        profiledata.username,
-                        style: normalStyle.copyWith(
-                          fontWeight: FontWeight.bold,
+                        'Status',
+                        style: smallStyle.copyWith(
                           color: isDarkMode ? Colors.white : Colors.black,
-                          fontSize: 14.0,
+                          fontSize: 12.0,
                         ),
                       ),
-                      const SizedBox(height: 5),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Status',
-                            style: smallStyle.copyWith(
-                              color: isDarkMode ? Colors.white : Colors.black,
-                              fontSize: 12.0,
-                            ),
+                      const SizedBox(width: 5.0),
+                      Container(
+                        width: 55.0,
+                        decoration: BoxDecoration(
+                          color:
+                              profiledata.isActive ? Colors.green : Colors.red,
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(20),
                           ),
-                          const SizedBox(width: 5.0),
-                          Container(
-                            width: 55.0,
-                            decoration: BoxDecoration(
-                              color: profiledata.isActive
-                                  ? Colors.green
-                                  : Colors.red,
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(20),
-                              ),
-                            ),
-                            child: Text(
-                              profiledata.isActive ? 'Online' : 'Offline',
-                              textAlign: TextAlign.center,
-                              style: smallStyle.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                fontSize: 12.0,
-                              ),
-                            ),
+                        ),
+                        child: Text(
+                          profiledata.isActive ? 'Online' : 'Offline',
+                          textAlign: TextAlign.center,
+                          style: smallStyle.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontSize: 12.0,
                           ),
-                        ],
+                        ),
                       ),
                     ],
-                  );
-                },
+                  ),
+                ],
               );
             }),
-          ),
-        ],
-      ),
-    );
+          )
+        ]));
   }
 }

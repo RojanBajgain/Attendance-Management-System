@@ -59,7 +59,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       _messageController.clear();
 
       final isDepartmentChat = widget.department != null;
-      final currentUserId = profileController.profile.first.id ?? 0;
+      final currentUserId = profileController.profile.value!.id ?? 0;
 
       // Create a temporary message object using ChatModel
       final tempMessage = ChatModel(
@@ -69,7 +69,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         sender: Sender(
           id: currentUserId,
           // user: profileController.profile.first.user ?? 'You',
-          profileImage: profileController.profile.first.profileImage,
+          profileImage: profileController.profile.value!.profileImage,
         ),
         receiver: isDepartmentChat
             ? null
@@ -122,7 +122,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   void _sendImageOrDocument(File file, {String? message}) async {
     try {
       final isDepartmentChat = widget.department != null;
-      final currentUserId = profileController.profile.first.id ?? 0;
+      final currentUserId = profileController.profile.value!.id ?? 0;
 
       // Create a temporary message object using ChatModel
       final tempMessage = ChatModel(
@@ -132,7 +132,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         sender: Sender(
           id: currentUserId,
           // user: profileController.profile.first.user ?? 'You',
-          profileImage: profileController.profile.first.profileImage,
+          profileImage: profileController.profile.value!.profileImage,
         ),
         receiver: isDepartmentChat
             ? null
@@ -496,7 +496,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final currentUserId = profileController.profile.first.id ?? 0;
+    final currentUserId = profileController.profile.value!.id ?? 0;
 
     return Scaffold(
       appBar: AppBar(

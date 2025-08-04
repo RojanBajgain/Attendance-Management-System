@@ -72,10 +72,10 @@ class _EditUserBankState extends State<EditUserBank> {
   void _initializeBankDetails() {
     final profileData = profilecontroller.profile;
 
-    if (profileData.isNotEmpty && profileData.first.bankDetails.isNotEmpty) {
-      _bankDetailsList.assignAll(profileData.first.bankDetails);
+    if (profileData.value!.bankDetails.isNotEmpty) {
+      _bankDetailsList.assignAll(profileData.value!.bankDetails);
 
-      for (var bankDetail in profileData.first.bankDetails) {
+      for (var bankDetail in profileData.value!.bankDetails) {
         _selectedBanks.add(bankDetail.bankName);
 
         if (bankDetail.isPayroll) {
@@ -209,7 +209,7 @@ class _EditUserBankState extends State<EditUserBank> {
 
   Future<void> _submitUserBankDetails() async {
     try {
-      final userID = profilecontroller.profile.first.id;
+      final userID = profilecontroller.profile.value!.id;
 
       for (int i = 0; i < _bankDetailsList.length; i++) {
         final bank = _bankDetailsList[i];

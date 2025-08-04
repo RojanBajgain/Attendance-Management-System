@@ -25,7 +25,7 @@ class _ChatCardState extends State<ChatCard> {
 
     final ChatController chatController = Get.find<ChatController>();
     final profileController = Get.find<ProfileController>();
-    final currentUserId = profileController.profile.first.id ?? 1;
+    final currentUserId = profileController.profile.value!.id ?? 1;
 
     // Determine who is the other user (not the current user)
     final isCurrentUserSender = widget.chat.sender?.id == currentUserId;
