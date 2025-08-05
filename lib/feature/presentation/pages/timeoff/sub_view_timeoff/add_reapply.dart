@@ -87,123 +87,160 @@ class _AddReapplyPageState extends State<AddReapplyPage> {
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    return Scaffold(
-      appBar: ConstantAppBar(),
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(15),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                InkWell(
-                  onTap: () => Get.back(),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.arrow_back_sharp,
-                        color: isDarkMode ? Colors.white : Colors.black,
-                      ),
-                      const SizedBox(width: 15.0),
-                      Text(
-                        'Submit a new Reason',
-                        style: smallNStyle.copyWith(
-                          fontWeight: FontWeight.bold,
+    return SafeArea(
+      top: false,
+      child: Scaffold(
+        // appBar: ConstantAppBar(),
+        body: SingleChildScrollView(
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  InkWell(
+                    onTap: () => Get.back(),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.arrow_back_sharp,
                           color: isDarkMode ? Colors.white : Colors.black,
-                          fontSize: 14.0,
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 30.0),
-                Padding(
-                  padding: const EdgeInsets.only(left: 6.0),
-                  child: Column(
-                    children: [
-                      Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Reason  ',
-                              style: smallStyle.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: isDarkMode ? Colors.white : Colors.black,
-                                fontSize: 12.0,
-                              ),
-                            ),
-                            const TextSpan(
-                              text: '*',
-                              style: TextStyle(
-                                fontFamily: 'Mukta',
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14.0,
-                                color: Colors.red,
-                              ),
-                            ),
-                          ],
+                        const SizedBox(width: 15.0),
+                        Text(
+                          'Submit a new Reason',
+                          style: smallNStyle.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: isDarkMode ? Colors.white : Colors.black,
+                            fontSize: 14.0,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 10.0),
-                Container(
-                  height: 160.0,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(13.0),
-                    color:
-                        isDarkMode ? Colors.grey.shade800 : Colors.grey.shade50,
-                    border: Border.all(color: Colors.black, width: 1.0),
+                  const SizedBox(height: 30.0),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 6.0),
+                    child: Column(
+                      children: [
+                        Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Reason  ',
+                                style: smallStyle.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color:
+                                      isDarkMode ? Colors.white : Colors.black,
+                                  fontSize: 12.0,
+                                ),
+                              ),
+                              const TextSpan(
+                                text: '*',
+                                style: TextStyle(
+                                  fontFamily: 'Mukta',
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14.0,
+                                  color: Colors.red,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: TextField(
-                      controller: _reasonController,
-                      maxLines: 8,
-                      style: smallStyle.copyWith(
-                        color: isDarkMode ? Colors.white : Colors.black,
-                      ),
-                      decoration: InputDecoration.collapsed(
-                        hintText: "Write Your Reason",
-                        hintStyle: smallStyle.copyWith(
+                  const SizedBox(height: 10.0),
+                  Container(
+                    height: 160.0,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(13.0),
+                      color: isDarkMode
+                          ? Colors.grey.shade800
+                          : Colors.grey.shade50,
+                      border: Border.all(color: Colors.black, width: 1.0),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: TextField(
+                        controller: _reasonController,
+                        maxLines: 8,
+                        style: smallStyle.copyWith(
                           color: isDarkMode ? Colors.white : Colors.black,
-                          fontSize: 12.0,
+                        ),
+                        decoration: InputDecoration.collapsed(
+                          hintText: "Write Your Reason",
+                          hintStyle: smallStyle.copyWith(
+                            color: isDarkMode ? Colors.white : Colors.black,
+                            fontSize: 12.0,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 40.0),
-                Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 105.0),
-                      child: InkWell(
-                        onTap: _clearForm,
+                  const SizedBox(height: 40.0),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 105.0),
+                        child: InkWell(
+                          onTap: _clearForm,
+                          child: Container(
+                            height: 45.0,
+                            width: 120.0,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black),
+                              borderRadius: BorderRadius.circular(10.0),
+                              color: Theme.of(context).colorScheme.surface,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.sort,
+                                  color:
+                                      isDarkMode ? Colors.black : Colors.white,
+                                ),
+                                const SizedBox(width: 4.0),
+                                Text(
+                                  "Clear",
+                                  style: smallStyle.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: isDarkMode
+                                        ? Colors.black
+                                        : Colors.white,
+                                    fontSize: 12.0,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 15.0),
+                      InkWell(
+                        onTap: _submitReapply,
                         child: Container(
                           height: 45.0,
                           width: 120.0,
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.black),
                             borderRadius: BorderRadius.circular(10.0),
-                            color: isDarkMode ? Colors.white : Colors.black,
+                            color: Theme.of(context).colorScheme.surface,
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
-                                Icons.sort,
-                                color: isDarkMode ? Colors.black : Colors.white,
+                              const Icon(
+                                Icons.save_outlined,
+                                color: Colors.white,
                               ),
-                              const SizedBox(width: 4.0),
+                              const SizedBox(width: 5.0),
                               Text(
-                                "Clear",
+                                "Re-Apply",
                                 style: smallStyle.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color:
-                                      isDarkMode ? Colors.black : Colors.white,
+                                  color: Colors.white,
                                   fontSize: 12.0,
                                 ),
                               ),
@@ -211,41 +248,10 @@ class _AddReapplyPageState extends State<AddReapplyPage> {
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 15.0),
-                    InkWell(
-                      onTap: _submitReapply,
-                      child: Container(
-                        height: 45.0,
-                        width: 120.0,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          borderRadius: BorderRadius.circular(10.0),
-                          color:
-                              isDarkMode ? Colors.grey.shade600 : Colors.black,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.save_outlined,
-                              color: Colors.white,
-                            ),
-                            const SizedBox(width: 5.0),
-                            Text(
-                              "Re-Apply",
-                              style: smallStyle.copyWith(
-                                color: Colors.white,
-                                fontSize: 12.0,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

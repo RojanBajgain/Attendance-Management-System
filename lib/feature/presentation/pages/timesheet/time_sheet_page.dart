@@ -171,7 +171,7 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
     return SafeArea(
       child: Scaffold(
         body: RefreshIndicator(
-          color: isDarkMode ? Colors.white : Colors.black,
+          color: Theme.of(context).colorScheme.primary,
           backgroundColor: isDarkMode ? Colors.grey.shade800 : Colors.white,
           onRefresh: () async {
             await timesheetcontroller.getTimesheet();

@@ -424,7 +424,7 @@ class _DashboardPageState extends State<DashboardPage> {
       appBar: const ConstantAppBar(),
       body: RefreshIndicator(
         color: Theme.of(context).colorScheme.primary,
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        backgroundColor: isDarkMode ? Colors.grey.shade800 : Colors.white,
         onRefresh: _safeRefresh,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),

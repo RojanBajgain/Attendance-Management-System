@@ -291,13 +291,15 @@ class _AddTimeoffState extends State<AddTimeoff> {
             ),
           )
         : ThemeData.light().copyWith(
-            textTheme: const TextTheme(
-              bodyLarge: TextStyle(fontSize: 11.0, color: Colors.black),
-              bodyMedium: TextStyle(fontSize: 11.0, color: Colors.black),
+            textTheme: TextTheme(
+              bodyLarge: TextStyle(
+                  fontSize: 11.0, color: Theme.of(context).colorScheme.surface),
+              bodyMedium: TextStyle(
+                  fontSize: 11.0, color: Theme.of(context).colorScheme.surface),
             ),
             dialogBackgroundColor: Colors.white,
-            colorScheme: const ColorScheme.light(
-              primary: Colors.black,
+            colorScheme: ColorScheme.light(
+              primary: Theme.of(context).colorScheme.surface,
               onPrimary: Colors.white,
               onSurface: Colors.black,
               background: Colors.white,
@@ -891,9 +893,8 @@ class _AddTimeoffState extends State<AddTimeoff> {
                                           : Colors.grey.shade500,
                                     ),
                                     borderRadius: BorderRadius.circular(10.0),
-                                    color: isDarkMode
-                                        ? Colors.white
-                                        : Colors.grey.shade500,
+                                    color:
+                                        Theme.of(context).colorScheme.surface,
                                   ),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -941,9 +942,9 @@ class _AddTimeoffState extends State<AddTimeoff> {
                                         border: Border.all(color: Colors.black),
                                         borderRadius:
                                             BorderRadius.circular(10.0),
-                                        color: isDarkMode
-                                            ? Colors.grey.shade600
-                                            : Colors.black,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .surface,
                                       ),
                                       child: Row(
                                         mainAxisAlignment:

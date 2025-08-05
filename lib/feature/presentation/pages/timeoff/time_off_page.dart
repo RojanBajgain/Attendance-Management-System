@@ -38,7 +38,7 @@ class _TimeOffPageState extends State<TimeOffPage> {
       child: Scaffold(
         // appBar: const ConstantAppBar(),
         body: RefreshIndicator(
-          color: isDarkMode ? Colors.white : Colors.black,
+          color: Theme.of(context).colorScheme.surface,
           backgroundColor: isDarkMode ? Colors.grey.shade800 : Colors.white,
           onRefresh: () async {
             await timeoffcontroller.getTimeoff(forceRefresh: true);
@@ -89,7 +89,7 @@ class _TimeOffPageState extends State<TimeOffPage> {
                           height: 40.0,
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black),
+                            border: Border.all(color: Colors.transparent),
                             borderRadius: BorderRadius.circular(10.0),
                             color: Theme.of(context).colorScheme.surface,
                           ),

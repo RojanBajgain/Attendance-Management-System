@@ -16,11 +16,11 @@ class AbsentDayWidget extends StatelessWidget {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      height: 90.0,
+      height: 95.0,
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        color: isDarkMode ? Colors.white : Colors.black,
+        color: Theme.of(context).colorScheme.surface,
         boxShadow: const <BoxShadow>[
           BoxShadow(
             color: Color.fromRGBO(0, 0, 0, 0.08),
@@ -99,7 +99,7 @@ class AbsentDayWidget extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 15.0),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.014),
               // Time and Hours Row with --- for absent day
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

@@ -69,7 +69,7 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
         width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
-          color: isDarkMode ? Colors.white : Colors.black,
+          color: Theme.of(context).colorScheme.surface,
           boxShadow: const <BoxShadow>[
             BoxShadow(
               color: Color.fromRGBO(0, 0, 0, 0.08),
@@ -244,7 +244,7 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
                        */
                     ),
                     Container(
-                      height: 35, // Increased height to accommodate labels
+                      height: 35,
                       width: 1,
                       color: isDarkMode
                           ? Colors.grey.shade600

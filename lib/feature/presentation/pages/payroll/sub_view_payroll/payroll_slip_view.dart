@@ -55,8 +55,8 @@ class PayRollSlip extends StatelessWidget {
             begin: const Alignment(-1.0, -1.0),
             end: const Alignment(-1.0, 1.0),
             colors: [
-              isDarkMode ? Colors.grey.shade700 : Colors.black,
-              isDarkMode ? Colors.grey.shade700 : Colors.black,
+              Theme.of(context).colorScheme.surface,
+              Theme.of(context).colorScheme.surface,
               isDarkMode ? Colors.black : Colors.white,
             ],
             stops: const [
