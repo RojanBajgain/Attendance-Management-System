@@ -5,6 +5,7 @@ import 'package:ams/config/routes/route_helper.dart';
 import 'package:ams/feature/data/datasource/remote/api_client.dart';
 import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/repository/organization_repo.dart';
+import 'package:ams/feature/presentation/pages/app_image_brand/controller/app_brand_controller.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/organization/model/organization_model.dart';
 import 'package:ams/feature/presentation/pages/organization/model/organization_profile_model.dart';
@@ -24,6 +25,8 @@ class OrganizationController extends GetxController {
 
   final OrganizationRepo organizationRepo =
       OrganizationRepo(apiClient: Get.find<ApiClient>());
+  final colorsController =
+      Get.put(AppBrandController(appBrandRepo: Get.find()));
   final GetStorage box = GetStorage();
 
   @override
@@ -49,6 +52,7 @@ class OrganizationController extends GetxController {
         if (organizationList.length == 1) {
           await selectOrganization(organizationList.first);
         }
+        colorsController.onInit();
       } else {
         errorMessage.value = "No organizations found";
         log("No organizations passed");

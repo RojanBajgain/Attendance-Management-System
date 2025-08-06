@@ -47,6 +47,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    profilecontroller.getProfile();
+
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return SafeArea(

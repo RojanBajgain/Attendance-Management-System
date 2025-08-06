@@ -59,7 +59,18 @@ class BottomNavPage extends StatelessWidget {
       },
       child: Scaffold(
         body: Obx(() {
-          return pages[bottomNavController.selectedTab.value];
+          return IndexedStack(
+            index: bottomNavController.selectedTab.value,
+            children: [
+              const DashboardPage(),
+              TimeOffPage(),
+              TimeSheetPage(),
+              PayrollPage(),
+              const ProfilePage(),
+            ],
+          );
+
+          // pages[bottomNavController.selectedTab.value];
         }),
         bottomNavigationBar: Container(
           decoration: BoxDecoration(

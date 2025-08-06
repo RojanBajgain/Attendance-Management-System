@@ -59,11 +59,13 @@ class AuthController extends GetxController {
         }
 
         SharedPreferences prefs = await SharedPreferences.getInstance();
+        GetStorage box = GetStorage();
 
         // Store user info in shared preferences for persistence
         if (alluserData.value.user != null) {
           await prefs.setString(
               'userData', json.encode(alluserData.value.toJson()));
+          box.write('user_id', alluserData.value.user);
         }
 
         // Always set isLoggedIn to true since we want persistent login
