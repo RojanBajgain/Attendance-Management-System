@@ -11,6 +11,7 @@ import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:ams/feature/utils/validator.dart';
 import 'package:ams/services/helpers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -73,13 +74,13 @@ class _LoginPageState extends State<LoginPage> {
             // overflow: Overflow.visible,
             alignment: const FractionalOffset(.5, 1.0),
             children: [
-              Container(
+              SizedBox(
                 height: 50,
                 // color: lightcolor,
                 child: Column(
                   children: [
                     Text(
-                      '© 2025 AMS. All Rights Reserved',
+                      '© 2025 iHRTrack. All Rights Reserved',
                       style:
                           miniStyle.copyWith(fontSize: 12, color: Colors.grey),
                     ),
@@ -149,8 +150,8 @@ class _LoginPageState extends State<LoginPage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const SizedBox(height: 20),
-                        Image.asset(
-                          AppImages.logo,
+                        SvgPicture.asset(
+                          AppImages.appLogoHR,
                           height: 50,
                           // color: Colors.lightBlue,
                         ),
@@ -168,10 +169,9 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              "AYATA",
+                              "iHRTrack",
                               style: mediumStyle.copyWith(
-                                  color:
-                                      isDarkMode ? Colors.white : Colors.black,
+                                  color: Colors.black,
                                   fontWeight: FontWeight.w600),
                             ),
                           ],
@@ -183,7 +183,7 @@ class _LoginPageState extends State<LoginPage> {
                           children: [
                             Expanded(
                               child: Text(
-                                "Fill the credentials below to login into AYATA",
+                                "Fill the credentials below to login into iHRTrack",
                                 style: smallStyle.copyWith(
                                   fontSize: 13,
                                   color: isDarkMode

@@ -59,7 +59,7 @@ class TimeoffView extends StatelessWidget {
                     child: Text(
                       _getButtonText(timeoffdata.status),
                       style: smallStyle.copyWith(
-                        color: Colors.white,
+                        color: _getStatusTextColor(timeoffdata.status),
                         fontSize: 12.0,
                       ),
                     ),
@@ -160,15 +160,30 @@ class TimeoffView extends StatelessWidget {
 Color _getContainerColor(String? status) {
   switch (status?.toLowerCase()) {
     case 'approved':
-      return Colors.green;
+      return Colors.green.shade100;
     case 'pending':
-      return Colors.orange;
+      return Colors.orange.shade100;
     case 'rejected':
-      return Colors.red;
+      return Colors.red.shade100;
     case 're-apply':
-      return Colors.blue;
+      return Colors.blue.shade100;
     default:
-      return Colors.grey;
+      return Colors.grey.shade100;
+  }
+}
+
+Color _getStatusTextColor(String? status) {
+  switch (status?.toLowerCase()) {
+    case 'approved':
+      return Colors.green.shade800;
+    case 'pending':
+      return Colors.orange.shade800;
+    case 'rejected':
+      return Colors.red.shade800;
+    case 're-apply':
+      return Colors.blue.shade800;
+    default:
+      return Colors.grey.shade800;
   }
 }
 

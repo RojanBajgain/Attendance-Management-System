@@ -23,14 +23,6 @@ class BottomNavPage extends StatelessWidget {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 
-    List<Widget> pages = [
-      const DashboardPage(),
-      TimeOffPage(),
-      TimeSheetPage(),
-      PayrollPage(),
-      const ProfilePage(),
-    ];
-
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) {
@@ -64,7 +56,7 @@ class BottomNavPage extends StatelessWidget {
             children: [
               const DashboardPage(),
               TimeOffPage(),
-              TimeSheetPage(),
+              const TimeSheetPage(),
               PayrollPage(),
               const ProfilePage(),
             ],

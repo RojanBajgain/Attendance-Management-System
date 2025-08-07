@@ -190,7 +190,7 @@ class _AddReapplyPageState extends State<AddReapplyPage> {
                             height: 45.0,
                             width: 120.0,
                             decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black),
+                              border: Border.all(color: Colors.transparent),
                               borderRadius: BorderRadius.circular(10.0),
                               color: Theme.of(context).colorScheme.surface,
                             ),
@@ -225,7 +225,7 @@ class _AddReapplyPageState extends State<AddReapplyPage> {
                           height: 45.0,
                           width: 120.0,
                           decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black),
+                            border: Border.all(color: Colors.transparent),
                             borderRadius: BorderRadius.circular(10.0),
                             color: Theme.of(context).colorScheme.surface,
                           ),

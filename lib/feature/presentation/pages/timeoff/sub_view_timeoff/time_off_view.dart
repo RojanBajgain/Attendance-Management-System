@@ -684,23 +684,21 @@ class TimeOffSheet extends StatelessWidget {
   }
 }
 
-// Update the _getContainerColor function to return light colors
 Color _getContainerColor(String? status) {
   switch (status?.toLowerCase()) {
     case 'approved':
-      return Colors.green.shade100; // Light green
+      return Colors.green.shade100;
     case 'pending':
-      return Colors.orange.shade100; // Light orange
+      return Colors.orange.shade100;
     case 'rejected':
-      return Colors.red.shade100; // Light red
+      return Colors.red.shade100;
     case 're-apply':
-      return Colors.blue.shade100; // Light blue
+      return Colors.blue.shade100;
     default:
-      return Colors.grey.shade100; // Light grey
+      return Colors.grey.shade100;
   }
 }
 
-// Update the _getStatusTextColor function to return dark versions of the same color
 Color _getStatusTextColor(String? status) {
   switch (status?.toLowerCase()) {
     case 'approved':
@@ -716,7 +714,6 @@ Color _getStatusTextColor(String? status) {
   }
 }
 
-// Update the _getButtonText function (optional - just for consistency)
 String _getButtonText(String? status) {
   switch (status?.toLowerCase()) {
     case 'approved':

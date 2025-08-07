@@ -154,6 +154,8 @@ class _EventPageState extends State<EventPage>
         backgroundColor: isDarkMode ? Colors.black : Colors.grey[100],
         appBar: AppBar(
           surfaceTintColor: Colors.transparent,
+          backgroundColor: Colors.transparent,
+          foregroundColor: isDarkMode ? Colors.white : Colors.black,
           title: Text(
             'Events & Holidays',
             style: normalStyle.copyWith(
@@ -171,15 +173,15 @@ class _EventPageState extends State<EventPage>
         ),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: _showAddReminderDialog,
-          backgroundColor: isDarkMode ? Colors.white : Colors.blue,
+          backgroundColor: Theme.of(context).colorScheme.primary,
           icon: Icon(
             Icons.add,
-            color: isDarkMode ? Colors.black : Colors.white,
+            color: Colors.black,
           ),
           label: Text(
             'Reminder',
             style: TextStyle(
-              color: isDarkMode ? Colors.black : Colors.white,
+              color: Colors.black,
               fontSize: 12.0,
             ),
           ),

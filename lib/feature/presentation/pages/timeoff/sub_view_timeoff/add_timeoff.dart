@@ -887,11 +887,8 @@ class _AddTimeoffState extends State<AddTimeoff> {
                                 child: Container(
                                   height: 45.0,
                                   decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: isDarkMode
-                                          ? Colors.black
-                                          : Colors.grey.shade500,
-                                    ),
+                                    border:
+                                        Border.all(color: Colors.transparent),
                                     borderRadius: BorderRadius.circular(10.0),
                                     color:
                                         Theme.of(context).colorScheme.surface,
@@ -939,7 +936,8 @@ class _AddTimeoffState extends State<AddTimeoff> {
                                     child: Container(
                                       height: 45.0,
                                       decoration: BoxDecoration(
-                                        border: Border.all(color: Colors.black),
+                                        border: Border.all(
+                                            color: Colors.transparent),
                                         borderRadius:
                                             BorderRadius.circular(10.0),
                                         color: Theme.of(context)

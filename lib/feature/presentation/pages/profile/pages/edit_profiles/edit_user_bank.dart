@@ -343,6 +343,7 @@ class _EditUserBankState extends State<EditUserBank> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
         automaticallyImplyLeading: false,
         titleSpacing: 20.0,

@@ -378,6 +378,11 @@ class _EditUserAddressState extends State<EditUserAddress> {
       // Navigate based on the parameter
       if (navigateToNext) {
         Get.to(() => const EditUserDocument());
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
+          'Profile updated successfully. Please update your document.',
+          SnackbarType.success,
+        );
       } else {
         Get.offAll(() => BottomNavPage());
         SSnackbarUtil.showFadeSnackbar(
@@ -724,6 +729,7 @@ class _EditUserAddressState extends State<EditUserAddress> {
     return Scaffold(
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
+        backgroundColor: Colors.transparent,
         automaticallyImplyLeading: false,
         titleSpacing: 20.0,
         title: Text(
@@ -768,9 +774,9 @@ class _EditUserAddressState extends State<EditUserAddress> {
           if (_isLoading)
             Container(
               color: Colors.black.withOpacity(0.5),
-              child: const Center(
+              child: Center(
                 child: CircularProgressIndicator(
-                  color: Colors.cyan,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),

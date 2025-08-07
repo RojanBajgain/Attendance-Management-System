@@ -9,6 +9,7 @@ import 'package:ams/services/theme_service.dart';
 import 'package:double_to_words/double_to_words.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
@@ -143,11 +144,10 @@ class _PaymentSlipState extends State<PaymentSlip> {
                               );
                             },
                             errorBuilder: (context, error, stackTrace) {
-                              return Image.asset(
-                                AppImages.logo,
+                              return SvgPicture.asset(
+                                AppImages.appLogoHR,
                                 height: 40,
                                 width: 100,
-                                color: isDarkMode ? Colors.white : Colors.black,
                               );
                             },
                           ),

@@ -125,11 +125,10 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _buildWelcomeCard(bool isDarkMode) {
-    // Determine text color based on background luminance for contrast
     final surfaceColor = Theme.of(context).colorScheme.surface;
     final textColor = surfaceColor.computeLuminance() > 0.5
-        ? AppColors.black // Use black for light backgrounds like yellow
-        : AppColors.white; // Use white for darker backgrounds
+        ? AppColors.black
+        : AppColors.white;
 
     return Container(
       height: 85.0,

@@ -6,6 +6,8 @@ class AppImages {
   static const ayataLogoAppBar = "assets/images/ayata_appbar.png";
   static const ayata_ayata = "assets/images/no_data.png";
   static const logo = "assets/images/ayata.png";
+  static const appLogoHR = "assets/icons/app_logo_HR.svg";
+  static const appLogoHr = "assets/images/app_logo_HR.png";
 
   static const notfound = "assets/images/ayata_dash_logo.svg";
 

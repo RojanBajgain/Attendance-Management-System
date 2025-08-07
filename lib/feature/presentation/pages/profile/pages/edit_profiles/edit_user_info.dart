@@ -228,7 +228,12 @@ class _EditUserInfoState extends State<EditUserInfo> {
       );
 
       if (navigateToAddress) {
-        // Get.to(() => const EditUserAddress());
+        Get.to(() => const EditUserAddress());
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
+          'Profile updated successfully. Please update your address.',
+          SnackbarType.success,
+        );
       } else {
         Get.offAll(() => BottomNavPage());
         SSnackbarUtil.showFadeSnackbar(
@@ -933,9 +938,9 @@ class _EditUserInfoState extends State<EditUserInfo> {
           if (_isLoading)
             Container(
               color: Colors.black.withOpacity(0.5),
-              child: const Center(
+              child: Center(
                 child: CircularProgressIndicator(
-                  color: Colors.cyan,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),

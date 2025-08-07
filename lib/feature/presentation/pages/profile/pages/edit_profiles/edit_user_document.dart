@@ -67,6 +67,27 @@ class _EditUserDocumentState extends State<EditUserDocument> {
     if (profileData.value!.documents.isNotEmpty) {
       for (var document in profileData.value!.documents) {
         final documentId = document.id;
+
+        // Fixed: Handle files properly
+        List<int> fileIds = [];
+        if (document.files != null && document.files.isNotEmpty) {
+          for (var file in document.files) {
+            if (file is Map<String, dynamic>) {
+              // If it's a Map, access the id using map syntax
+              if (file.containsKey('id') && file['id'] != null) {
+                fileIds.add(file['id'] as int);
+              }
+            } else {
+              // If it's a proper object, access id property directly
+              try {
+                fileIds.add(file.id);
+              } catch (e) {
+                print('Error accessing file.id in _storeInitialValues: $e');
+              }
+            }
+          }
+        }
+
         initialDocs[documentId.toString()] = {
           'type': document.type.isNotEmpty ? document.type : "N/A",
           'title': document.title,
@@ -74,7 +95,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
               ? DateFormat('yyyy-MM-dd').format(document.issuedDate!)
               : "",
           'identifier': document.identifier,
-          'filesToKeep': document.files.map((file) => file.id).toList(),
+          'filesToKeep': fileIds,
         };
       }
     }
@@ -146,8 +167,31 @@ class _EditUserDocumentState extends State<EditUserDocument> {
 
         selectedDocumentTypes[documentId] =
             document.type.isNotEmpty ? document.type : "N/A";
-        _filesToKeep[documentId] =
-            List<int>.from(document.files.map((file) => file.id));
+
+        // Fixed: Handle files properly based on their actual structure
+        if (document.files != null && document.files.isNotEmpty) {
+          _filesToKeep[documentId] = [];
+          for (var file in document.files) {
+            // Check if file is a Map or an object with id property
+            if (file is Map<String, dynamic>) {
+              // If it's a Map, access the id using map syntax
+              if (file.containsKey('id') && file['id'] != null) {
+                _filesToKeep[documentId]!.add(file['id'] as int);
+              }
+            } else {
+              // If it's a proper object, access id property directly
+              try {
+                _filesToKeep[documentId]!.add(file.id);
+              } catch (e) {
+                print('Error accessing file.id: $e');
+                // Handle the case where id is not accessible
+                // You might need to adjust this based on your actual file structure
+              }
+            }
+          }
+        } else {
+          _filesToKeep[documentId] = [];
+        }
 
         // Add listeners to text controllers
         documentControllers[documentId]!['title']!
@@ -158,6 +202,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
             .addListener(_checkForChanges);
       }
     }
+
     // Add listeners for new document fields
     newDocumentTitleController.addListener(_checkForChanges);
     newDocumentIssuedDateController.addListener(_checkForChanges);
@@ -351,6 +396,11 @@ class _EditUserDocumentState extends State<EditUserDocument> {
       } else {
         if (navigateToNext) {
           Get.to(() => const EditUserBank());
+          SSnackbarUtil.showFadeSnackbar(
+            Get.context!,
+            'Profile updated successfully. Please update your bank details.',
+            SnackbarType.success,
+          );
         } else {
           Get.offAll(() => BottomNavPage());
 
@@ -653,6 +703,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
         automaticallyImplyLeading: false,
         titleSpacing: 20.0,
@@ -807,16 +858,54 @@ class _EditUserDocumentState extends State<EditUserDocument> {
             children: [
               _buildSectionTitle("Existing Documents", isDarkMode),
               const SizedBox(height: 8),
-              ...document.files
-                  .where((file) => !_deletedFileIds.contains(file.id))
-                  .map((file) {
+              ...document.files.where((file) {
+                // Fixed: Handle file as Map<String, dynamic>
+                int fileId;
+                if (file is Map<String, dynamic>) {
+                  fileId = file['id'] as int? ?? 0;
+                } else {
+                  try {
+                    fileId = file.id;
+                  } catch (e) {
+                    print('Error accessing file.id in filter: $e');
+                    return false;
+                  }
+                }
+                return !_deletedFileIds.contains(fileId);
+              }).map((file) {
+                // Fixed: Handle file properties properly
+                int fileId;
+                String fileName;
+                String fileUrl;
+
+                if (file is Map<String, dynamic>) {
+                  fileId = file['id'] as int? ?? 0;
+                  fileUrl = file['file'] as String? ?? '';
+                  fileName = fileUrl.split('/').last.isNotEmpty
+                      ? fileUrl.split('/').last
+                      : 'Unknown file';
+                } else {
+                  try {
+                    fileId = file.id;
+                    fileUrl = file.file ?? '';
+                    fileName = fileUrl.split('/').last.isNotEmpty
+                        ? fileUrl.split('/').last
+                        : 'Unknown file';
+                  } catch (e) {
+                    print('Error accessing file properties: $e');
+                    fileId = 0;
+                    fileUrl = '';
+                    fileName = 'Unknown file';
+                  }
+                }
+
                 return Row(
                   children: [
                     IconButton(
                       icon: const Icon(Icons.file_present),
                       onPressed: () async {
-                        if (file.file.isNotEmpty) {
-                          final Uri url = Uri.parse(file.file);
+                        if (fileUrl.isNotEmpty) {
+                          final Uri url = Uri.parse(fileUrl);
                           if (await canLaunchUrl(url)) {
                             await launchUrl(url);
                           } else {
@@ -831,9 +920,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
                     ),
                     Expanded(
                       child: Text(
-                        file.file.split('/').last.isNotEmpty
-                            ? file.file.split('/').last
-                            : 'Unknown file',
+                        fileName,
                         style: smallStyle.copyWith(
                           color: isDarkMode ? Colors.white : Colors.black,
                           fontSize: 12,
@@ -844,11 +931,12 @@ class _EditUserDocumentState extends State<EditUserDocument> {
                       icon: const Icon(Icons.delete),
                       onPressed: () {
                         setState(() {
-                          _deletedFileIds.add(file.id);
+                          _deletedFileIds.add(fileId);
                           if (_filesToKeep.containsKey(documentId)) {
-                            _filesToKeep[documentId]!.remove(file.id);
+                            _filesToKeep[documentId]!.remove(fileId);
                           }
                           _fieldErrors.remove('file_$documentId');
+                          _checkForChanges(); // Add this to track changes
                         });
                       },
                     ),
@@ -866,10 +954,12 @@ class _EditUserDocumentState extends State<EditUserDocument> {
               setState(() {
                 _selectedFiles[documentId] = File(result.files.single.path!);
                 _fieldErrors.remove('file_$documentId');
+                _checkForChanges(); // Add this to track changes
               });
             } else {
               setState(() {
                 _selectedFiles[documentId] = null;
+                _checkForChanges(); // Add this to track changes
               });
             }
           },
@@ -1046,7 +1136,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
               if (Get.isDialogOpen == true) {
                 Get.back();
               }
-              Get.to(() => EditUserInfo());
+              Get.to(() => const EditUserInfo());
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.surface,

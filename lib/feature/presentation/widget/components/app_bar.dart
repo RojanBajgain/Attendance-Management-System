@@ -87,11 +87,11 @@ class _ConstantAppBarState extends State<ConstantAppBar> {
                   );
                 },
                 errorBuilder: (context, error, stackTrace) {
-                  return Image.asset(
-                    AppImages.logo,
-                    height: 90,
-                    width: 90,
-                    color: isDarkMode ? Colors.white : Colors.black,
+                  return SvgPicture.asset(
+                    AppImages.appLogoHR,
+                    height: 40,
+                    width: 40,
+                    // color: Theme.of(context).colorScheme.primary,
                   );
                 },
               ),
