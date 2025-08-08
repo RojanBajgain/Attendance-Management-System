@@ -61,42 +61,7 @@ class _ConstantAppBarState extends State<ConstantAppBar> {
           );
         } else if (themeService.logoUrl.isNotEmpty) {
           // Show network image if available
-          return Column(
-            children: [
-              Image.network(
-                themeService.logoUrl,
-                height: 90,
-                width: 90,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return SizedBox(
-                    height: 90,
-                    width: 90,
-                    child: Shimmer.fromColors(
-                      baseColor:
-                          isDarkMode ? Colors.grey[800]! : Colors.grey[300]!,
-                      highlightColor:
-                          isDarkMode ? Colors.grey[600]! : Colors.grey[100]!,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-                errorBuilder: (context, error, stackTrace) {
-                  return SvgPicture.asset(
-                    AppImages.appLogoHR,
-                    height: 40,
-                    width: 40,
-                    // color: Theme.of(context).colorScheme.primary,
-                  );
-                },
-              ),
-            ],
-          );
+          return _buildDynamicLogo(themeService.logoUrl, 50, isDarkMode);
         } else {
           // Fallback to local asset
           return Column(
@@ -241,6 +206,59 @@ class _ConstantAppBarState extends State<ConstantAppBar> {
         //   ),
         // ),
       ],
+    );
+  }
+}
+
+Widget _buildDynamicLogo(String url, double size, bool isDarkMode) {
+  final extension = url.split('.').last.toLowerCase();
+
+  Widget shimmerPlaceholder = Shimmer.fromColors(
+    baseColor: isDarkMode ? Colors.grey[800]! : Colors.grey[300]!,
+    highlightColor: isDarkMode ? Colors.grey[600]! : Colors.grey[100]!,
+    child: Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+      ),
+    ),
+  );
+
+  if (extension == 'svg') {
+    // Handle SVG
+    return SizedBox(
+      height: size,
+      width: size,
+      child: SvgPicture.network(
+        url,
+        height: size,
+        width: size,
+        placeholderBuilder: (context) => shimmerPlaceholder,
+        fit: BoxFit.contain,
+      ),
+    );
+  } else {
+    // Handle PNG, JPG, WEBP
+    return SizedBox(
+      height: size,
+      width: size,
+      child: Image.network(
+        url,
+        height: size,
+        width: size,
+        fit: BoxFit.contain,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return shimmerPlaceholder;
+        },
+        errorBuilder: (context, error, stackTrace) {
+          return SvgPicture.asset(
+            AppImages.appLogoHR,
+            height: size,
+            width: size,
+          );
+        },
+      ),
     );
   }
 }

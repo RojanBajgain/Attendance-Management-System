@@ -1,13 +1,14 @@
 import 'package:ams/feature/presentation/pages/bottom_nav/bottom_nav_page.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/sub_view_event/event_page.dart';
 import 'package:ams/feature/presentation/pages/chat/chat.dart';
-import 'package:ams/feature/presentation/pages/landing/landing_page.dart';
 import 'package:ams/feature/presentation/pages/login/login_page.dart';
 import 'package:ams/feature/presentation/pages/offline_page/page/offline_page.dart';
 import 'package:ams/feature/presentation/pages/organization/pages/organization_page.dart';
 import 'package:ams/feature/presentation/pages/payroll/sub_view_payroll/payment_slip_view.dart';
 import 'package:ams/feature/presentation/pages/timesheet/time_sheet_page.dart';
 import 'package:get/get.dart';
+
+import '../../feature/presentation/pages/landing/pages/landing_page.dart';
 
 class RouteHelper {
   RouteHelper._();

@@ -5,6 +5,7 @@ import 'package:ams/feature/presentation/pages/login/login_page.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 class LandingPage extends StatefulWidget {
@@ -19,9 +20,6 @@ class _LandingPageState extends State<LandingPage> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(seconds: 3), () {
-      // Navigator.of(context)
-      //     .pushReplacement(MaterialPageRoute(builder: (_) => Login()));
-      // Get.to(() => LandingPage());
       Get.off(
         () => const LoginPage(),
         transition: Transition.rightToLeft,
@@ -43,10 +41,10 @@ class _LandingPageState extends State<LandingPage> {
           children: [
             Expanded(
               child: Center(
-                child: Image.asset(
-                  AppImages.logo,
-                  height: 200,
-                  width: 200,
+                child: SvgPicture.asset(
+                  AppImages.appLogoHR,
+                  height: 150,
+                  width: 150,
                 ),
               ),
             ),
@@ -54,7 +52,7 @@ class _LandingPageState extends State<LandingPage> {
               padding: const EdgeInsets.only(bottom: 20.0),
               child: Text(
                 textAlign: TextAlign.center,
-                '© 2025 Avyaas. All Rights Reserved \nProduct of Ayata Inc.',
+                '© 2025 iHRTrack. All Rights Reserved \nProduct of Ayata Inc.',
                 style: miniStyle.copyWith(fontSize: 10, color: Colors.grey),
               ),
             ),

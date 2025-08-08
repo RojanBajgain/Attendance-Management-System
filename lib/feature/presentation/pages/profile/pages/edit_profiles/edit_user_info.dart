@@ -633,7 +633,7 @@ class _EditUserInfoState extends State<EditUserInfo> {
                   ? FileImage(_profileImage!)
                   : (profile != null && profile.profileImage != null
                       ? NetworkImage(profile.profileImage!) as ImageProvider
-                      : const AssetImage(AppImages.EditprofileImage)),
+                      : const AssetImage(AppImages.profileImage)),
               fit: BoxFit.cover,
             ),
           ),
@@ -907,12 +907,12 @@ class _EditUserInfoState extends State<EditUserInfo> {
                         isDarkMode,
                         fieldKey: 'skills',
                       ),
-                      _buildTextField(
-                        "Gross Salary",
-                        grossSalary,
-                        isDarkMode,
-                        enabled: false,
-                      ),
+                      // _buildTextField(
+                      //   "Gross Salary",
+                      //   grossSalary,
+                      //   isDarkMode,
+                      //   enabled: false,
+                      // ),
                       _buildDateField(
                         "Date of Birth",
                         dobController,

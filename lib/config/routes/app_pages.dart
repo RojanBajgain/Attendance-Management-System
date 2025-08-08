@@ -1,7 +1,7 @@
 import 'package:ams/feature/presentation/pages/bottom_nav/bottom_nav_page.dart';
 import 'package:ams/feature/presentation/pages/calender_notification/sub_view_event/event_page.dart';
 import 'package:ams/feature/presentation/pages/chat/chat.dart';
-import 'package:ams/feature/presentation/pages/landing/landing_page.dart';
+import 'package:ams/feature/presentation/pages/landing/pages/landing_page.dart';
 import 'package:ams/feature/presentation/pages/login/login_page.dart';
 import 'package:ams/feature/presentation/pages/organization/pages/organization_page.dart';
 import 'package:ams/feature/presentation/pages/payroll/payroll_page.dart';

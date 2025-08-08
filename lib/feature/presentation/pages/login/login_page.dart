@@ -70,61 +70,54 @@ class _LoginPageState extends State<LoginPage> {
       child: SafeArea(
         top: false,
         child: Scaffold(
-          bottomNavigationBar: Stack(
-            // overflow: Overflow.visible,
-            alignment: const FractionalOffset(.5, 1.0),
-            children: [
-              SizedBox(
-                height: 50,
-                // color: lightcolor,
-                child: Column(
+          bottomNavigationBar: SizedBox(
+            height: 40,
+            // color: lightcolor,
+            child: Column(
+              children: [
+                Text(
+                  '© 2025 iHRTrack. All Rights Reserved',
+                  style: miniStyle.copyWith(fontSize: 11, color: Colors.grey),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      '© 2025 iHRTrack. All Rights Reserved',
+                      "Product of ",
                       style:
-                          miniStyle.copyWith(fontSize: 12, color: Colors.grey),
+                          miniStyle.copyWith(fontSize: 11, color: Colors.grey),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Product of ",
-                          style: miniStyle.copyWith(
-                              fontSize: 12, color: Colors.grey),
-                        ),
-                        Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () {
-                              Helpers.launchWebsite();
-                            },
-                            splashColor: Colors.grey,
-                            borderRadius: BorderRadius.circular(12),
-                            child: Row(
-                              children: [
-                                Text(
-                                  "Ayata Inc",
-                                  style: miniStyle.copyWith(
-                                    // decoration: TextDecoration.underline,
-                                    fontSize: 12,
-                                    color: Colors.blueAccent,
-                                  ),
-                                ),
-                                const Icon(
-                                  Icons.arrow_outward_rounded,
-                                  size: 12,
-                                  color: Colors.blueAccent,
-                                ),
-                              ],
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          Helpers.launchWebsite();
+                        },
+                        splashColor: Colors.grey,
+                        borderRadius: BorderRadius.circular(12),
+                        child: Row(
+                          children: [
+                            Text(
+                              "Ayata Inc",
+                              style: miniStyle.copyWith(
+                                // decoration: TextDecoration.underline,
+                                fontSize: 11,
+                                color: Colors.blueAccent,
+                              ),
                             ),
-                          ),
+                            const Icon(
+                              Icons.arrow_outward_rounded,
+                              size: 12,
+                              color: Colors.blueAccent,
+                            ),
+                          ],
                         ),
-                      ],
-                    )
+                      ),
+                    ),
                   ],
-                ),
-              ),
-            ],
+                )
+              ],
+            ),
           ),
           body: SafeArea(
             child: Stack(

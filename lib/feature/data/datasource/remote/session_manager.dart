@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:ams/feature/presentation/pages/landing/landing_page.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/login/login_page.dart';
 import 'package:ams/feature/utils/ssnackbar_utils.dart';

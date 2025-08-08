@@ -1,4 +1,6 @@
-import 'dart:ui';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import 'package:ams/config/resources/shimmer.dart';
 import 'package:ams/config/resources/styles.dart';
@@ -11,9 +13,6 @@ import 'package:ams/feature/presentation/pages/profile/model/profile_model.dart'
 import 'package:ams/feature/presentation/pages/profile/pages/profile_container.dart';
 import 'package:ams/feature/presentation/pages/theme/change_theme.dart';
 import 'package:ams/services/helpers.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 
 class ProfilePage extends StatefulWidget {
   final Profile? profileData;
@@ -534,50 +533,50 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildTheme(bool isDarkMode) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8.0),
-        color: isDarkMode ? Colors.grey.shade800 : Colors.white,
-      ),
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          dividerColor: Colors.transparent,
-          // listTileTheme: ListTileTheme.of(context).copyWith(
-          //   dense: true,
-          // ),
-        ),
-        child: ListTile(
-          leading: Icon(
-            Icons.color_lens,
-            color: isDarkMode ? Colors.white : Colors.black,
-          ),
-          title: Text(
-            "Change Theme",
-            style: smallStyle.copyWith(
-              fontWeight: FontWeight.w600,
-              color: isDarkMode ? Colors.white : Colors.black,
-              overflow: TextOverflow.ellipsis,
-              fontSize: 12.0,
-            ),
-          ),
-          trailing: Icon(
-            Icons.arrow_forward_ios,
-            color: isDarkMode ? Colors.white : Colors.black,
-            size: 16,
-          ),
-          onTap: () {
-            Get.to(
-              () => const ChangeTheme(),
-              transition: Transition.rightToLeft,
-              duration: const Duration(milliseconds: 100),
-            );
-          },
-        ),
-      ),
-    );
-  }
+  // Widget _buildTheme(bool isDarkMode) {
+  //   return Container(
+  //     margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+  //     decoration: BoxDecoration(
+  //       borderRadius: BorderRadius.circular(8.0),
+  //       color: isDarkMode ? Colors.grey.shade800 : Colors.white,
+  //     ),
+  //     child: Theme(
+  //       data: Theme.of(context).copyWith(
+  //         dividerColor: Colors.transparent,
+  //         // listTileTheme: ListTileTheme.of(context).copyWith(
+  //         //   dense: true,
+  //         // ),
+  //       ),
+  //       child: ListTile(
+  //         leading: Icon(
+  //           Icons.color_lens,
+  //           color: isDarkMode ? Colors.white : Colors.black,
+  //         ),
+  //         title: Text(
+  //           "Change Theme",
+  //           style: smallStyle.copyWith(
+  //             fontWeight: FontWeight.w600,
+  //             color: isDarkMode ? Colors.white : Colors.black,
+  //             overflow: TextOverflow.ellipsis,
+  //             fontSize: 12.0,
+  //           ),
+  //         ),
+  //         trailing: Icon(
+  //           Icons.arrow_forward_ios,
+  //           color: isDarkMode ? Colors.white : Colors.black,
+  //           size: 16,
+  //         ),
+  //         onTap: () {
+  //           Get.to(
+  //             () => const ChangeTheme(),
+  //             transition: Transition.rightToLeft,
+  //             duration: const Duration(milliseconds: 100),
+  //           );
+  //         },
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _buildLogout(bool isDarkMode) {
     return Container(
@@ -840,7 +839,7 @@ class _ProfilePageState extends State<ProfilePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildRow(
-              'Employee ID:',
+              'Device ID:',
               profiledata.userRecords.isNotEmpty
                   ? profiledata.userRecords.first.employeeNo.toString()
                   : 'N/A'),
