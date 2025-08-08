@@ -1,7 +1,7 @@
-# ams
+# iHRTrack
 
-A Flutter AMS project.
+A Flutter iHRTrack project.
 
 ## Getting Started
 
-This project is about AMS(Attendence Management System)..
+This project is about iHRTrack..

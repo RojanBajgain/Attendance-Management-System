@@ -41,8 +41,8 @@ class _LandingPageState extends State<LandingPage> {
           children: [
             Expanded(
               child: Center(
-                child: SvgPicture.asset(
-                  AppImages.appLogoHR,
+                child: Image.asset(
+                  AppImages.appLogoHr,
                   height: 150,
                   width: 150,
                 ),
