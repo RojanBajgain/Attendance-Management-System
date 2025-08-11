@@ -43,6 +43,7 @@ class Datum {
   String? favicon;
   String themeColor;
   Organization? organization;
+  String? dateType;
 
   Datum({
     this.id = 0,
@@ -50,6 +51,7 @@ class Datum {
     this.favicon,
     this.themeColor = '',
     this.organization,
+    this.dateType,
   });
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
@@ -60,6 +62,7 @@ class Datum {
         organization: json["organization"] != null
             ? Organization.fromJson(json["organization"])
             : null,
+        dateType: json["date_type"] ?? '',
       );
 
   Map<String, dynamic> toJson() => {
@@ -68,6 +71,7 @@ class Datum {
         "favicon": favicon,
         "theme_color": themeColor,
         "organization": organization?.toJson(),
+        "date_type": dateType,
       };
 }
 

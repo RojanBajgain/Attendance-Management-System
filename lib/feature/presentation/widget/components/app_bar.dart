@@ -67,7 +67,7 @@ class _ConstantAppBarState extends State<ConstantAppBar> {
           return Column(
             children: [
               Image.asset(
-                AppImages.logo,
+                AppImages.appLogoHr,
                 height: 90,
                 width: 90,
                 color: isDarkMode ? Colors.white : Colors.black,

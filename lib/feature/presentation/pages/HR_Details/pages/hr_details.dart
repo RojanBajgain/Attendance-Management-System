@@ -19,7 +19,7 @@ class HRDetailsPage extends StatelessWidget {
 
     return RefreshIndicator(
       onRefresh: controller.getOrganizationStaff,
-      color: theme.colorScheme.secondary,
+      color: Theme.of(context).colorScheme.primary,
       backgroundColor: isDarkMode ? Colors.grey[800] : Colors.white,
       child: Scaffold(
         backgroundColor: isDarkMode ? Colors.grey[900] : Colors.grey[50],
@@ -35,7 +35,7 @@ class HRDetailsPage extends StatelessWidget {
                     children: [
                       Icon(
                         Icons.arrow_back_sharp,
-                        color: theme.iconTheme.color,
+                        color: Colors.black,
                       ),
                       const SizedBox(width: 15.0),
                       Text(
@@ -49,15 +49,14 @@ class HRDetailsPage extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color:
-                                  theme.colorScheme.secondary.withOpacity(0.1),
+                              color: theme.colorScheme.primary.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
                               '${controller.organizationStaff.length} members',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: theme.colorScheme.secondary,
+                                color: theme.colorScheme.primary,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -98,7 +97,7 @@ class HRDetailsPage extends StatelessWidget {
                             Text(
                               "No Staffs Data Available",
                               style: smallStyle.copyWith(
-                                color: isDarkMode ? Colors.white : Colors.black,
+                                color: Colors.black,
                               ),
                             ),
                           ],
@@ -303,7 +302,7 @@ class TeamMemberCard extends StatelessWidget {
                     style: TextStyle(color: Colors.white),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.secondary,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                     // backgroundColor: Colors.teal,
                     padding: const EdgeInsets.symmetric(vertical: 6),
                     shape: RoundedRectangleBorder(
@@ -326,7 +325,7 @@ class TeamMemberCard extends StatelessWidget {
                     style: TextStyle(color: Colors.white),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.secondary,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                     padding: const EdgeInsets.symmetric(vertical: 6),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -346,7 +345,7 @@ class TeamMemberCard extends StatelessWidget {
       width: 50,
       height: 50,
       decoration: BoxDecoration(
-        color: theme.colorScheme.secondary.withOpacity(0.1),
+        color: theme.colorScheme.primary.withOpacity(0.1),
         borderRadius: BorderRadius.circular(30),
       ),
       child: Center(
@@ -355,7 +354,7 @@ class TeamMemberCard extends StatelessWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: theme.colorScheme.secondary,
+            color: theme.colorScheme.primary,
           ),
         ),
       ),

@@ -178,7 +178,7 @@ class _PayrollPageState extends State<PayrollPage> {
                                   DateFormat('MMM d, yyyy').format(
                                       payrollcontroller.selectedDate.value!),
                                   style:
-                                      smallStyle.copyWith(color: Colors.black),
+                                      smallStyle.copyWith(color: Colors.white),
                                 ),
                                 const SizedBox(width: 5),
                                 GestureDetector(
@@ -188,7 +188,7 @@ class _PayrollPageState extends State<PayrollPage> {
                                   child: const Icon(
                                     Icons.clear,
                                     size: 20.0,
-                                    color: Colors.black,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ],

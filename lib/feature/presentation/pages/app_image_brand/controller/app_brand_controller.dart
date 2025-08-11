@@ -14,6 +14,7 @@ class AppBrandController extends GetxController {
   var appColor = '';
   var authappLogo = ''.obs;
   var authappColor = ''.obs;
+  var authappDate = ''.obs;
 
   Datum? get currentBrand => appBrand.value?.data.isNotEmpty ?? false
       ? appBrand.value!.data.first

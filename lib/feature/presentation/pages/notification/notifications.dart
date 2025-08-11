@@ -31,6 +31,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        foregroundColor: isDarkMode ? Colors.white : Colors.black,
+        titleSpacing: 0,
         elevation: 0,
         title: Text(
           'Notification',

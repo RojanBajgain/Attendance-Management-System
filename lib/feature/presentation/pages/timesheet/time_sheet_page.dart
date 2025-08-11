@@ -380,12 +380,16 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
                   children: [
                     Text(
                       "${DateFormat('MMM d').format(timesheetcontroller.dateRange.value!.start)} - ${DateFormat('MMM d').format(timesheetcontroller.dateRange.value!.end)}",
-                      style: smallStyle.copyWith(color: Colors.black),
+                      style: smallStyle.copyWith(color: Colors.white),
                     ),
                     const SizedBox(width: 5),
                     GestureDetector(
                       onTap: () => timesheetcontroller.clearDateRange(),
-                      child: const Icon(Icons.clear, size: 18),
+                      child: const Icon(
+                        Icons.clear,
+                        size: 18,
+                        color: Colors.white,
+                      ),
                     ),
                   ],
                 )

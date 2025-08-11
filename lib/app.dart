@@ -1,4 +1,3 @@
-import 'package:ams/config/resources/app_theme.dart';
 import 'package:ams/config/resources/colors.dart';
 import 'package:ams/config/routes/app_pages.dart';
 import 'package:ams/config/routes/route_helper.dart';
@@ -30,24 +29,20 @@ class App extends StatelessWidget {
             statusBarIconBrightness: Brightness.dark,
           ),
         );
+
         return Obx(() {
           final appBrandController = Get.find<AppBrandController>();
           final primaryColor = appBrandController.currentBrand != null
               ? hexToColor(appBrandController.currentBrand!.themeColor)
               : AppColors.blue;
 
-          // Adjust surface color for dark mode (e.g., darken the primary color)
-          final surfaceColorLight =
-              primaryColor; // Use yellow (#F1B939) directly
-          final surfaceColorDark =
-              primaryColor.withOpacity(0.2); // Darken for contrast
-
           return GetMaterialApp(
             builder: (context, child) {
               final mediaQuery = MediaQuery.of(context);
               return MediaQuery(
                 data: mediaQuery.copyWith(
-                    textScaler: const TextScaler.linear(1.0)),
+                  textScaler: const TextScaler.linear(1.0),
+                ),
                 child: child ?? const SizedBox(),
               );
             },
@@ -65,7 +60,7 @@ class App extends StatelessWidget {
                 onError: AppColors.onError,
                 background: AppColors.white,
                 onBackground: AppColors.black,
-                surface: surfaceColorLight, // Use server-provided color
+                surface: primaryColor,
                 onSurface: AppColors.black,
               ),
               textSelectionTheme: const TextSelectionThemeData(
@@ -79,34 +74,6 @@ class App extends StatelessWidget {
                 foregroundColor: AppColors.onPrimary,
               ),
             ),
-            darkTheme: ThemeData(
-              primaryColor: primaryColor,
-              colorScheme: ColorScheme.fromSeed(
-                seedColor: primaryColor,
-                brightness: Brightness.dark,
-                primary: primaryColor,
-                onPrimary: AppColors.onPrimary,
-                secondary: AppColors.secondary,
-                onSecondary: AppColors.onSecondary,
-                error: AppColors.error,
-                onError: AppColors.onError,
-                background: Colors.grey[900]!,
-                onBackground: AppColors.white,
-                surface: surfaceColorDark, // Adjusted for dark mode
-                onSurface: AppColors.white,
-              ),
-              textSelectionTheme: const TextSelectionThemeData(
-                cursorColor: AppColors.white,
-                selectionColor: AppColors.grey,
-                selectionHandleColor: AppColors.grey,
-              ),
-              scaffoldBackgroundColor: Colors.grey[900]!,
-              appBarTheme: AppBarTheme(
-                backgroundColor: primaryColor,
-                foregroundColor: AppColors.onPrimary,
-              ),
-            ),
-            themeMode: ThemeMode.system,
             initialRoute:
                 isLoggedIn ? RouteHelper.bottomnav : RouteHelper.landingpage,
             getPages: AppPages.routes,

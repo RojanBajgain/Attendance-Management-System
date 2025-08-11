@@ -52,68 +52,63 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return SafeArea(
       top: false,
-      child: RefreshIndicator(
-        onRefresh: () async {
-          await profilecontroller.getProfile();
-        },
-        child: Scaffold(
-          backgroundColor: isDarkMode ? Colors.black : Colors.grey.shade300,
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                _buildHeader(isDarkMode),
-                _buildProfileContent(isDarkMode),
-                const SizedBox(height: 20.0),
-                SizedBox(
-                  height: 50,
-                  child: Column(
-                    children: [
-                      Text(
-                        '© 2025 iHRTrack. All Rights Reserved',
-                        style: miniStyle.copyWith(
-                            fontSize: 11, color: Colors.grey),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Product of ",
-                            style: miniStyle.copyWith(
-                                fontSize: 11, color: Colors.grey),
-                          ),
-                          Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () {
-                                Helpers.launchWebsite();
-                              },
-                              splashColor: Colors.grey,
-                              borderRadius: BorderRadius.circular(12),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    "Ayata Inc",
-                                    style: miniStyle.copyWith(
-                                      fontSize: 12,
-                                      color: Colors.blueAccent,
-                                    ),
-                                  ),
-                                  const Icon(
-                                    Icons.arrow_outward_rounded,
-                                    size: 12,
+      child: Scaffold(
+        backgroundColor: isDarkMode ? Colors.black : Colors.grey.shade300,
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              _buildHeader(isDarkMode),
+              _buildProfileContent(isDarkMode),
+              const SizedBox(height: 20.0),
+              SizedBox(
+                height: 50,
+                child: Column(
+                  children: [
+                    Text(
+                      '© 2025 iHRTrack. All Rights Reserved',
+                      style:
+                          miniStyle.copyWith(fontSize: 11, color: Colors.grey),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Product of ",
+                          style: miniStyle.copyWith(
+                              fontSize: 11, color: Colors.grey),
+                        ),
+                        Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () {
+                              Helpers.launchWebsite();
+                            },
+                            splashColor: Colors.grey,
+                            borderRadius: BorderRadius.circular(12),
+                            child: Row(
+                              children: [
+                                Text(
+                                  "Ayata Inc",
+                                  style: miniStyle.copyWith(
+                                    fontSize: 12,
                                     color: Colors.blueAccent,
                                   ),
-                                ],
-                              ),
+                                ),
+                                const Icon(
+                                  Icons.arrow_outward_rounded,
+                                  size: 12,
+                                  color: Colors.blueAccent,
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      )
-                    ],
-                  ),
+                        ),
+                      ],
+                    )
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -459,11 +454,11 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         child: ListTile(
           leading: Icon(
-            Icons.business_center_outlined,
+            Icons.people_alt_outlined,
             color: isDarkMode ? Colors.white : Colors.black,
           ),
           title: Text(
-            "HR Details",
+            "View Teams",
             style: smallStyle.copyWith(
               fontWeight: FontWeight.w600,
               color: isDarkMode ? Colors.white : Colors.black,

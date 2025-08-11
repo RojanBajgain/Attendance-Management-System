@@ -9,7 +9,7 @@ class ThemeService extends GetxService {
   // Reactive properties
   final RxString _logoUrl = ''.obs;
   final RxString _faviconUrl = ''.obs;
-  final Rx<Color> _themeColor = Colors.blue.obs; // Default fallback color
+  final Rx<Color> _themeColor = Colors.blue.obs;
 
   ThemeService() {
     try {
