@@ -33,7 +33,7 @@ class _EventPageState extends State<EventPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
     _tabController.addListener(_handleTabSelection);
     filteredEvents = _filterEvents(activeTabType);
     if (_controller.eventCalenders.isEmpty &&
@@ -67,12 +67,15 @@ class _EventPageState extends State<EventPage>
           tabType = "EVENT";
           break;
         case 1:
-          tabType = "NOTICE";
+          tabType = "BIRTHDAY";
           break;
         case 2:
-          tabType = "HOLIDAY";
+          tabType = "NOTICE";
           break;
         case 3:
+          tabType = "HOLIDAY";
+          break;
+        case 4:
           tabType = "REMINDER";
           break;
         default:
@@ -85,6 +88,20 @@ class _EventPageState extends State<EventPage>
         });
       }
     }
+  }
+
+  final ScrollController horizontalScrollController = ScrollController();
+  void scrollToItem(int index) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double tabWidth = 100;
+    double targetOffset =
+        (index * tabWidth) - (screenWidth / 3) + (tabWidth / 2);
+    if (targetOffset < 0) targetOffset = 0;
+    horizontalScrollController.animateTo(
+      targetOffset,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   List<EventCalenderModel> _filterEvents(String type) {
@@ -119,6 +136,8 @@ class _EventPageState extends State<EventPage>
     switch (type.toUpperCase()) {
       case "EVENT":
         return 'Events';
+      case "BIRTHDAY":
+        return 'Birthday';
       case "NOTICE":
         return 'Notices';
       case "HOLIDAY":
@@ -166,22 +185,22 @@ class _EventPageState extends State<EventPage>
           titleSpacing: 0,
           leading: IconButton(
             onPressed: _handleBackNavigation,
-            icon: Icon(
+            icon: const Icon(
               Icons.arrow_back,
             ),
           ),
         ),
         floatingActionButton: FloatingActionButton.extended(
-          onPressed: _showAddReminderDialog,
+          onPressed: _showReminderDialog,
           backgroundColor: Theme.of(context).colorScheme.primary,
-          icon: Icon(
+          icon: const Icon(
             Icons.add,
-            color: Colors.black,
+            color: Colors.white,
           ),
-          label: Text(
+          label: const Text(
             'Reminder',
             style: TextStyle(
-              color: Colors.black,
+              color: Colors.white,
               fontSize: 12.0,
             ),
           ),
@@ -244,11 +263,16 @@ class _EventPageState extends State<EventPage>
                     color: isDarkMode ? Colors.grey[800] : Colors.grey[200],
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    controller: horizontalScrollController,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        //EVents
+                        GestureDetector(
                           onTap: () {
+                            scrollToItem(0);
                             _tabController.animateTo(0);
                             setState(() {
                               activeTabType = "EVENT";
@@ -256,7 +280,7 @@ class _EventPageState extends State<EventPage>
                             });
                           },
                           child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            padding: const EdgeInsets.all(15),
                             decoration: BoxDecoration(
                               color: activeTabType == "EVENT"
                                   ? (isDarkMode ? Colors.white : Colors.white)
@@ -308,19 +332,85 @@ class _EventPageState extends State<EventPage>
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: GestureDetector(
+                        const SizedBox(width: 4),
+                        //birthday
+                        GestureDetector(
                           onTap: () {
                             _tabController.animateTo(1);
+                            scrollToItem(1);
+                            setState(() {
+                              activeTabType = "BIRTHDAY";
+                              filteredEvents = _filterEvents(activeTabType);
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(15),
+                            decoration: BoxDecoration(
+                              color: activeTabType == "BIRTHDAY"
+                                  ? (isDarkMode ? Colors.white : Colors.white)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: activeTabType == "BIRTHDAY"
+                                  ? [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ]
+                                  : null,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.announcement_outlined,
+                                  size: 18,
+                                  color: activeTabType == "BIRTHDAY"
+                                      ? (isDarkMode
+                                          ? Colors.black
+                                          : Colors.black)
+                                      : (isDarkMode
+                                          ? Colors.white70
+                                          : Colors.black54),
+                                ),
+                                const SizedBox(width: 5),
+                                Text(
+                                  'Birthday',
+                                  style: smallNStyle.copyWith(
+                                    color: activeTabType == "Birthday"
+                                        ? (isDarkMode
+                                            ? Colors.black
+                                            : Colors.black)
+                                        : (isDarkMode
+                                            ? Colors.white70
+                                            : Colors.black54),
+                                    fontWeight: activeTabType == "Birthday"
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                    fontSize: 12.0,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+
+                        //notice
+                        GestureDetector(
+                          onTap: () {
+                            _tabController.animateTo(2);
+                            scrollToItem(2);
+
                             setState(() {
                               activeTabType = "NOTICE";
                               filteredEvents = _filterEvents(activeTabType);
                             });
                           },
                           child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            padding: const EdgeInsets.all(15),
                             decoration: BoxDecoration(
                               color: activeTabType == "NOTICE"
                                   ? (isDarkMode ? Colors.white : Colors.white)
@@ -372,19 +462,21 @@ class _EventPageState extends State<EventPage>
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: GestureDetector(
+
+                        const SizedBox(width: 4),
+                        //holiday
+                        GestureDetector(
                           onTap: () {
-                            _tabController.animateTo(2);
+                            _tabController.animateTo(3);
+                            scrollToItem(3);
+
                             setState(() {
                               activeTabType = "HOLIDAY";
                               filteredEvents = _filterEvents(activeTabType);
                             });
                           },
                           child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            padding: const EdgeInsets.all(15),
                             decoration: BoxDecoration(
                               color: activeTabType == "HOLIDAY"
                                   ? (isDarkMode ? Colors.white : Colors.white)
@@ -436,19 +528,20 @@ class _EventPageState extends State<EventPage>
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: GestureDetector(
+                        const SizedBox(width: 4),
+                        //reminder
+                        GestureDetector(
                           onTap: () {
-                            _tabController.animateTo(3);
+                            _tabController.animateTo(4);
+                            scrollToItem(4);
+
                             setState(() {
                               activeTabType = "REMINDER";
                               filteredEvents = _filterEvents(activeTabType);
                             });
                           },
                           child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            padding: const EdgeInsets.all(15),
                             decoration: BoxDecoration(
                               color: activeTabType == "REMINDER"
                                   ? (isDarkMode ? Colors.white : Colors.white)
@@ -500,8 +593,8 @@ class _EventPageState extends State<EventPage>
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -528,11 +621,12 @@ class _EventPageState extends State<EventPage>
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               _buildDateCircle(
                                 month: todayFormatted,
                                 day: dayFormatted,
-                                color: Colors.red,
+                                color: Theme.of(context).colorScheme.surface,
                               ),
                               const SizedBox(width: 16),
                               Expanded(
@@ -672,14 +766,20 @@ class _EventPageState extends State<EventPage>
                         Padding(
                           padding: const EdgeInsets.all(32),
                           child: Center(
-                            child: Text(
-                              "No ${getTabName(activeTabType).toLowerCase()} found",
-                              style: smallStyle.copyWith(
-                                color: isDarkMode
-                                    ? Colors.white70
-                                    : Colors.black54,
-                                fontSize: 12.0,
-                              ),
+                            child: Column(
+                              children: [
+                                Image.asset("assets/images/noEvent.png"),
+                                SizedBox(height: 20),
+                                Text(
+                                  "No ${getTabName(activeTabType).toLowerCase()} found",
+                                  style: smallStyle.copyWith(
+                                    color: isDarkMode
+                                        ? Colors.white70
+                                        : Colors.black54,
+                                    fontSize: 12.0,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         )
@@ -732,16 +832,78 @@ class _EventPageState extends State<EventPage>
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            Text(
-                                              event.title ??
-                                                  event.name ??
-                                                  "Untitled",
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                              maxLines: 5,
-                                              overflow: TextOverflow.ellipsis,
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(
+                                                  event.title ??
+                                                      event.name ??
+                                                      "Untitled",
+                                                  style: const TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                  maxLines: 5,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                                if (event.type?.toUpperCase() ==
+                                                    "REMINDER")
+                                                  Row(
+                                                    children: [
+                                                      Material(
+                                                        color:
+                                                            Colors.transparent,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(12),
+                                                        child: InkWell(
+                                                          onTap: () {
+                                                            _showReminderDialog(
+                                                                reminder:
+                                                                    event);
+                                                          },
+                                                          child: const Padding(
+                                                            padding:
+                                                                EdgeInsets.all(
+                                                                    8.0),
+                                                            child: Icon(
+                                                                Icons.edit,
+                                                                size: 18,
+                                                                color: Colors
+                                                                    .blue),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: 8),
+                                                      Material(
+                                                        color:
+                                                            Colors.transparent,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(12),
+                                                        child: InkWell(
+                                                          onTap: () {
+                                                            _showDeleteConfirmation(
+                                                                event.id);
+                                                          },
+                                                          child: const Padding(
+                                                            padding:
+                                                                EdgeInsets.all(
+                                                                    8.0),
+                                                            child: Icon(
+                                                                Icons.delete,
+                                                                size: 18,
+                                                                color:
+                                                                    Colors.red),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                              ],
                                             ),
                                             const SizedBox(height: 6),
                                             if (event.type != null)
@@ -775,44 +937,55 @@ class _EventPageState extends State<EventPage>
                                                 overflow: TextOverflow.ellipsis,
                                               ),
                                             const SizedBox(height: 6),
-                                            Row(
-                                              children: [
-                                                const Icon(Icons.calendar_today,
-                                                    size: 13,
-                                                    color: Colors.grey),
-                                                const SizedBox(width: 4),
-                                                Text(
-                                                  event.startDate != null
-                                                      ? (event.endDate !=
-                                                                  null &&
-                                                              event.startDate!
-                                                                      .year ==
-                                                                  event.endDate!
-                                                                      .year &&
-                                                              event.startDate!
-                                                                      .month ==
-                                                                  event.endDate!
-                                                                      .month &&
-                                                              event.startDate!
-                                                                      .day ==
-                                                                  event.endDate!
-                                                                      .day
-                                                          ? DateFormat(
-                                                                  'd MMM yyyy')
-                                                              .format(event
-                                                                  .startDate!)
-                                                          : "${DateFormat('d MMM yyyy').format(event.startDate!)} - ${DateFormat('d MMM yyyy').format(event.endDate ?? event.startDate!)}")
-                                                      : 'Date not specified',
-                                                  style: TextStyle(
-                                                    color: isDarkMode
-                                                        ? Colors.grey.shade400
-                                                        : Colors.black,
-                                                    fontSize: 11,
-                                                    fontStyle: FontStyle.italic,
+                                            if (event.type == "REMINDER")
+                                              Row(
+                                                children: [
+                                                  const Icon(
+                                                      Icons.calendar_today,
+                                                      size: 13,
+                                                      color: Colors.grey),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                    event.startDate != null
+                                                        ? (event.endDate !=
+                                                                    null &&
+                                                                event.startDate!
+                                                                        .year ==
+                                                                    event
+                                                                        .endDate!
+                                                                        .year &&
+                                                                event.startDate!
+                                                                        .month ==
+                                                                    event
+                                                                        .endDate!
+                                                                        .month &&
+                                                                event.startDate!
+                                                                        .day ==
+                                                                    event
+                                                                        .endDate!
+                                                                        .day
+                                                            ? DateFormat(event
+                                                                            .type ==
+                                                                        "Birthday"
+                                                                    ? 'd MMM'
+                                                                    : 'd MMM yyyy')
+                                                                .format(event
+                                                                    .startDate!)
+                                                            : "${DateFormat(event.type == "Birthday" ? 'd MMM' : 'd MMM yyyy').format(event.startDate!)}"
+                                                                " - "
+                                                                "${DateFormat(event.type == "Birthday" ? 'd MMM' : 'd MMM yyyy').format(event.endDate ?? event.startDate!)}")
+                                                        : 'Date not specified',
+                                                    style: TextStyle(
+                                                      color: isDarkMode
+                                                          ? Colors.grey.shade400
+                                                          : Colors.black,
+                                                      fontSize: 11,
+                                                      fontStyle:
+                                                          FontStyle.italic,
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
-                                            ),
+                                                ],
+                                              ),
                                             if (event.createdBy != null &&
                                                 event.createdBy!.isNotEmpty)
                                               Padding(
@@ -965,16 +1138,23 @@ class _EventPageState extends State<EventPage>
     );
   }
 
-  void _showAddReminderDialog() {
+  void _showReminderDialog({EventCalenderModel? reminder}) {
     final addReminderController = Get.put(
       AddReminderController(
         addReminderRepo: ReminderRepo(apiClient: Get.find<ApiClient>()),
       ),
     );
-    final titleController = TextEditingController();
-    final remarksController = TextEditingController();
-    DateTime? startDate;
-    DateTime? endDate;
+
+    final titleController = TextEditingController(
+      text: reminder?.title ?? '',
+    );
+    final remarksController = TextEditingController(
+      text: reminder?.remarks ?? '',
+    );
+
+    DateTime? startDate = reminder?.startDate;
+    DateTime? endDate = reminder?.endDate;
+
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     Get.dialog(
@@ -987,7 +1167,7 @@ class _EventPageState extends State<EventPage>
             ),
             title: Center(
               child: Text(
-                'Add New Reminder',
+                reminder == null ? 'Add New Reminder' : 'Edit Reminder',
                 style: TextStyle(
                   color: isDarkMode ? Colors.white : Colors.black,
                   fontSize: 14,
@@ -1002,8 +1182,8 @@ class _EventPageState extends State<EventPage>
               ),
               child: SingleChildScrollView(
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
                   children: [
+                    // Title
                     TextField(
                       controller: titleController,
                       style: TextStyle(
@@ -1020,73 +1200,32 @@ class _EventPageState extends State<EventPage>
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(
-                            color: isDarkMode
-                                ? Colors.grey.shade600
-                                : Colors.grey.shade400,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(
-                            color: isDarkMode
-                                ? Colors.grey.shade600
-                                : Colors.grey.shade400,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(
-                            color: isDarkMode ? Colors.white : Colors.black,
-                          ),
                         ),
                         contentPadding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 8),
                       ),
                     ),
                     const SizedBox(height: 12),
+                    // Remarks
                     TextField(
                       controller: remarksController,
+                      maxLines: 2,
                       style: TextStyle(
                         color: isDarkMode ? Colors.white : Colors.black,
                         fontSize: 14,
                       ),
                       decoration: InputDecoration(
                         labelText: 'Remarks',
-                        labelStyle: TextStyle(
-                          color: isDarkMode
-                              ? Colors.grey.shade400
-                              : Colors.grey.shade600,
-                          fontSize: 11,
-                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(
-                            color: isDarkMode
-                                ? Colors.grey.shade600
-                                : Colors.grey.shade400,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(
-                            color: isDarkMode
-                                ? Colors.grey.shade600
-                                : Colors.grey.shade400,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(
-                            color: isDarkMode ? Colors.white : Colors.black,
-                          ),
                         ),
                         contentPadding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 8),
                       ),
-                      maxLines: 2,
                     ),
                     const SizedBox(height: 12),
+
+                    // Dates
                     Row(
                       children: [
                         Expanded(
@@ -1094,92 +1233,24 @@ class _EventPageState extends State<EventPage>
                             onTap: () async {
                               final date = await showDatePicker(
                                 context: context,
-                                initialDate: DateTime.now(),
+                                initialDate: startDate ?? DateTime.now(),
                                 firstDate: DateTime.now(),
                                 lastDate: DateTime(2100),
-                                builder: (context, child) {
-                                  return Theme(
-                                    data: Theme.of(context).copyWith(
-                                      textTheme: TextTheme(
-                                        bodyLarge: TextStyle(
-                                          fontSize: 11.0,
-                                          color: isDarkMode
-                                              ? Colors.white
-                                              : Colors.black,
-                                        ),
-                                        bodyMedium: TextStyle(
-                                          fontSize: 11.0,
-                                          color: isDarkMode
-                                              ? Colors.white
-                                              : Colors.black,
-                                        ),
-                                      ),
-                                      colorScheme: ColorScheme.light(
-                                        primary: isDarkMode
-                                            ? Colors.white
-                                            : Colors.black,
-                                        onPrimary: isDarkMode
-                                            ? Colors.black
-                                            : Colors.white,
-                                        surface: isDarkMode
-                                            ? Colors.grey.shade800
-                                            : Colors.white,
-                                        onSurface: isDarkMode
-                                            ? Colors.white
-                                            : Colors.black,
-                                      ),
-                                      dialogBackgroundColor: isDarkMode
-                                          ? Colors.grey.shade800
-                                          : Colors.white,
-                                    ),
-                                    child: child!,
-                                  );
-                                },
                               );
                               if (date != null) {
-                                dialogSetState(() {
-                                  startDate = date;
-                                });
+                                dialogSetState(() => startDate = date);
                               }
                             },
                             child: InputDecorator(
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: 'Start Date',
-                                labelStyle: TextStyle(
-                                  color: isDarkMode
-                                      ? Colors.grey.shade400
-                                      : Colors.grey.shade600,
-                                  fontSize: 12,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(
-                                    color: isDarkMode
-                                        ? Colors.grey.shade600
-                                        : Colors.grey.shade400,
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(
-                                    color: isDarkMode
-                                        ? Colors.grey.shade600
-                                        : Colors.grey.shade400,
-                                  ),
-                                ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 8),
+                                border: OutlineInputBorder(),
                               ),
                               child: Text(
                                 startDate != null
                                     ? DateFormat('yyyy-MM-dd')
                                         .format(startDate!)
                                     : 'Select Date',
-                                style: TextStyle(
-                                  color:
-                                      isDarkMode ? Colors.white : Colors.black,
-                                  fontSize: 11,
-                                ),
                               ),
                             ),
                           ),
@@ -1190,91 +1261,24 @@ class _EventPageState extends State<EventPage>
                             onTap: () async {
                               final date = await showDatePicker(
                                 context: context,
-                                initialDate: startDate ?? DateTime.now(),
+                                initialDate:
+                                    endDate ?? startDate ?? DateTime.now(),
                                 firstDate: startDate ?? DateTime.now(),
                                 lastDate: DateTime(2100),
-                                builder: (context, child) {
-                                  return Theme(
-                                    data: Theme.of(context).copyWith(
-                                      textTheme: TextTheme(
-                                        bodyLarge: TextStyle(
-                                          fontSize: 11.0,
-                                          color: isDarkMode
-                                              ? Colors.white
-                                              : Colors.black,
-                                        ),
-                                        bodyMedium: TextStyle(
-                                          fontSize: 11.0,
-                                          color: isDarkMode
-                                              ? Colors.white
-                                              : Colors.black,
-                                        ),
-                                      ),
-                                      colorScheme: ColorScheme.light(
-                                        primary: isDarkMode
-                                            ? Colors.white
-                                            : Colors.black,
-                                        onPrimary: isDarkMode
-                                            ? Colors.black
-                                            : Colors.white,
-                                        surface: isDarkMode
-                                            ? Colors.grey.shade800
-                                            : Colors.white,
-                                        onSurface: isDarkMode
-                                            ? Colors.white
-                                            : Colors.black,
-                                      ),
-                                      dialogBackgroundColor: isDarkMode
-                                          ? Colors.grey.shade800
-                                          : Colors.white,
-                                    ),
-                                    child: child!,
-                                  );
-                                },
                               );
                               if (date != null) {
-                                setState(() {
-                                  endDate = date;
-                                });
+                                dialogSetState(() => endDate = date);
                               }
                             },
                             child: InputDecorator(
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: 'End Date',
-                                labelStyle: TextStyle(
-                                  color: isDarkMode
-                                      ? Colors.grey.shade400
-                                      : Colors.grey.shade600,
-                                  fontSize: 12,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(
-                                    color: isDarkMode
-                                        ? Colors.grey.shade600
-                                        : Colors.grey.shade400,
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(
-                                    color: isDarkMode
-                                        ? Colors.grey.shade600
-                                        : Colors.grey.shade400,
-                                  ),
-                                ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 8),
+                                border: OutlineInputBorder(),
                               ),
                               child: Text(
                                 endDate != null
                                     ? DateFormat('yyyy-MM-dd').format(endDate!)
                                     : 'Select Date',
-                                style: TextStyle(
-                                  color:
-                                      isDarkMode ? Colors.white : Colors.black,
-                                  fontSize: 11,
-                                ),
                               ),
                             ),
                           ),
@@ -1288,26 +1292,14 @@ class _EventPageState extends State<EventPage>
             actions: [
               TextButton(
                 onPressed: () => Get.back(),
-                style: TextButton.styleFrom(
-                  foregroundColor:
-                      isDarkMode ? Colors.grey.shade400 : Colors.grey.shade600,
-                ),
-                child: const Text(
-                  'Cancel',
-                  style: TextStyle(fontSize: 12),
-                ),
+                child: const Text('Cancel'),
               ),
               Obx(
                 () => addReminderController.isLoading.value
-                    ? SizedBox(
+                    ? const SizedBox(
                         width: 20,
                         height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            isDarkMode ? Colors.white : Colors.black,
-                          ),
-                        ),
+                        child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : ElevatedButton(
                         onPressed: () async {
@@ -1327,24 +1319,36 @@ class _EventPageState extends State<EventPage>
                             );
                             return;
                           }
+
                           final profileId = profileController.profile.value!.id;
 
-                          /* final profileId =
-                              profileController.profile.isNotEmpty &&
-                                      profileController.profile.first.id != 0
-                                  ? profileController.profile.first.id
-                                  : box.read('profile_id') ?? 1; */
+                          if (reminder == null) {
+                            // ADD
+                            await addReminderController.createtimeoff(
+                              profile: profileId,
+                              title: titleController.text,
+                              remarks: remarksController.text,
+                              startdate:
+                                  DateFormat('yyyy-MM-dd').format(startDate!),
+                              enddate: endDate != null
+                                  ? DateFormat('yyyy-MM-dd').format(endDate!)
+                                  : DateFormat('yyyy-MM-dd').format(startDate!),
+                            );
+                          } else {
+                            // EDIT
+                            await addReminderController.editReminder(
+                              reminderEvent: reminder.id.toString(),
+                              profile: profileId,
+                              title: titleController.text,
+                              remarks: remarksController.text,
+                              startdate:
+                                  DateFormat('yyyy-MM-dd').format(startDate!),
+                              enddate: endDate != null
+                                  ? DateFormat('yyyy-MM-dd').format(endDate!)
+                                  : DateFormat('yyyy-MM-dd').format(startDate!),
+                            );
+                          }
 
-                          await addReminderController.createtimeoff(
-                            profile: profileId,
-                            title: titleController.text,
-                            remarks: remarksController.text,
-                            startdate:
-                                DateFormat('yyyy-MM-dd').format(startDate!),
-                            enddate: endDate != null
-                                ? DateFormat('yyyy-MM-dd').format(endDate!)
-                                : DateFormat('yyyy-MM-dd').format(startDate!),
-                          );
                           if (!addReminderController.isLoading.value) {
                             Get.back();
                             _controller.getEventCalenders().then((_) {
@@ -1359,26 +1363,68 @@ class _EventPageState extends State<EventPage>
                             });
                           }
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              isDarkMode ? Colors.white : Colors.black,
-                          foregroundColor:
-                              isDarkMode ? Colors.black : Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: const Text(
-                          'Save',
-                          style: TextStyle(fontSize: 12),
-                        ),
+                        child: Text(reminder == null ? 'Save' : 'Update'),
                       ),
               ),
             ],
           );
         },
+      ),
+    );
+  }
+
+  void _showDeleteConfirmation(int reminderId) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final addReminderController = Get.put(
+      AddReminderController(
+        addReminderRepo: ReminderRepo(apiClient: Get.find<ApiClient>()),
+      ),
+    );
+    Get.dialog(
+      AlertDialog(
+        backgroundColor: isDarkMode ? Colors.grey.shade900 : Colors.white,
+        title: Center(
+          child: Text(
+            "Delete Reminder",
+            style: TextStyle(
+              color: isDarkMode ? Colors.white : Colors.black,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        content: Text(
+          "Are you sure you want to delete this reminder?",
+          style: TextStyle(
+            color: isDarkMode ? Colors.white70 : Colors.black87,
+            fontSize: 12,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              await addReminderController.deleteReminder(
+                  id: reminderId.toString());
+              Get.back();
+              _controller.getEventCalenders().then((_) {
+                if (mounted) {
+                  setState(() {
+                    filteredEvents = _filterEvents(activeTabType);
+                  });
+                }
+              });
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text("Delete"),
+          ),
+        ],
       ),
     );
   }

@@ -1,24 +1,32 @@
 // Fix for ClockInOutController
 import 'dart:developer';
+import 'dart:ffi';
 
 import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/repository/clock_in_out_repo.dart';
 import 'package:ams/feature/presentation/pages/dashboard/controller/has_clockedIn_controller.dart';
+import 'package:ams/feature/presentation/pages/dashboard/model/breaktime.dart';
 import 'package:ams/feature/presentation/pages/dashboard/model/check_access_point_model.dart';
 import 'package:ams/feature/presentation/pages/dashboard/model/clock_in_model.dart';
 import 'package:ams/feature/presentation/pages/dashboard/model/clock_out_model.dart';
 import 'package:ams/feature/presentation/pages/dashboard/model/location_model.dart';
+import 'package:ams/feature/presentation/pages/dashboard/model/resume_model.dart';
 import 'package:ams/feature/presentation/pages/dashboard/widget/clock_time.dart';
 import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:network_info_plus/network_info_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ClockInOutController extends GetxController {
   var clockin = ClockInModel().obs;
   var clockout = ClockOutModel().obs;
   var officelocation = <Datum>[].obs;
+  var resumeData = ResumeResponse().obs;
+  var breakTimes = <BreakTime>[].obs;
+
+  var totalBreakDuration = 0.0.obs;
   var isLoading = false.obs;
 
   var officeLocationError = ''.obs;
@@ -26,12 +34,13 @@ class ClockInOutController extends GetxController {
   final ClockInOutRepo clockinoutrepo;
 
   ClockInOutController({required this.clockinoutrepo});
+  Future<SharedPreferences> prefs = SharedPreferences.getInstance();
 
-  // @override
-  // void onInit() {
-  //   super.onInit();
-  //   getOfficeLocation();
-  // }
+  @override
+  void onInit() {
+    super.onInit();
+    getBreakTime();
+  }
 
   // Get Office Location
   Future<Location?> getOfficeLocation() async {
@@ -75,6 +84,47 @@ class ClockInOutController extends GetxController {
       log("⛔ Error getting IP address: $e");
       return null;
     }
+  }
+
+  int calculateTotalBreakSeconds(List<BreakTime> breaks) {
+    double total = 0;
+
+    for (var b in breaks) {
+      if (b.totalBreakDuration != null) {
+        total += b.totalBreakDuration!;
+      }
+    }
+
+    return total.toInt();
+  }
+
+  Future<void> getBreakTime() async {
+    try {
+      ApiResponse ipResponse = await clockinoutrepo.breaktime();
+
+      if (ipResponse.status == ApiStatus.SUCCESS) {
+        List<BreakTime> breaks = List<BreakTime>.from(ipResponse.response);
+      final prefs = await SharedPreferences.getInstance();
+
+if (breaks.last.isCompleted == true) {
+  prefs.setBool('isOnBreak', false);
+} else {
+  prefs.setBool('isOnBreak', true);
+  breakTimes.assignAll(breaks);
+  double total = calculateTotalBreakDuration(breakTimes);
+  totalBreakDuration.value = total;
+}
+
+  double total = calculateTotalBreakDuration(breakTimes);
+  totalBreakDuration.value = total;
+
+
+      }
+    } catch (e) {}
+  }
+
+  double calculateTotalBreakDuration(List<BreakTime> breaks) {
+    return breaks.fold(0, (sum, item) => sum + (item.totalBreakDuration ?? 0));
   }
 
   // Post Clock In with improved error handling
@@ -225,7 +275,8 @@ class ClockInOutController extends GetxController {
         final hasClockedinController = Get.find<HasClockedinController>();
         // FIXED: Don't set to null on break
         // hasClockedinController.clockedInTime.value = null;
-
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setBool('isOnBreak', true);
         Get.back();
         SSnackbarUtil.showFadeSnackbar(
             // "Posted On Break",
@@ -283,6 +334,13 @@ class ClockInOutController extends GetxController {
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
         log("Fetched created resume data: ${response.response}");
+        resumeData.value = response.response;
+
+        log('${resumeData.value.totalBreakDuration}');
+        getBreakTime();
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+
+        prefs.setBool('isOnBreak', false);
 
         final hasClockedinController = Get.find<HasClockedinController>();
         // FIXED: Don't set to null on resume

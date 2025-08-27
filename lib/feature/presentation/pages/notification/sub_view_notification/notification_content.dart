@@ -1,16 +1,17 @@
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/notification/model/notification_model.dart';
 import 'package:flutter/material.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class NotificationsContent extends StatefulWidget {
   final String calenderTxt;
   final String calenderDate;
   final String contextTxt;
   final String contextTxtDetail;
-  final String contextTime;
+  final DateTime contextTime;
   final Datum notificationdata;
-
-  const NotificationsContent({
+  final VoidCallback ontap;
+  NotificationsContent({
     super.key,
     required this.calenderTxt,
     required this.calenderDate,
@@ -18,6 +19,7 @@ class NotificationsContent extends StatefulWidget {
     required this.contextTxtDetail,
     required this.contextTime,
     required this.notificationdata,
+    required this.ontap,
   });
 
   @override
@@ -110,13 +112,25 @@ class _NotificationsContentState extends State<NotificationsContent> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    widget.contextTxt,
-                    style: smallStyle.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: isDarkMode ? Colors.white : Colors.black,
-                      fontSize: 12.0,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        widget.contextTxt,
+                        style: smallStyle.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: isDarkMode ? Colors.white : Colors.black,
+                          fontSize: 12.0,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: widget.ontap,
+                        child: Icon(
+                          Icons.close,
+                          size: 15,
+                        ),
+                      )
+                    ],
                   ),
                   const SizedBox(height: 5.0),
                   Column(
@@ -156,7 +170,7 @@ class _NotificationsContentState extends State<NotificationsContent> {
                   ),
                   const SizedBox(height: 5.0),
                   Text(
-                    widget.contextTime,
+                    timeago.format(widget.contextTime),
                     style: miniStyle.copyWith(
                       color: isDarkMode ? Colors.grey[400] : Colors.black,
                       fontStyle: FontStyle.italic,

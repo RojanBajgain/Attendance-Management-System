@@ -558,7 +558,7 @@ class TimeOffSheet extends StatelessWidget {
                               padding: const EdgeInsets.symmetric(
                                   vertical: 10, horizontal: 16),
                               decoration: BoxDecoration(
-                                color: Colors.blue,
+                                color: Theme.of(context).colorScheme.surface,
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Center(

@@ -357,7 +357,7 @@ class _EditUserBankState extends State<EditUserBank> {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Obx(() {
           final hasBankDetails = _bankDetailsList.isNotEmpty;
 
@@ -449,6 +449,7 @@ class _EditUserBankState extends State<EditUserBank> {
         _buildBankTextField(
           "Account Number",
           bank.bankAccount,
+          keyboardType: const TextInputType.numberWithOptions(),
           isDarkMode,
           onChanged: (value) {
             bank.bankAccount = value;
@@ -569,11 +570,19 @@ class _EditUserBankState extends State<EditUserBank> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 11,
+              color: Colors.black,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 6),
           TextField(
             controller: controller,
             keyboardType: keyboardType,
             decoration: InputDecoration(
-              labelText: title,
               border: OutlineInputBorder(
                 borderSide: BorderSide(
                   color: hasError
@@ -700,6 +709,7 @@ class _EditUserBankState extends State<EditUserBank> {
 
   Widget _buildAddNewBankSection(bool isDarkMode) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [

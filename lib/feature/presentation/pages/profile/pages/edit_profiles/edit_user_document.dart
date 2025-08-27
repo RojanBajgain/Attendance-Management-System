@@ -6,6 +6,7 @@ import 'package:ams/feature/presentation/pages/profile/controller/profile_contro
 import 'package:ams/feature/presentation/pages/profile/model/profile_model.dart';
 import 'package:ams/feature/presentation/pages/profile/pages/edit_profiles/edit_user_bank.dart';
 import 'package:ams/feature/presentation/pages/profile/pages/edit_profiles/edit_user_info.dart';
+import 'package:ams/feature/presentation/pages/profile/widget/custom_textfield.dart';
 import 'package:ams/feature/presentation/pages/profile/widget/image_uploader.dart';
 import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -500,11 +501,19 @@ class _EditUserDocumentState extends State<EditUserDocument> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text(
+            'Issued Date',
+            style: TextStyle(
+              fontSize: 11,
+              color: Colors.black,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 6),
           TextField(
             controller: controller,
             readOnly: true,
             decoration: InputDecoration(
-              labelText: title,
               border: OutlineInputBorder(
                 borderSide: BorderSide(
                   color: hasError
@@ -615,87 +624,87 @@ class _EditUserDocumentState extends State<EditUserDocument> {
     );
   }
 
-  Widget _buildTextField(
-    String title,
-    TextEditingController controller,
-    bool isDarkMode, {
-    bool enabled = true,
-    TextInputType? keyboardType,
-    required String fieldKey,
-  }) {
-    final hasError = _fieldErrors.containsKey(fieldKey);
+  // Widget _buildTextField(
+  //   String title,
+  //   TextEditingController controller,
+  //   bool isDarkMode, {
+  //   bool enabled = true,
+  //   TextInputType? keyboardType,
+  //   required String fieldKey,
+  // }) {
+  //   final hasError = _fieldErrors.containsKey(fieldKey);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextField(
-            controller: controller,
-            enabled: enabled,
-            keyboardType: keyboardType,
-            decoration: InputDecoration(
-              labelText: title,
-              border: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: hasError
-                      ? Colors.red
-                      : (isDarkMode ? Colors.white70 : Colors.black54),
-                ),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: hasError
-                      ? Colors.red
-                      : (isDarkMode ? Colors.white70 : Colors.black54),
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: hasError
-                      ? Colors.red
-                      : (isDarkMode ? Colors.blueAccent : Colors.black),
-                  width: 2.0,
-                ),
-              ),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-              labelStyle: smallStyle.copyWith(
-                color: hasError
-                    ? Colors.red
-                    : (isDarkMode ? Colors.white70 : Colors.black54),
-                fontSize: 11,
-              ),
-              filled: !enabled,
-              fillColor: !enabled
-                  ? (isDarkMode ? Colors.grey[700] : Colors.grey[200])
-                  : null,
-            ),
-            style: smallStyle.copyWith(
-              color: isDarkMode ? Colors.white : Colors.black,
-              fontSize: 11,
-            ),
-            onChanged: (value) {
-              if (hasError) {
-                setState(() {
-                  _fieldErrors.remove(fieldKey);
-                });
-              }
-              _checkForChanges();
-            },
-          ),
-          if (hasError)
-            Padding(
-              padding: const EdgeInsets.only(top: 4, left: 12),
-              child: Text(
-                _fieldErrors[fieldKey]!,
-                style: const TextStyle(color: Colors.red, fontSize: 12),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(vertical: 8),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         TextField(
+  //           controller: controller,
+  //           enabled: enabled,
+  //           keyboardType: keyboardType,
+  //           decoration: InputDecoration(
+  //             // labelText: title,
+  //             border: OutlineInputBorder(
+  //               borderSide: BorderSide(
+  //                 color: hasError
+  //                     ? Colors.red
+  //                     : (isDarkMode ? Colors.white70 : Colors.black54),
+  //               ),
+  //             ),
+  //             enabledBorder: OutlineInputBorder(
+  //               borderSide: BorderSide(
+  //                 color: hasError
+  //                     ? Colors.red
+  //                     : (isDarkMode ? Colors.white70 : Colors.black54),
+  //               ),
+  //             ),
+  //             focusedBorder: OutlineInputBorder(
+  //               borderSide: BorderSide(
+  //                 color: hasError
+  //                     ? Colors.red
+  //                     : (isDarkMode ? Colors.blueAccent : Colors.black),
+  //                 width: 2.0,
+  //               ),
+  //             ),
+  //             contentPadding:
+  //                 const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+  //             labelStyle: smallStyle.copyWith(
+  //               color: hasError
+  //                   ? Colors.red
+  //                   : (isDarkMode ? Colors.white70 : Colors.black54),
+  //               fontSize: 11,
+  //             ),
+  //             filled: !enabled,
+  //             fillColor: !enabled
+  //                 ? (isDarkMode ? Colors.grey[700] : Colors.grey[200])
+  //                 : null,
+  //           ),
+  //           style: smallStyle.copyWith(
+  //             color: isDarkMode ? Colors.white : Colors.black,
+  //             fontSize: 11,
+  //           ),
+  //           onChanged: (value) {
+  //             if (hasError) {
+  //               setState(() {
+  //                 _fieldErrors.remove(fieldKey);
+  //               });
+  //             }
+  //             _checkForChanges();
+  //           },
+  //         ),
+  //         if (hasError)
+  //           Padding(
+  //             padding: const EdgeInsets.only(top: 4, left: 12),
+  //             child: Text(
+  //               _fieldErrors[fieldKey]!,
+  //               style: const TextStyle(color: Colors.red, fontSize: 12),
+  //             ),
+  //           ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -831,7 +840,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
           fieldKey: 'doc_${documentId}_type',
         ),
         const SizedBox(height: 10),
-        _buildTextField(
+        CustomTextField(
           "Title",
           controllers['title']!,
           isDarkMode,
@@ -845,8 +854,8 @@ class _EditUserDocumentState extends State<EditUserDocument> {
           fieldKey: 'doc_${documentId}_issuedDate',
         ),
         const SizedBox(height: 10),
-        _buildTextField(
-          "Identifier",
+        CustomTextField(
+          '${selectedDocumentTypes[documentId] ?? document.type} Number',
           controllers['identifier']!,
           isDarkMode,
           fieldKey: 'doc_${documentId}_identifier',
@@ -1017,7 +1026,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
           fieldKey: 'new_doc_type',
         ),
         const SizedBox(height: 16),
-        _buildTextField(
+        CustomTextField(
           "New Document Title",
           newDocumentTitleController,
           isDarkMode,
@@ -1031,7 +1040,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
           fieldKey: 'new_doc_issuedDate',
         ),
         const SizedBox(height: 16),
-        _buildTextField(
+        CustomTextField(
           "New Document Identifier",
           newDocumentIdentifierController,
           isDarkMode,
@@ -1092,25 +1101,47 @@ class _EditUserDocumentState extends State<EditUserDocument> {
               ),
             );
           }).toList(),
-          dropdownStyleData: DropdownStyleData(
-            maxHeight: 300,
-            decoration: BoxDecoration(
-              color: isDarkMode ? Colors.grey.shade800 : Colors.white,
-              borderRadius: BorderRadius.circular(13),
-            ),
-          ),
-          buttonStyleData: ButtonStyleData(
-            height: 50,
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(13),
-              color: isDarkMode ? Colors.grey.shade800 : Colors.grey.shade50,
-              border: Border.all(
-                color: hasError
-                    ? Colors.red
-                    : (isDarkMode ? Colors.white70 : Colors.black54),
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.symmetric(vertical: 2),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: isDarkMode ? Colors.white70 : Colors.black54,
               ),
             ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: isDarkMode ? Colors.white70 : Colors.black54,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: isDarkMode ? Colors.blueAccent : Colors.black,
+                width: 2.0,
+              ),
+            ),
+            filled: true,
+            fillColor: isDarkMode ? Colors.grey[800] : Colors.grey[50],
+          ),
+          dropdownStyleData: DropdownStyleData(
+            maxHeight: 200,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(13),
+              color: isDarkMode ? Colors.grey[800] : Colors.white,
+            ),
+          ),
+          iconStyleData: IconStyleData(
+            icon: Icon(
+              Icons.keyboard_arrow_down,
+              color: isDarkMode ? Colors.white : Colors.black,
+            ),
+            iconSize: 24,
+          ),
+          buttonStyleData: const ButtonStyleData(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            height: 20,
           ),
         ),
         if (hasError)
@@ -1136,7 +1167,7 @@ class _EditUserDocumentState extends State<EditUserDocument> {
               if (Get.isDialogOpen == true) {
                 Get.back();
               }
-              Get.to(() => const EditUserInfo());
+              Get.back();
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.surface,

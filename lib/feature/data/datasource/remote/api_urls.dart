@@ -2,6 +2,7 @@ import 'package:ams/feature/domain/model/environment.dart';
 
 class ApiUrls {
   static final String baseUrl = Environment.apiBaseUrl;
+  // static const String baseUrl = "https://backend.ams.ayata.com.np/";
 
   static const String login = "api/login/";
 
@@ -78,6 +79,7 @@ class ApiUrls {
   static const String ipaddress = "https://api.ipify.org/?format=json";
 
   static const String accesspoint = "api/geolocation/check-access-point/";
+  static const String breaktime = "api/timesheets/breaktime/";
 
   static const String onbreak = "api/timesheets/breaktime/start/";
   static const String onresume = "api/timesheets/breaktime/resume/";

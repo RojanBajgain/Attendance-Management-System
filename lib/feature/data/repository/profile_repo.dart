@@ -83,6 +83,7 @@ class ProfileRepo {
     String joinedDate,
     List<String> skills,
     File? resume,
+    String empno,
   ) async {
     try {
       final token = await apiClient.token;
@@ -103,11 +104,12 @@ class ProfileRepo {
       request.fields['id'] = id.toString();
       request.fields['user.full_name'] = username;
       request.fields['dob'] = dob;
+
       request.fields['phone_number'] = phonenumber;
       request.fields['gender'] = gender;
       request.fields['joined_date'] = joinedDate;
       request.fields['skills'] = skills.join(",");
-
+      request.fields['employee_no'] = empno;
       // Add profile image file if it exists
       if (profileImage != null) {
         var profileImageFile = await http.MultipartFile.fromPath(

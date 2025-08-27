@@ -146,6 +146,8 @@ class ProfileController extends GetxController {
     required String dob,
     required String phonenumber,
     required String gender,
+        required String empno,
+
     required String joinedDate,
     required List<String> skills,
     required File? resume,
@@ -162,9 +164,12 @@ class ProfileController extends GetxController {
         joinedDate,
         skills,
         resume,
+        empno
       );
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
+        getProfile();
+        getProfileDetailData(id.toString());
       } else {
         SSnackbarUtil.showFadeSnackbar(
           Get.context!,

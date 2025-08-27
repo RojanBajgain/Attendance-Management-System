@@ -301,11 +301,7 @@ class AuthController extends GetxController {
 
       Get.back(); // Close loading
 
-      if (response.status == ApiStatus.SUCCESS ||
-          (response.status == ApiStatus.ERROR &&
-              response.message
-                      ?.contains('Unable to change password at this time') ==
-                  true)) {
+      if (response.status == ApiStatus.SUCCESS) {
         // Success case - clear tokens and redirect to login
         await _clearAuthData();
 
@@ -330,6 +326,8 @@ class AuthController extends GetxController {
           errorMessage = 'Incorrect current password';
         } else if (errorMessage.toLowerCase().contains('too common')) {
           errorMessage = 'Password is too common';
+        } else if (errorMessage.toLowerCase().contains('new_password1')) {
+          errorMessage = 'commonPassword is too ';
         } else if (errorMessage.toLowerCase().contains('too short')) {
           errorMessage = 'Password must be at least 8 characters';
         }

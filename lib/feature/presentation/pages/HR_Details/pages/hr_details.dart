@@ -2,6 +2,8 @@ import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/HR_Details/controller/hr_detail_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:ams/feature/presentation/pages/HR_Details/model/hr_detail_model.dart';
 
@@ -130,12 +132,14 @@ class TeamMemberCard extends StatelessWidget {
   final OrganizationStaffModel staff;
   final ThemeData theme;
 
-  const TeamMemberCard({
+  TeamMemberCard({
     super.key,
     required this.staff,
     required this.theme,
   });
-
+  final controller = Get.put(OrganizationStaffController(
+    organizationStaffRepo: Get.find(),
+  ));
   String getInitials(String name) {
     if (name.isEmpty) return 'NA';
     final parts = name.split(' ');
@@ -143,24 +147,24 @@ class TeamMemberCard extends StatelessWidget {
     return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
   }
 
-  String formatJoinDate(DateTime? date) {
-    if (date == null) return 'Joined date not available';
-    final monthNames = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec'
-    ];
-    return 'Joined ${monthNames[date.month - 1]} ${date.year}';
-  }
+  // String formatJoinDate(DateTime? date) {
+  //   if (date == null) return 'Joined date not available';
+  //   final monthNames = [
+  //     'Jan',
+  //     'Feb',
+  //     'Mar',
+  //     'Apr',
+  //     'May',
+  //     'Jun',
+  //     'Jul',
+  //     'Aug',
+  //     'Sep',
+  //     'Oct',
+  //     'Nov',
+  //     'Dec'
+  //   ];
+  //   return 'Joined ${monthNames[date.month - 1]} ${date.year}';
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -172,7 +176,13 @@ class TeamMemberCard extends StatelessWidget {
     final textColor = isDarkMode ? Colors.white : Colors.black87;
     final secondaryTextColor =
         isDarkMode ? Colors.grey[400]! : Colors.grey[600]!;
+    GetStorage box = GetStorage();
 
+    final int userid = box.read('user_id');
+
+    if (staff.id == userid) {
+      return const SizedBox.shrink();
+    }
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(20),
@@ -230,7 +240,7 @@ class TeamMemberCard extends StatelessWidget {
                     Text(
                       staff.designation.isNotEmpty
                           ? staff.designation
-                          : 'No designation',
+                          : 'Admin',
                       style: TextStyle(
                         fontSize: 12,
                         color: secondaryTextColor,
@@ -243,9 +253,11 @@ class TeamMemberCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    staff.employeeType.isNotEmpty
-                        ? staff.employeeType
-                        : 'No type',
+                    staff.role == 'Admin'
+                        ? ''
+                        : staff.employeeType.isNotEmpty
+                            ? staff.employeeType
+                            : 'No type',
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
@@ -254,7 +266,7 @@ class TeamMemberCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    staff.role.isNotEmpty ? staff.role : 'No role',
+                    staff.role == 'Admin' ? '' : staff.role,
                     style: TextStyle(
                       fontSize: 12,
                       color: textColor,
@@ -279,7 +291,7 @@ class TeamMemberCard extends StatelessWidget {
               if (staff.joinedDate != null)
                 _buildInfoRow(
                   Icons.calendar_today_outlined,
-                  formatJoinDate(staff.joinedDate),
+                  ' ${DateFormat("d MMMM',' y").format(staff.joinedDate ?? DateTime.now())}',
                   secondaryTextColor,
                 ),
             ],

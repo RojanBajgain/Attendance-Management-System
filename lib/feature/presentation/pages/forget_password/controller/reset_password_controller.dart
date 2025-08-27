@@ -2,6 +2,8 @@ import 'dart:developer';
 
 import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/repository/reset_password_repo.dart';
+import 'package:ams/feature/presentation/pages/login/login_page.dart';
+import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -20,27 +22,14 @@ class ResetPasswordController extends GetxController {
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
         log("Fetched reset password data: ${response.response}");
 
-        Get.back();
-
-        Get.snackbar(
-          'Reset Password',
-          response.message ??
-              'Password Reset has been successfully posted, Please check your mail',
-          snackPosition: SnackPosition.TOP,
-          duration: const Duration(seconds: 3),
-          colorText: Colors.white,
-          backgroundColor: Colors.green,
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
+          'Password reset email sent',
+          SnackbarType.success,
         );
+        Get.off(() => const LoginPage());
       } else {
         log("Error: ${response.message}");
-        // Get.snackbar(
-        //   'Server Error',
-        //   'Failed to post password reset. Please try again later',
-        //   snackPosition: SnackPosition.BOTTOM,
-        //   duration: const Duration(seconds: 3),
-        //   colorText: Colors.white,
-        //   backgroundColor: Colors.redAccent,
-        // );
       }
     } catch (e) {
       if (kDebugMode) {

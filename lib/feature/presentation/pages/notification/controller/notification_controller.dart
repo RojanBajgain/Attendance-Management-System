@@ -2,6 +2,8 @@ import 'dart:developer';
 import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/repository/notification_repo.dart';
 import 'package:ams/feature/presentation/pages/notification/model/notification_model.dart';
+import 'package:ams/feature/utils/ssnackbar_utils.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:collection/collection.dart'; // For firstWhereOrNull
 
@@ -12,21 +14,34 @@ class NotificationController extends GetxController {
 
   var isLoading = false.obs;
   var errorMessage = ''.obs;
+  var hasMore = true.obs;
+  var page = 1;
+  final int limit = 10;
+  var unreadCount = 0.obs;
 
   final NotificationRepo notificationrepo;
 
   NotificationController({required this.notificationrepo});
 
-  // @override
-  // void onInit() {
-  //   getNotification();
-  //   super.onInit();
-  // }
+  @override
+  void onInit() {
+    getNotification();
 
-  Future<void> getNotification() async {
+    super.onInit();
+  }
+
+  Future<void> getNotification({bool loadMore = false}) async {
+    if (loadMore) {
+      if (!hasMore.value || isLoading.value) return;
+      page++;
+    } else {
+      page = 1;
+      hasMore.value = true;
+    }
     isLoading(true);
     try {
-      ApiResponse response = await notificationrepo.getNotification();
+      ApiResponse response =
+          await notificationrepo.getNotification(page: page, limit: limit);
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
         log("Fetched Notification data: ${response.response}");
@@ -41,8 +56,17 @@ class NotificationController extends GetxController {
             newNotif.isRead = existing.isRead;
           }
         }
+        if (loadMore) {
+          notification.addAll(newData);
+        } else {
+          notification.value = newData;
+        }
 
-        notification.value = newData;
+        hasMore.value =
+            notificationdata.currentPage < notificationdata.totalPages;
+
+        unreadCount.value = notification.where((n) => n.isRead == false).length;
+        // notification.value = newData;
         log("Notification list length: ${notification.length}, Unread: ${notification.where((n) => n.isRead == false).length}");
       } else {
         log("Error: ${response.message}");
@@ -57,6 +81,10 @@ class NotificationController extends GetxController {
     }
   }
 
+  void loadMore() {
+    getNotification(loadMore: true);
+  }
+
   Future<void> markAllAsRead() async {
     try {
       log("Before marking read: Unread count: ${notification.where((n) => n.isRead == false).length}");
@@ -64,10 +92,33 @@ class NotificationController extends GetxController {
         notif.isRead = true;
       }
       notification.refresh();
+      unreadCount.value = 0;
       log("After marking read: Unread count: ${notification.where((n) => n.isRead == false).length}");
     } catch (e) {
       log("Error marking notifications as read: $e");
       errorMessage.value = "An error occurred: $e";
     }
+  }
+
+  Future<void> delelteNotification(int id) async {
+    try {
+      ApiResponse response = await notificationrepo.deleteNotification(id);
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
+        'Notification deleted.',
+        SnackbarType.success,
+      );
+      getNotification(loadMore: false);
+
+      print(' detelet $response');
+    } catch (e) {
+    } finally {}
+  }
+
+  //read notification
+  Future<void> readNotification() async {
+    ApiResponse response = await notificationrepo.readNotification();
+    getNotification();
+    print(response);
   }
 }

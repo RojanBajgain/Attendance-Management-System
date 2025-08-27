@@ -77,48 +77,40 @@ class _ConstantAppBarState extends State<ConstantAppBar> {
         }
       }),
       actions: <Widget>[
-        IconButton(
-          onPressed: () async {
-            await notificationcontroller.markAllAsRead();
-            Future.delayed(const Duration(milliseconds: 100), () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) => const NotificationsPage(),
-              //   ),
-              // );
-              Get.to(
-                () => const NotificationsPage(),
-                transition: Transition.rightToLeft,
-                duration: const Duration(milliseconds: 100),
-              );
-            });
-          },
-          icon: badges.Badge(
-            showBadge: notificationcontroller.notification
-                .any((notif) => notif.isRead == false),
-            badgeContent: Text(
-              notificationcontroller.notification
-                  .where((notif) => notif.isRead == false)
-                  .length
-                  .toString(),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
+        Obx(() => IconButton(
+              onPressed: () async {
+                notificationcontroller.readNotification();
+                Future.delayed(const Duration(milliseconds: 100), () {
+                  Get.to(
+                    () => const NotificationsPage(),
+                    transition: Transition.rightToLeft,
+                    duration: const Duration(milliseconds: 100),
+                  );
+                });
+              },
+              icon: badges.Badge(
+                showBadge: notificationcontroller.notification
+                    .where((e) => e.isRead == false)
+                    .isNotEmpty,
+                badgeContent: Text(
+                  notificationcontroller.unreadCount.value.toString(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                badgeStyle: const badges.BadgeStyle(
+                  badgeColor: Colors.red,
+                  padding: EdgeInsets.all(8),
+                ),
+                child: Icon(
+                  Icons.notifications_none_outlined,
+                  color: isDarkMode ? Colors.white : Colors.black,
+                  size: 25.0,
+                ),
               ),
-            ),
-            badgeStyle: const badges.BadgeStyle(
-              badgeColor: Colors.red,
-              padding: EdgeInsets.all(6),
-            ),
-            child: Icon(
-              Icons.notifications_none_outlined,
-              color: isDarkMode ? Colors.white : Colors.black,
-              size: 25.0,
-            ),
-          ),
-        ),
+            )),
 
         // Events
         IconButton(

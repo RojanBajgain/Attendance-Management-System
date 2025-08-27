@@ -12,7 +12,7 @@ class EventTooltip extends StatelessWidget {
   final VoidCallback onViewAll;
   final BuildContext rootContext;
 
-  const EventTooltip({
+  EventTooltip({
     super.key,
     required this.isDarkMode,
     required this.controller,
@@ -55,11 +55,11 @@ class EventTooltip extends StatelessWidget {
             ),
           );
         }
+        final today = DateTime.now();
 
         // Filter today's data (all types: events, holidays, notices)
         final todayEvents = controller.eventCalenders.where((event) {
           if (event.startDate == null) return false;
-          final today = DateTime.now();
           return isSameDay(event.startDate!, today);
         }).toList();
 
@@ -76,7 +76,7 @@ class EventTooltip extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               child: Center(
                 child: Text(
-                  "Today's Schedule",
+                  "Today's Schedule (${DateFormat("d MMMM',' y").format(today)})",
                   style: smallNStyle.copyWith(
                     fontWeight: FontWeight.bold,
                     color: isDarkMode ? Colors.white : Colors.black87,

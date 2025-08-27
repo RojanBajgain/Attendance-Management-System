@@ -7,7 +7,7 @@ class Environment {
 
     return '.env.development'; // Replace with your desired default or logic
   }
-
+ 
   static String get apiBaseUrl {
     return dotenv.env['API_BASE_URL'] ?? "API_BASE_URL not specified";
   }

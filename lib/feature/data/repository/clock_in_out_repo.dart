@@ -5,8 +5,10 @@ import 'dart:developer';
 import 'package:ams/feature/data/datasource/remote/api_client.dart';
 import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/datasource/remote/api_urls.dart';
+import 'package:ams/feature/presentation/pages/dashboard/model/breaktime.dart';
 import 'package:ams/feature/presentation/pages/dashboard/model/check_access_point_model.dart';
 import 'package:ams/feature/presentation/pages/dashboard/model/location_model.dart';
+import 'package:ams/feature/presentation/pages/dashboard/model/resume_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
@@ -225,7 +227,28 @@ class ClockInOutRepo {
       return ApiResponse.error('Clock-out failed: $e');
     }
   }
+//get breaktime
+  Future<ApiResponse> breaktime() async {
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
 
+    // Use consistent base URL
+    const url = ApiUrls.breaktime;
+
+    if (kDebugMode) {
+      print(url);
+    }
+
+    final response = await apiClient.getApi(
+    
+      url,
+      token: token,
+      apiKey: organization,
+      fromJson: (json) => List<BreakTime>.from(
+      (json as List).map((x) => BreakTime.fromJson(x)),)
+    );
+    return response;
+  }
   // Post on Break
   Future<ApiResponse> postOnBreak(int employeeId) async {
     final token = await apiClient.token;
@@ -275,7 +298,7 @@ class ClockInOutRepo {
       url,
       token: token,
       apiKey: organization,
-      fromJson: null,
+      fromJson:  (json) => ResumeResponse.fromJson(json),
     );
     return response;
   }

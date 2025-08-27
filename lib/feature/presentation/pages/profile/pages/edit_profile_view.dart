@@ -95,6 +95,7 @@ class _EditProfileViewState extends State<EditProfileView> {
 
         // Call the update method
         await profilecontroller.postProfileUpdate(
+          empno: profilecontroller.profile.value?.userRecords!.first.employeeNo.toString() ??'' , 
           dob: profile.dob != null
               ? DateFormat('yyyy-MM-dd').format(profile.dob!)
               : "",

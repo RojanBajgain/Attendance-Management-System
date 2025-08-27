@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'package:ams/feature/presentation/pages/dashboard/controller/clock_in_out_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,6 +23,8 @@ class TimerController extends GetxController {
     _loadSavedState();
   }
 
+  final ClockInOutController clockInOutController =
+      Get.find<ClockInOutController>();
   Future<void> _loadSavedState() async {
     final prefs = await SharedPreferences.getInstance();
     String? storedClockInTime = prefs.getString('clockInTime');
@@ -74,7 +77,10 @@ class TimerController extends GetxController {
 
     // Load stopwatch state if on break
     if (prefs.getBool('isOnBreak') ?? false) {
-      String? breakStartTime = prefs.getString('breakStartTime');
+      stopwatchSeconds.value =
+          clockInOutController.totalBreakDuration.value.toInt();
+      String? breakStartTime = stopwatchSeconds.value.toString();
+
       if (breakStartTime != null) {
         DateTime breakStart = DateTime.parse(breakStartTime);
 
@@ -208,12 +214,12 @@ class TimerController extends GetxController {
     }
   }
 
-  Future<void> startStopwatch({int initialSeconds = 0}) async {
+  Future<void> startStopwatch(int totalbreak, {int initialSeconds = 0}) async {
     if (isStopwatchRunning.value) return;
 
     final prefs = await SharedPreferences.getInstance();
     isStopwatchRunning.value = true;
-    stopwatchSeconds.value = initialSeconds;
+    stopwatchSeconds.value = totalbreak;
 
     // Store current date
     String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
@@ -234,11 +240,11 @@ class TimerController extends GetxController {
   Future<void> stopStopwatch() async {
     _stopwatchTimer?.cancel();
     isStopwatchRunning.value = false;
-    stopwatchSeconds.value = 0;
+    // stopwatchSeconds.value = 0;
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isStopwatchRunning', false);
-    await prefs.remove('stopwatchElapsedSeconds');
+    await prefs.remove('z');
   }
 
   Future<void> stopTimer() async {
@@ -282,9 +288,10 @@ class TimerController extends GetxController {
     // Get current user ID if available
     final profileController = Get.find<ProfileController>();
     if (profileController.profile == null &&
-        profileController.profile.value!.userRecords.first.employeeNo != null) {
+        profileController.profile.value!.userRecords?.first.employeeNo !=
+            null) {
       int userId =
-          profileController.profile.value!.userRecords.first.employeeNo;
+          profileController.profile.value!.userRecords?.first.employeeNo ?? 0;
       await prefs.setString('clockInTime_$userId', time);
     }
 

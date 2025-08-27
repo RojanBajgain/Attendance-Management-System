@@ -7,16 +7,20 @@ import 'package:ams/config/resources/styles.dart';
 
 class CountryDropdown extends StatefulWidget {
   final String? valueId;
+  final String? title;
   final String? valueName;
   final Function(CountryData?)? onChanged;
   final bool isDarkMode;
+  final String? errorText;
 
   const CountryDropdown({
     Key? key,
     this.valueId,
+    this.title,
     this.valueName,
     this.onChanged,
     required this.isDarkMode,
+    this.errorText,
   }) : super(key: key);
 
   @override
@@ -77,50 +81,103 @@ class _CountryDropdownState extends State<CountryDropdown> {
 
         // Find the selected country in the current list
         CountryData? selected = _findSelectedCountry(countries);
+        final hasError =
+            widget.errorText != null && widget.errorText!.isNotEmpty;
 
-        return DropdownButtonFormField2<CountryData>(
-          isExpanded: true,
-          value: selected,
-          dropdownStyleData: DropdownStyleData(
-            maxHeight: 300,
-            decoration: BoxDecoration(
-              color: widget.isDarkMode ? Colors.grey[800] : Colors.white,
-              borderRadius: BorderRadius.circular(13),
-            ),
-          ),
-          buttonStyleData: ButtonStyleData(
-            height: 50,
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(13),
-              border: Border.all(color: Colors.black),
-              color: widget.isDarkMode ? Colors.grey[800] : Colors.grey[50],
-            ),
-          ),
-          iconStyleData: IconStyleData(
-            icon: Icon(
-              Icons.keyboard_arrow_down,
-              color: widget.isDarkMode ? Colors.white : Colors.black,
-            ),
-            iconSize: 24,
-          ),
-          items: countries.map((country) {
-            return DropdownMenuItem<CountryData>(
-              value: country,
-              child: Text(
-                country.name,
-                style: smallStyle.copyWith(
-                  color: widget.isDarkMode ? Colors.white : Colors.black,
-                  fontWeight: FontWeight.w500,
+        return Column(
+          children: [
+            DropdownButtonFormField2<CountryData>(
+              isExpanded: true,
+              value: selected,
+              hint: Text(
+                'Country',
+              ),
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.symmetric(vertical: 2),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: hasError
+                        ? Colors.red
+                        : widget.isDarkMode
+                            ? Colors.white70
+                            : Colors.black54,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: hasError
+                        ? Colors.red
+                        : widget.isDarkMode
+                            ? Colors.white70
+                            : Colors.black54,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: hasError
+                        ? Colors.red
+                        : widget.isDarkMode
+                            ? Colors.blueAccent
+                            : Colors.black,
+                    width: 2.0,
+                  ),
+                ),
+                filled: true,
+                fillColor:
+                    widget.isDarkMode ? Colors.grey[800] : Colors.grey[50],
+              ),
+              dropdownStyleData: DropdownStyleData(
+                maxHeight: 200,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(13),
+                  color: hasError
+                      ? Colors.red
+                      : widget.isDarkMode
+                          ? Colors.grey[800]
+                          : Colors.white,
                 ),
               ),
-            );
-          }).toList(),
-          onChanged: (CountryData? newValue) {
-            if (widget.onChanged != null) {
-              widget.onChanged!(newValue);
-            }
-          },
+              iconStyleData: IconStyleData(
+                icon: Icon(
+                  Icons.keyboard_arrow_down,
+                  color: widget.isDarkMode ? Colors.white : Colors.black,
+                ),
+                iconSize: 24,
+              ),
+              buttonStyleData: const ButtonStyleData(
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                height: 20,
+              ),
+              items: countries.map((country) {
+                return DropdownMenuItem<CountryData>(
+                  value: country,
+                  child: Text(
+                    country.name,
+                    style: smallStyle.copyWith(
+                      color: widget.isDarkMode ? Colors.white : Colors.black,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                );
+              }).toList(),
+              onChanged: (CountryData? newValue) {
+                if (widget.onChanged != null) {
+                  widget.onChanged!(newValue);
+                }
+              },
+            ),
+            if (hasError)
+              Padding(
+                padding: const EdgeInsets.only(top: 4, left: 12),
+                child: Text(
+                  widget.errorText!,
+                  style: const TextStyle(color: Colors.red, fontSize: 12),
+                ),
+              ),
+          ],
         );
       }),
     );

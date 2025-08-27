@@ -56,4 +56,70 @@ class AddReminderController extends GetxController {
       isLoading(false);
     }
   }
+  //edit reminder
+
+  Future<void> editReminder(
+      {required int profile,
+      required String title,
+      required String remarks,
+      required String startdate,
+      required String enddate,
+      required String reminderEvent}) async {
+    try {
+      isLoading(true);
+
+      ApiResponse response = await addReminderRepo.editReminder(
+        profile,
+        title,
+        remarks,
+        startdate,
+        enddate,
+        reminderEvent,
+      );
+
+      if (response.status == ApiStatus.SUCCESS) {
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
+          'Reminder edited successfully',
+          SnackbarType.success,
+        );
+      } else {
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
+          'Failed to edit reminder',
+          SnackbarType.error,
+        );
+      }
+    } catch (e) {
+      log("Error creating reminder: $e");
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  //delete reminder
+  Future<void> deleteReminder({required String id}) async {
+    try {
+      isLoading(true);
+
+      ApiResponse response = await addReminderRepo.deleteReminder(id);
+
+      if (response.status == ApiStatus.SUCCESS) {
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
+          'Reminder deleted successfully',
+          SnackbarType.success,
+        );
+      } else {
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
+          'Failed to delete reminder',
+          SnackbarType.error,
+        );
+      }
+    } catch (e) {
+    } finally {
+      isLoading(false);
+    }
+  }
 }

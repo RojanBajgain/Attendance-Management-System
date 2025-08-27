@@ -20,7 +20,7 @@ class ProfileModel {
   Organization? organization;
   String? status;
   String? grossSalary;
-  List<UserRecord> userRecords;
+  List<UserRecord>? userRecords;
   String? username;
   String? email;
 
@@ -119,7 +119,7 @@ class ProfileModel {
         "organization": organization?.toJson(),
         "status": status,
         "gross_salary": grossSalary,
-        "user_records": userRecords.map((x) => x.toJson()).toList(),
+        "user_records": userRecords?.map((x) => x.toJson()).toList(),
         "username": username,
         "email": email,
       };
@@ -129,7 +129,7 @@ class Organization {
   int id;
   String title;
   String description;
-  String location;
+  dynamic location;
   bool webEnabled;
   bool mobileEnabled;
 

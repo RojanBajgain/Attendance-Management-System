@@ -53,11 +53,12 @@ class _ClockTimeState extends State<ClockTime> {
   Future<void> _initializeData() async {
     await _fetchOfficeLocation();
     await _checkMobileEnabled();
+    clockInOutController.getBreakTime();
 
     // FIXED: Check if profile exists and has valid user records
     if (profileController.profile.value != null &&
-        profileController.profile.value!.userRecords.isNotEmpty &&
-        profileController.profile.value!.userRecords.first.employeeNo != null) {
+        profileController.profile.value!.userRecords?.first.employeeNo !=
+            null) {
       await hasClockedinController.handleUserChanged();
     }
 
@@ -218,7 +219,7 @@ class _ClockTimeState extends State<ClockTime> {
           Position position = await Geolocator.getCurrentPosition(
               desiredAccuracy: LocationAccuracy.best);
           int? deviceId =
-              profileController.profile.value?.userRecords.first.employeeNo;
+              profileController.profile.value?.userRecords?.first.employeeNo;
           if (deviceId == null) {
             SSnackbarUtil.showFadeSnackbar(
               Get.context!,
@@ -327,7 +328,9 @@ class _ClockTimeState extends State<ClockTime> {
         int additionalSeconds =
             DateTime.now().difference(breakStartTime).inSeconds;
         int totalElapsed = elapsedSeconds + additionalSeconds;
-        timerController.startStopwatch(initialSeconds: totalElapsed);
+        int breaktime = clockInOutController.totalBreakDuration.value.toInt();
+
+        timerController.startStopwatch(breaktime, initialSeconds: totalElapsed);
       }
     }
     if (!mounted) return;
@@ -345,7 +348,7 @@ class _ClockTimeState extends State<ClockTime> {
           Position position = await Geolocator.getCurrentPosition(
               desiredAccuracy: LocationAccuracy.best);
           int? employeeId =
-              profileController.profile.value?.userRecords.first.employeeNo;
+              profileController.profile.value?.userRecords?.first.employeeNo;
           if (employeeId == null) {
             SSnackbarUtil.showFadeSnackbar(
               Get.context!,
@@ -376,11 +379,13 @@ class _ClockTimeState extends State<ClockTime> {
             await clockInOutController.postOnBreak(employeeId: employeeId);
             await prefs.setString(
                 'breakStartTime', DateTime.now().toIso8601String());
-            await prefs.setInt('stopwatchElapsedSeconds', 0);
+            // await prefs.setInt('stopwatchElapsedSeconds', 0);
             await prefs.setBool('isOnBreak', true);
             await prefs.setString('lastActiveDate', todayDate);
             timerController.pauseTimer();
-            timerController.startStopwatch();
+            int breaktime = timerController.stopwatchSeconds.value;
+
+            timerController.startStopwatch(breaktime);
             isOnBreak.value = true;
           } else {
             await clockInOutController.postResume(
@@ -390,7 +395,8 @@ class _ClockTimeState extends State<ClockTime> {
             );
             int elapsedTime = timerController.stopwatchSeconds.value;
             await prefs.setInt('stopwatchElapsedSeconds', elapsedTime);
-            await prefs.remove('breakStartTime');
+            await prefs.setString('breakStartTime',
+                clockInOutController.totalBreakDuration.value.toString());
             await prefs.remove('stopwatchElapsedSeconds');
             await prefs.setBool('isOnBreak', false);
             timerController.stopStopwatch();
@@ -755,7 +761,7 @@ class _ClockTimeState extends State<ClockTime> {
       double progress = isClockingOut
           ? (timerController.elapsedSeconds.value % 28800) / 28800
           : 0.0;
-
+      int breaktime = clockInOutController.totalBreakDuration.value.toInt();
       return Stack(
         alignment: Alignment.center,
         children: [
@@ -816,11 +822,11 @@ class _ClockTimeState extends State<ClockTime> {
         buttonColor = Colors.grey[600]!;
       } else if (isClockedInToday.value) {
         buttonIcon = Icons.logout;
-        buttonText = 'Check Out';
+        buttonText = 'Clock Out';
         buttonColor = Colors.red[700]!;
       } else {
         buttonIcon = Icons.login;
-        buttonText = 'Check In';
+        buttonText = 'Clock In';
         buttonColor = Colors.green[600]!;
       }
 
@@ -922,6 +928,17 @@ class _ClockTimeState extends State<ClockTime> {
         '${minutes.toString().padLeft(2, '0')}:'
         '${secs.toString().padLeft(2, '0')}';
   }
+}
+
+String _formatbreakTime(int seconds) {
+  int positiveSeconds = seconds.abs();
+  int hours = positiveSeconds ~/ 3600;
+  int minutes = (positiveSeconds % 3600) ~/ 60;
+  int secs = positiveSeconds % 60;
+
+  return '${hours.toString().padLeft(2, '0')}:'
+      '${minutes.toString().padLeft(2, '0')}:'
+      '${secs.toString().padLeft(2, '0')}';
 }
 
 class Location {

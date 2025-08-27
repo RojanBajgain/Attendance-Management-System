@@ -121,6 +121,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                         onTap: () {
                           authcontroller.changePasswordMethod(oldPassword.text,
                               newPassword.text, confirmPassword.text);
+                          FocusScope.of(context).requestFocus(FocusNode());
                         },
                         child: Container(
                           decoration: BoxDecoration(

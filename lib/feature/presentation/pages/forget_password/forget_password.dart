@@ -1,4 +1,5 @@
 import 'package:ams/config/resources/colors.dart';
+import 'package:ams/config/resources/images.dart';
 import 'package:ams/config/resources/styles.dart';
 import 'package:ams/feature/presentation/pages/forget_password/controller/reset_password_controller.dart';
 import 'package:ams/feature/presentation/pages/login/login_page.dart';
@@ -7,6 +8,7 @@ import 'package:ams/feature/presentation/widget/custom_textfield.dart';
 import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:ams/feature/utils/validator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 class ForgetPassword extends StatefulWidget {
@@ -27,7 +29,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
       SSnackbarUtil.showFadeSnackbar(
         Get.context!,
         'Please fill the required field.',
-        SnackbarType.error,
+        SnackbarType.info,
       );
     }
     await resetpassword.resetpassword(email: email.text);
@@ -43,11 +45,27 @@ class _ForgetPasswordState extends State<ForgetPassword> {
       },
       child: Scaffold(
         appBar: AppBar(
-          leading: InkWell(
-            onTap: () => Get.back(),
-            child: const Icon(
-              Icons.arrow_back_ios,
-              color: Colors.grey,
+          // automaticallyImplyLeading: false,
+          backgroundColor: Colors.transparent,
+          foregroundColor: isDarkMode ? Colors.white : Colors.black,
+          titleSpacing: 0,
+          elevation: 0,
+          // leading: InkWell(
+          //   onTap: () => Get.back(),
+          //   child: const Icon(
+          //     Icons.arrow_back_ios,
+          //     color: Colors.grey,
+          //   ),
+          // ),
+          title: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              'Rest password',
+              style: normalStyle.copyWith(
+                fontWeight: FontWeight.bold,
+                color: isDarkMode ? Colors.white : Colors.black,
+                fontSize: 14.0,
+              ),
             ),
           ),
         ),
@@ -75,34 +93,29 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // const SizedBox(height: 50.0),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Forget Your Password",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey,
-                                ),
-                          ),
-                        ],
+                      const SizedBox(height: 20),
+                      SvgPicture.asset(
+                        AppImages.appLogoHR,
+                        height: 50,
+                        // color: Colors.lightBlue,
                       ),
-                      const SizedBox(height: 8.0),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Enter your valid Email address",
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                        ],
+                      const SizedBox(height: 20),
+
+                      Center(
+                        child: Text(
+                          "Forget Password",
+                          style: mediumStyle.copyWith(
+                              color: Colors.black, fontWeight: FontWeight.bold),
+                        ),
                       ),
-                      const SizedBox(height: 50.0),
+                      const SizedBox(height: 20),
+                      Center(
+                        child: Text(
+                          "Enter your valid Email address",
+                          style: smallNStyle.copyWith(color: Colors.grey),
+                        ),
+                      ),
+                      const SizedBox(height: 25.0),
                       CustomTextField(
                         hint: "Email Address",
                         // icon: Icon(Icons.mail),
@@ -118,6 +131,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                           borderRadius: BorderRadius.circular(8.0),
                           onTap: () {
                             _submitresetpassword();
+                            FocusScope.of(context).requestFocus(FocusNode());
                           },
                           child: const LargeButton(title: "Confirm"),
                         ),

@@ -426,7 +426,7 @@ class _AddTimeoffState extends State<AddTimeoff> {
                             TextSpan(
                               children: [
                                 TextSpan(
-                                  text: 'Time Off Type  ',
+                                  text: 'Leave Type  ',
                                   style: smallStyle.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: isDarkMode
@@ -482,6 +482,13 @@ class _AddTimeoffState extends State<AddTimeoff> {
                                       _selectedValue.value = value;
                                       field.didChange(value);
                                     },
+                                    hint: const Text(
+                                      "Leave Type",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
                                     isExpanded: true,
                                     items: leavePolicies.map((policy) {
                                       final policyName =

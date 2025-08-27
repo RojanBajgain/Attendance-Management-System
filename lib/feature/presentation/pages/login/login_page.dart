@@ -234,7 +234,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             GestureDetector(
                               onTap: () {
-                                Get.off(() => const ForgetPassword());
+                                Get.to(() => const ForgetPassword());
                               },
                               child: Text(
                                 "Forget your password?",
@@ -260,7 +260,8 @@ class _LoginPageState extends State<LoginPage> {
                                     onTap: authController.authIsLoading.value
                                         ? null
                                         : () {
-                                            FocusScope.of(context).unfocus();
+                                            FocusScope.of(context)
+                                                .requestFocus(FocusNode());
 
                                             final emailError =
                                                 Validator.validateEmail(

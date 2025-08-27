@@ -151,8 +151,9 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               const SizedBox(height: 80.0),
               _buildPersonalInfo(isDarkMode),
-              _buildEmployeeDetail(isDarkMode),
+              // _buildEmployeeDetail(isDarkMode),
               _buildDocuments(isDarkMode),
+              _buildAddressDetails(isDarkMode),
               _buildBankDetails(isDarkMode),
               _buildHRDetails(isDarkMode),
               _buildChangePassword(isDarkMode),
@@ -430,6 +431,74 @@ class _ProfilePageState extends State<ProfilePage> {
 
                 return _buildBankDetailList(
                     profileData.bankDetails, isDarkMode);
+              }),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAddressDetails(bool isDarkMode) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.0),
+        color: isDarkMode ? Colors.grey.shade800 : Colors.white,
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent,
+        ),
+        child: ExpansionTile(
+          expansionAnimationStyle: AnimationStyle(
+            curve: Curves.easeInOut,
+            duration: Duration(milliseconds: 100),
+          ),
+          leading: Icon(
+            Icons.location_on,
+            color: isDarkMode ? Colors.white : Colors.black,
+          ),
+          title: Text(
+            "Address ",
+            style: smallStyle.copyWith(
+              fontWeight: FontWeight.w600,
+              color: isDarkMode ? Colors.white : Colors.black,
+              overflow: TextOverflow.ellipsis,
+              fontSize: 12.0,
+            ),
+          ),
+          iconColor: isDarkMode ? Colors.white : Colors.black,
+          collapsedIconColor: isDarkMode ? Colors.white : Colors.black,
+          children: [
+            Divider(
+              height: 1,
+              thickness: 1,
+              color: isDarkMode ? Colors.grey.shade700 : Colors.grey.shade300,
+              indent: 14,
+              endIndent: 14,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Obx(() {
+                if (profilecontroller.isLoading.value) {
+                  return const ShrimmerEffect.rectangular(height: 200);
+                }
+
+                final profileData = profilecontroller.profile.value;
+
+                if (profileData == null) {
+                  return Center(
+                    child: Text(
+                      "No bank details available.",
+                      style: smallStyle.copyWith(
+                        color: isDarkMode ? Colors.white : Colors.black,
+                      ),
+                    ),
+                  );
+                }
+
+                return _buildAdress(profileData.addresses, isDarkMode);
               }),
             ),
           ],
@@ -803,8 +872,20 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          _buildRow(
+            'Device id:',
+            profilecontroller.profile.value?.userRecords!.first.employeeNo
+                    .toString() ??
+                '',
+          ),
           _buildRow('Full Name:', profiledata.user?.fullName ?? 'N/A'),
+          _buildRow('Email:', profiledata.email ?? 'N/A'),
+          _buildRow('Phone Number:', profiledata.phoneNumber ?? 'N/A'),
+          _buildRow('Gross Salary:', profiledata.grossSalary ?? 'N/A'),
           _buildRow('Designation:', profiledata.designation?.name ?? 'N/A'),
+          _buildRow('Rank:', profiledata.rank?.name ?? 'N/A'),
+          _buildRow('Shift:', profiledata.shift?.name ?? 'N/A'),
+          _buildRow('Employee Type:', profiledata.employeeType ?? 'N/A'),
           _buildRow(
             'Date of Birth:',
             profiledata.dob != null
@@ -817,10 +898,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 ? DateFormat('yyyy-MM-dd').format(profiledata.joinedDate!)
                 : 'N/A',
           ),
-          _buildRow('Contact:', profiledata.phoneNumber ?? 'N/A'),
-          _buildRow('Current Address:', currentAddress),
-          _buildRow('Permanent Address:', permanentAddress),
-          _buildRow('Email:', profiledata.email ?? 'N/A'),
+          // _buildRow('Current Address:', currentAddress),
+          // _buildRow('Permanent Address:', permanentAddress),
         ],
       ),
     );
@@ -834,10 +913,11 @@ class _ProfilePageState extends State<ProfilePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildRow(
-              'Device ID:',
-              profiledata.userRecords.isNotEmpty
-                  ? profiledata.userRecords.first.employeeNo.toString()
-                  : 'N/A'),
+            'Device ID:',
+            profilecontroller.profile.value?.userRecords!.first.employeeNo
+                    .toString() ??
+                '',
+          ),
           _buildRow('Department:', profiledata.organization?.title ?? 'N/A'),
           _buildRow(
             'Gross Salary:',
@@ -856,7 +936,7 @@ class _ProfilePageState extends State<ProfilePage> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 1.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (profiledata.documents.isNotEmpty)
             for (final doc in profiledata.documents)
@@ -878,7 +958,7 @@ class _ProfilePageState extends State<ProfilePage> {
           if (profiledata.documents.isEmpty && profiledata.resume == null)
             Text(
               'No documents available.',
-              style: normalStyle.copyWith(
+              style: smallStyle.copyWith(
                 color: isDarkMode ? Colors.white : Colors.black,
               ),
             ),
@@ -892,7 +972,7 @@ class _ProfilePageState extends State<ProfilePage> {
     if (bankDetails.isEmpty) {
       return Text(
         'No bank details available.',
-        style: normalStyle.copyWith(
+        style: smallStyle.copyWith(
           color: isDarkMode ? Colors.white : Colors.black,
         ),
       );
@@ -924,6 +1004,72 @@ class _ProfilePageState extends State<ProfilePage> {
                   bankDetail.bankAccount.isNotEmpty
                       ? bankDetail.bankAccount
                       : 'N/A'),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildAdress(List<Address> address, bool isDarkMode) {
+    if (address.isEmpty) {
+      return Text(
+        'No address details available.',
+        style: smallStyle.copyWith(
+          color: isDarkMode ? Colors.white : Colors.black,
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: address.map((address) {
+        return Container(
+          width: MediaQuery.of(context).size.width,
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.only(bottom: 2),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Theme.of(context).colorScheme.surface,
+                      width: 3,
+                    ),
+                  ),
+                ),
+                child: Text(
+                  address.addressType[0].toUpperCase() +
+                      address.addressType.substring(1),
+                  style: normalStyle.copyWith(
+                    fontWeight: FontWeight.bold,
+                    decoration: TextDecoration.none,
+                  ),
+                ),
+              ),
+              _buildRow(
+                  'Country:',
+                  address.addressLineOne.isNotEmpty
+                      ? address.country?.name ?? ''
+                      : 'N/A'),
+              _buildRow('Province:',
+                  address.province.isNotEmpty ? address.province : 'N/A'),
+              _buildRow(
+                  'City:', address.city.isNotEmpty ? address.city : 'N/A'),
+              _buildRow(
+                  'Address one:',
+                  address.addressLineOne.isNotEmpty
+                      ? address.addressLineOne
+                      : 'N/A'),
+              _buildRow(
+                  'Address two:',
+                  address.addressLineTwo.isNotEmpty
+                      ? address.addressLineTwo
+                      : 'N/A'),
+              _buildRow('Postal code:',
+                  address.postalCode.isNotEmpty ? address.postalCode : 'N/A'),
             ],
           ),
         );

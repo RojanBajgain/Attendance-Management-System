@@ -1,6 +1,7 @@
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/pages/edit_profiles/edit_user_document.dart';
 import 'package:ams/feature/presentation/pages/profile/widget/country_dropdown.dart';
+import 'package:ams/feature/presentation/pages/profile/widget/custom_textfield.dart';
 import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -237,6 +238,10 @@ class _EditUserAddressState extends State<EditUserAddress> {
       _fieldErrors['permanentAddressLineOne'] = 'Address Line 1 is required';
       isValid = false;
     }
+    if (addressLineTwoController.text.isEmpty) {
+      _fieldErrors['permanentAddressLineTwo'] = 'Address Line 2 is required';
+      isValid = false;
+    }
     if (zipController.text.isEmpty) {
       _fieldErrors['permanentZip'] = 'Zip Code is required';
       isValid = false;
@@ -261,6 +266,10 @@ class _EditUserAddressState extends State<EditUserAddress> {
       }
       if (currentAddressLineOneController.text.isEmpty) {
         _fieldErrors['currentAddressLineOne'] = 'Address Line 1 is required';
+        isValid = false;
+      }
+      if (currentAddressLineTwoController.text.isEmpty) {
+        _fieldErrors['currentAddressLineTwo'] = 'Address Line 2 is required';
         isValid = false;
       }
       if (currentZipController.text.isEmpty) {
@@ -436,88 +445,6 @@ class _EditUserAddressState extends State<EditUserAddress> {
     );
   }
 
-  Widget _buildTextField(
-    String title,
-    TextEditingController controller,
-    bool isDarkMode, {
-    bool enabled = true,
-    TextInputType? keyboardType,
-    required String fieldKey,
-  }) {
-    final hasError = _fieldErrors.containsKey(fieldKey);
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextField(
-            controller: controller,
-            enabled: enabled,
-            keyboardType: keyboardType,
-            decoration: InputDecoration(
-              labelText: title,
-              border: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: hasError
-                      ? Colors.red
-                      : (isDarkMode ? Colors.white70 : Colors.black54),
-                ),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: hasError
-                      ? Colors.red
-                      : (isDarkMode ? Colors.white70 : Colors.black54),
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: hasError
-                      ? Colors.red
-                      : (isDarkMode ? Colors.blueAccent : Colors.black),
-                  width: 2.0,
-                ),
-              ),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-              labelStyle: smallStyle.copyWith(
-                fontSize: 12,
-                color: hasError
-                    ? Colors.red
-                    : (isDarkMode ? Colors.white70 : Colors.black),
-              ),
-              filled: !enabled,
-              fillColor: !enabled
-                  ? (isDarkMode ? Colors.grey[700] : Colors.grey[200])
-                  : null,
-            ),
-            style: smallStyle.copyWith(
-              color: isDarkMode ? Colors.white : Colors.black,
-              fontSize: 11,
-            ),
-            onChanged: (value) {
-              if (hasError) {
-                setState(() {
-                  _fieldErrors.remove(fieldKey);
-                });
-              }
-              _checkForChanges();
-            },
-          ),
-          if (hasError)
-            Padding(
-              padding: const EdgeInsets.only(top: 4, left: 12),
-              child: Text(
-                _fieldErrors[fieldKey]!,
-                style: const TextStyle(color: Colors.red, fontSize: 12),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildAddressSection(String title, IconData icon, bool isDarkMode) {
     return Row(
       children: [
@@ -645,38 +572,61 @@ class _EditUserAddressState extends State<EditUserAddress> {
 
   List<Widget> _buildPermanentAddressFields(bool isDarkMode) {
     return [
-      CountryDropdown(
-        valueId: countryIdController.text,
-        valueName: countryNameController.text,
-        onChanged: (CountryData? data) {
-          if (data != null) {
-            setState(() {
-              countryIdController.text = data.id.toString();
-              countryNameController.text = data.name;
-              _fieldErrors.remove('permanentCountry');
-              if (profileController.isSameAsPermanent.value) {
-                currentCountryIdController.text = data.id.toString();
-                currentCountryNameController.text = data.name;
-                _fieldErrors.remove('currentCountry');
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Country',
+            style: TextStyle(
+              fontSize: 11,
+              color: Colors.black,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 6),
+          CountryDropdown(
+            errorText: _fieldErrors['currentCountry'],
+            valueId: countryIdController.text,
+            valueName: countryNameController.text,
+            onChanged: (CountryData? data) {
+              if (data != null) {
+                setState(() {
+                  countryIdController.text = data.id.toString();
+                  countryNameController.text = data.name;
+                  _fieldErrors.remove('permanentCountry');
+                  if (profileController.isSameAsPermanent.value) {
+                    currentCountryIdController.text = data.id.toString();
+                    currentCountryNameController.text = data.name;
+                    _fieldErrors.remove('currentCountry');
+                  }
+                });
+                _checkForChanges();
               }
-            });
-            _checkForChanges();
-          }
-        },
-        isDarkMode: isDarkMode,
+            },
+            isDarkMode: isDarkMode,
+          ),
+        ],
       ),
-      _buildTextField("Province", provinceController, isDarkMode,
-          fieldKey: 'permanentProvince'),
-      _buildTextField("City", cityController, isDarkMode,
+      CustomTextField(
+        "Province",
+        provinceController,
+        isDarkMode,
+        errorText: _fieldErrors['permanentProvince'],
+        fieldKey: 'permanentProvince',
+      ),
+      CustomTextField("City", cityController, isDarkMode,
           fieldKey: 'permanentCity'),
-      _buildTextField("Address Line 1", addressLineOneController, isDarkMode,
+      CustomTextField("Address Line 1", addressLineOneController, isDarkMode,
+          errorText: _fieldErrors['permanentAddressLineOne'],
           fieldKey: 'permanentAddressLineOne'),
-      _buildTextField("Address Line 2", addressLineTwoController, isDarkMode,
+      CustomTextField("Address Line 2", addressLineTwoController, isDarkMode,
+          errorText: _fieldErrors['permanentAddressLineTwo'],
           fieldKey: 'permanentAddressLineTwo'),
-      _buildTextField(
+      CustomTextField(
         "Zip Code",
         zipController,
         isDarkMode,
+        errorText: _fieldErrors['permanentZip'],
         keyboardType: const TextInputType.numberWithOptions(),
         fieldKey: 'permanentZip',
       ),
@@ -702,19 +652,28 @@ class _EditUserAddressState extends State<EditUserAddress> {
         },
         isDarkMode: isDarkMode,
       ),
-      _buildTextField("Province", currentProvinceController, isDarkMode,
+      CustomTextField("Province", currentProvinceController, isDarkMode,
+          errorText: _fieldErrors['currentProvince'],
           fieldKey: 'currentProvince'),
-      _buildTextField("City", currentCityController, isDarkMode,
-          fieldKey: 'currentCity'),
-      _buildTextField(
+      CustomTextField(
+        "City",
+        currentCityController,
+        isDarkMode,
+        errorText: _fieldErrors['currentCity'],
+        fieldKey: 'currentCity',
+      ),
+      CustomTextField(
           "Address Line 1", currentAddressLineOneController, isDarkMode,
+          errorText: _fieldErrors['currentAddressLineOne'],
           fieldKey: 'currentAddressLineOne'),
-      _buildTextField(
+      CustomTextField(
           "Address Line 2", currentAddressLineTwoController, isDarkMode,
+          errorText: _fieldErrors['currentAddressLineTwo'],
           fieldKey: 'currentAddressLineTwo'),
-      _buildTextField(
+      CustomTextField(
         "Zip Code",
         currentZipController,
+        errorText: _fieldErrors['currentZip'],
         isDarkMode,
         keyboardType: const TextInputType.numberWithOptions(),
         fieldKey: 'currentZip',

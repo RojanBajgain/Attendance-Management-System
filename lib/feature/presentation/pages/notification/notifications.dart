@@ -16,12 +16,30 @@ class NotificationsPage extends StatefulWidget {
 class _NotificationsPageState extends State<NotificationsPage> {
   final NotificationController notificationcontroller =
       Get.put(NotificationController(notificationrepo: Get.find()));
-
+  final ScrollController scrollController = ScrollController();
   @override
   void initState() {
     super.initState();
     if (notificationcontroller.notification.isEmpty) {
       notificationcontroller.getNotification();
+    }
+    scrollController.addListener(_scrollListener);
+  }
+
+  @override
+  void dispose() {
+    scrollController.removeListener(_scrollListener);
+    // notificationcontroller.notification.value = [];
+    scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollListener() {
+    if (scrollController.offset >= scrollController.position.maxScrollExtent &&
+        !scrollController.position.outOfRange) {
+      if (notificationcontroller.hasMore.value) {
+        notificationcontroller.loadMore();
+      }
     }
   }
 
@@ -44,47 +62,62 @@ class _NotificationsPageState extends State<NotificationsPage> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              children: [
-                Obx(() {
-                  if (notificationcontroller.isLoading.value) {
-                    return Column(
-                      children: List.generate(
-                        6,
-                        (index) => const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8.0),
-                          child: SkeletonItem(),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            children: [
+              Obx(() {
+                if (notificationcontroller.isLoading.value &&
+                    notificationcontroller.notification.isEmpty) {
+                  return Column(
+                    children: List.generate(
+                      6,
+                      (index) => const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8.0),
+                        child: SkeletonItem(),
+                      ),
+                    ),
+                  );
+                } else if (notificationcontroller.notification.isEmpty) {
+                  return SizedBox(
+                    height: 650,
+                    child: Center(
+                      child: Text(
+                        "No notification available",
+                        style: smallStyle.copyWith(
+                          color: isDarkMode ? Colors.white : Colors.black,
+                          fontSize: 12.0,
                         ),
                       ),
-                    );
-                  } else if (notificationcontroller.notification.isEmpty) {
-                    return SizedBox(
-                      height: 650,
-                      child: Center(
-                        child: Text(
-                          "No notification available",
-                          style: smallStyle.copyWith(
-                            color: isDarkMode ? Colors.white : Colors.black,
-                            fontSize: 12.0,
-                          ),
-                        ),
-                      ),
-                    );
-                  } else {
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: notificationcontroller.notification.length,
+                    ),
+                  );
+                } else {
+                  return Expanded(
+                    child: ListView.builder(
+                      controller: scrollController,
+                      itemCount: notificationcontroller.notification.length +
+                          (notificationcontroller.isLoading.value ? 1 : 0),
                       itemBuilder: (context, index) {
+                        if (index ==
+                            notificationcontroller.notification.length) {
+                          return const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Center(child: CircularProgressIndicator()),
+                          );
+                        }
+
                         final notification =
                             notificationcontroller.notification[index];
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: NotificationsContent(
+                            ontap: () {
+                              notificationcontroller
+                                  .delelteNotification(notification.id);
+                              // notificationcontroller.readNotification(
+                              //     notification.id, notification.title ?? '');
+                            },
                             notificationdata: notification,
                             calenderTxt: notification.timestamp != null
                                 ? DateFormat.MMM()
@@ -96,17 +129,16 @@ class _NotificationsPageState extends State<NotificationsPage> {
                             contextTxt: notification.title.toString(),
                             contextTxtDetail:
                                 notification.description.toString(),
-                            contextTime: notification.timestamp != null
-                                ? _getRelativeDate(notification.timestamp!)
-                                : "---",
+                            contextTime:
+                                notification.timestamp ?? DateTime.now(),
                           ),
                         );
                       },
-                    );
-                  }
-                }),
-              ],
-            ),
+                    ),
+                  );
+                }
+              }),
+            ],
           ),
         ),
       ),

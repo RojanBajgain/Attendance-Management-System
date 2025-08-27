@@ -135,6 +135,8 @@ class TimeoffController extends GetxController {
       ApiResponse response = await timeoffRepo.postReapply(id, reason);
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
+        getTimeoff();
+
         Get.back();
 
         SSnackbarUtil.showFadeSnackbar(
@@ -160,6 +162,7 @@ class TimeoffController extends GetxController {
     }
   }
 
+//delete time off
   Future<void> deleteTimeoff(int id) async {
     try {
       ApiResponse response = await timeoffRepo.deleteTimeoff(id);
@@ -174,7 +177,7 @@ class TimeoffController extends GetxController {
         // Delay navigation to allow snackbar to display
         await Future.delayed(const Duration(seconds: 1));
         Get.back();
-        await getTimeoff(forceRefresh: true);
+        await getTimeoff(forceRefresh: false);
       } else {
         log("Error deleting timeoff: ${response.message}");
         SSnackbarUtil.showFadeSnackbar(

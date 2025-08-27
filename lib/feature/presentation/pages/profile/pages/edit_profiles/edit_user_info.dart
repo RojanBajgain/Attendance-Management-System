@@ -10,6 +10,7 @@ import 'package:ams/feature/presentation/pages/login/controller/login_controller
 import 'package:ams/feature/presentation/pages/profile/controller/profile_controller.dart';
 import 'package:ams/feature/presentation/pages/profile/model/profile_model.dart';
 import 'package:ams/feature/presentation/pages/profile/pages/edit_profiles/edit_user_address.dart';
+import 'package:ams/feature/presentation/pages/profile/widget/custom_textfield.dart';
 import 'package:ams/feature/presentation/pages/profile/widget/file_uploader.dart';
 import 'package:ams/feature/utils/ssnackbar_utils.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -48,6 +49,10 @@ class _EditUserInfoState extends State<EditUserInfo> {
   final TextEditingController dobController = TextEditingController();
   final TextEditingController joinedDateController = TextEditingController();
   final TextEditingController grossSalary = TextEditingController();
+  final TextEditingController employeeTypeController = TextEditingController();
+
+  final TextEditingController rankController = TextEditingController();
+  final TextEditingController shiftController = TextEditingController();
 
   // Error state for each field
   final Map<String, String> _fieldErrors = {};
@@ -76,6 +81,9 @@ class _EditUserInfoState extends State<EditUserInfo> {
         'phone': phoneController.text,
         'skills': skillsController.text,
         'dob': dobController.text,
+        'rank': rankController.text,
+        'employyeType': employeeTypeController.text,
+        'shift': shiftController.text,
       };
     });
   }
@@ -87,6 +95,9 @@ class _EditUserInfoState extends State<EditUserInfo> {
       'phone': phoneController.text,
       'skills': skillsController.text,
       'dob': dobController.text,
+      'employeeType': employeeTypeController.text,
+      'rank': rankController.text,
+      'shift': shiftController.text,
     };
 
     setState(() {
@@ -114,6 +125,9 @@ class _EditUserInfoState extends State<EditUserInfo> {
           ? DateFormat('yyyy-MM-dd').format(profile.joinedDate!)
           : "";
       grossSalary.text = profile.grossSalary.toString();
+      employeeTypeController.text = profile.employeeType.toString();
+      rankController.text = profile.rank?.name.toString() ?? '';
+      shiftController.text = profile.shift?.name.toString() ?? '';
     }
   }
 
@@ -189,6 +203,18 @@ class _EditUserInfoState extends State<EditUserInfo> {
       _fieldErrors['skills'] = 'At least one skill is required';
       isValid = false;
     }
+    if (employeeTypeController.text.isEmpty) {
+      _fieldErrors['employeType'] = 'Employee Type required';
+      isValid = false;
+    }
+    if (rankController.text.isEmpty) {
+      _fieldErrors['rank'] = 'Rank required';
+      isValid = false;
+    }
+    if (shiftController.text.isEmpty) {
+      _fieldErrors['shift'] = 'Shift required';
+      isValid = false;
+    }
 
     return isValid;
   }
@@ -216,6 +242,9 @@ class _EditUserInfoState extends State<EditUserInfo> {
         profileImage: _profileImage,
         username: fullNameController.text,
         dob: dobController.text,
+        empno: profilecontroller.profile.value?.userRecords!.first.employeeNo
+                .toString() ??
+            '',
         phonenumber: phoneController.text,
         gender: genderToSend,
         joinedDate: joinedDateController.text,
@@ -404,88 +433,6 @@ class _EditUserInfoState extends State<EditUserInfo> {
           color: isDarkMode ? Colors.white : Colors.black,
           fontSize: 12,
         ),
-      ),
-    );
-  }
-
-  Widget _buildTextField(
-    String title,
-    TextEditingController controller,
-    bool isDarkMode, {
-    bool enabled = true,
-    TextInputType? keyboardType,
-    String fieldKey = '',
-  }) {
-    final hasError = _fieldErrors.containsKey(fieldKey);
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextField(
-            controller: controller,
-            enabled: enabled,
-            keyboardType: keyboardType,
-            decoration: InputDecoration(
-              labelText: title,
-              border: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: hasError
-                      ? Colors.red
-                      : (isDarkMode ? Colors.white70 : Colors.black54),
-                ),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: hasError
-                      ? Colors.red
-                      : (isDarkMode ? Colors.white70 : Colors.black54),
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: hasError
-                      ? Colors.red
-                      : (isDarkMode ? Colors.blueAccent : Colors.black),
-                  width: 2.0,
-                ),
-              ),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-              labelStyle: smallStyle.copyWith(
-                fontSize: 11,
-                color: hasError
-                    ? Colors.red
-                    : (isDarkMode ? Colors.white70 : Colors.black),
-              ),
-              filled: !enabled,
-              fillColor: !enabled
-                  ? (isDarkMode ? Colors.grey[700] : Colors.grey[200])
-                  : null,
-            ),
-            style: smallStyle.copyWith(
-              color: isDarkMode ? Colors.white : Colors.black,
-              fontSize: 12,
-            ),
-            onChanged: (value) {
-              if (hasError) {
-                setState(() {
-                  _fieldErrors.remove(fieldKey);
-                });
-              }
-              _checkForChanges();
-            },
-          ),
-          if (hasError)
-            Padding(
-              padding: const EdgeInsets.only(top: 4, left: 12),
-              child: Text(
-                _fieldErrors[fieldKey]!,
-                style: const TextStyle(color: Colors.red, fontSize: 12),
-              ),
-            ),
-        ],
       ),
     );
   }
@@ -870,13 +817,13 @@ class _EditUserInfoState extends State<EditUserInfo> {
                     children: [
                       _buildProfileHeader(isDarkMode),
                       const SizedBox(height: 24),
-                      _buildTextField(
+                      CustomTextField(
                         "Full Name",
                         fullNameController,
                         isDarkMode,
                         fieldKey: 'fullName',
                       ),
-                      _buildTextField(
+                      CustomTextField(
                         "Email",
                         emailController,
                         isDarkMode,
@@ -888,20 +835,21 @@ class _EditUserInfoState extends State<EditUserInfo> {
                         isDarkMode,
                         fieldKey: 'gender',
                       ),
-                      _buildTextField(
+                      CustomTextField(
                         "Contact Number",
                         phoneController,
                         isDarkMode,
+                        errorText: _fieldErrors['phone'],
                         keyboardType: const TextInputType.numberWithOptions(),
                         fieldKey: 'phone',
                       ),
-                      _buildTextField(
+                      CustomTextField(
                         "Designation",
                         designationController,
                         isDarkMode,
                         enabled: false,
                       ),
-                      _buildTextField(
+                      CustomTextField(
                         "Skills",
                         skillsController,
                         isDarkMode,
@@ -913,13 +861,34 @@ class _EditUserInfoState extends State<EditUserInfo> {
                       //   isDarkMode,
                       //   enabled: false,
                       // ),
+                      CustomTextField(
+                        "Rank",
+                        rankController,
+                        isDarkMode,
+                        fieldKey: 'rank',
+                        enabled: false,
+                      ),
+                      CustomTextField(
+                        "Employee Type",
+                        employeeTypeController,
+                        isDarkMode,
+                        fieldKey: 'employeeType',
+                        enabled: false,
+                      ),
+                      CustomTextField(
+                        "Shift",
+                        shiftController,
+                        enabled: false,
+                        isDarkMode,
+                        fieldKey: 'shift',
+                      ),
                       _buildDateField(
                         "Date of Birth",
                         dobController,
                         isDarkMode,
                         fieldKey: 'dob',
                       ),
-                      _buildTextField(
+                      CustomTextField(
                         "Joined Date",
                         joinedDateController,
                         isDarkMode,

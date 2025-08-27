@@ -181,40 +181,36 @@ class _AddReapplyPageState extends State<AddReapplyPage> {
                   ),
                   const SizedBox(height: 40.0),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 105.0),
-                        child: InkWell(
-                          onTap: _clearForm,
-                          child: Container(
-                            height: 45.0,
-                            width: 120.0,
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.transparent),
-                              borderRadius: BorderRadius.circular(10.0),
-                              color: Theme.of(context).colorScheme.surface,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.sort,
+                      InkWell(
+                        onTap: _clearForm,
+                        child: Container(
+                          height: 45.0,
+                          width: 120.0,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.transparent),
+                            borderRadius: BorderRadius.circular(10.0),
+                            color: Theme.of(context).colorScheme.surface,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.sort,
+                                color: isDarkMode ? Colors.black : Colors.white,
+                              ),
+                              const SizedBox(width: 4.0),
+                              Text(
+                                "Clear",
+                                style: smallStyle.copyWith(
+                                  fontWeight: FontWeight.bold,
                                   color:
                                       isDarkMode ? Colors.black : Colors.white,
+                                  fontSize: 12.0,
                                 ),
-                                const SizedBox(width: 4.0),
-                                Text(
-                                  "Clear",
-                                  style: smallStyle.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: isDarkMode
-                                        ? Colors.black
-                                        : Colors.white,
-                                    fontSize: 12.0,
-                                  ),
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       ),

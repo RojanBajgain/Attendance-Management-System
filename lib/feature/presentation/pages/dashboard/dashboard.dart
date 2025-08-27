@@ -7,6 +7,7 @@ import 'package:ams/feature/presentation/pages/dashboard/sub_view_dashboard/time
 import 'package:ams/feature/presentation/pages/dashboard/widget/clock_time.dart';
 import 'package:ams/feature/presentation/pages/dashboard/widget/skeleton_box.dart';
 import 'package:ams/feature/presentation/pages/login/controller/login_controller.dart';
+import 'package:ams/feature/presentation/pages/notification/controller/notification_controller.dart';
 import 'package:ams/feature/presentation/pages/organization/model/organization_profile_model.dart';
 import 'package:ams/feature/presentation/pages/timeoff/controller/timeoff_controller.dart';
 import 'package:ams/feature/presentation/pages/timesheet/controller/timesheet_controller.dart';
@@ -37,6 +38,8 @@ class _DashboardPageState extends State<DashboardPage> {
   final CalenderNotificationController calenderNotificationController =
       Get.find<CalenderNotificationController>();
   final ProfileController profileController = Get.find<ProfileController>();
+    final ClockInOutController clockInOutController = Get.find<ClockInOutController>();
+
 
   Rx<Profile?> profile = Rx<Profile?>(null);
 
@@ -70,6 +73,7 @@ class _DashboardPageState extends State<DashboardPage> {
       errorMessage.value = 'Failed to load dashboard data';
     }
   }
+  final notificationcontroller = Get.find<NotificationController>();
 
   Future<void> _safeRefresh() async {
     try {
@@ -77,11 +81,16 @@ class _DashboardPageState extends State<DashboardPage> {
       await Future.wait([
         dashboardTimesheetController.getDashboardTimesheet(),
         timesheetController.getTimesheet(),
+
         timeoffController.getTimeoff(),
+                clockInOutController.getBreakTime(),
+
         calenderNotificationController.getEventCalenders(),
         profileController.getProfile(),
         Get.find<HasClockedinController>().getClockData(),
         Get.find<ClockInOutController>().getOfficeLocation(),
+        notificationcontroller.getNotification(),
+
       ]);
     } catch (e) {
       print('Refresh error: $e');

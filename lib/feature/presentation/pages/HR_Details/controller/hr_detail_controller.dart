@@ -4,12 +4,12 @@ import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/repository/organizationStaff_repo.dart';
 import 'package:ams/feature/presentation/pages/HR_Details/model/hr_detail_model.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
 class OrganizationStaffController extends GetxController {
   var organizationStaff = <OrganizationStaffModel>[].obs;
   var isLoading = false.obs;
   var errorMessage = ''.obs;
-
   final OrganizationStaffRepo organizationStaffRepo;
 
   OrganizationStaffController({required this.organizationStaffRepo});
