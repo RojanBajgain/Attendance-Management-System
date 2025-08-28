@@ -769,7 +769,7 @@ class _EventPageState extends State<EventPage>
                             child: Column(
                               children: [
                                 Image.asset("assets/images/noEvent.png"),
-                                SizedBox(height: 20),
+                                const SizedBox(height: 20),
                                 Text(
                                   "No ${getTabName(activeTabType).toLowerCase()} found",
                                   style: smallStyle.copyWith(
@@ -1024,13 +1024,17 @@ class _EventPageState extends State<EventPage>
                                                 child: Row(
                                                   children: [
                                                     const Icon(
-                                                        Icons.person_outline,
+                                                        Icons
+                                                            .calendar_month_outlined,
                                                         size: 14,
                                                         color: Colors.grey),
                                                     const SizedBox(width: 4),
                                                     Flexible(
                                                       child: Text(
-                                                        "Assigned to: ${event.user}",
+                                                        DateFormat(
+                                                                'dd MMM yyyy')
+                                                            .format(event
+                                                                .startDate!),
                                                         style: TextStyle(
                                                           color: isDarkMode
                                                               ? Colors
