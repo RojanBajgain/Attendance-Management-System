@@ -58,6 +58,7 @@ class AbsentDayWidget extends StatelessWidget {
             right: 15.0,
           ),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Date and Absent Status Row
@@ -104,28 +105,7 @@ class AbsentDayWidget extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // SizedBox(
-                  //   width: 80,
-                  //   child: Row(
-                  //     children: [
-                  //       const Icon(
-                  //         Icons.history,
-                  //         color: Colors.grey,
-                  //         size: 20,
-                  //       ),
-                  //       const SizedBox(width: 4),
-                  //       Text(
-                  //         "---",
-                  //         style: smallStyle.copyWith(
-                  //           color: Colors.grey,
-                  //           fontSize: 12.0,
-                  //         ),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
-                  SizedBox(
-                    width: 85,
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -140,32 +120,25 @@ class AbsentDayWidget extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 2),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "---",
-                              style: smallStyle.copyWith(
-                                color: Colors.grey,
-                                fontSize: 12.0,
-                              ),
-                            ),
-                          ],
+                        Text(
+                          "---",
+                          style: smallStyle.copyWith(
+                            color: Colors.grey,
+                            fontSize: 12.0,
+                          ),
                         ),
                       ],
                     ),
                   ),
                   Container(
-                    height: 25,
+                    height: 35,
                     width: 1,
                     color: isDarkMode
                         ? Colors.grey.shade600
                         : Colors.grey.shade300,
-                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                    margin: const EdgeInsets.symmetric(horizontal: 8),
                   ),
-                  const SizedBox(width: 20),
-                  SizedBox(
-                    width: 85,
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -180,32 +153,25 @@ class AbsentDayWidget extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 2),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "---",
-                              style: smallStyle.copyWith(
-                                color: Colors.grey,
-                                fontSize: 12.0,
-                              ),
-                            ),
-                          ],
+                        Text(
+                          "---",
+                          style: smallStyle.copyWith(
+                            color: Colors.grey,
+                            fontSize: 12.0,
+                          ),
                         ),
                       ],
                     ),
                   ),
                   Container(
-                    height: 25,
+                    height: 35,
                     width: 1,
                     color: isDarkMode
                         ? Colors.grey.shade600
                         : Colors.grey.shade300,
-                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                    margin: const EdgeInsets.symmetric(horizontal: 8),
                   ),
-                  const SizedBox(width: 15),
-                  SizedBox(
-                    width: 85,
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -220,17 +186,12 @@ class AbsentDayWidget extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 2),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "---",
-                              style: smallStyle.copyWith(
-                                color: Colors.grey,
-                                fontSize: 12.0,
-                              ),
-                            ),
-                          ],
+                        Text(
+                          "---",
+                          style: smallStyle.copyWith(
+                            color: Colors.grey,
+                            fontSize: 12.0,
+                          ),
                         ),
                       ],
                     ),

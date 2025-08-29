@@ -105,11 +105,10 @@ class _EventPageState extends State<EventPage>
   }
 
   List<EventCalenderModel> _filterEvents(String type) {
-    final filtered = _controller.eventCalenders
-        .where(
-            (event) => (event.type?.toUpperCase() ?? '') == type.toUpperCase())
-        .toList();
-    // log("Filtering for $type, found ${filtered.length} events");
+    final filtered = _controller.eventCalenders.where((event) {
+      final effectiveType = _getEffectiveEventType(event);
+      return effectiveType == type.toUpperCase();
+    }).toList();
     return filtered;
   }
 
@@ -647,7 +646,8 @@ class _EventPageState extends State<EventPage>
                                     ),
                                     const SizedBox(height: 6),
                                     if (todayEvent?.type != null)
-                                      _buildEventTag(todayEvent!.type!),
+                                      _buildEventTag(todayEvent!.type!,
+                                          event: todayEvent),
                                     const SizedBox(height: 6),
                                     if (todayEvent?.description != null &&
                                         todayEvent!.description!.isNotEmpty)
@@ -721,22 +721,22 @@ class _EventPageState extends State<EventPage>
                                           ),
                                         ),
                                       ),
-                                    if (todayEvent?.user != null &&
-                                        todayEvent!.user!.isNotEmpty)
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(top: 6.0),
-                                        child: Text(
-                                          'Created By: ${todayEvent.user}',
-                                          style: TextStyle(
-                                            fontSize: 11,
-                                            fontStyle: FontStyle.italic,
-                                            color: isDarkMode
-                                                ? Colors.grey.shade400
-                                                : Colors.black,
-                                          ),
-                                        ),
-                                      ),
+                                    // if (todayEvent?.user != null &&
+                                    //     todayEvent!.user!.isNotEmpty)
+                                    //   Padding(
+                                    //     padding:
+                                    //         const EdgeInsets.only(top: 6.0),
+                                    //     child: Text(
+                                    //       'Created By: ${todayEvent.user}',
+                                    //       style: TextStyle(
+                                    //         fontSize: 11,
+                                    //         fontStyle: FontStyle.italic,
+                                    //         color: isDarkMode
+                                    //             ? Colors.grey.shade400
+                                    //             : Colors.black,
+                                    //       ),
+                                    //     ),
+                                    //   ),
                                   ],
                                 ),
                               ),
@@ -825,7 +825,7 @@ class _EventPageState extends State<EventPage>
                                           month: month,
                                           day: day,
                                           color: _getColorForEventType(
-                                              event.type)),
+                                              _getEffectiveEventType(event))),
                                       const SizedBox(width: 16),
                                       Expanded(
                                         child: Column(
@@ -907,7 +907,8 @@ class _EventPageState extends State<EventPage>
                                             ),
                                             const SizedBox(height: 6),
                                             if (event.type != null)
-                                              _buildEventTag(event.type!),
+                                              _buildEventTag(event.type!,
+                                                  event: event),
                                             const SizedBox(height: 6),
                                             if (event.description != null &&
                                                 event.description!.isNotEmpty)
@@ -937,11 +938,14 @@ class _EventPageState extends State<EventPage>
                                                 overflow: TextOverflow.ellipsis,
                                               ),
                                             const SizedBox(height: 6),
-                                            if (event.type == "REMINDER")
+                                            if (event.type == "REMINDER" ||
+                                                _getEffectiveEventType(event) ==
+                                                    "BIRTHDAY")
                                               Row(
                                                 children: [
                                                   const Icon(
-                                                      Icons.calendar_today,
+                                                      Icons
+                                                          .calendar_today_outlined,
                                                       size: 13,
                                                       color: Colors.grey),
                                                   const SizedBox(width: 4),
@@ -964,17 +968,17 @@ class _EventPageState extends State<EventPage>
                                                                     event
                                                                         .endDate!
                                                                         .day
-                                                            ? DateFormat(event
-                                                                            .type ==
-                                                                        "Birthday"
-                                                                    ? 'd MMM'
-                                                                    : 'd MMM yyyy')
+                                                            ? DateFormat(_getEffectiveEventType(
+                                                                            event) ==
+                                                                        "BIRTHDAY"
+                                                                    ? 'd MMMM'
+                                                                    : 'd MMMM')
                                                                 .format(event
                                                                     .startDate!)
-                                                            : "${DateFormat(event.type == "Birthday" ? 'd MMM' : 'd MMM yyyy').format(event.startDate!)}"
+                                                            : "${DateFormat(_getEffectiveEventType(event) == "BIRTHDAY" ? 'd MMM' : 'd MMM yyyy').format(event.startDate!)}"
                                                                 " - "
-                                                                "${DateFormat(event.type == "Birthday" ? 'd MMM' : 'd MMM yyyy').format(event.endDate ?? event.startDate!)}")
-                                                        : 'Date not specified',
+                                                                "${DateFormat(_getEffectiveEventType(event) == "BIRTHDAY" ? 'd MMM' : 'd MMM yyyy').format(event.endDate ?? event.startDate!)}")
+                                                        : '',
                                                     style: TextStyle(
                                                       color: isDarkMode
                                                           ? Colors.grey.shade400
@@ -1074,6 +1078,8 @@ class _EventPageState extends State<EventPage>
     switch (type?.toUpperCase()) {
       case "EVENT":
         return Colors.blue;
+      case "BIRTHDAY":
+        return Colors.orange; // Orange color for birthdays
       case "HOLIDAY":
         return Colors.red;
       case "NOTICE":
@@ -1111,12 +1117,22 @@ class _EventPageState extends State<EventPage>
     );
   }
 
-  Widget _buildEventTag(String type) {
-    Color tagColor = _getColorForEventType(type);
+  Widget _buildEventTag(String type, {EventCalenderModel? event}) {
+    // Check if this event should be treated as a birthday
+    String effectiveType = type;
+    if (event != null) {
+      effectiveType = _getEffectiveEventType(event);
+    }
+
+    Color tagColor = _getColorForEventType(effectiveType);
     String tagText;
-    switch (type.toUpperCase()) {
+
+    switch (effectiveType.toUpperCase()) {
       case "EVENT":
         tagText = "Event";
+        break;
+      case "BIRTHDAY":
+        tagText = "Birthday"; // This will show "Birthday" instead of "Event"
         break;
       case "HOLIDAY":
         tagText = "Holiday";
@@ -1130,6 +1146,7 @@ class _EventPageState extends State<EventPage>
       default:
         tagText = "Event";
     }
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
       decoration: BoxDecoration(
@@ -1140,6 +1157,17 @@ class _EventPageState extends State<EventPage>
             color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11),
       ),
     );
+  }
+
+  String _getEffectiveEventType(EventCalenderModel event) {
+    final name = event.name?.toLowerCase() ?? '';
+    final title = event.title?.toLowerCase() ?? '';
+
+    if (name.contains('birthday') || title.contains('birthday')) {
+      return "BIRTHDAY";
+    }
+
+    return event.type?.toUpperCase() ?? "EVENT";
   }
 
   void _showReminderDialog({EventCalenderModel? reminder}) {
@@ -1220,6 +1248,12 @@ class _EventPageState extends State<EventPage>
                       ),
                       decoration: InputDecoration(
                         labelText: 'Remarks',
+                        labelStyle: TextStyle(
+                          color: isDarkMode
+                              ? Colors.grey.shade400
+                              : Colors.grey.shade600,
+                          fontSize: 11,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -1232,22 +1266,54 @@ class _EventPageState extends State<EventPage>
                     // Dates
                     Row(
                       children: [
+                        // START DATE
                         Expanded(
                           child: InkWell(
                             onTap: () async {
                               final date = await showDatePicker(
                                 context: context,
                                 initialDate: startDate ?? DateTime.now(),
-                                firstDate: DateTime.now(),
+                                firstDate:
+                                    DateTime.now(), // ⬅️ only today and forward
                                 lastDate: DateTime(2100),
+                                builder: (context, child) {
+                                  return Theme(
+                                    data: Theme.of(context).copyWith(
+                                      colorScheme: const ColorScheme.light(
+                                        primary: Colors.black,
+                                        onPrimary: Colors.white,
+                                        onSurface: Colors.black,
+                                      ),
+                                      dialogBackgroundColor: Colors.white,
+                                      textTheme: Theme.of(context)
+                                          .textTheme
+                                          .copyWith(
+                                            bodyLarge:
+                                                const TextStyle(fontSize: 12),
+                                            bodyMedium:
+                                                const TextStyle(fontSize: 12),
+                                            labelSmall:
+                                                const TextStyle(fontSize: 11),
+                                          ),
+                                    ),
+                                    child: child!,
+                                  );
+                                },
                               );
                               if (date != null) {
-                                dialogSetState(() => startDate = date);
+                                dialogSetState(
+                                    () => startDate = date); // ✅ FIXED
+                                // Reset endDate if it's before the new startDate
+                                if (endDate != null &&
+                                    endDate!.isBefore(date)) {
+                                  dialogSetState(() => endDate = null);
+                                }
                               }
                             },
                             child: InputDecorator(
                               decoration: const InputDecoration(
                                 labelText: 'Start Date',
+                                labelStyle: TextStyle(fontSize: 11),
                                 border: OutlineInputBorder(),
                               ),
                               child: Text(
@@ -1255,11 +1321,14 @@ class _EventPageState extends State<EventPage>
                                     ? DateFormat('yyyy-MM-dd')
                                         .format(startDate!)
                                     : 'Select Date',
+                                style: const TextStyle(fontSize: 10),
                               ),
                             ),
                           ),
                         ),
                         const SizedBox(width: 8),
+
+                        // END DATE
                         Expanded(
                           child: InkWell(
                             onTap: () async {
@@ -1267,8 +1336,32 @@ class _EventPageState extends State<EventPage>
                                 context: context,
                                 initialDate:
                                     endDate ?? startDate ?? DateTime.now(),
-                                firstDate: startDate ?? DateTime.now(),
+                                firstDate: startDate ??
+                                    DateTime.now(), // ⬅️ not before start date
                                 lastDate: DateTime(2100),
+                                builder: (context, child) {
+                                  return Theme(
+                                    data: Theme.of(context).copyWith(
+                                      colorScheme: const ColorScheme.light(
+                                        primary: Colors.black,
+                                        onPrimary: Colors.white,
+                                        onSurface: Colors.black,
+                                      ),
+                                      dialogBackgroundColor: Colors.white,
+                                      textTheme: Theme.of(context)
+                                          .textTheme
+                                          .copyWith(
+                                            bodyLarge:
+                                                const TextStyle(fontSize: 12),
+                                            bodyMedium:
+                                                const TextStyle(fontSize: 12),
+                                            labelSmall:
+                                                const TextStyle(fontSize: 11),
+                                          ),
+                                    ),
+                                    child: child!,
+                                  );
+                                },
                               );
                               if (date != null) {
                                 dialogSetState(() => endDate = date);
@@ -1277,12 +1370,20 @@ class _EventPageState extends State<EventPage>
                             child: InputDecorator(
                               decoration: const InputDecoration(
                                 labelText: 'End Date',
+                                labelStyle: TextStyle(fontSize: 12),
                                 border: OutlineInputBorder(),
                               ),
                               child: Text(
                                 endDate != null
                                     ? DateFormat('yyyy-MM-dd').format(endDate!)
                                     : 'Select Date',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
                               ),
                             ),
                           ),
@@ -1296,7 +1397,10 @@ class _EventPageState extends State<EventPage>
             actions: [
               TextButton(
                 onPressed: () => Get.back(),
-                child: const Text('Cancel'),
+                child: Text(
+                  'Cancel',
+                  style: miniStyle,
+                ),
               ),
               Obx(
                 () => addReminderController.isLoading.value
@@ -1367,7 +1471,14 @@ class _EventPageState extends State<EventPage>
                             });
                           }
                         },
-                        child: Text(reminder == null ? 'Save' : 'Update'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white,
+                        ),
+                        child: Text(
+                          reminder == null ? 'Save' : 'Update',
+                          style: miniStyle.copyWith(color: Colors.white),
+                        ),
                       ),
               ),
             ],
