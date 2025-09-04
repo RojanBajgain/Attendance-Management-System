@@ -38,13 +38,22 @@ class TimeoffView extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  "${timeoffdata.startDate != null ? DateFormat.yMMMd('en_US').format(timeoffdata.startDate!) : ""} to ${timeoffdata.endDate != null ? DateFormat.yMMMd('en_US').format(timeoffdata.endDate!) : ""}",
+                  timeoffdata.startDate != null && timeoffdata.endDate != null
+                      ? (DateFormat.yMMMd('en_US')
+                                  .format(timeoffdata.startDate!) ==
+                              DateFormat.yMMMd('en_US')
+                                  .format(timeoffdata.endDate!)
+                          ? DateFormat.yMMMd('en_US')
+                              .format(timeoffdata.startDate!)
+                          : "${DateFormat.yMMMd('en_US').format(timeoffdata.startDate!)} to ${DateFormat.yMMMd('en_US').format(timeoffdata.endDate!)}")
+                      : "",
                   style: smallStyle.copyWith(
                     fontWeight: FontWeight.bold,
                     color: isDarkMode ? Colors.white : Colors.black,
                     fontSize: 12.0,
                   ),
                 ),
+
                 // const SizedBox(width: 20.0),
                 const Spacer(),
                 Container(
@@ -95,7 +104,8 @@ class TimeoffView extends StatelessWidget {
                     ),
                     SizedBox(height: 5.0),
                     Text(
-                      '${timeoffdata.days.toString()} days',
+                      // '${timeoffdata.days.toString()} days',
+                      "${timeoffdata.days} ${timeoffdata.days == 1 ? 'day' : 'days'}",
                       style: smallStyle.copyWith(
                         fontWeight: FontWeight.bold,
                         color: isDarkMode ? Colors.white : Colors.black,

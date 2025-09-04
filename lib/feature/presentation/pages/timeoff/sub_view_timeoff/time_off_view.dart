@@ -468,7 +468,7 @@ class TimeOffSheet extends StatelessWidget {
                   ),
                   const Spacer(),
                   Text(
-                    "${timeoffdata.days.toString()} days",
+                    "${timeoffdata.days} ${timeoffdata.days == 1 ? 'day' : 'days'}",
                     style: smallStyle.copyWith(
                       color: isDarkMode ? Colors.white : Colors.black,
                       fontSize: 12.0,

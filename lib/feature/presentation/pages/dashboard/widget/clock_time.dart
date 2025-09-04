@@ -822,11 +822,11 @@ class _ClockTimeState extends State<ClockTime> {
         buttonColor = Colors.grey[600]!;
       } else if (isClockedInToday.value) {
         buttonIcon = Icons.logout;
-        buttonText = 'Clock Out';
+        buttonText = 'Check Out';
         buttonColor = Colors.red[700]!;
       } else {
         buttonIcon = Icons.login;
-        buttonText = 'Clock In';
+        buttonText = 'Check In';
         buttonColor = Colors.green[600]!;
       }
 
