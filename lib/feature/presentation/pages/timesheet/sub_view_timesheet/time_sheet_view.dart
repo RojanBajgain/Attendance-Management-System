@@ -4,6 +4,7 @@ import 'package:ams/feature/presentation/pages/timesheet/sub_view_timesheet/time
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 class TimeSheetWidget extends StatefulWidget {
   final Datum timesheetdata;
@@ -130,10 +131,6 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
                     // Entry Status Container
                     if (getEntryStatus() != "N/A")
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8.0,
-                          vertical: 4.0,
-                        ),
                         decoration: BoxDecoration(
                           color: getEntryStatusColor().withOpacity(0.1),
                           borderRadius: BorderRadius.circular(6.0),
@@ -146,7 +143,7 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
                           getEntryStatus(),
                           style: smallStyle.copyWith(
                             color: getEntryStatusColor(),
-                            fontSize: 8.0,
+                            fontSize: 12.sp,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -160,88 +157,36 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     // Clock-in Section
-                    SizedBox(
-                      width: 85,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Entry Time",
-                            style: smallStyle.copyWith(
-                              color: isDarkMode
-                                  ? Colors.white70
-                                  : Colors.grey.shade700,
-                              fontSize: 10.0,
-                              fontWeight: FontWeight.w500,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Entry Time",
+                          style: smallStyle.copyWith(
+                            color: isDarkMode
+                                ? Colors.white70
+                                : Colors.grey.shade700,
+                            fontSize: 10.0,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.timesheetdata.entryTime != null
+                                  ? DateFormat('hh:mm a').format(
+                                      widget.timesheetdata.entryTime!.toLocal())
+                                  : "--:--",
+                              style: smallStyle.copyWith(
+                                color: Colors.grey,
+                                fontSize: 12.0,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 2),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                widget.timesheetdata.entryTime != null
-                                    ? DateFormat('hh:mm a').format(widget
-                                        .timesheetdata.entryTime!
-                                        .toLocal())
-                                    : "--:--",
-                                style: smallStyle.copyWith(
-                                  color: Colors.grey,
-                                  fontSize: 12.0,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-
-                      /* 
-                        child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.history,
-                                color: isDarkMode
-                                    ? Colors.white60
-                                    : Colors.grey.shade600,
-                                size: 10,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                "Entry Time",
-                                style: smallStyle.copyWith(
-                                  color: isDarkMode
-                                      ? Colors.white70
-                                      : Colors.grey.shade700,
-                                  fontSize: 10.0,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 2),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                widget.timesheetdata.entryTime != null
-                                    ? DateFormat('hh:mm a').format(widget
-                                        .timesheetdata.entryTime!
-                                        .toLocal())
-                                    : "--:--",
-                                style: smallStyle.copyWith(
-                                  color: Colors.grey,
-                                  fontSize: 12.0,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                       */
+                          ],
+                        ),
+                      ],
                     ),
                     Container(
                       height: 35,
@@ -256,6 +201,7 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
                     SizedBox(
                       width: 85,
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             "Exit Time",
@@ -269,7 +215,7 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
                           ),
                           const SizedBox(height: 2),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               // Icon(
                               //   Icons.update,
@@ -307,6 +253,7 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
                     SizedBox(
                       width: 80,
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             "Total Hours",
@@ -320,7 +267,7 @@ class _TimeSheetWidgetState extends State<TimeSheetWidget> {
                           ),
                           const SizedBox(height: 2),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               // Icon(
                               //   Icons.schedule,

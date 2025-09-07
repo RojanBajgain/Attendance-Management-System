@@ -38,8 +38,8 @@ class _DashboardPageState extends State<DashboardPage> {
   final CalenderNotificationController calenderNotificationController =
       Get.find<CalenderNotificationController>();
   final ProfileController profileController = Get.find<ProfileController>();
-    final ClockInOutController clockInOutController = Get.find<ClockInOutController>();
-
+  final ClockInOutController clockInOutController =
+      Get.find<ClockInOutController>();
 
   Rx<Profile?> profile = Rx<Profile?>(null);
 
@@ -73,6 +73,7 @@ class _DashboardPageState extends State<DashboardPage> {
       errorMessage.value = 'Failed to load dashboard data';
     }
   }
+
   final notificationcontroller = Get.find<NotificationController>();
 
   Future<void> _safeRefresh() async {
@@ -81,16 +82,13 @@ class _DashboardPageState extends State<DashboardPage> {
       await Future.wait([
         dashboardTimesheetController.getDashboardTimesheet(),
         timesheetController.getTimesheet(),
-
         timeoffController.getTimeoff(),
-                clockInOutController.getBreakTime(),
-
+        clockInOutController.getBreakTime(),
         calenderNotificationController.getEventCalenders(),
         profileController.getProfile(),
         Get.find<HasClockedinController>().getClockData(),
         Get.find<ClockInOutController>().getOfficeLocation(),
         notificationcontroller.getNotification(),
-
       ]);
     } catch (e) {
       print('Refresh error: $e');
@@ -329,8 +327,12 @@ class _DashboardPageState extends State<DashboardPage> {
   double _getWeeklyPercentage() {
     try {
       return dashboardTimesheetController
-              .dashboardtimesheet.value.thisWeek?.percentage ??
-          0.0;
+                  .dashboardtimesheet.value.thisWeek!.percentage >
+              100
+          ? 100
+          : dashboardTimesheetController
+                  .dashboardtimesheet.value.thisWeek?.percentage ??
+              0.0;
     } catch (e) {
       return 0.0;
     }
@@ -339,8 +341,12 @@ class _DashboardPageState extends State<DashboardPage> {
   double _getMonthlyPercentage() {
     try {
       return dashboardTimesheetController
-              .dashboardtimesheet.value.month?.percentage ??
-          0.0;
+                  .dashboardtimesheet.value.month!.percentage >
+              100
+          ? 100
+          : dashboardTimesheetController
+                  .dashboardtimesheet.value.month?.percentage ??
+              0.0;
     } catch (e) {
       return 0.0;
     }

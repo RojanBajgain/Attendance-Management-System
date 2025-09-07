@@ -9,6 +9,7 @@ import 'package:ams/feature/presentation/widget/components/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 class PayrollPage extends StatefulWidget {
   int? profileId;
@@ -59,7 +60,7 @@ class _PayrollPageState extends State<PayrollPage> {
                     Text(
                       "Payrolls",
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: isDarkMode ? Colors.white : Colors.black,
                       ),
@@ -111,7 +112,7 @@ class _PayrollPageState extends State<PayrollPage> {
                                       fontWeight: selectedType == "PROFILE"
                                           ? FontWeight.bold
                                           : FontWeight.normal,
-                                      fontSize: 14.0,
+                                      fontSize: 14.0.sp,
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
@@ -157,7 +158,7 @@ class _PayrollPageState extends State<PayrollPage> {
                                       fontWeight: selectedType == "PAYSLIP"
                                           ? FontWeight.bold
                                           : FontWeight.normal,
-                                      fontSize: 14.0,
+                                      fontSize: 14.0.sp,
                                     ),
                                     textAlign: TextAlign.center,
                                   ),

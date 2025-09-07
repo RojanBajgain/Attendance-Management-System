@@ -1,7 +1,8 @@
 import 'package:ams/config/resources/styles.dart';
 import 'package:flutter/material.dart';
+
 class TabButton extends StatelessWidget {
-  final String tabType; 
+  final String tabType;
   final String activeTabType;
   final bool isDarkMode;
   final VoidCallback onTap;
@@ -39,7 +40,6 @@ class TabButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            
             Text(
               label,
               style: smallNStyle.copyWith(
@@ -56,7 +56,7 @@ class TabButton extends StatelessWidget {
       ),
     );
   }
-  
+
   String getTabName(String type) {
     switch (type.toUpperCase()) {
       case "PROFILE":

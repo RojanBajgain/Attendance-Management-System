@@ -1,5 +1,6 @@
 import 'package:ams/config/resources/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 class LeaveView extends StatefulWidget {
   int? profileId;
@@ -73,10 +74,8 @@ class _LeaveViewState extends State<LeaveView> {
                       selectType(id, name);
                     },
                     child: Container(
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 2, vertical: 2),
                       padding: const EdgeInsets.symmetric(
-                          vertical: 14, horizontal: 10),
+                          vertical: 10, horizontal: 10),
                       decoration: BoxDecoration(
                         color: isSelected
                             ? (isDarkMode
@@ -84,15 +83,6 @@ class _LeaveViewState extends State<LeaveView> {
                                 : Colors.grey.shade300)
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(12),
-                        //   boxShadow: isSelected
-                        //       ? [
-                        //           BoxShadow(
-                        //             color: Colors.black.withOpacity(0.1),
-                        //             blurRadius: 4,
-                        //             offset: const Offset(0, 2),
-                        //           )
-                        //         ]
-                        //       : null,
                       ),
                       child: Text(
                         name,
@@ -102,7 +92,7 @@ class _LeaveViewState extends State<LeaveView> {
                               : (isDarkMode ? Colors.white70 : Colors.black54),
                           fontWeight:
                               isSelected ? FontWeight.bold : FontWeight.normal,
-                          fontSize: 12.0,
+                          fontSize: 14.0.sp,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -115,93 +105,45 @@ class _LeaveViewState extends State<LeaveView> {
             // Show selected tab content
             Container(
               decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(12)),
+                color: Colors.white,
+                border: Border.all(
+                  color: Colors.grey.shade300,
+                ),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 3), // changes position of shadow
+                  ),
+                ],
+              ),
               margin: const EdgeInsets.only(top: 16),
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "$selectedTypeName",
-                      style: smallStyle.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Column(
-                          children: [
-                            Text(
-                              'Last Year balance',
-                              style: smallStyle,
-                            ),
-                            Text('0',
-                                style: smallStyle.copyWith(
-                                    fontWeight: FontWeight.bold)),
-                          ],
+                        Text(
+                          selectedTypeName,
+                          style: smallStyle.copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16.0.sp,
+                          ),
                         ),
-                        Column(
+                        Row(
                           children: [
                             Text(
-                              'Added This Year',
-                              style: smallStyle,
-                            ),
-                            Text(
-                              '0',
+                              "Remaining Leaves: ",
                               style: smallStyle.copyWith(
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            Text(
-                              'Adjusted',
-                              style: smallStyle,
-                            ),
-                            Text(
-                              '0',
-                              style: smallStyle.copyWith(
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const Divider(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          children: [
-                            Text(
-                              'Total',
-                              style: smallStyle,
-                            ),
-                            Text('0'),
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            Text(
-                              'Leave Used',
-                              style: smallStyle,
-                            ),
-                            Text(
-                              '0',
-                              style: smallStyle,
-                            ),
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            Text(
-                              'Remaining Leaves',
-                              style: smallStyle,
+                                fontSize: 14.0.sp,
+                                color: Colors.grey,
+                              ),
                             ),
                             Container(
                               decoration: BoxDecoration(
@@ -212,13 +154,41 @@ class _LeaveViewState extends State<LeaveView> {
                                     const EdgeInsets.symmetric(horizontal: 8.0),
                                 child: Text(
                                   '0',
-                                  style:
-                                      smallStyle.copyWith(color: Colors.white),
+                                  style: smallStyle.copyWith(
+                                      color: Colors.white, fontSize: 14.sp),
                                 ),
                               ),
                             ),
                           ],
                         ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                            flex: 2,
+                            child: buildInfoColumn(
+                                title: 'Last Year balance', value: '0')),
+                        Expanded(
+                            flex: 2,
+                            child: buildInfoColumn(
+                                title: 'Added This Year', value: '0')),
+                        Expanded(
+                            child:
+                                buildInfoColumn(title: 'Adjusted', value: '0')),
+                      ],
+                    ),
+                    Divider(
+                      thickness: 1,
+                      color: Colors.grey.shade300,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        buildInfoColumn(title: 'Total', value: '0'),
+                        buildInfoColumn(title: 'Leave Used', value: '0'),
                       ],
                     )
                   ],
@@ -228,6 +198,26 @@ class _LeaveViewState extends State<LeaveView> {
           ],
         ),
       ),
+    );
+  }
+
+  Column buildInfoColumn({required String title, required String value}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: smallStyle.copyWith(fontSize: 14.0.sp, color: Colors.grey),
+        ),
+        Text(
+          value,
+          style: smallStyle.copyWith(
+            fontWeight: FontWeight.bold,
+            fontSize: 14.0.sp,
+            color: Colors.grey.shade600,
+          ),
+        ),
+      ],
     );
   }
 }
