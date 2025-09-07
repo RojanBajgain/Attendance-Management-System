@@ -121,31 +121,51 @@ class _TimeSheetDetailState extends State<TimeSheetDetail> {
                                     ? "---"
                                     : timesheet.exitRemarks.toString()),
                             // _buildDivider(),
+                            // _buildRow(
+                            //   Icons.timer_off,
+                            //   "Break Time",
+                            //   timesheet.breakTime != null
+                            //       ? _formatDuration(timesheet
+                            //           .breakTime!) // Direct call, no Duration conversion
+                            //       : "N/A",
+                            // ),
+
+                            // // _buildDivider(),
+                            // _buildRow(
+                            //   Icons.alarm,
+                            //   "Overtime",
+                            //   timesheet.overTime != null
+                            //       ? _formatHoursOnly(timesheet.overTime!)
+                            //       : "N/A",
+                            // ),
+
+                            // Break Time
                             _buildRow(
-                                Icons.timer_off,
-                                "Break Time",
-                                timesheet.breakTime != null
-                                    ? _formatDuration(Duration(
-                                        seconds: timesheet.breakTime!.toInt()))
-                                    : "N/A"),
+                              Icons.timer_off,
+                              "Break Time",
+                              timesheet.breakTime != null
+                                  ? _formatTimeAsIs(timesheet.breakTime!)
+                                  : "N/A",
+                            ),
+
+// Overtime
+                            _buildRow(
+                              Icons.alarm,
+                              "Overtime",
+                              timesheet.overTime != null
+                                  ? _formatTimeAsIs(timesheet.overTime!)
+                                  : "N/A",
+                            ),
+
                             // _buildDivider(),
                             _buildRow(
-                                Icons.alarm,
-                                "Overtime",
-                                timesheet.overTime != null
-                                    ? _formatHoursOnly(
-                                        double.tryParse(timesheet.overTime!) ??
-                                            0)
-                                    : "N/A"),
-                            // _buildDivider(),
-                            _buildRow(
-                                Icons.access_time_filled,
-                                "Total Hours",
-                                timesheet.totalHour != null
-                                    ? _formatHourMinute(
-                                        double.tryParse(timesheet.totalHour!) ??
-                                            0)
-                                    : "N/A"),
+                              Icons.access_time_filled,
+                              "Total Hours",
+                              timesheet.totalHour != null
+                                  ? _formatHourMinute(timesheet.totalHour!)
+                                  : "N/A",
+                            ),
+
                             // _buildDivider(),
                             _buildRow(Icons.badge, "Designation",
                                 timesheet.designation ?? "N/A"),
@@ -215,12 +235,41 @@ class _TimeSheetDetailState extends State<TimeSheetDetail> {
 
   String _formatHoursOnly(double hours) {
     final int wholeHours = hours.floor();
-    return "${wholeHours}hrs";
+    final int minutes = ((hours - wholeHours) * 60).round();
+
+    if (wholeHours > 0 && minutes > 0) {
+      return "${wholeHours}hrs ${minutes}min";
+    } else if (wholeHours > 0) {
+      return "${wholeHours}hrs";
+    } else {
+      return "${minutes}min";
+    }
   }
 
-  String _formatDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, "0");
-    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
-    return "${twoDigits(duration.inHours)}:$twoDigitMinutes";
+  String _formatDuration(double hours) {
+    final int wholeHours = hours.floor();
+    final int minutes = ((hours - wholeHours) * 60).round();
+
+    if (wholeHours > 0 && minutes > 0) {
+      return "${wholeHours}hrs ${minutes}min";
+    } else if (wholeHours > 0) {
+      return "${wholeHours}hrs";
+    } else {
+      return "${minutes}min";
+    }
+  }
+
+  String _formatTimeAsIs(double timeValue) {
+    final int hours = timeValue.floor();
+    final int minutes =
+        ((timeValue - hours) * 100).round(); // Decimal part * 100 = minutes
+
+    if (hours > 0 && minutes > 0) {
+      return "${hours}hrs ${minutes}min";
+    } else if (hours > 0) {
+      return "${hours}hrs";
+    } else {
+      return "${minutes}min";
+    }
   }
 }

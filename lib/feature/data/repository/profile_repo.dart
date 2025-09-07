@@ -178,42 +178,6 @@ class ProfileRepo {
     }
   }
 
-  // Updating user new Address
-  Future<ApiResponse> postnewuserAddress(
-    int userID,
-    int issuedCountry,
-    String province,
-    String city,
-    String addressLineOne,
-    String addressLineTwo,
-    String zipcode,
-    String addressType,
-  ) async {
-    final token = await apiClient.token;
-    final organization = await apiClient.organization;
-
-    final url = ApiUrls.postuseraddress;
-
-    final response = await apiClient.postApi(
-      url,
-      requestBody: {
-        "profile": userID,
-        "issued_country": issuedCountry,
-        "province": province,
-        "postal_code": zipcode,
-        "city": city,
-        "address_type": addressType,
-        "address_line_one": addressLineOne,
-        "address_line_two": addressLineTwo,
-      },
-      token: token,
-      apiKey: organization,
-      fromJson: null,
-    );
-    return response;
-  }
-
-  // Updating user Address
   Future<ApiResponse> postuserAddress(
     int id,
     int addressID,
@@ -221,8 +185,8 @@ class ProfileRepo {
     String province,
     String city,
     String addressLineOne,
-    String addressLineTwo,
-    String zipcode,
+    String? addressLineTwo,
+    String? zipcode,
     String addressType,
   ) async {
     final token = await apiClient.token;
@@ -232,18 +196,82 @@ class ProfileRepo {
 
     int countryId = int.tryParse(country) ?? 1;
 
+    // Build request body conditionally
+    Map<String, dynamic> requestBody = {
+      "profile": id,
+      "issued_country": countryId,
+      "province": province,
+      "city": city,
+      "address_type": addressType,
+      "address_line_one": addressLineOne,
+    };
+
+    // Only add optional fields if they have values
+    if (addressLineTwo != null && addressLineTwo.isNotEmpty) {
+      requestBody["address_line_two"] = addressLineTwo;
+    } else {
+      // Explicitly set to empty string or null to clear the field
+      requestBody["address_line_two"] = "";
+    }
+
+    if (zipcode != null && zipcode.isNotEmpty) {
+      requestBody["postal_code"] = zipcode;
+    } else {
+      // Explicitly set to empty string or null to clear the field
+      requestBody["postal_code"] = "";
+    }
+
     final response = await apiClient.patchApi(
       url,
-      requestBody: {
-        "profile": id,
-        "issued_country": countryId,
-        "province": province,
-        "postal_code": zipcode,
-        "city": city,
-        "address_type": addressType,
-        "address_line_one": addressLineOne,
-        "address_line_two": addressLineTwo,
-      },
+      requestBody: requestBody,
+      token: token,
+      apiKey: organization,
+      fromJson: null,
+    );
+    return response;
+  }
+
+  Future<ApiResponse> postnewuserAddress(
+    int userID,
+    int issuedCountry,
+    String province,
+    String city,
+    String addressLineOne,
+    String? addressLineTwo,
+    String? zipcode,
+    String addressType,
+  ) async {
+    final token = await apiClient.token;
+    final organization = await apiClient.organization;
+
+    final url = ApiUrls.postuseraddress;
+
+    // Build request body conditionally
+    Map<String, dynamic> requestBody = {
+      "profile": userID,
+      "issued_country": issuedCountry,
+      "province": province,
+      "city": city,
+      "address_type": addressType,
+      "address_line_one": addressLineOne,
+    };
+
+    // Only add optional fields if they have values
+    if (addressLineTwo != null && addressLineTwo.isNotEmpty) {
+      requestBody["address_line_two"] = addressLineTwo;
+    } else {
+      requestBody["address_line_two"] = "";
+    }
+
+    if (zipcode != null && zipcode.isNotEmpty) {
+      requestBody["postal_code"] = zipcode;
+    } else {
+      requestBody["postal_code"] = "";
+    }
+
+    final response = await apiClient.postApi(
+      url,
+      requestBody: requestBody,
       token: token,
       apiKey: organization,
       fromJson: null,

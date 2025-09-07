@@ -146,26 +146,24 @@ class ProfileController extends GetxController {
     required String dob,
     required String phonenumber,
     required String gender,
-        required String empno,
-
+    required String empno,
     required String joinedDate,
     required List<String> skills,
     required File? resume,
   }) async {
     try {
       ApiResponse response = await profileRepo.postProfileUpdate(
-        id,
-        profileID,
-        profileImage,
-        username,
-        dob,
-        phonenumber,
-        gender,
-        joinedDate,
-        skills,
-        resume,
-        empno
-      );
+          id,
+          profileID,
+          profileImage,
+          username,
+          dob,
+          phonenumber,
+          gender,
+          joinedDate,
+          skills,
+          resume,
+          empno);
 
       if (response.status == ApiStatus.SUCCESS && response.response != null) {
         getProfile();
@@ -181,66 +179,6 @@ class ProfileController extends GetxController {
       SSnackbarUtil.showFadeSnackbar(
         Get.context!,
         'An unexpected error occurred, please try again',
-        SnackbarType.error,
-      );
-    }
-  }
-
-  Future<void> postnewuserAddress({
-    required int profileID,
-    required int issuedCountry,
-    required String province,
-    required String city,
-    required String addressLineOne,
-    required String addressLineTwo,
-    required String zipcode,
-    required String addressType,
-  }) async {
-    try {
-      // Guard against any null values
-      if (province.isEmpty ||
-          city.isEmpty ||
-          addressLineOne.isEmpty ||
-          zipcode.isEmpty) {
-        SSnackbarUtil.showFadeSnackbar(
-          Get.context!,
-          'All required fields must be filled',
-          SnackbarType.warning,
-        );
-        return;
-      }
-
-      ApiResponse response = await profileRepo.postnewuserAddress(
-        profileID,
-        issuedCountry,
-        province,
-        city,
-        addressLineOne,
-        addressLineTwo,
-        zipcode,
-        addressType,
-      );
-
-      if (response.status == ApiStatus.SUCCESS && response.response != null) {
-        // log("Created new user address: ${response.response}");
-
-        // Refresh profile data to get updated addresses
-        await getProfile();
-      } else {
-        log("Error: ${response.message}");
-        SSnackbarUtil.showFadeSnackbar(
-          Get.context!,
-          'Failed to create your address. Please try again later',
-          SnackbarType.error,
-        );
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        // print("Error creating address: $e");
-      }
-      SSnackbarUtil.showFadeSnackbar(
-        Get.context!,
-        'An unexpected error occurred: $e',
         SnackbarType.error,
       );
     }
@@ -262,8 +200,7 @@ class ProfileController extends GetxController {
       if (country.isEmpty ||
           province.isEmpty ||
           city.isEmpty ||
-          addressLineOne.isEmpty ||
-          zipcode.isEmpty) {
+          addressLineOne.isEmpty) {
         SSnackbarUtil.showFadeSnackbar(
           Get.context!,
           'All required fields must be filled',
@@ -275,6 +212,11 @@ class ProfileController extends GetxController {
       // Parse country to int for API
       int countryId = int.tryParse(country) ?? 1;
 
+      // Convert empty strings to null for optional fields
+      String? addressLine2 =
+          addressLineTwo.trim().isEmpty ? null : addressLineTwo.trim();
+      String? postalCode = zipcode.trim().isEmpty ? null : zipcode.trim();
+
       ApiResponse response = await profileRepo.postuserAddress(
         id,
         addressID,
@@ -282,8 +224,8 @@ class ProfileController extends GetxController {
         province,
         city,
         addressLineOne,
-        addressLineTwo,
-        zipcode,
+        addressLine2,
+        postalCode,
         addressType,
       );
 
@@ -293,7 +235,6 @@ class ProfileController extends GetxController {
         // Refresh profile data to get updated addresses
         await getProfile();
       } else {
-        // log("Error: ${response.message}");
         SSnackbarUtil.showFadeSnackbar(
           Get.context!,
           'Failed to update your address. Please try again later',
@@ -303,6 +244,66 @@ class ProfileController extends GetxController {
     } catch (e) {
       if (kDebugMode) {
         print("Error updating address: $e");
+      }
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
+        'An unexpected error occurred: $e',
+        SnackbarType.error,
+      );
+    }
+  }
+
+  Future<void> postnewuserAddress({
+    required int profileID,
+    required int issuedCountry,
+    required String province,
+    required String city,
+    required String addressLineOne,
+    required String addressLineTwo,
+    required String zipcode,
+    required String addressType,
+  }) async {
+    try {
+      // Guard against any null values
+      if (province.isEmpty || city.isEmpty || addressLineOne.isEmpty) {
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
+          'All required fields must be filled',
+          SnackbarType.warning,
+        );
+        return;
+      }
+
+      // Convert empty strings to null for optional fields
+      String? addressLine2 =
+          addressLineTwo.trim().isEmpty ? null : addressLineTwo.trim();
+      String? postalCode = zipcode.trim().isEmpty ? null : zipcode.trim();
+
+      ApiResponse response = await profileRepo.postnewuserAddress(
+        profileID,
+        issuedCountry,
+        province,
+        city,
+        addressLineOne,
+        addressLine2,
+        postalCode,
+        addressType,
+      );
+
+      if (response.status == ApiStatus.SUCCESS && response.response != null) {
+        // Refresh profile data to get updated addresses
+        await getProfile();
+      } else {
+        log("Error: ${response.message}");
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
+          'Failed to create your address. Please try again later',
+          SnackbarType.error,
+        );
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        // print("Error creating address: $e");
       }
       SSnackbarUtil.showFadeSnackbar(
         Get.context!,

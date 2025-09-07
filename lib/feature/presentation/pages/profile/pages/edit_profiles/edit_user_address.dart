@@ -238,17 +238,18 @@ class _EditUserAddressState extends State<EditUserAddress> {
       _fieldErrors['permanentAddressLineOne'] = 'Address Line 1 is required';
       isValid = false;
     }
-    if (addressLineTwoController.text.isEmpty) {
-      _fieldErrors['permanentAddressLineTwo'] = 'Address Line 2 is required';
-      isValid = false;
-    }
-    if (zipController.text.isEmpty) {
-      _fieldErrors['permanentZip'] = 'Zip Code is required';
-      isValid = false;
-    } else if (!_isValidZipCode(zipController.text)) {
-      _fieldErrors['permanentZip'] = 'Enter a valid zip code';
-      isValid = false;
-    }
+    // if (addressLineTwoController.text.isEmpty) {
+    //   _fieldErrors['permanentAddressLineTwo'] = 'Address Line 2 is required';
+    //   isValid = false;
+    // }
+    // if (zipController.text.isEmpty) {
+    //   _fieldErrors['permanentZip'] = 'Zip Code is required';
+    //   isValid = false;
+    // }
+    //else if (!_isValidZipCode(zipController.text)) {
+    //   _fieldErrors['permanentZip'] = 'Enter a valid zip code';
+    //   isValid = false;
+    // }
 
     // Validate current address fields if not same as permanent
     if (!profileController.isSameAsPermanent.value) {
@@ -268,17 +269,18 @@ class _EditUserAddressState extends State<EditUserAddress> {
         _fieldErrors['currentAddressLineOne'] = 'Address Line 1 is required';
         isValid = false;
       }
-      if (currentAddressLineTwoController.text.isEmpty) {
-        _fieldErrors['currentAddressLineTwo'] = 'Address Line 2 is required';
-        isValid = false;
-      }
-      if (currentZipController.text.isEmpty) {
-        _fieldErrors['currentZip'] = 'Zip Code is required ';
-        isValid = false;
-      } else if (!_isValidZipCode(currentZipController.text)) {
-        _fieldErrors['currentZip'] = 'Enter a valid zip code';
-        isValid = false;
-      }
+      // if (currentAddressLineTwoController.text.isEmpty) {
+      //   _fieldErrors['currentAddressLineTwo'] = 'Address Line 2 is required';
+      //   isValid = false;
+      // }
+      // if (currentZipController.text.isEmpty) {
+      //   _fieldErrors['currentZip'] = 'Zip Code is required ';
+      //   isValid = false;
+      // }
+      // else if (!_isValidZipCode(currentZipController.text)) {
+      //   _fieldErrors['currentZip'] = 'Enter a valid zip code';
+      //   isValid = false;
+      // }
     }
 
     return isValid;
@@ -288,6 +290,8 @@ class _EditUserAddressState extends State<EditUserAddress> {
     // Basic zip code validation (e.g., at least 4 digits)
     return zip.length >= 4 && RegExp(r'^\d+$').hasMatch(zip);
   }
+
+  // In EditUserAddress class - Update the _submitUserAddress method
 
   Future<void> _submitUserAddress({bool navigateToNext = false}) async {
     if (!_validateInputs()) return;
@@ -300,28 +304,33 @@ class _EditUserAddressState extends State<EditUserAddress> {
       final userId = profileController.profile.value!.id;
       int permanentCountryId = int.tryParse(countryIdController.text) ?? 1;
 
+      // Helper function to handle empty strings
+      String processOptionalField(String value) {
+        return value.trim().isEmpty ? "" : value.trim();
+      }
+
       // Update or create permanent address
       if (permanentAddressId != null) {
         await profileController.postuserAddress(
           id: userId,
           addressID: permanentAddressId!,
           country: permanentCountryId.toString(),
-          province: provinceController.text,
-          city: cityController.text,
-          addressLineOne: addressLineOneController.text,
-          addressLineTwo: addressLineTwoController.text,
-          zipcode: zipController.text,
+          province: provinceController.text.trim(),
+          city: cityController.text.trim(),
+          addressLineOne: addressLineOneController.text.trim(),
+          addressLineTwo: processOptionalField(addressLineTwoController.text),
+          zipcode: processOptionalField(zipController.text),
           addressType: "permanent",
         );
       } else {
         await profileController.postnewuserAddress(
           profileID: userId,
           issuedCountry: permanentCountryId,
-          province: provinceController.text,
-          city: cityController.text,
-          addressLineOne: addressLineOneController.text,
-          addressLineTwo: addressLineTwoController.text,
-          zipcode: zipController.text,
+          province: provinceController.text.trim(),
+          city: cityController.text.trim(),
+          addressLineOne: addressLineOneController.text.trim(),
+          addressLineTwo: processOptionalField(addressLineTwoController.text),
+          zipcode: processOptionalField(zipController.text),
           addressType: "permanent",
         );
       }
@@ -334,22 +343,22 @@ class _EditUserAddressState extends State<EditUserAddress> {
             id: userId,
             addressID: currentAddressId!,
             country: permanentCountryId.toString(),
-            province: provinceController.text,
-            city: cityController.text,
-            addressLineOne: addressLineOneController.text,
-            addressLineTwo: addressLineTwoController.text,
-            zipcode: zipController.text,
+            province: provinceController.text.trim(),
+            city: cityController.text.trim(),
+            addressLineOne: addressLineOneController.text.trim(),
+            addressLineTwo: processOptionalField(addressLineTwoController.text),
+            zipcode: processOptionalField(zipController.text),
             addressType: "current",
           );
         } else {
           await profileController.postnewuserAddress(
             profileID: userId,
             issuedCountry: permanentCountryId,
-            province: provinceController.text,
-            city: cityController.text,
-            addressLineOne: addressLineOneController.text,
-            addressLineTwo: addressLineTwoController.text,
-            zipcode: zipController.text,
+            province: provinceController.text.trim(),
+            city: cityController.text.trim(),
+            addressLineOne: addressLineOneController.text.trim(),
+            addressLineTwo: processOptionalField(addressLineTwoController.text),
+            zipcode: processOptionalField(zipController.text),
             addressType: "current",
           );
         }
@@ -363,22 +372,24 @@ class _EditUserAddressState extends State<EditUserAddress> {
             id: userId,
             addressID: currentAddressId!,
             country: currentCountryId.toString(),
-            province: currentProvinceController.text,
-            city: currentCityController.text,
-            addressLineOne: currentAddressLineOneController.text,
-            addressLineTwo: currentAddressLineTwoController.text,
-            zipcode: currentZipController.text,
+            province: currentProvinceController.text.trim(),
+            city: currentCityController.text.trim(),
+            addressLineOne: currentAddressLineOneController.text.trim(),
+            addressLineTwo:
+                processOptionalField(currentAddressLineTwoController.text),
+            zipcode: processOptionalField(currentZipController.text),
             addressType: "current",
           );
         } else {
           await profileController.postnewuserAddress(
             profileID: userId,
             issuedCountry: currentCountryId,
-            province: currentProvinceController.text,
-            city: currentCityController.text,
-            addressLineOne: currentAddressLineOneController.text,
-            addressLineTwo: currentAddressLineTwoController.text,
-            zipcode: currentZipController.text,
+            province: currentProvinceController.text.trim(),
+            city: currentCityController.text.trim(),
+            addressLineOne: currentAddressLineOneController.text.trim(),
+            addressLineTwo:
+                processOptionalField(currentAddressLineTwoController.text),
+            zipcode: processOptionalField(currentZipController.text),
             addressType: "current",
           );
         }
@@ -401,11 +412,12 @@ class _EditUserAddressState extends State<EditUserAddress> {
         );
       }
 
+      // Store new initial values after successful update
+      _storeInitialValues();
       setState(() {
         _hasChanges = false;
       });
     } catch (e) {
-      // print("Error submitting address: $e");
       SSnackbarUtil.showFadeSnackbar(
         Get.context!,
         'An unexpected error occurred: $e',
