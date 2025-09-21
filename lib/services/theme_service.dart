@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 class ThemeService extends GetxService {
   late final AppBrandController _brandController;
 
-  // Reactive properties
+  // Reactive properties - these are now properly observable
   final RxString _logoUrl = ''.obs;
   final RxString _faviconUrl = ''.obs;
   final Rx<Color> _themeColor = Colors.blue.obs;
@@ -21,6 +21,12 @@ class ThemeService extends GetxService {
     }
   }
 
+  // Getters that return the observable values directly for Obx to work
+  RxString get logoUrlRx => _logoUrl;
+  RxString get faviconUrlRx => _faviconUrl;
+  Rx<Color> get themeColorRx => _themeColor;
+
+  // Regular getters for direct access
   String get logoUrl => _logoUrl.value;
   String get faviconUrl => _faviconUrl.value;
   Color get themeColor => _themeColor.value;
@@ -96,19 +102,43 @@ class ThemeService extends GetxService {
       }
     } else {
       print('ThemeService: No brand data available, using default theme color');
-      _themeColor.value = Colors.blue; // Fallback to default
+      // Reset to defaults when no brand data
+      _logoUrl.value = '';
+      _faviconUrl.value = '';
+      _themeColor.value = Colors.blue;
     }
   }
 
   // Helper method to parse hex color
   Color _parseColor(String hexColor) {
-    final hexCode = hexColor.replaceAll('#', '');
-    return Color(int.parse('FF$hexCode', radix: 16));
+    String cleanHex = hexColor.replaceAll('#', '');
+
+    // Handle 3-character hex colors (e.g., #F1B -> #FF11BB)
+    if (cleanHex.length == 3) {
+      cleanHex = cleanHex.split('').map((c) => c + c).join('');
+    }
+
+    // Add alpha channel if not present
+    if (cleanHex.length == 6) {
+      cleanHex = 'FF' + cleanHex;
+    }
+
+    return Color(int.parse(cleanHex, radix: 16));
   }
 
   // Method to manually trigger branding update (for debugging)
   void forceUpdateBranding() {
     print('ThemeService: Force updating branding...');
     _updateBranding();
+  }
+
+  // Debug method to check current state
+  void debugPrint() {
+    print('ThemeService Debug:');
+    print('  Logo URL: ${_logoUrl.value}');
+    print('  Favicon URL: ${_faviconUrl.value}');
+    print('  Theme Color: ${_themeColor.value}');
+    print('  Brand Controller Loading: ${_brandController.isLoading.value}');
+    print('  Current Brand: ${_brandController.currentBrand}');
   }
 }

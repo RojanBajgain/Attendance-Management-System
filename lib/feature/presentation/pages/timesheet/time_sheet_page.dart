@@ -7,6 +7,7 @@ import 'package:ams/feature/presentation/pages/timesheet/widget/absentday_widget
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 
 class TimeSheetPage extends StatefulWidget {
   final int? profileId;
@@ -314,48 +315,12 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
     );
   }
 
-  /// Date Filter Widget
+  /// Date Filter Widget with Calendar Date Picker 2
   Widget _buildDateFilter(bool isDarkMode) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Obx(() {
       return GestureDetector(
         onTap: () async {
-          final ThemeData datePickerTheme = isDarkMode
-              ? ThemeData.dark().copyWith(
-                  dialogBackgroundColor: Colors.grey[900],
-                  colorScheme: const ColorScheme.dark(
-                    primary: Colors.blueAccent,
-                    onPrimary: Colors.white,
-                    onSurface: Colors.white,
-                  ),
-                )
-              : ThemeData.light().copyWith(
-                  colorScheme: const ColorScheme.light(
-                    primary: Colors.black,
-                    onPrimary: Colors.white,
-                    onSurface: Colors.black,
-                  ),
-                );
-
-          DateTimeRange? dateRange = await showDateRangePicker(
-            context: context,
-            initialDateRange: timesheetcontroller.dateRange.value ??
-                DateTimeRange(
-                  start: DateTime.now().subtract(const Duration(days: 7)),
-                  end: DateTime.now(),
-                ),
-            firstDate: DateTime(2000),
-            lastDate: DateTime(2100),
-            builder: (context, child) {
-              return Theme(data: datePickerTheme, child: child!);
-            },
-          );
-
-          if (dateRange != null) {
-            timesheetcontroller.dateRange.value = dateRange;
-            timesheetcontroller.filterByDateRange(
-                dateRange.start, dateRange.end);
-          }
+          await _showCalendarDatePicker(isDarkMode);
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 6),
@@ -398,6 +363,97 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
         ),
       );
     });
+  }
+
+  /// Show Calendar Date Picker 2
+  Future<void> _showCalendarDatePicker(bool isDarkMode) async {
+    // Get current date range or set default
+    List<DateTime?> initialDates = [];
+
+    if (timesheetcontroller.dateRange.value != null) {
+      initialDates = [
+        timesheetcontroller.dateRange.value!.start,
+        timesheetcontroller.dateRange.value!.end,
+      ];
+    } else {
+      // Default to last 7 days
+      initialDates = [
+        DateTime.now().subtract(const Duration(days: 7)),
+        DateTime.now(),
+      ];
+    }
+
+    final results = await showCalendarDatePicker2Dialog(
+      context: context,
+      config: CalendarDatePicker2WithActionButtonsConfig(
+        calendarType: CalendarDatePicker2Type.range,
+        selectedDayHighlightColor:
+            isDarkMode ? Colors.blueAccent : Colors.black,
+        weekdayLabelTextStyle: TextStyle(
+          color: isDarkMode ? Colors.white70 : Colors.black54,
+          fontWeight: FontWeight.bold,
+        ),
+        controlsTextStyle: TextStyle(
+          color: isDarkMode ? Colors.white : Colors.black,
+          fontSize: 15,
+          fontWeight: FontWeight.bold,
+        ),
+        dayTextStyle: TextStyle(
+          color: isDarkMode ? Colors.white : Colors.black,
+        ),
+        selectedDayTextStyle: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+        selectedRangeDayTextStyle: TextStyle(
+          color: isDarkMode ? Colors.black : Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+        yearTextStyle: TextStyle(
+          color: isDarkMode ? Colors.white : Colors.black,
+        ),
+        selectedYearTextStyle: TextStyle(
+          color: isDarkMode ? Colors.blueAccent : Colors.black,
+          fontWeight: FontWeight.bold,
+        ),
+        okButtonTextStyle: TextStyle(
+          color: isDarkMode ? Colors.blueAccent : Colors.black,
+          fontWeight: FontWeight.bold,
+        ),
+        cancelButtonTextStyle: TextStyle(
+          color: isDarkMode ? Colors.white70 : Colors.black54,
+        ),
+        // Custom styling for dark/light mode
+        weekdayLabels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2100),
+        currentDate: DateTime.now(),
+        // Range selection styling
+        selectedRangeHighlightColor: isDarkMode
+            ? Colors.blueAccent.withOpacity(0.3)
+            : Colors.black.withOpacity(0.1),
+        // Dialog styling
+        centerAlignModePicker: true,
+        customModePickerIcon: const SizedBox(),
+      ),
+      dialogSize: const Size(325, 400),
+      borderRadius: BorderRadius.circular(15),
+      // Apply theme based on dark mode
+      dialogBackgroundColor: isDarkMode ? Colors.grey[900] : Colors.white,
+      value: initialDates,
+    );
+
+    // Handle the result
+    if (results != null && results.length == 2) {
+      final startDate = results[0];
+      final endDate = results[1];
+
+      if (startDate != null && endDate != null) {
+        final dateRange = DateTimeRange(start: startDate, end: endDate);
+        timesheetcontroller.dateRange.value = dateRange;
+        timesheetcontroller.filterByDateRange(startDate, endDate);
+      }
+    }
   }
 
   /// Loading placeholder
