@@ -46,7 +46,7 @@ class _ConstantAppBarState extends State<ConstantAppBar> {
 
         // Then check if ThemeService has a logo URL
         if (themeService.logoUrl.isNotEmpty) {
-          return _buildDynamicLogo(themeService.logoUrl, 50, isDarkMode);
+          return _buildDynamicLogo(themeService.logoUrl, 65, isDarkMode);
         }
 
         // Finally, fallback to local asset

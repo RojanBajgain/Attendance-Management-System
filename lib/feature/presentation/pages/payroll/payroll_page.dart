@@ -52,7 +52,8 @@ class _PayrollPageState extends State<PayrollPage> {
                 await payrollcontroller.getPayroll();
               },
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 child: Column(mainAxisSize: MainAxisSize.min, children: [
                   Row(children: [
                     Text(

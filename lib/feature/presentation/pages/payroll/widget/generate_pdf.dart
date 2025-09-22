@@ -202,10 +202,10 @@ Future<void> generateAndSavePDF(
                 color: PdfColors.grey100,
                 child: pw.Row(
                   children: [
-                    pw.Text('Earning',
+                    pw.Text('Plan Name',
                         style: pw.TextStyle(font: fontBold, fontSize: 12)),
                     pw.Spacer(),
-                    pw.Text('Grand Total',
+                    pw.Text('Amount',
                         style: pw.TextStyle(font: fontBold, fontSize: 12)),
                   ],
                 ),
@@ -213,14 +213,23 @@ Future<void> generateAndSavePDF(
               pw.SizedBox(height: 10),
 
               // Earnings details
-              _buildPdfAmountRow(
-                  font, 'Basic', "Rs. ${payrollDetail.totalSalary.toString()}"),
-              _buildPdfAmountRow(font, 'Unpaid Leave Deduction',
-                  "Rs. ${payrollDetail.unpaidDeduction.toString()}"),
-              _buildPdfAmountRow(
-                  font, 'Tax Deduction', "Rs. ${payrollDetail.tax.toString()}"),
+              _buildPdfAmountRow(font, 'Basic Salary',
+                  "Rs. ${payrollDetail.totalSalary.toString()}"),
               _buildPdfAmountRow(font, 'Reimbursement',
                   "Rs. ${payrollDetail.reimbursement.toString()}"),
+              _buildPdfAmountRow(font, 'SSF Contribution', "Rs. -"),
+              _buildPdfAmountRow(
+                font,
+                'Gross Income',
+                "Rs. ${((payrollDetail.totalSalary ?? 0) + (double.tryParse(payrollDetail.reimbursement ?? "0") ?? 0)).toStringAsFixed(2)}",
+              ),
+              _buildPdfAmountRow(font, 'SSF Deduction', "Rs. -"),
+              _buildPdfAmountRow(
+                  font, 'TDS', "Rs. ${payrollDetail.tax.toString()}"),
+              _buildPdfAmountRow(font, 'Unpaid Deduction',
+                  "Rs. ${payrollDetail.unpaidDeduction.toString()}"),
+              // _buildPdfAmountRow(font, 'Total Deduction',
+              //     "Rs. ${payrollDetail.unpaidDeduction.toString()}"),
 
               pw.SizedBox(height: 10),
               pw.Divider(thickness: 0.5),
@@ -230,11 +239,17 @@ Future<void> generateAndSavePDF(
                 padding: const pw.EdgeInsets.all(8),
                 child: pw.Row(
                   children: [
-                    pw.Text('Net Salary',
-                        style: pw.TextStyle(font: fontBold, fontSize: 12)),
+                    pw.Text('Net Paid',
+                        style: pw.TextStyle(
+                            font: fontBold,
+                            fontSize: 12,
+                            color: PdfColors.blue)),
                     pw.Spacer(),
                     pw.Text("Rs. ${payrollDetail.netTotal.toString()}",
-                        style: pw.TextStyle(font: fontBold, fontSize: 12)),
+                        style: pw.TextStyle(
+                            font: fontBold,
+                            fontSize: 12,
+                            color: PdfColors.blue)),
                   ],
                 ),
               ),

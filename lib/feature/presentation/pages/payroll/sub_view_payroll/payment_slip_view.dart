@@ -1,10 +1,8 @@
 import 'package:ams/config/resources/images.dart';
 import 'package:ams/config/resources/shimmer.dart';
 import 'package:ams/config/resources/styles.dart';
-import 'package:ams/config/routes/route_helper.dart';
 import 'package:ams/feature/presentation/pages/payroll/controller/payroll_controller.dart';
 import 'package:ams/feature/presentation/pages/payroll/widget/generate_pdf.dart';
-import 'package:ams/feature/presentation/widget/components/app_bar.dart';
 import 'package:ams/services/theme_service.dart';
 import 'package:double_to_words/double_to_words.dart';
 import 'package:flutter/material.dart';
@@ -280,7 +278,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                'Earning',
+                                'Plan Name',
                                 style: smallStyle.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black,
@@ -289,7 +287,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                               ),
                               const Spacer(),
                               Text(
-                                'Grand Total',
+                                'Amount',
                                 style: smallStyle.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black,
@@ -320,9 +318,9 @@ class _PaymentSlipState extends State<PaymentSlip> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Text(
-                                'Basic',
+                                'Basic Salary',
                                 style: smallStyle.copyWith(
-                                  fontWeight: FontWeight.bold,
+                                  // fontWeight: FontWeight.bold,
                                   color:
                                       isDarkMode ? Colors.white : Colors.black,
                                   fontSize: 12.0,
@@ -349,9 +347,9 @@ class _PaymentSlipState extends State<PaymentSlip> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Unpaid Leave Deduction',
+                                    'Reimbursement',
                                     style: smallStyle.copyWith(
-                                      fontWeight: FontWeight.bold,
+                                      // fontWeight: FontWeight.bold,
                                       color: isDarkMode
                                           ? Colors.white
                                           : Colors.black,
@@ -360,7 +358,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                                   ),
                                   const Spacer(),
                                   Text(
-                                    "Rs. ${payrolldata.unpaidDeduction.toString()}",
+                                    "Rs. ${payrolldata.reimbursement.toString()}",
                                     style: smallStyle.copyWith(
                                       color: isDarkMode
                                           ? Colors.white
@@ -380,9 +378,107 @@ class _PaymentSlipState extends State<PaymentSlip> {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Tax Deduction',
+                                        'SSF Contribution',
+                                        style: smallStyle.copyWith(
+                                          // fontWeight: FontWeight.bold,
+                                          color: isDarkMode
+                                              ? Colors.white
+                                              : Colors.black,
+                                          fontSize: 12.0,
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      Text(
+                                        // "Rs. ${payrolldata.reimbursement.toString()}",
+                                        "Rs. -",
+                                        style: smallStyle.copyWith(
+                                          color: isDarkMode
+                                              ? Colors.white
+                                              : Colors.black,
+                                          fontSize: 12.0,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(6.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Gross Income',
                                         style: smallStyle.copyWith(
                                           fontWeight: FontWeight.bold,
+                                          color: isDarkMode
+                                              ? Colors.white
+                                              : Colors.black,
+                                          fontSize: 12.0,
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      Text(
+                                        "Rs. ${((payrolldata.totalSalary ?? 0) + (double.tryParse(payrolldata.reimbursement ?? "0") ?? 0)).toStringAsFixed(2)}",
+                                        style: smallStyle.copyWith(
+                                          color: isDarkMode
+                                              ? Colors.white
+                                              : Colors.black,
+                                          fontSize: 12.0,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(6.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'SSF Deduction',
+                                        style: smallStyle.copyWith(
+                                          color: isDarkMode
+                                              ? Colors.white
+                                              : Colors.black,
+                                          fontSize: 12.0,
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      Text(
+                                        "Rs. -",
+                                        style: smallStyle.copyWith(
+                                          color: isDarkMode
+                                              ? Colors.white
+                                              : Colors.black,
+                                          fontSize: 12.0,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(6.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'TDS',
+                                        style: smallStyle.copyWith(
                                           color: isDarkMode
                                               ? Colors.white
                                               : Colors.black,
@@ -402,6 +498,11 @@ class _PaymentSlipState extends State<PaymentSlip> {
                                     ],
                                   ),
                                 ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -412,9 +513,8 @@ class _PaymentSlipState extends State<PaymentSlip> {
                                             MainAxisAlignment.start,
                                         children: [
                                           Text(
-                                            'Reimbursement',
+                                            'Unpaid  Deduction',
                                             style: smallStyle.copyWith(
-                                              fontWeight: FontWeight.bold,
                                               color: isDarkMode
                                                   ? Colors.white
                                                   : Colors.black,
@@ -423,7 +523,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                                           ),
                                           const Spacer(),
                                           Text(
-                                            "Rs. ${payrolldata.reimbursement.toString()}",
+                                            "Rs. ${payrolldata.unpaidDeduction.toString()}",
                                             style: smallStyle.copyWith(
                                               color: isDarkMode
                                                   ? Colors.white
@@ -469,12 +569,10 @@ class _PaymentSlipState extends State<PaymentSlip> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Net Salary',
+                                  'Net Paid',
                                   style: smallStyle.copyWith(
                                     fontWeight: FontWeight.bold,
-                                    color: isDarkMode
-                                        ? Colors.white
-                                        : Colors.black,
+                                    color: Colors.blue,
                                     fontSize: 12.0,
                                   ),
                                 ),
@@ -483,9 +581,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                                   "Rs. ${payrollData.netTotal.toString()}",
                                   style: smallStyle.copyWith(
                                     fontWeight: FontWeight.bold,
-                                    color: isDarkMode
-                                        ? Colors.white
-                                        : Colors.black,
+                                    color: Colors.blue,
                                     fontSize: 12.0,
                                   ),
                                 ),
@@ -554,8 +650,17 @@ class _PaymentSlipState extends State<PaymentSlip> {
                     thickness: 0.5,
                     color: Colors.grey,
                   ),
+                  // Text(
+                  //   'Note : Gross Earning - Unpaid Leave - Tax + Reimbursements + Paid Leave',
+                  //   style: miniStyle.copyWith(
+                  //     color: isDarkMode ? Colors.white : Colors.grey.shade600,
+                  //   ),
+                  // ),
+                  // SizedBox(
+                  //   height: 10.0,
+                  // ),
                   Text(
-                    'Note : Gross Earning - Unpaid Leave - Tax + Reimbursements + Paid Leave',
+                    'Note : This is the computer generated invoice and does not require any signature.',
                     style: miniStyle.copyWith(
                       color: isDarkMode ? Colors.white : Colors.grey.shade600,
                     ),
