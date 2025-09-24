@@ -217,42 +217,42 @@ class _PaymentSlipState extends State<PaymentSlip> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildPaymentDetailRow(
-                            'Employee Name :', payroll.username.toString()),
+                            'Employee Name ', payroll.username.toString()),
                         _buildPaymentDetailRow(
-                            'Designation :', payroll.designation.toString()),
+                            'Designation ', payroll.designation.toString()),
                         _buildPaymentDetailRow(
-                            'Pay Period :', payroll.payPeriod.toString()),
+                            'Pay Period ', payroll.payPeriod.toString()),
                         _buildPaymentDetailRow(
-                            'Pay Date :',
+                            'Pay Date ',
                             payroll.dateOfPayment != null
                                 ? DateFormat.yMd()
                                     .format(payroll.dateOfPayment!)
                                 : "---"),
-                        _buildPaymentDetailRow('Mode of Payment :',
+                        _buildPaymentDetailRow('Mode of Payment ',
                             payroll.modeOfPayment.toString()),
                         if (payroll.chequeNo != null &&
                             payroll.chequeNo!.isNotEmpty)
                           _buildPaymentDetailRow(
-                              'Cheque No :', payroll.chequeNo!),
+                              'Cheque No ', payroll.chequeNo!),
                         if (payroll.modeOfPayment != "Cash Payment") ...[
                           _buildPaymentDetailRow(
-                              'A/c Number :',
+                              'A/c Number ',
                               payroll.bankAccountNumber != null
                                   ? payroll.bankAccountNumber!
                                   : "---"),
                           _buildPaymentDetailRow(
-                              'A/c Name :',
+                              'A/c Name ',
                               payroll.accountName != null
                                   ? payroll.accountName!
                                   : "---"),
                         ],
                         _buildPaymentDetailRow(
-                            'PAN Number :',
+                            'PAN Number ',
                             payroll.panNumber != null
                                 ? payroll.panNumber!
-                                : "---"),
+                                : "-"),
                         _buildPaymentDetailRow(
-                            'Tax Deduction :', "Rs. ${payroll.tax.toString()}"),
+                            'Tax Deduction ', "Rs. ${payroll.tax.toString()}"),
                       ],
                     );
                   }),
@@ -263,7 +263,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
                   ),
                   const SizedBox(height: 10.0),
                   Container(
-                    height: 50.0,
+                    height: 45.0,
                     width: double.infinity,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10.0),

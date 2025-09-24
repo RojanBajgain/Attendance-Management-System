@@ -3,9 +3,7 @@ import 'package:ams/feature/data/datasource/remote/api_response.dart';
 import 'package:ams/feature/data/repository/notification_repo.dart';
 import 'package:ams/feature/presentation/pages/notification/model/notification_model.dart';
 import 'package:ams/feature/utils/ssnackbar_utils.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:collection/collection.dart'; // For firstWhereOrNull
 
 class NotificationController extends GetxController {
   var notification = <Datum>[].obs;
@@ -26,7 +24,6 @@ class NotificationController extends GetxController {
   @override
   void onInit() {
     getNotification();
-
     super.onInit();
   }
 
@@ -65,9 +62,8 @@ class NotificationController extends GetxController {
         hasMore.value =
             notificationdata.currentPage < notificationdata.totalPages;
 
-        unreadCount.value = notification.where((n) => n.isRead == false).length;
-        // notification.value = newData;
-        log("Notification list length: ${notification.length}, Unread: ${notification.where((n) => n.isRead == false).length}");
+        updateUnreadCount();
+        log("Notification list length: ${notification.length}, Unread: ${unreadCount.value}");
       } else {
         log("Error: ${response.message}");
         errorMessage.value =
@@ -85,18 +81,72 @@ class NotificationController extends GetxController {
     getNotification(loadMore: true);
   }
 
+  // Update unread count helper method
+  void updateUnreadCount() {
+    unreadCount.value = notification.where((n) => n.isRead == false).length;
+  }
+
+  // Mark a single notification as read
+  Future<void> markAsRead(int notificationId) async {
+    try {
+      log("Marking notification $notificationId as read");
+
+      // Find and update the notification locally
+      final notificationIndex =
+          notification.indexWhere((n) => n.id == notificationId);
+      if (notificationIndex != -1) {
+        notification[notificationIndex].isRead = true;
+        notification.refresh(); // Trigger UI update
+        updateUnreadCount();
+
+        log("Notification $notificationId marked as read locally. Unread count: ${unreadCount.value}");
+
+        // Optional: Show success message
+        SSnackbarUtil.showFadeSnackbar(
+          Get.context!,
+          'Notification marked as read.',
+          SnackbarType.success,
+        );
+      }
+    } catch (e) {
+      log("Error marking notification as read: $e");
+      errorMessage.value = "Failed to mark notification as read: $e";
+
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
+        'Failed to mark notification as read.',
+        SnackbarType.error,
+      );
+    }
+  }
+
+  // Mark all notifications as read
   Future<void> markAllAsRead() async {
     try {
-      log("Before marking read: Unread count: ${notification.where((n) => n.isRead == false).length}");
+      log("Before marking all read: Unread count: ${unreadCount.value}");
+
       for (var notif in notification) {
         notif.isRead = true;
       }
       notification.refresh();
-      unreadCount.value = 0;
-      log("After marking read: Unread count: ${notification.where((n) => n.isRead == false).length}");
+      updateUnreadCount();
+
+      log("After marking all read: Unread count: ${unreadCount.value}");
+
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
+        'All notifications marked as read.',
+        SnackbarType.success,
+      );
     } catch (e) {
-      log("Error marking notifications as read: $e");
+      log("Error marking all notifications as read: $e");
       errorMessage.value = "An error occurred: $e";
+
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
+        'Failed to mark all notifications as read.',
+        SnackbarType.error,
+      );
     }
   }
 
@@ -109,16 +159,25 @@ class NotificationController extends GetxController {
         SnackbarType.success,
       );
       getNotification(loadMore: false);
-
-      print(' detelet $response');
+      print('Delete response: $response');
     } catch (e) {
-    } finally {}
+      log("Error deleting notification: $e");
+      SSnackbarUtil.showFadeSnackbar(
+        Get.context!,
+        'Failed to delete notification.',
+        SnackbarType.error,
+      );
+    }
   }
 
-  //read notification
+  //read notification (bulk read - from server)
   Future<void> readNotification() async {
-    ApiResponse response = await notificationrepo.readNotification();
-    getNotification();
-    print(response);
+    try {
+      ApiResponse response = await notificationrepo.readNotification();
+      await getNotification();
+      log("Read notification response: $response");
+    } catch (e) {
+      log("Error reading notifications: $e");
+    }
   }
 }

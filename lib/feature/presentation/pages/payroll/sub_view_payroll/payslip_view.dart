@@ -29,7 +29,7 @@ class _PayslipViewState extends State<PayslipView> {
 
   void _downloadLatestPayslip() {
     // Get the payroll list from the controller
-    final payrollList = payrollController.payroll; // This is RxList<Datum>
+    final payrollList = payrollController.payroll;
 
     if (payrollList.isEmpty) {
       Get.snackbar(
@@ -83,7 +83,7 @@ class _PayslipViewState extends State<PayslipView> {
                     decoration: BoxDecoration(
                       color: payrollController.isLoading.value
                           ? Colors.grey
-                          : Colors.black,
+                          : Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
