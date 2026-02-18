@@ -1,4 +1,5 @@
 import 'package:ams/feature/utils/ssnackbar_utils.dart';
+import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Helpers {
@@ -20,5 +21,12 @@ class Helpers {
         SnackbarType.error,
       );
     }
+  }
+
+  static printScreenSize() {
+    final window = WidgetsBinding.instance.platformDispatcher.views.first;
+    final Size screenSize = window.physicalSize / window.devicePixelRatio;
+    // logger.i("Width: ${screenSize.width}, Height: ${screenSize.height}");
+    return screenSize;
   }
 }

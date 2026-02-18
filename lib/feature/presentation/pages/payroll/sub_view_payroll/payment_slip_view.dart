@@ -56,7 +56,7 @@ class _PaymentSlipState extends State<PaymentSlip> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
+                  /*   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       InkWell(
@@ -71,31 +71,34 @@ class _PaymentSlipState extends State<PaymentSlip> {
                         ),
                       ),
                       // const Spacer(),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.05,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Ayata Incorporation',
-                            style: smallStyle.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: isDarkMode ? Colors.white : Colors.black,
-                              fontSize: 12.0,
-                            ),
-                          ),
-                          const SizedBox(height: 5.0),
-                          Text(
-                            'Annamnagar, Kathmandu',
-                            style: smallStyle.copyWith(
-                              color: isDarkMode ? Colors.white : Colors.black,
-                              fontSize: 12.0,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const Spacer(),
+                      // SizedBox(
+                      //   width: MediaQuery.of(context).size.width * 0.05,
+                      // ),
+                      // Column(
+                      //   crossAxisAlignment: CrossAxisAlignment.start,
+                      //   children: [
+                      //     Text(
+                      //       'Ayata Incorporation',
+                      //       style: smallStyle.copyWith(
+                      //         fontWeight: FontWeight.bold,
+                      //         color: isDarkMode ? Colors.white : Colors.black,
+                      //         fontSize: 12.0,
+                      //       ),
+                      //     ),
+                      //     const SizedBox(height: 5.0),
+                      //     Text(
+                      //       'Annamnagar, Kathmandu',
+                      //       style: smallStyle.copyWith(
+                      //         color: isDarkMode ? Colors.white : Colors.black,
+                      //         fontSize: 12.0,
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
+
+                      // Image
+
+                      // const Spacer(),
                       // Image.asset(
                       //   // color: Colors.lightBlue,
                       //   AppImages.logo,
@@ -109,63 +112,73 @@ class _PaymentSlipState extends State<PaymentSlip> {
                       //   fit: BoxFit.cover,
                       // ),
 
-                      Obx(() {
-                        if (themeService.logoUrl.isEmpty) {
-                          return Image.asset(
-                            AppImages.logo,
-                            height: 40,
-                            width: 100,
-                            color: isDarkMode ? Colors.white : Colors.black,
-                          );
-                        }
+                      // Obx(
+                      //   () {
+                      //     if (themeService.logoUrl.isEmpty) {
+                      //       return Image.asset(
+                      //         AppImages.logo,
+                      //         height: 40,
+                      //         width: 100,
+                      //         color: isDarkMode ? Colors.white : Colors.black,
+                      //       );
+                      //     }
 
-                        return SizedBox(
-                          height: 40,
-                          width: 100,
-                          child: Image.network(
-                            themeService.logoUrl,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Shimmer.fromColors(
-                                baseColor: isDarkMode
-                                    ? Colors.grey[800]!
-                                    : Colors.grey[300]!,
-                                highlightColor: isDarkMode
-                                    ? Colors.grey[600]!
-                                    : Colors.grey[100]!,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                ),
-                              );
-                            },
-                            errorBuilder: (context, error, stackTrace) {
-                              return SvgPicture.asset(
-                                AppImages.appLogoHR,
-                                height: 40,
-                                width: 100,
-                              );
-                            },
+                      //     return SizedBox(
+                      //       height: 40,
+                      //       width: 100,
+                      //       child: Image.network(
+                      //         themeService.logoUrl,
+                      //         loadingBuilder:
+                      //             (context, child, loadingProgress) {
+                      //           if (loadingProgress == null) return child;
+                      //           return Shimmer.fromColors(
+                      //             baseColor: isDarkMode
+                      //                 ? Colors.grey[800]!
+                      //                 : Colors.grey[300]!,
+                      //             highlightColor: isDarkMode
+                      //                 ? Colors.grey[600]!
+                      //                 : Colors.grey[100]!,
+                      //             child: Container(
+                      //               decoration: BoxDecoration(
+                      //                 color: Colors.white,
+                      //                 borderRadius: BorderRadius.circular(4),
+                      //               ),
+                      //             ),
+                      //           );
+                      //         },
+                      //         errorBuilder: (context, error, stackTrace) {
+                      //           return SvgPicture.asset(
+                      //             AppImages.appLogoHR,
+                      //             height: 40,
+                      //             width: 100,
+                      //           );
+                      //         },
+                      //       ),
+                      //     );
+                      //   },
+                      // ),
+                    ],
+                  ), */
+                  // const SizedBox(height: 10.0),
+                  // const Divider(
+                  //   thickness: 0.5,
+                  //   color: Colors.grey,
+                  // ),
+                  Center(
+                    child: Obx(
+                      () {
+                        final payrollDate =
+                            payrollcontroller.payrollDetail.value;
+
+                        return Text(
+                          'PaySlip of: ${payrollDate.dateOfPayment != null ? DateFormat.yMMMM('en_US').format(payrollDate.dateOfPayment!) : "---"}',
+                          style: normalStyle.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: isDarkMode ? Colors.white : Colors.black,
+                            fontSize: 12.0,
                           ),
                         );
-                      }),
-                    ],
-                  ),
-                  const SizedBox(height: 10.0),
-                  const Divider(
-                    thickness: 0.5,
-                    color: Colors.grey,
-                  ),
-                  Center(
-                    child: Text(
-                      'Pay Slip',
-                      style: normalStyle.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: isDarkMode ? Colors.white : Colors.black,
-                        fontSize: 14.0,
-                      ),
+                      },
                     ),
                   ),
                   const SizedBox(height: 5.0),
@@ -176,11 +189,13 @@ class _PaymentSlipState extends State<PaymentSlip> {
                         final payrollDate =
                             payrollcontroller.payrollDetail.value;
 
-                        return Text(
-                          "Date: ${payrollDate.dateOfPayment != null ? DateFormat.yMMMd('en_US').format(payrollDate.dateOfPayment!) : "---"}",
-                          style: smallStyle.copyWith(
-                            color: isDarkMode ? Colors.white : Colors.black,
-                            fontSize: 12.0,
+                        return Center(
+                          child: Text(
+                            "Date: ${payrollDate.dateOfPayment != null ? DateFormat.yMd('en_US').format(payrollDate.dateOfPayment!) : "---"}",
+                            style: smallStyle.copyWith(
+                              color: isDarkMode ? Colors.white : Colors.black,
+                              fontSize: 12.0,
+                            ),
                           ),
                         );
                       }),
@@ -213,47 +228,51 @@ class _PaymentSlipState extends State<PaymentSlip> {
                     }
                     final payroll = payrollcontroller.payrollDetail.value;
 
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildPaymentDetailRow(
-                            'Employee Name ', payroll.username.toString()),
-                        _buildPaymentDetailRow(
-                            'Designation ', payroll.designation.toString()),
-                        _buildPaymentDetailRow(
-                            'Pay Period ', payroll.payPeriod.toString()),
-                        _buildPaymentDetailRow(
-                            'Pay Date ',
-                            payroll.dateOfPayment != null
-                                ? DateFormat.yMd()
-                                    .format(payroll.dateOfPayment!)
-                                : "---"),
-                        _buildPaymentDetailRow('Mode of Payment ',
-                            payroll.modeOfPayment.toString()),
-                        if (payroll.chequeNo != null &&
-                            payroll.chequeNo!.isNotEmpty)
+                    return Container(
+                      padding: const EdgeInsets.all(12.0),
+                      color: Colors.grey.shade300,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           _buildPaymentDetailRow(
-                              'Cheque No ', payroll.chequeNo!),
-                        if (payroll.modeOfPayment != "Cash Payment") ...[
+                              'Employee Name ', payroll.username.toString()),
                           _buildPaymentDetailRow(
-                              'A/c Number ',
-                              payroll.bankAccountNumber != null
-                                  ? payroll.bankAccountNumber!
+                              'Designation ', payroll.designation.toString()),
+                          _buildPaymentDetailRow(
+                              'Pay Period ', payroll.payPeriod.toString()),
+                          _buildPaymentDetailRow(
+                              'Pay Date ',
+                              payroll.dateOfPayment != null
+                                  ? DateFormat.yMd()
+                                      .format(payroll.dateOfPayment!)
                                   : "---"),
+                          _buildPaymentDetailRow('Mode of Payment ',
+                              payroll.modeOfPayment.toString()),
+                          if (payroll.chequeNo != null &&
+                              payroll.chequeNo!.isNotEmpty)
+                            _buildPaymentDetailRow(
+                                'Cheque No ', payroll.chequeNo!),
+                          if (payroll.modeOfPayment != "Cash Payment") ...[
+                            _buildPaymentDetailRow(
+                                'A/c Number ',
+                                payroll.bankAccountNumber != null
+                                    ? payroll.bankAccountNumber!
+                                    : "---"),
+                            _buildPaymentDetailRow(
+                                'A/c Name ',
+                                payroll.accountName != null
+                                    ? payroll.accountName!
+                                    : "---"),
+                          ],
                           _buildPaymentDetailRow(
-                              'A/c Name ',
-                              payroll.accountName != null
-                                  ? payroll.accountName!
-                                  : "---"),
+                              'PAN Number ',
+                              payroll.panNumber != null
+                                  ? payroll.panNumber!
+                                  : "-"),
+                          _buildPaymentDetailRow('Tax Deduction ',
+                              "Rs. ${payroll.tax.toString()}"),
                         ],
-                        _buildPaymentDetailRow(
-                            'PAN Number ',
-                            payroll.panNumber != null
-                                ? payroll.panNumber!
-                                : "-"),
-                        _buildPaymentDetailRow(
-                            'Tax Deduction ', "Rs. ${payroll.tax.toString()}"),
-                      ],
+                      ),
                     );
                   }),
                   const SizedBox(height: 10.0),

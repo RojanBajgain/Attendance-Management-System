@@ -9,9 +9,12 @@ import 'package:get/get.dart';
 
 class ProfilePic extends StatefulWidget {
   final ProfileModel? profiledata;
+  final Size? printScreenSize;
+
   const ProfilePic({
     super.key,
     this.profiledata,
+    this.printScreenSize,
   });
 
   @override
@@ -71,7 +74,8 @@ class _ProfilePicState extends State<ProfilePic> {
             ),
             // padding: const EdgeInsets.only(left: 10.0),
             padding: const EdgeInsets.fromLTRB(10.0, 30.0, 10.0, 10.0),
-            height: MediaQuery.of(context).size.height * 0.3,
+            // height: MediaQuery.of(context).size.height * 0.3,
+
             width: MediaQuery.of(context).size.width * 0.85,
             child: Obx(() {
               final profiledata = profilecontroller.profile.value;
